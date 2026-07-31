@@ -1,0 +1,55 @@
+name: 🚀 Proposta de melhoria
+description: Proponha uma melhoria para ser adicionada ao projeto
+labels: ["enhancement"]
+title: "`nomeDaFuncionalidade` | "
+type: feature
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Obrigado pelo seu interesse nesse projeto e pelo tempo provisionado para preencher esse formulário!
+
+        Por favor, siga um dos formatos de título a seguir:
+        - `` `nomeDaFuncionalidade` | Breve Descrição `` - se for algo relacionado a uma funcionalidade específica
+        - `Breve Descrição` - se for uma funcionalidade genérica
+
+        Por exemplo:
+        ```
+        `maskFormatter` | Suporte para campos com máscaras
+        ```
+  - type: textarea
+    id: feature-description
+    attributes:
+      label: Descrição clara e concisa do problema
+      description: "Como um desenvolvedor utilizando essa lib [gostaria de...] [para que...]. Se você tem a intenção de implementar uma PR para resolver o reportado anteriormente, nos diga aqui também. Obrigado!"
+    validations:
+      required: true
+  - type: textarea
+    id: suggested-solution
+    attributes:
+      label: Solução sugerida
+      description: "No módulo xyz nós poderíamos implementar..."
+    validations:
+      required: true
+  - type: textarea
+    id: alternative
+    attributes:
+      label: Alternativa
+      description: Uma descrição clara e concisa para um solução alternativa ou melhorias que possam ser consideradas.
+  - type: textarea
+    id: additional-context
+    attributes:
+      label: Contexto adicional
+      description: Qualquer outro contexto ou screenshots sobre a melhoria que está sendo mencionada aqui.
+  - type: checkboxes
+    id: checkboxes
+    attributes:
+      label: Validações
+      description: Antes de submeter a issue, por favor certifique-se de fazer o seguinte
+      options:
+        - label: Ler o [Contributing Guidelines](https://github.com/nexdom-healthtech/pkg-template#contributing).
+          required: true
+        - label: Ler a [docs](https://nexdom-healthtech.github.io/pkg-template/).
+          required: true
+        - label: Verificar se já não existe uma [issue](https://github.com/nexdom-healthtech/pkg-template/issues) criada para tratar este tema, evitando duplicidades.
+          required: true

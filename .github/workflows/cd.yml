@@ -1,0 +1,66 @@
+name: CD
+
+on:
+  push:
+    branches:
+      - main
+      - beta
+      - alpha
+
+jobs:
+  cd:
+    if: ${{ github.event_name != 'pull_request' }}
+    name: Build and deploy docs to GitHub Pages
+    outputs:
+      new_release_published: ${{ steps.release.outputs.new_release_published }}
+    permissions:
+      contents: write
+      issues: write
+      pull-requests: write
+      id-token: write
+
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Setup repo
+        uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+
+      - name: Setup Vite+
+        uses: voidzero-dev/setup-vp@v1
+        with:
+          node-version: "24"
+          cache: true
+          run-install: true
+
+      - name: Semantic Release
+        uses: cycjimmy/semantic-release-action@v6
+        id: release
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+          NPM_TOKEN: ${{ secrets.npmToken }}
+
+      - name: Build
+        run: vpr docs:build
+
+      - name: Upload static files as artifact
+        id: deployment
+        uses: actions/upload-pages-artifact@v5
+        with:
+          path: docs/.vitepress/dist/
+
+  deploy:
+    needs: cd
+    if: ${{ github.ref_name == 'main' && needs.cd.outputs.new_release_published == 'true' }}
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v5

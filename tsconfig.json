@@ -1,0 +1,27 @@
+{
+  "include": ["src/**/*", "*.md", "docs/**/*.ts", "docs/**/*.vue", "docs/**/*.md"],
+  "vueCompilerOptions": {
+    "vitePressExtensions": [".md"]
+  },
+  "compilerOptions": {
+    "target": "esnext",
+    "lib": ["dom", "es2023"],
+    "moduleDetection": "force",
+    "module": "nodenext",
+    "moduleResolution": "nodenext",
+    "resolveJsonModule": true,
+    "types": ["node", "vite-plus/client", "vite-plus/test/globals"],
+    "strict": true,
+    "noUnusedLocals": true,
+    "declaration": true,
+    "noEmit": true,
+    "allowImportingTsExtensions": true,
+    "esModuleInterop": true,
+    "isolatedModules": true,
+    "verbatimModuleSyntax": true,
+    "skipLibCheck": true,
+    "paths": {
+      "@/*": ["./src/*"]
+    }
+  }
+}

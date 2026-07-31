@@ -1,0 +1,42 @@
+// For format details, see https://aka.ms/devcontainer.json. For config options, see the
+// README at: https://github.com/devcontainers/templates/tree/main/src/typescript-node
+{
+  "name": "Node.js & TypeScript",
+  // Or use a Dockerfile or Docker Compose file. More info: https://containers.dev/guide/dockerfile
+  "image": "mcr.microsoft.com/devcontainers/typescript-node:4-24-trixie",
+  "features": {
+    "ghcr.io/helpers4/devcontainer/vite-plus:1": {}
+  },
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "VoidZero.vite-plus-extension-pack",
+        "streetsidesoftware.code-spell-checker",
+        "streetsidesoftware.code-spell-checker-portuguese-brazilian",
+        "Vue.volar"
+      ],
+      "settings": {
+        "js/ts.preferences.importModuleSpecifier": "non-relative",
+        "vue.server.includeLanguages": ["vue", "markdown"],
+        "cSpell.language": "en,pt,pt_BR"
+      }
+    }
+  },
+
+  // Features to add to the dev container. More info: https://containers.dev/features.
+  // "features": {},
+
+  // Use 'forwardPorts' to make a list of ports inside the container available locally.
+  // "forwardPorts": [],
+
+  "onCreateCommand": "export DEBIAN_FRONTEND=noninteractive && sudo apt-get update && sudo apt-get -y install --no-install-recommends graphviz",
+
+  // Use 'postCreateCommand' to run commands after the container is created.
+  "postCreateCommand": "vp install"
+
+  // Configure tool-specific properties.
+  // "customizations": {},
+
+  // Uncomment to connect as root instead. More info: https://aka.ms/dev-containers-non-root.
+  // "remoteUser": "root"
+}
