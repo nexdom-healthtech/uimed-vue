@@ -2,7 +2,7 @@
 outline: deep
 ---
 
-# O que é pkg-template?
+# O que é uimed-vue?
 
 É um [GitHub template](https://docs.github.com/en/repositories/creating-and-managing-repositories/creating-a-template-repository#about-template-repositories) para criar bibliotecas [TypeScript](https://www.typescriptlang.org/), utilizando o [Vite+](https://viteplus.dev/), e disponibilizá-las, preferencialmente, mas não exclusivamente, no [GitHub](https://github.com/) e [NPM](https://www.npmjs.com/).
 
