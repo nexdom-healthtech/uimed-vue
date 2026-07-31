@@ -5,7 +5,8 @@ Uma função de exemplo para saudação.
 ## Exemplo
 
 ```ts
-import { sayHello } from "@nexdom/pkg-template";
+// TODO: Remove stock example, quando a lib conter algo para ser mostrado
+import { sayHello } from "@nexdom/uimed-vue";
 // Output: Hello, NEXTERS!
 console.log(sayHello());
 ```

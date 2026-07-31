@@ -3,19 +3,19 @@
 layout: home
 
 hero:
-  name: "pkg-template"
+  name: "uimed-vue"
   text: "Um template para criar libs"
   tagline: Sinergia em forma de código
   actions:
     - theme: brand
-      text: O que é pkg-template?
+      text: O que é uimed-vue?
       link: /guide
     - theme: alt
       text: Iniciando
       link: /guide/getting-started
     - theme: alt
       text: GitHub
-      link: https://github.com/nexdom-healthtech/pkg-template
+      link: https://github.com/nexdom-healthtech/uimed-vue
   image:
     light: /light-logo.svg
     dark: /dark-logo.svg

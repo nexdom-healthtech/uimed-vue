@@ -1,8 +1,8 @@
-# @nexdom/pkg-template
+# @nexdom/uimed-vue
 
-[![CI](https://github.com/nexdom-healthtech/pkg-template/actions/workflows/ci.yml/badge.svg)](https://github.com/nexdom-healthtech/pkg-template/actions/workflows/ci.yml)
-[![CD](https://github.com/nexdom-healthtech/pkg-template/actions/workflows/cd.yml/badge.svg)](https://github.com/nexdom-healthtech/pkg-template/actions/workflows/cd.yml)
-[![Dependabot](https://github.com/nexdom-healthtech/pkg-template/actions/workflows/dependabot/dependabot-updates/badge.svg)](https://github.com/nexdom-healthtech/pkg-template/actions/workflows/dependabot/dependabot-updates)
+[![CI](https://github.com/nexdom-healthtech/uimed-vue/actions/workflows/ci.yml/badge.svg)](https://github.com/nexdom-healthtech/uimed-vue/actions/workflows/ci.yml)
+[![CD](https://github.com/nexdom-healthtech/uimed-vue/actions/workflows/cd.yml/badge.svg)](https://github.com/nexdom-healthtech/uimed-vue/actions/workflows/cd.yml)
+[![Dependabot](https://github.com/nexdom-healthtech/uimed-vue/actions/workflows/dependabot/dependabot-updates/badge.svg)](https://github.com/nexdom-healthtech/uimed-vue/actions/workflows/dependabot/dependabot-updates)
 
 > [!Warning]
 > This projects is a template designed for GitHub projects. It is ready to be published on GitHub Pages and NPM.
@@ -20,38 +20,33 @@
 
 A template for creating NEXDOM flavor libraries **using Vite+ and TypeScript**.
 
-For more examples and information, check the [docs page](https://nexdom-healthtech.github.io/pkg-template/).
+For more examples and information, check the [docs page](https://nexdom-healthtech.github.io/uimed-vue/).
 
 ## 💻 Get started
 
 ### Install
 
 ```bash
-vp add @nexdom/pkg-template
+vp add @nexdom/uimed-vue
 # But, if you're not using Vite+ yet...
-npm i @nexdom/pkg-template
+npm i @nexdom/uimed-vue
 # Or
-pnpm add @nexdom/pkg-template
+pnpm add @nexdom/uimed-vue
 # Or
-yarn add @nexdom/pkg-template
+yarn add @nexdom/uimed-vue
 ```
 
 ### Usage
 
 ```ts
-import { sayHello } from "@nexdom/pkg-template";
-
-const helloMessage = sayHello();
-
-// Will print "Hello, NEXTERS!"
-console.log(helloMessage);
+// TODO
 ```
 
 ## 🧱 Contribute
 
 Help us improve our community.
 
-Report an [issue](https://github.com/nexdom-healthtech/pkg-template/issues) you've found or check our [Contribution Guide](./CONTRIBUTING.md) to learn how to code in our project and open your own PRs to us.
+Report an [issue](https://github.com/nexdom-healthtech/uimed-vue/issues) you've found or check our [Contribution Guide](./CONTRIBUTING.md) to learn how to code in our project and open your own PRs to us.
 
 ## 📄 License
 
