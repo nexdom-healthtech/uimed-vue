@@ -2,7 +2,7 @@
 
 ### Antes de submeter sua PR, por favor certifique-se de fazer o seguinte
 
-- [ ] Ler o [Contribution Guide](https://github.com/nexdom-healthtech/pkg-template/blob/main/CONTRIBUTING.md).
+- [ ] Ler o [Contribution Guide](https://github.com/nexdom-healthtech/uimed-vue/blob/main/CONTRIBUTING.md).
 - [ ] Verificar se já não existe uma PR endereçada para resolver o mesmo problema, evitando duplicidades.
 - [ ] Provisionar um descrição abordando **o que** a PR está resolvendo, ou uma referência para a issue que ela está tratando (exemplo: `fixes #123`).
 - [ ] Quando possível, incluir testes que falhem sem essa PR, mas que passem com ela.

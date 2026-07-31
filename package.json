@@ -1,24 +1,24 @@
 {
-  "name": "@nexdom/pkg-template",
+  "name": "@nexdom/uimed-vue",
   "version": "0.0.0",
   "private": true,
-  "description": "A template for creating NEXDOM flavor libraries.",
+  "description": "A proxy between Vuetify and NEXDOM applications.",
   "keywords": [
     "lib",
     "nexdom",
     "typescript",
     "utils"
   ],
-  "homepage": "https://nexdom-healthtech.github.io/pkg-template/",
+  "homepage": "https://nexdom-healthtech.github.io/uimed-vue/",
   "bugs": {
-    "url": "https://github.com/nexdom-healthtech/pkg-template/issues"
+    "url": "https://github.com/nexdom-healthtech/uimed-vue/issues"
   },
   "license": "MIT",
   "author": "Author Name <author.name@nexdom.tec.br>",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/nexdom-healthtech/pkg-template.git",
-    "home": "https://github.com/nexdom-healthtech/pkg-template#readme"
+    "url": "git+https://github.com/nexdom-healthtech/uimed-vue.git",
+    "home": "https://github.com/nexdom-healthtech/uimed-vue#readme"
   },
   "files": [
     "dist"
