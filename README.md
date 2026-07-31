@@ -39,7 +39,7 @@ yarn add @nexdom/uimed-vue
 ### Usage
 
 ```ts
-// TODO
+// TODO: Add first example, when the library has one.
 ```
 
 ## 🧱 Contribute
