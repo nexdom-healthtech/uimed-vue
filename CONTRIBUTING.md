@@ -1,4 +1,4 @@
-# @nexdom/pkg-template
+# @nexdom/uimed-vue
 
 After clone this project, **open it inside its devContainer** using [VSCode](https://code.visualstudio.com/download).
 

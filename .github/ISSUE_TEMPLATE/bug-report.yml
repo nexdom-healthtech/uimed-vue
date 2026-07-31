@@ -38,11 +38,11 @@ body:
       label: Validations
       description: Antes de submeter a issue, por favor certifique-se de fazer o seguinte
       options:
-        - label: Ler o [Contributing Guidelines](https://github.com/nexdom-healthtech/pkg-template#contributing).
+        - label: Ler o [Contributing Guidelines](https://github.com/nexdom-healthtech/uimed-vue#contributing).
           required: true
-        - label: Ler a [docs](https://nexdom-healthtech.github.io/pkg-template/).
+        - label: Ler a [docs](https://nexdom-healthtech.github.io/uimed-vue/).
           required: true
-        - label: Verificar se já não existe uma [issue](https://github.com/nexdom-healthtech/pkg-template/issues) criada para tratar este tema, evitando duplicidades.
+        - label: Verificar se já não existe uma [issue](https://github.com/nexdom-healthtech/uimed-vue/issues) criada para tratar este tema, evitando duplicidades.
           required: true
         - label: Certifique-se de que o problema está dentro desse projeto e não em um outro framework específico.
           required: true
