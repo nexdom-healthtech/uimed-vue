@@ -8,14 +8,14 @@ const currentYearText = currentYear > releaseYear ? `-${currentYear}` : "";
 // https://vitepress.dev/reference/site-config
 export default defineConfig({
   lang: "pt-BR",
-  title: "pkg-template | NEXDOM",
-  base: "/pkg-template/",
-  head: [["link", { rel: "icon", href: "/pkg-template/favicon.svg" }]],
+  title: "uimed-vue | NEXDOM",
+  base: "/uimed-vue/",
+  head: [["link", { rel: "icon", href: "/uimed-vue/favicon.svg" }]],
   description: "Um template para a criação validando de libs NEXDOM.",
   lastUpdated: true,
   cleanUrls: true,
   sitemap: {
-    hostname: "https://nexdom-healthtech.github.io/pkg-template/",
+    hostname: "https://nexdom-healthtech.github.io/uimed-vue/",
   },
   markdown: {
     container: {
@@ -32,7 +32,7 @@ export default defineConfig({
   themeConfig: {
     // https://vitepress.dev/reference/default-theme-config
     logo: "/favicon.svg",
-    siteTitle: "pkg-template",
+    siteTitle: "uimed-vue",
     darkModeSwitchLabel: "Tema Escuro",
     darkModeSwitchTitle: "Mudar para Modo Escuro",
     lightModeSwitchTitle: "Mudar para Modo Claro",
@@ -56,7 +56,7 @@ export default defineConfig({
     lastUpdated: { text: "Atualizado em" },
     editLink: {
       text: "Edite esta página no GitHub",
-      pattern: "https://github.com/nexdom-healthtech/pkg-template/edit/main/docs/:path",
+      pattern: "https://github.com/nexdom-healthtech/uimed-vue/edit/main/docs/:path",
     },
     notFound: {
       title: "PÁGINA NÃO ENCONTRADA",
@@ -71,11 +71,11 @@ export default defineConfig({
         items: [
           {
             text: "Releases",
-            link: "https://github.com/nexdom-healthtech/pkg-template/releases",
+            link: "https://github.com/nexdom-healthtech/uimed-vue/releases",
           },
           {
             text: "Contribuindo",
-            link: "https://github.com/nexdom-healthtech/pkg-template/blob/main/CONTRIBUTING.md",
+            link: "https://github.com/nexdom-healthtech/uimed-vue/blob/main/CONTRIBUTING.md",
           },
         ],
       },
@@ -85,7 +85,7 @@ export default defineConfig({
         {
           text: "Introdução",
           items: [
-            { text: "O que é pkg-template?", link: "/guide/" },
+            { text: "O que é uimed-vue?", link: "/guide/" },
             { text: "Iniciando", link: "/guide/getting-started" },
           ],
         },
@@ -103,7 +103,7 @@ export default defineConfig({
         },
       ],
     },
-    socialLinks: [{ icon: "github", link: "https://github.com/nexdom-healthtech/pkg-template" }],
+    socialLinks: [{ icon: "github", link: "https://github.com/nexdom-healthtech/uimed-vue" }],
     footer: {
       message: "Lançado sob licença MIT",
       copyright: `Direitos reservados © ${releaseYear}${currentYearText} NEXDOM HealthTech`,
