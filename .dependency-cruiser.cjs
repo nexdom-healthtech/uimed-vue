@@ -58,7 +58,7 @@ module.exports = {
         dependencyTypes: ["npm-dev"],
         // type only dependencies are not a problem as they don't end up in the
         // production code or are ignored by the runtime.
-        dependencyTypesNot: ["type-only"],
+        dependencyTypesNot: ["type-only", "npm-peer"],
         pathNot: ["node_modules/@types/"],
       },
     },
@@ -86,6 +86,15 @@ module.exports = {
       to: {
         dependencyTypesNot: ["local", "npm-peer"],
       },
+    },
+    {
+      name: "components-and-composables",
+      comment: `The root folders from this project must be components or composables only.`,
+      severity: "error",
+      from: {
+        pathNot: ["src/(__tests__|index|components|composables)"],
+      },
+      to: {},
     },
   ],
   options: {
