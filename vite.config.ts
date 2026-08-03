@@ -50,5 +50,10 @@ export default defineConfig({
     environment: "jsdom",
     coverage: { reporter: ["text"] },
     setupFiles: ["src/__tests__/setup.ts"],
+    server: {
+      deps: {
+        inline: ["vuetify"],
+      },
+    },
   },
 });
