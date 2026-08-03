@@ -89,15 +89,19 @@ export default defineConfig({
             { text: "Iniciando", link: "/guide/getting-started" },
           ],
         },
+        {
+          text: "Componentes",
+          items: [{ text: "Root", link: "/guide/components/root" }],
+        },
       ],
       "/api/": [
         {
-          text: "Utils",
+          text: "Componentes",
           collapsed: false,
           items: [
             {
-              text: "sayHello",
-              link: "/api/say-hello",
+              text: "Root",
+              link: "/api/components/root",
             },
           ],
         },

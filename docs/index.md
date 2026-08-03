@@ -4,8 +4,8 @@ layout: home
 
 hero:
   name: "uimed-vue"
-  text: "Um template para criar libs"
-  tagline: Sinergia em forma de código
+  text: "UI Framework"
+  tagline: Sinergia em camada visual
   actions:
     - theme: brand
       text: O que é uimed-vue?
@@ -21,15 +21,15 @@ hero:
     dark: /dark-logo.svg
 
 features:
-  - title: Orientado a Sinergia
-    icon: 🤝
-    details: Feito para promovermos inovação e qualidade para o Sistema Unimed.
-  - title: Mais Tecnologia
-    icon: 🤖
-    details: Sinergia na troca de conhecimento e soluções.
+  - title: Estilizado
+    icon: 🎨
+    details: Feito para padronizar as aplicações do Sistema Unimed.
+  - title: Modular
+    icon: 🧩
+    details: Adicione somente os recursos necessários.
   - title: Sem Retrabalhos
-    icon: 💡
-    details: Menos foco nos problemas genéricos, mais foco no nosso negócio.
+    icon: 🪄
+    details: Sem necessidade de CSS ou classes adicionais.
   - title: Mais Agilidade
     icon: 🚀
     details: Tudo pronto pra você começar a usar com qualidade.
