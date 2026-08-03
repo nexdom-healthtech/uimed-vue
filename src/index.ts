@@ -1,11 +1,1 @@
-/**
- * A "Hello World" function.
- *
- * Call it like:
- * ```ts
- * console.log(sayHello());
- * ```
- */
-export function sayHello() {
-  return "Hello, NEXTERS!";
-}
+export * as components from "@/components/index.ts";
