@@ -1,5 +1,6 @@
 import path from "path";
 import { defineConfig } from "vite-plus";
+import vue from "@vitejs/plugin-vue";
 
 export default defineConfig({
   staged: {
@@ -19,8 +20,14 @@ export default defineConfig({
     },
   },
   pack: {
+    entry: {
+      index: "src/index.ts",
+      components: "src/components/index.ts",
+    },
+    platform: "neutral",
+    plugins: [vue()],
     dts: {
-      tsgo: true,
+      vue: true,
     },
     exports: true,
   },
@@ -36,6 +43,7 @@ export default defineConfig({
       "@": path.resolve(__dirname, "./src"),
     },
   },
+  plugins: [vue()],
   test: {
     globals: true,
     clearMocks: true,
