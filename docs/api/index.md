@@ -25,7 +25,7 @@ next: false
 
 <script lang="ts" setup>
     const apis = [{
-        group: "Utils",
-        methods: [{ text: "sayHello", link: './say-hello' }]
+        group: "Componentes",
+        methods: [{ text: "Root", link: './components/root' }]
     }];
 </script>
