@@ -1,17 +1,6 @@
 # Iniciando
 
-## Setup do seu repositório
-
-A primeira coisa a fazer é [criar o seu repositório a partir deste template](https://docs.github.com/en/repositories/creating-and-managing-repositories/creating-a-repository-from-a-template).
-
-> [!Warning]
-> Ao fazer isso, não se esqueça de remover este tópico sobre o [Setup do seu repositório](#setup-do-seu-repositório). A menos que ele também venha a servir como um template.
-
 ## Instação
-
-### Pré-requisitos
-
-- [Node.js](https://nodejs.org/pt-br) versão 20 ou superior
 
 Para instalar no seu projeto, execute:
 
@@ -37,6 +26,18 @@ $ yarn add @nexdom/uimed-vue
 
 ## E agora?
 
-<!-- TODO: implemente suas demos para apresentar aqui e atualize as APIs -->
+Importe os recursos que você precisar, como no exemplo a seguir:
 
-Acesse as [APIs](../api/) e saiba mais dos recursos que essa lib dispõe.
+```vue
+<template>
+  <Root>
+    <!-- ... -->
+  </Root>
+</template>
+
+<script lang="ts" setup>
+import { Root } from "@nexdom/uimed-vue/compoents";
+</script>
+```
+
+Acesse as [APIs](../api/) e saiba mais dos recursos que este framework dispõe.
