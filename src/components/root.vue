@@ -1,5 +1,7 @@
 <template>
-  <slot />
+  <VApp>
+    <slot />
+  </VApp>
 </template>
 
 <script lang="ts">
@@ -9,5 +11,5 @@
 </script>
 
 <script setup lang="ts">
-import "vuetify/styles";
+import { VApp } from "vuetify/components";
 </script>
