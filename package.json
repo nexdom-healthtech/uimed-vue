@@ -1,8 +1,7 @@
 {
   "name": "@nexdom/uimed-vue",
   "version": "0.0.0",
-  "private": true,
-  "description": "A proxy between Vuetify and NEXDOM applications.",
+  "description": "A ui framework for NEXDOM applications.",
   "keywords": [
     "lib",
     "nexdom",
@@ -26,6 +25,7 @@
   "type": "module",
   "exports": {
     ".": "./dist/index.mjs",
+    "./components": "./dist/components.mjs",
     "./package.json": "./package.json"
   },
   "publishConfig": {
@@ -50,14 +50,21 @@
     "@types/node": "^26.1.1",
     "@typescript/native-preview": "7.0.0-dev.20260629.1",
     "@vitest/coverage-v8": "4.1.9",
+    "@vue/test-utils": "^2.4.11",
     "bumpp": "^12.0.0",
     "dependency-cruiser": "^18.1.0",
     "jsdom": "^30.0.0",
     "oxc-minify": "^0.141.0",
+    "postcss": "^8.5.25",
     "typescript": "^6.0.3",
     "vite-plus": "^0.2.2",
     "vitepress": "2.0.0-alpha.17",
-    "vue": "^3.5.40"
+    "vue": "^3.5.40",
+    "vuetify": "^4.1.7"
+  },
+  "peerDependencies": {
+    "vue": "^3.5.40",
+    "vuetify": "^4.1.7"
   },
   "commitlint": {
     "extends": [
