@@ -10,6 +10,9 @@ const vuetify = createVuetify({ components, directives });
 
 describe("root", () => {
   const wrapper = mount(Root, {
+    attrs: {
+      "data-testid": "root",
+    },
     global: {
       plugins: [vuetify],
     },
@@ -21,5 +24,9 @@ describe("root", () => {
 
   it("should contain primary component", () => {
     expect(wrapper.findComponent(VApp).exists()).toBe(true);
+  });
+
+  it('should not inherit "data-testid" attribute', () => {
+    expect(wrapper.attributes("data-testid")).toBeUndefined();
   });
 });
