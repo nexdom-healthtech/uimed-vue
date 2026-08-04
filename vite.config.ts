@@ -22,6 +22,7 @@ export default defineConfig({
   pack: {
     entry: {
       index: "src/index.ts",
+      plugins: "src/plugins.ts",
       components: "src/components/index.ts",
     },
     platform: "neutral",

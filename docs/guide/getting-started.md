@@ -24,11 +24,44 @@ $ yarn add @nexdom/uimed-vue
 
 :::
 
+## Configuração
+
+Adicione o plugin ao arquivo de configurações do Vite:
+
+```js [vite.config.js]
+import { defineConfig } from 'vite'
+import vue from "@vitejs/plugin-vue";
+import { vitePluginUimed } from "@nexdom/uimed-vue/plugins.ts"; // [!code ++]
+
+export default defineConfig({
+  plugins: [
+    vue(),
+    vitePluginUimed() // [!code ++]
+  ];
+  // ...
+});
+```
+
+Após atualizar as configurações do Vite, instale o plugin no seu app:
+
+```ts [main.ts]
+import { createApp } from "vue";
+import { createUimed } from "@nexdom/uimed-vue"; // [!code ++]
+
+import App from "./App.vue";
+
+const uimed = createUimed(); // [!code ++]
+
+createApp(App)
+  .use(uimed) // [!code ++]
+  .mount("#app");
+```
+
 ## E agora?
 
-Importe os recursos que você precisar, como no exemplo a seguir:
+Importe o componente [`Root`](../api/components/root.md) para dentro do seu `App.vue` e então os demais recursos que você precise, como no exemplo a seguir:
 
-```vue
+```vue [App.vue]
 <template>
   <Root>
     <!-- ... -->
@@ -36,7 +69,7 @@ Importe os recursos que você precisar, como no exemplo a seguir:
 </template>
 
 <script lang="ts" setup>
-import { Root } from "@nexdom/uimed-vue/compoents";
+import { Root } from "@nexdom/uimed-vue/components";
 </script>
 ```
 

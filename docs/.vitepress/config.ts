@@ -1,4 +1,5 @@
 import { defineConfig } from "vitepress";
+import { groupIconMdPlugin, groupIconVitePlugin } from "vitepress-plugin-group-icons";
 
 const pkg = require("../../package.json");
 const releaseYear = 2026;
@@ -28,6 +29,12 @@ export default defineConfig({
       importantLabel: "IMPORTANTE",
       cautionLabel: "ATENÇÃO",
     },
+    config(md) {
+      md.use(groupIconMdPlugin);
+    },
+  },
+  vite: {
+    plugins: [groupIconVitePlugin()],
   },
   themeConfig: {
     // https://vitepress.dev/reference/default-theme-config

@@ -22,10 +22,50 @@ pnpm add @nexdom/uimed-vue
 yarn add @nexdom/uimed-vue
 ```
 
-### Usage
+### Setup
+
+Add Vite config:
 
 ```ts
-// TODO: Add first example, when the library has one.
+// vite.config.js
+import { vitePluginUimed } from "@nexdom/uimed-vue/plugins.ts";
+
+/// ...
+
+plugins: [vue(), vitePluginUimed()];
+
+// ...
+```
+
+Use Uimed inside the Vue app:
+
+```ts
+// main.js or main.ts
+import { createApp } from "vue";
+import { createUimed } from "@nexdom/uimed-vue";
+
+import App from "./App.vue";
+
+const uimed = createUimed();
+
+createApp(App).use(uimed).mount("#app");
+```
+
+### Usage
+
+Add the `Root` component to you `App.vue`, then add the rest of the components as needed:
+
+```vue
+<!-- App.vue -->
+<template>
+  <Root>
+    <!-- ... -->
+  </Root>
+</template>
+
+<script setup lang="ts">
+import { Root } from "@nexdom/uimed-vue/components";
+</script>
 ```
 
 ## 🧱 Contribute
