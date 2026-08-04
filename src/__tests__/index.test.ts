@@ -1,13 +1,17 @@
-// import { components, composables } from "@/index.ts";
-import { components } from "@/index.ts";
+import { createUimed } from "@/index.ts";
+import { createVuetify } from "vuetify";
+
+vi.mock("vuetify", () => ({ createVuetify: vi.fn() }));
 
 describe("index", () => {
-  it("should export components", () => {
-    expect(components).not.toBeUndefined();
-  });
+  describe("createUimed", () => {
+    it("should call createVuetify", () => {
+      expect(createVuetify).not.toHaveBeenCalled();
 
-  // it.todo("should export composables", () => {
-  //   expect(composables).not.toBe(components);
-  //   expect(composables).not.toBeUndefined();
-  // });
+      createUimed();
+
+      expect(createVuetify).toHaveBeenCalledOnce();
+      expect(createVuetify).toHaveBeenCalledWith({ theme: { defaultTheme: "light" } });
+    });
+  });
 });
