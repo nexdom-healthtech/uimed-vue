@@ -4,7 +4,7 @@
 [![CD](https://github.com/nexdom-healthtech/uimed-vue/actions/workflows/cd.yml/badge.svg)](https://github.com/nexdom-healthtech/uimed-vue/actions/workflows/cd.yml)
 [![Dependabot](https://github.com/nexdom-healthtech/uimed-vue/actions/workflows/dependabot/dependabot-updates/badge.svg)](https://github.com/nexdom-healthtech/uimed-vue/actions/workflows/dependabot/dependabot-updates)
 
-A ui framework for NEXDOM applications, based on [Vuetify](https://vuetifyjs.com/).
+A ui framework for NEXDOM applications, based on [Material Design](https://m3.material.io/).
 
 For more examples and information, check the [docs page](https://nexdom-healthtech.github.io/uimed-vue/).
 
