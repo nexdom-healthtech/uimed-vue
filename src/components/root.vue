@@ -12,4 +12,8 @@
 
 <script setup lang="ts">
 import { VApp } from "vuetify/components";
+
+defineOptions({
+  inheritAttrs: false,
+});
 </script>
