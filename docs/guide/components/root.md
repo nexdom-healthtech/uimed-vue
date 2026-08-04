@@ -7,14 +7,14 @@ Responsável por carregar os estilos necessários para os demais componentes.
 
 ::: raw
 <Root>
-<h2> Testing...</h2>
+  <h2>Testando...</h2>
 </Root>
 :::
 
 ```vue
 <template>
   <Root>
-    <h2>Testing...</h2>
+    <h2>Testando...</h2>
   </Root>
 </template>
 

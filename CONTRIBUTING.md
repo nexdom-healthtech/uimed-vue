@@ -8,6 +8,10 @@ _Don't forget to commit your changes using [Conventional Commits](https://www.co
 
 ## Development
 
+The next topics will instruct you on how to run what's already inside this project and how to add new features.
+
+### Scripts
+
 The following scripts will help you on your daily basis.
 
 All code that's going to be published in the library is inside the `src` folder. Also, it's written in English, so let's try to keep it standardized.
@@ -61,6 +65,22 @@ vp run depcruise
 
 ```bash
 vp --help
+```
+
+### Architecture
+
+#### Components
+
+Since `@nexdom/uimed-vue` is a frameworks, we shall not expose any trace of its internal implementations.
+
+To do so, **the following code is recommended for every component**, since it restricts a component use to the exposed API only:
+
+```vue
+<script setup lang="ts">
+defineOptions({
+  inheritAttrs: false,
+});
+</script>
 ```
 
 ## Documentation
