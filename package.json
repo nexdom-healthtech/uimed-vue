@@ -42,8 +42,7 @@
     "depcruise": "depcruise src --output-type err-long",
     "depcruise:graph": "depcruise src --output-type dot| dot -T svg > dependencygraph.svg",
     "depcruise:graph:no-tests": "depcruise src --exclude \"__tests__\"  --output-type dot | dot -T svg > dependencygraph.no-tests.svg",
-    "docs:dev": "vitepress dev docs --host",
-    "docs:preview": "vitepress preview docs"
+    "docs:dev": "vitepress dev docs --host"
   },
   "devDependencies": {
     "@commitlint/cli": "^21.2.1",

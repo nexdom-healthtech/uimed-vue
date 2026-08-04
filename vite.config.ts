@@ -17,6 +17,10 @@ export default defineConfig({
         command: "vpx vitepress build docs",
         dependsOn: ["build"],
       },
+      "docs:preview": {
+        command: "vpx vitepress preview docs",
+        dependsOn: ["docs:build"],
+      },
     },
   },
   pack: {
