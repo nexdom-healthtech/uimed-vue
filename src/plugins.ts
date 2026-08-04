@@ -1,6 +1,8 @@
 import vitePluginVuetify from "vite-plugin-vuetify";
 
-// TODO: add JSDoc
+/**
+ * Vite plugin for Uimed.
+ */
 export function vitePluginUimed(): ReturnType<typeof vitePluginVuetify> {
   return vitePluginVuetify({ autoImport: false });
 }
