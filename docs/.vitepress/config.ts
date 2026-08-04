@@ -35,6 +35,9 @@ export default defineConfig({
   },
   vite: {
     plugins: [groupIconVitePlugin()],
+    ssr: {
+      noExternal: [/\.css$/, /^vuetify/],
+    },
   },
   themeConfig: {
     // https://vitepress.dev/reference/default-theme-config

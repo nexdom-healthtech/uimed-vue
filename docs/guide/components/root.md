@@ -24,6 +24,5 @@ import { Root } from "@nexdom/uimed-vue/components";
 ```
 
 <script lang="ts" setup>
-    import { VBtn } from "vuetify/components"
-    import { Root } from "../../../dist/components.js"
+  import { Root } from "../../../dist/components.js"
 </script>
