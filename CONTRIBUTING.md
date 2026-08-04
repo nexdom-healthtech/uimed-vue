@@ -45,6 +45,8 @@ vpr check
 vp run check
 ```
 
+_This script might require `build` first._
+
 - Run the unit tests:
 
 ```bash
