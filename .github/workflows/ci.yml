@@ -27,6 +27,9 @@ jobs:
       - name: Validate PR commits with Commitlint
         run: vpx commitlint --from ${{ github.event.pull_request.base.sha }} --to ${{ github.event.pull_request.head.sha }} --verbose
 
+      - name: Pack
+        run: vp pack
+
       - name: Check
         run: vp check
 
