@@ -71,7 +71,7 @@ module.exports = {
         "from.pathNot re of the not-to-dev-dep rule in the dependency-cruiser configuration",
       from: {
         path: "^(src)",
-        pathNot: "[.](?:spec|test)[.](?:js|mjs|cjs|jsx|ts|mts|cts|tsx)$",
+        pathNot: "__tests__",
       },
       to: {
         dependencyTypes: ["npm-dev"],
@@ -111,7 +111,7 @@ module.exports = {
       comment: `The root folders from this project must be components or composables only.`,
       severity: "error",
       from: {
-        pathNot: ["src/(__tests__|index|components|composables)"],
+        pathNot: ["src/(__tests__|index|plugins|components|composables)"],
       },
       to: {},
     },
