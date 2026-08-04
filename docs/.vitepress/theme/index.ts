@@ -4,6 +4,8 @@ import type { Theme } from "vitepress";
 import DefaultTheme from "vitepress/theme";
 import "./style.css";
 
+import { createUimed } from "../../../dist/index.js";
+
 export default {
   extends: DefaultTheme,
   Layout: () => {
@@ -11,7 +13,7 @@ export default {
       // https://vitepress.dev/guide/extending-default-theme#layout-slots
     });
   },
-  // enhanceApp({ app, router, siteData }) {
-  //   // ...
-  // },
+  enhanceApp({ app }) {
+    app.use(createUimed());
+  },
 } satisfies Theme;
