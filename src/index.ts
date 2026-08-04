@@ -17,11 +17,12 @@ import "@mdi/font/css/materialdesignicons.css";
 
 import "vuetify/styles";
 import { createVuetify } from "vuetify";
+import { type Plugin } from "vue";
 
 /**
  * Create an uimed-vue instance to be installed after [createApp](https://vuejs.org/guide/essentials/application.html#the-application-instance).
  * @returns an instance to be used with [app.use](https://vuejs.org/guide/essentials/application.html#the-application-instance)
  */
-export const createUimed = () => createVuetify({ theme: { defaultTheme: "light" } });
-
-export * as components from "@/components/index.ts";
+export function createUimed(): Plugin {
+  return createVuetify({ theme: { defaultTheme: "light" } });
+}
