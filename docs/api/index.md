@@ -24,8 +24,13 @@ next: false
 </div>
 
 <script lang="ts" setup>
-    const apis = [{
+const apis = [
+    {
         group: "Componentes",
-        methods: [{ text: "Root", link: './components/root' }]
-    }];
+        methods: [
+            { text: "Root", link: './components/root' },
+            { text: "Button", link: "./components/button" }
+        ]
+    },
+];
 </script>
