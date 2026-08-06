@@ -6,7 +6,8 @@
     "lib",
     "nexdom",
     "typescript",
-    "utils"
+    "utils",
+    "vue"
   ],
   "homepage": "https://nexdom-healthtech.github.io/uimed-vue/",
   "bugs": {
