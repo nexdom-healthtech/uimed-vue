@@ -32,7 +32,10 @@
   "onCreateCommand": "export DEBIAN_FRONTEND=noninteractive && sudo apt-get update && sudo apt-get -y install --no-install-recommends graphviz",
 
   // Use 'postCreateCommand' to run commands after the container is created.
-  "postCreateCommand": "vp install"
+  "postCreateCommand": {
+    "install": "vp install",
+    "setup": "vp env setup"
+  }
 
   // Configure tool-specific properties.
   // "customizations": {},
