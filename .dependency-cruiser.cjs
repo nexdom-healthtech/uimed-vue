@@ -11,7 +11,7 @@ module.exports = {
         "disable this rule by adding this override as a rule in the 'forbidden' section " +
         "of your dependency-cruiser configuration: " +
         '{"name": "no-duplicate-dep-types", "severity": "ignore"}',
-      severity: "warn",
+      severity: "error",
       from: {},
       to: {
         moreThanOneDependencyType: true,
