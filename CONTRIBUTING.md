@@ -108,21 +108,143 @@ vpr docs
 vp run docs
 ```
 
-## Opening Pull Requests
+## Opening a Pull Request
 
-This projects has 3 major branches that you must know:
+Following [Semantic Release recommendations](https://semantic-release.org/foundation/supported-branching/#trunk-based-development), this project uses [Trunk-Based Development](https://beyond.minimumcd.org/docs/reference/practices/trunk-based-development/). That said, you might want to read the next instructions before creating your branch and submit it as a Pull Request.
 
-- _main_ - where the last published version relies
-- _beta_ - where _pre-release_ code, ready to be tested, relies
-- _alpha_ - where _pre-release_ code relies when it's not ready for testing yet
+Keep in mind that we only have one long-living branch, which is `main` (our _`trunk`_ branch).
 
-Any changes on this project must target one of these branches through a pull request, causing the original branch to be deleted after merge.
+Every short-lived branch must aim to reach `main` sometime. Always through pull requests, of course, since branch `main`, also `beta` and `alpha` eventually, are protected against direct push.
 
-So, to contribute on this project, all you have to do is open a new branch from the branch you'll be targeting your PR later, and that only depends if your changes will be: ready for production (_main_), ready to be tested (_beta_) or not ready for tests yet (_alpha_).
+### When to use `main` (_`trunk`_)?
 
-As soon as we merge your PR, the changes will be published as a new _alpha_, _beta_ or _main_ version (which will also update the published docs).
+The majority of new features, bug fixes and minor updates (like documentations or CI/CD changes) will come from a short-lived branch (named based on its intention, e.g. "`fix-some-method-behavior`").
 
-Note that, at some point, we'll ended up using _alpha_ to update _beta_ and _beta_ to update _main_ and then both branches (_beta_ and _alpha_) will be deleted. When it happens, all you gotta do to work on them again is open a new _beta_ branch from _main_ or _alpha_ from _beta_.
+Short-lived branches, as mentioned before, originate from branch `main`, and will, as soon as possible, go back to `main` through a Pull Request. As soon as the PR is merged, the origin branch must be deleted.
+
+The diagram bellow illustrates that workflow:
+
+```mermaid
+gitGraph:
+    commit id: "Initial commit" tag: "v1.0.0"
+    branch fix-something
+    checkout fix-something
+    commit
+    commit
+    checkout main
+    branch some-feature
+    commit
+    checkout main
+    merge fix-something tag: "v1.0.1"
+    checkout some-feature
+    commit
+    commit
+    commit
+    checkout main
+    branch fix-some-other-thing
+    commit
+    checkout main
+    merge some-feature tag: "v1.1.0"
+    branch improve-ci-cd
+    commit
+    checkout main
+    merge improve-ci-cd
+    merge fix-some-other-thing tag: "v1.1.1"
+```
+
+_Exceptions to this flow will be described on [When to use `beta`?](#when-to-use-beta) and [When to use `alpha`?](#when-to-use-alpha)._
+
+### When to use `beta`?
+
+If you're implementing something that's not production ready for sure (a `pre-release`), or method signatures (API) might still change, prefer using `beta`.
+
+Here, what you'll do is create a branch `beta`, from `main`, if it's not already created. Then open your branch from `beta` and send it back (to `beta`) as a PR when it's ready to be tested.
+
+As soon as all changes inside beta are actually production ready, which must not linger, merge `beta` into `main` using a PR.
+
+_Just like any other branch, as soon as the PR from `beta` to `main` is merged, the branch `beta` must be deleted (at least until new a `beta` is needed)._
+
+_Sometimes merging `beta` straight into `main` won't be possible duo some merge conflicts and the protection rule that prevents pushes (including rebases or merge resolving commits) into `main`, `beta` and `alpha`. To solve it, create an intermediary branch, from `beta`, rebase it with `main` and use it to create your PR. Remember to delete both branches, `beta` and the temporary branch, after merge._
+
+The `beta` branch flow should looks something like this:
+
+```mermaid
+gitGraph:
+    commit id: "Initial commit" tag: "v1.0.0"
+    branch beta
+    checkout main
+    branch fix-something
+    checkout fix-something
+    commit
+    commit
+    checkout beta
+    branch some-great-feature
+    commit
+    checkout main
+    merge fix-something tag: "v1.0.1"
+    checkout some-great-feature
+    commit
+    commit
+    commit
+    checkout main
+    branch fix-something-else
+    commit
+    checkout beta
+    merge some-great-feature tag: "v1.1.0-beta.1"
+    branch improve-ci-cd
+    commit
+    commit
+    commit
+    commit
+    commit
+    commit
+    commit
+    checkout main
+    merge fix-something-else tag: "v1.0.2"
+    checkout beta
+    merge improve-ci-cd
+    checkout main
+    merge beta tag: "v1.1.0"
+```
+
+### When to use `alpha`?
+
+Sometimes, when you don't even have enough resources to test something, like when you've just created a new project/library from a template, or started to prototype a new feature, you need `alpha`.
+
+Create `alpha` from `main` and work on it just like you would on `beta`. The moment your changes become stable enough for starting test phase, promote tem to `beta` by creating a new branch `beta` from `main`, if it's not already there, and push `alpha` into `beta`using a Pull Request.
+
+For that moment on, everything should comply according to [When to use `beta`?](#when-to-use-beta) specifications.
+
+The whole flow will look like this:
+
+```mermaid
+gitGraph:
+    commit id: "Initial commit"
+    branch alpha
+    branch setup-ci-cd
+    commit
+    checkout alpha
+    branch setup-docs
+    commit
+    commit
+    checkout alpha
+    merge setup-docs tag: "v1.0.0-alpha.1"
+    merge setup-ci-cd tag: "v1.0.0-alpha.2"
+    branch first-feature
+    commit
+    commit
+    checkout alpha
+    merge first-feature tag: "v1.0.0-alpha.3"
+    checkout main
+    branch beta
+    merge alpha tag: "v1.0.0-beta.1"
+    branch fix-something
+    commit
+    checkout beta
+    merge fix-something tag: "v1.0.0-beta.2"
+    checkout main
+    merge beta tag: "v1.0.0"
+```
 
 ## Publishing
 
