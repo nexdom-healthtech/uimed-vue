@@ -1,4 +1,4 @@
-import { VBtn } from "vuetify/components";
+import { VBtn, VProgressCircular } from "vuetify/components";
 import { mount } from "@vue/test-utils";
 import Button from "@/components/button/button.vue";
 
@@ -92,6 +92,11 @@ describe("button", () => {
       const wrapper = mountButton();
       expect(wrapper.findComponent(VBtn).props("loading")).toBe(false);
     });
+
+    it("should render the underlying component's default spinner when loading without a custom `loader` slot", () => {
+      const wrapper = mountButton({ loading: true } as InstanceType<typeof Button>["$props"]);
+      expect(wrapper.findComponent(VProgressCircular).exists()).toBe(true);
+    });
   });
 
   describe("position prop", () => {
@@ -119,11 +124,20 @@ describe("button", () => {
   });
 
   describe("loader slot", () => {
-    it("should forward the `loader` slot to the underlying component when loading", () => {
+    it("should render the `loader` slot content inside the underlying component's loader", () => {
       const wrapper = mountButton({ loading: true } as InstanceType<typeof Button>["$props"], {
         loader: '<span data-testid="custom-loader">Loading…</span>',
       });
-      expect(wrapper.find('[data-testid="custom-loader"]').exists()).toBe(true);
+      expect(wrapper.find(".v-btn__loader").find('[data-testid="custom-loader"]').exists()).toBe(
+        true,
+      );
+    });
+
+    it("should replace the underlying component's default spinner when a custom loader is provided", () => {
+      const wrapper = mountButton({ loading: true } as InstanceType<typeof Button>["$props"], {
+        loader: '<span data-testid="custom-loader">Loading…</span>',
+      });
+      expect(wrapper.findComponent(VProgressCircular).exists()).toBe(false);
     });
 
     it("should not render the `loader` slot content when not loading", () => {
