@@ -55,6 +55,7 @@
     "@vitest/coverage-v8": "4.1.10",
     "@vue/test-utils": "^2.4.11",
     "bumpp": "^12.1.1",
+    "conventional-changelog-conventionalcommits": "^10.3.0",
     "dependency-cruiser": "^18.1.1",
     "jsdom": "^30.0.1",
     "oxc-minify": "^0.143.0",
@@ -79,6 +80,19 @@
   "commitlint": {
     "extends": [
       "@commitlint/config-conventional"
+    ]
+  },
+  "release": {
+    "plugins": [
+      [
+        "@semantic-release/commit-analyzer",
+        {
+          "preset": "conventionalcommits"
+        }
+      ],
+      "@semantic-release/release-notes-generator",
+      "@semantic-release/npm",
+      "@semantic-release/github"
     ]
   },
   "packageManager": "pnpm@10.32.0"
