@@ -7,8 +7,12 @@
     :position="position"
     @click="$emit('click', $event)"
   >
-    <slot name="default" />
-    <slot v-if="loading" name="loader" />
+    <template #default>
+      <slot name="default" />
+    </template>
+    <template v-if="$slots.loader" #loader>
+      <slot name="loader" />
+    </template>
   </v-btn>
 </template>
 
