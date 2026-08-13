@@ -1,5 +1,6 @@
 <template>
   <v-btn
+    :class="className"
     :variant="type"
     :color="color"
     :disabled="disabled"
@@ -36,6 +37,10 @@ type VBtnProps = InstanceType<typeof VBtn>["$props"];
  * Props exposed by the {@link Button} component.
  */
 type ButtonProps = {
+  /**
+   * Applies a custom CSS class to the root button element.
+   */
+  class?: VBtnProps["class"];
   /**
    * Applies a distinct style variation to the button.
    * One of `elevated`, `flat`, `outlined`, `plain`, `text`, or `tonal`.
@@ -82,6 +87,7 @@ type ButtonEmits = {
 };
 
 const {
+  class: className,
   type = "elevated",
   color = "primary",
   disabled = false,
