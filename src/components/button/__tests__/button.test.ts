@@ -111,6 +111,29 @@ describe("button", () => {
     });
   });
 
+  describe("class prop", () => {
+    it("should forward `class` to the underlying component", () => {
+      const wrapper = mountButton({ class: "custom-class" } as InstanceType<
+        typeof Button
+      >["$props"]);
+      expect(wrapper.findComponent(VBtn).props("class")).toBe("custom-class");
+    });
+
+    it("should apply the custom class alongside the underlying component's own classes on the root element", () => {
+      const wrapper = mountButton({ class: "custom-class" } as InstanceType<
+        typeof Button
+      >["$props"]);
+      expect(wrapper.classes()).toContain("custom-class");
+      expect(wrapper.classes()).toContain("v-btn");
+    });
+
+    it("should not apply any custom class by default", () => {
+      const wrapper = mountButton();
+      expect(wrapper.classes()).toContain("v-btn");
+      expect(wrapper.classes()).not.toContain("custom-class");
+    });
+  });
+
   describe("default slot", () => {
     it("should render content passed to the default slot", () => {
       const wrapper = mountButton({}, { default: "Click me" });
