@@ -21,6 +21,11 @@ export default defineConfig({
         command: "vpx vitepress preview docs",
         dependsOn: ["docs:build"],
       },
+      "test:e2e": {
+        command: "vpx playwright test",
+        dependsOn: ["docs:build"],
+        cache: false,
+      },
     },
   },
   pack: {
