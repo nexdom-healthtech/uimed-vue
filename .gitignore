@@ -18,3 +18,8 @@ coverage
 
 # Cache
 docs/.vitepress/cache
+
+# Playwright
+playwright-report
+test-results
+blob-report
