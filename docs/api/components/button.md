@@ -11,6 +11,7 @@ Componente principal para utilização de botões.
 | `disabled` | `boolean`                                                            | `false`      | Remove a possibilidade de clicar ou focar no botão.                                    |
 | `loading`  | `boolean \| string`                                                  | `false`      | Exibe um indicador de carregamento. Aceita o nome de um slot para usar como loader.    |
 | `position` | `"absolute" \| "fixed" \| "relative" \| "static" \| "sticky"`        | `"static"`   | Define a propriedade CSS `position` do botão.                                          |
+| `class`    | `string`                                                             | —            | Aplica uma classe CSS customizada ao elemento raiz do botão.                           |
 
 ## Slots
 
