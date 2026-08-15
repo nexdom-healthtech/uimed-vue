@@ -103,7 +103,7 @@ export default defineConfig({
           text: "Componentes",
           items: [
             { text: "Root", link: "/guide/components/root" },
-            { text: "Button", link: "/guide/components/button" },
+            { text: "Btn", link: "/guide/components/btn" },
           ],
         },
       ],
@@ -117,8 +117,8 @@ export default defineConfig({
               link: "/api/components/root",
             },
             {
-              text: "Button",
-              link: "/api/components/button",
+              text: "Btn",
+              link: "/api/components/btn",
             },
           ],
         },
