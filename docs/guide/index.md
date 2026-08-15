@@ -14,9 +14,9 @@ Recursos reutilizáveis para elaboração de interface gráfica.
 
 #### Layout
 
-| Componente                    | Descrição                       |
-| ----------------------------- | ------------------------------- |
-| [Root](./components/root)     | Componente raiz do projeto.     |
-| [Button](./components/button) | Componente de botão do projeto. |
+| Componente                | Descrição                       |
+| ------------------------- | ------------------------------- |
+| [Root](./components/root) | Componente raiz do projeto.     |
+| [Btn](./components/btn)   | Componente de botão do projeto. |
 
 <!-- TODO: adicionar composables -->
