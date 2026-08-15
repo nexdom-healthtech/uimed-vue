@@ -1,0 +1,37 @@
+# Btn
+
+Componente principal para utilização de botões.
+
+## Props
+
+| Prop       | Tipo                                                                           | Padrão      | Descrição                                           |
+| ---------- | ------------------------------------------------------------------------------ | ----------- | --------------------------------------------------- |
+| `variant`  | `"primary" \| "secondary" \| "ghost"`                                          | `"primary"` | Aplica uma variação de estilo distinta ao botão.    |
+| `color`    | `"brand" \| "neutral" \| "positive" \| "informative" \| "caution" \| "danger"` | `"brand"`   | Aplica uma cor ao botão.                            |
+| `disabled` | `boolean`                                                                      | `false`     | Remove a possibilidade de clicar ou focar no botão. |
+| `loading`  | `boolean`                                                                      | `false`     | Exibe um indicador de carregamento.                 |
+
+## Slots
+
+| Slot      | Descrição                         |
+| --------- | --------------------------------- |
+| `default` | Conteúdo exibido dentro do botão. |
+
+## Exemplo
+
+```vue
+<template>
+  <btn variant="ghost" :loading="loading" @click="onClick"></btn>
+</template>
+
+<script lang="ts" setup>
+import { ref } from "vue";
+import { Btn } from "@nexdom/uimed-vue/components";
+
+const loading = ref(false);
+
+function onClick(event: MouseEvent) {
+  console.log("Botão clicado!", event);
+}
+</script>
+```
