@@ -6,10 +6,16 @@ export default defineConfig({
   forbidOnly: !!process.env.CI,
   retries: process.env.CI ? 2 : 0,
   reporter: process.env.CI ? [["github"], ["html", { open: "never" }]] : "list",
+  expect: {
+    toMatchAriaSnapshot: {
+      pathTemplate: "{testDir}/{testFileDir}/__snapshots__/{testFileName}/{arg}{ext}",
+    },
+  },
   use: {
     baseURL: "http://localhost:4173/uimed-vue/",
     trace: "on-first-retry",
     screenshot: "only-on-failure",
+    testIdAttribute: "data-test",
   },
   projects: [
     {
