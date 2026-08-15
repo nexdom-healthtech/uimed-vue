@@ -2,6 +2,7 @@
   "include": [
     "src/**/*",
     "*.md",
+    "*.ts",
     "docs/**/*.ts",
     "docs/**/*.vue",
     "docs/.vitepress/**/*",
