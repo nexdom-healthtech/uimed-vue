@@ -45,12 +45,12 @@ describe("BtnVariant", () => {
 });
 
 describe("btnColorToVuetifyColor", () => {
-  it("should map `brand` to Vuetify's `primary` color", () => {
-    expect(btnColorToVuetifyColor.brand).toBe("primary");
+  it("should map `primary` to Vuetify's `primary` color", () => {
+    expect(btnColorToVuetifyColor.primary).toBe("primary");
   });
 
-  it("should map `neutral` to Vuetify's `secondary` color", () => {
-    expect(btnColorToVuetifyColor.neutral).toBe("secondary");
+  it("should map `secondary` to Vuetify's `secondary` color", () => {
+    expect(btnColorToVuetifyColor.secondary).toBe("secondary");
   });
 
   it("should map `positive` to Vuetify's `success` color", () => {
@@ -69,23 +69,23 @@ describe("btnColorToVuetifyColor", () => {
     expect(btnColorToVuetifyColor.danger).toBe("error");
   });
 
-  it("should exposes exactly the curated `brand`, `neutral`, `positive`, `informative`, `caution`, and `danger` color names", () => {
+  it("should exposes exactly the curated `primary`, `secondary`, `positive`, `informative`, `caution`, and `danger` color names", () => {
     expect(Object.keys(btnColorToVuetifyColor).sort()).toEqual([
-      "brand",
+      "primary",
+      "secondary",
       "caution",
       "danger",
       "informative",
-      "neutral",
       "positive",
     ]);
   });
 });
 
 describe("BtnColor", () => {
-  it("should be exactly `brand` | `neutral` | `positive` | `informative` | `caution` | `danger`", () => {
+  it("should be exactly `primary` | `secondary` | `positive` | `informative` | `caution` | `danger`", () => {
     const isExactUnion: IsEqual<
       BtnColor,
-      "brand" | "neutral" | "positive" | "informative" | "caution" | "danger"
+      "primary" | "secondary" | "positive" | "informative" | "caution" | "danger"
     > = true;
 
     expect(isExactUnion).toBe(true);

@@ -59,7 +59,7 @@ describe("btn", () => {
       expect(wrapper.findComponent(VBtn).props("color")).toBe("secondary");
     });
 
-    it("should have `brand` color by default", () => {
+    it("should have `primary` color by default", () => {
       const wrapper = mountBtn();
       expect(wrapper.findComponent(VBtn).props("color")).toBe("primary");
     });
