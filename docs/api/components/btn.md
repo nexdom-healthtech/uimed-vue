@@ -4,12 +4,12 @@ Componente principal para utilização de botões.
 
 ## Props
 
-| Prop       | Tipo                                                                           | Padrão      | Descrição                                           |
-| ---------- | ------------------------------------------------------------------------------ | ----------- | --------------------------------------------------- |
-| `variant`  | `"primary" \| "secondary" \| "ghost"`                                          | `"primary"` | Aplica uma variação de estilo distinta ao botão.    |
-| `color`    | `"brand" \| "neutral" \| "positive" \| "informative" \| "caution" \| "danger"` | `"brand"`   | Aplica uma cor ao botão.                            |
-| `disabled` | `boolean`                                                                      | `false`     | Remove a possibilidade de clicar ou focar no botão. |
-| `loading`  | `boolean`                                                                      | `false`     | Exibe um indicador de carregamento.                 |
+| Prop       | Tipo                                                                               | Padrão      | Descrição                                           |
+| ---------- | ---------------------------------------------------------------------------------- | ----------- | --------------------------------------------------- |
+| `variant`  | `"primary" \| "secondary" \| "ghost"`                                              | `"primary"` | Aplica uma variação de estilo distinta ao botão.    |
+| `color`    | `"primary" \| "secondary" \| "positive" \| "informative" \| "caution" \| "danger"` | `"primary"` | Aplica uma cor ao botão.                            |
+| `disabled` | `boolean`                                                                          | `false`     | Remove a possibilidade de clicar ou focar no botão. |
+| `loading`  | `boolean`                                                                          | `false`     | Exibe um indicador de carregamento.                 |
 
 ## Slots
 
@@ -21,7 +21,7 @@ Componente principal para utilização de botões.
 
 ```vue
 <template>
-  <btn variant="ghost" :loading="loading" @click="onClick"></btn>
+  <btn variant="ghost" color="danger" :loading="loading" @click="onClick"> </btn>
 </template>
 
 <script lang="ts" setup>
