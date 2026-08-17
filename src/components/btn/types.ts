@@ -5,7 +5,7 @@ export type VBtnProps = InstanceType<typeof VBtn>["$props"];
 type VuetifyVariant = NonNullable<VBtnProps["variant"]>;
 
 /**
- * Style variation for the {@link Button} component.
+ * Style variation for the {@link Btn} component.
  * {@link btnVariantToVuetifyVariant} for the mapping applied when rendering.
  */
 export type BtnVariant = "primary" | "secondary" | "ghost";
@@ -22,7 +22,7 @@ export const btnVariantToVuetifyVariant = {
 } as const satisfies Record<BtnVariant, VuetifyVariant>;
 
 /**
- * Color palette for the {@link Button} component.
+ * Color palette for the {@link Btn} component.
  * {@link btnColorToVuetifyColor} for the mapping applied when rendering.
  */
 export type BtnColor = "primary" | "secondary" | "positive" | "informative" | "caution" | "danger";
@@ -71,7 +71,7 @@ export type ButtonProps = {
 };
 
 /**
- * Events emitted by the {@link Button} component.
+ * Events emitted by the {@link Btn} component.
  */
 export type ButtonEmits = {
   /**
