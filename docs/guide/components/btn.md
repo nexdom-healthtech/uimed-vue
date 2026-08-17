@@ -29,12 +29,12 @@ import { Btn } from "@nexdom/uimed-vue/components";
 
 ## Cores
 
-A prop `color` aceita um dos valores da paleta do componente: `brand`, `neutral`, `positive`, `informative`, `caution` ou `danger`.
+A prop `color` aceita um dos valores da paleta do componente: `primary`, `secondary`, `positive`, `informative`, `caution` ou `danger`.
 
 ::: raw
 <div class="btn-demo-row" data-test="btn-demo-colors">
-  <btn color="brand">Brand</btn>
-  <btn color="neutral">Neutral</btn>
+  <btn color="primary">Primary</btn>
+  <btn color="secondary">Secondary</btn>
   <btn color="positive">Positive</btn>
   <btn color="informative">Informative</btn>
   <btn color="caution">Caution</btn>
@@ -44,8 +44,8 @@ A prop `color` aceita um dos valores da paleta do componente: `brand`, `neutral`
 
 ```vue
 <template>
-  <btn color="brand">Brand</btn>
-  <btn color="neutral">Neutral</btn>
+  <btn color="primary">Primary</btn>
+  <btn color="Secondary">Secondary</btn>
   <btn color="positive">Positive</btn>
   <btn color="informative">Informative</btn>
   <btn color="caution">Caution</btn>
@@ -122,13 +122,13 @@ O evento `click` é emitido ao clicar no botão, repassando o `MouseEvent` nativ
   }
 
   type PlaygroundVariant = "primary" | "secondary" | "ghost"
-  type PlaygroundColor = "brand" | "neutral" | "positive" | "informative" | "caution" | "danger"
+  type PlaygroundColor = "primary" | "secondary" | "positive" | "informative" | "caution" | "danger"
 
   const playgroundVariantOptions: PlaygroundVariant[] = ["primary", "secondary", "ghost"]
-  const playgroundColorOptions: PlaygroundColor[] = ["brand", "neutral", "positive", "informative", "caution", "danger"]
+  const playgroundColorOptions: PlaygroundColor[] = ["primary", "secondary", "positive", "informative", "caution", "danger"]
 
   const playgroundVariant = ref<PlaygroundVariant>("primary")
-  const playgroundColor = ref<PlaygroundColor>("brand")
+  const playgroundColor = ref<PlaygroundColor>("primary")
   const playgroundLabel = ref("Me clique")
   const playgroundDisabled = ref(false)
   const playgroundLoading = ref(false)
