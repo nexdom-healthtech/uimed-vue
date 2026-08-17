@@ -71,12 +71,12 @@ describe("btnColorToVuetifyColor", () => {
 
   it("should exposes exactly the curated `primary`, `secondary`, `positive`, `informative`, `caution`, and `danger` color names", () => {
     expect(Object.keys(btnColorToVuetifyColor).sort()).toEqual([
-      "primary",
-      "secondary",
       "caution",
       "danger",
       "informative",
       "positive",
+      "primary",
+      "secondary",
     ]);
   });
 });
