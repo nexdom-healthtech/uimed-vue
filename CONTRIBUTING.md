@@ -108,6 +108,9 @@ vpr docs
 vp run docs
 ```
 
+> [!Tip]
+> The docs theme imports the library from `dist`, not from `src`, so `vpr docs` alone only builds it once. If you're actively editing components and want the docs to keep reflecting your changes, run `vpr dev` (or `vp pack --watch`) on a second terminal alongside `vpr docs:dev`. Still stale? Try clearing `docs/.vitepress/cache`.
+
 ## Opening a Pull Request
 
 Following [Semantic Release recommendations](https://semantic-release.org/foundation/supported-branching/#trunk-based-development), this project uses [Trunk-Based Development](https://beyond.minimumcd.org/docs/reference/practices/trunk-based-development/). That said, you might want to read the next instructions before creating your branch and submit it as a Pull Request.
