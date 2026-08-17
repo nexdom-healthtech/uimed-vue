@@ -25,7 +25,7 @@ export const btnVariantToVuetifyVariant = {
  * Color palette for the {@link Button} component.
  * {@link btnColorToVuetifyColor} for the mapping applied when rendering.
  */
-export type BtnColor = "brand" | "neutral" | "positive" | "informative" | "caution" | "danger";
+export type BtnColor = "primary" | "secondary" | "positive" | "informative" | "caution" | "danger";
 
 /**
  * Maps {@link BtnColor} to the underlying Vuetify `VBtn` `color` value.
@@ -34,8 +34,8 @@ export type BtnColor = "brand" | "neutral" | "positive" | "informative" | "cauti
  * value — not that the value is itself a valid Vuetify theme color.
  */
 export const btnColorToVuetifyColor = {
-  brand: "primary",
-  neutral: "secondary",
+  primary: "primary",
+  secondary: "secondary",
   positive: "success",
   informative: "info",
   caution: "warning",
@@ -54,8 +54,8 @@ export type ButtonProps = {
   variant?: BtnVariant;
   /**
    * Applies a color to the button.
-   * One of `brand`, `neutral`, `positive`, `informative`, `caution`, or `danger`.
-   * @default "brand"
+   * One of `primary`, `secondary`, `positive`, `informative`, `caution`, or `danger`.
+   * @default "primary"
    */
   color?: BtnColor;
   /**

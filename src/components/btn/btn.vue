@@ -30,7 +30,7 @@ defineOptions({
 
 const {
   variant = "primary",
-  color = "brand",
+  color = "primary",
   disabled = false,
   loading = false,
 } = defineProps<ButtonProps>();
