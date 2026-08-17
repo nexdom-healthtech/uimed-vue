@@ -45,7 +45,7 @@ A prop `color` aceita um dos valores da paleta do componente: `primary`, `second
 ```vue
 <template>
   <btn color="primary">Primary</btn>
-  <btn color="Secondary">Secondary</btn>
+  <btn color="secondary">Secondary</btn>
   <btn color="positive">Positive</btn>
   <btn color="informative">Informative</btn>
   <btn color="caution">Caution</btn>
