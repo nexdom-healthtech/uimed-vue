@@ -15,6 +15,15 @@
 <script lang="ts">
  /**
  * Button component to be used throughout the application.
+ *
+ * @example
+ * ```vue
+ * <btn variant="primary" color="danger" @click="onClick">
+ *   Confirmar
+ * </btn>
+ * ```
+ *
+ * @see {@link https://nexdom-healthtech.github.io/uimed-vue/guide/components/btn | Guia do Btn}
  */
 </script>
 
