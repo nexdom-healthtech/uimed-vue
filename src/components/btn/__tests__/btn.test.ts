@@ -55,7 +55,7 @@ describe("btn", () => {
 
   describe("color prop", () => {
     it("should forward `color` to the underlying component", () => {
-      const wrapper = mountBtn({ color: "neutral" } as InstanceType<typeof Btn>["$props"]);
+      const wrapper = mountBtn({ color: "secondary" } as InstanceType<typeof Btn>["$props"]);
       expect(wrapper.findComponent(VBtn).props("color")).toBe("secondary");
     });
 
