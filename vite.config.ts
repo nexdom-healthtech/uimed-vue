@@ -58,6 +58,7 @@ export default defineConfig({
     globals: true,
     clearMocks: true,
     environment: "jsdom",
+    exclude: ["e2e/**", "**/node_modules/**", "**/.git/**"],
     coverage: { reporter: ["text"] },
     setupFiles: ["src/__tests__/setup.ts"],
     server: {
