@@ -39,8 +39,5 @@ jobs:
       - name: Test
         run: vp test --coverage
 
-      - name: Install Playwright Browsers
-        run: vp exec playwright install --with-deps chromium
-
       - name: E2E Test
-        run: vp run test:e2e
+        run: vpr test:e2e
