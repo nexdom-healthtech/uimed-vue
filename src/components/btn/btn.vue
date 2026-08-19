@@ -30,8 +30,8 @@
 <script setup lang="ts">
 import { computed } from "vue";
 import { VBtn } from "vuetify/components";
-import type { ButtonProps, ButtonEmits } from "@/components/btn/types.ts";
-import { btnVariantToVuetifyVariant, btnColorToVuetifyColor } from "@/components/btn/types.ts";
+import type { BtnProps, BtnEmits } from "@/components/btn/types.ts";
+import { btnVariantToVuetifyVariant, btnColorToVuetifyColor } from "@/components/btn/consts.ts";
 
 defineOptions({
   inheritAttrs: false,
@@ -42,9 +42,9 @@ const {
   color = "primary",
   disabled = false,
   loading = false,
-} = defineProps<ButtonProps>();
+} = defineProps<BtnProps>();
 
-const emit = defineEmits<ButtonEmits>();
+const emit = defineEmits<BtnEmits>();
 
 const vuetifyVariant = computed(() => btnVariantToVuetifyVariant[variant]);
 const vuetifyColor = computed(() => btnColorToVuetifyColor[color]);
