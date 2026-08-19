@@ -21,9 +21,12 @@ export default defineConfig({
         command: "vpx vitepress preview docs",
         dependsOn: ["docs:build"],
       },
+      "playwright:install": {
+        command: "vpx playwright install --with-deps chromium",
+      },
       "test:e2e": {
         command: "vpx playwright test",
-        dependsOn: ["docs:build"],
+        dependsOn: ["docs:build", "playwright:install"],
         cache: false,
       },
     },
