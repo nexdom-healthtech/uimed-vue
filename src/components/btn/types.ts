@@ -1,25 +1,8 @@
-import type { VBtn } from "vuetify/components";
-
-export type VBtnProps = InstanceType<typeof VBtn>["$props"];
-
-type VuetifyVariant = NonNullable<VBtnProps["variant"]>;
-
 /**
  * Style variation for the {@link Btn} component.
  * {@link btnVariantToVuetifyVariant} for the mapping applied when rendering.
  */
 export type BtnVariant = "primary" | "secondary" | "ghost";
-
-/**
- * Maps {@link BtnVariant} to the underlying Vuetify `VBtn` `variant` value.
- * Each value is checked against Vuetify's prop type, so a variant renamed or
- * removed by Vuetify fails to type-check here.
- */
-export const btnVariantToVuetifyVariant = {
-  primary: "elevated",
-  secondary: "flat",
-  ghost: "outlined",
-} as const satisfies Record<BtnVariant, VuetifyVariant>;
 
 /**
  * Color palette for the {@link Btn} component.
@@ -28,24 +11,9 @@ export const btnVariantToVuetifyVariant = {
 export type BtnColor = "primary" | "secondary" | "positive" | "informative" | "caution" | "danger";
 
 /**
- * Maps {@link BtnColor} to the underlying Vuetify `VBtn` `color` value.
- * Vuetify types `color` as a bare `string` (it accepts any theme color or
- * CSS color), so this only guarantees every {@link BtnColor} has a mapped
- * value — not that the value is itself a valid Vuetify theme color.
- */
-export const btnColorToVuetifyColor = {
-  primary: "primary",
-  secondary: "secondary",
-  positive: "success",
-  informative: "info",
-  caution: "warning",
-  danger: "error",
-} as const satisfies Record<BtnColor, string>;
-
-/**
  * Props exposed by the {@link Btn} component.
  */
-export type ButtonProps = {
+export type BtnProps = {
   /**
    * Applies a distinct style variation to the button.
    * One of `primary`, `secondary`, or `ghost`.
@@ -73,7 +41,7 @@ export type ButtonProps = {
 /**
  * Events emitted by the {@link Btn} component.
  */
-export type ButtonEmits = {
+export type BtnEmits = {
   /**
    * Emitted when the button is clicked.
    * @param {MouseEvent} event - The native `MouseEvent` object associated with the click.
