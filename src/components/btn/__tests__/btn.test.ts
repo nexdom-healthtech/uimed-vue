@@ -1,6 +1,7 @@
 import { VBtn, VProgressCircular } from "vuetify/components";
 import { mount } from "@vue/test-utils";
 import Btn from "@/components/btn/btn.vue";
+import type { BtnColor, BtnVariant } from "@/components/btn/types.ts";
 
 import { createVuetify } from "vuetify";
 import * as components from "vuetify/components";
@@ -42,10 +43,17 @@ describe("btn", () => {
   });
 
   describe("variant prop", () => {
-    it("should forward `variant` to the underlying component's variant", () => {
-      const wrapper = mountBtn({ variant: "ghost" } as InstanceType<typeof Btn>["$props"]);
-      expect(wrapper.findComponent(VBtn).props("variant")).toBe("outlined");
-    });
+    it.each([
+      ["primary", "elevated"],
+      ["secondary", "flat"],
+      ["ghost", "outlined"],
+    ] satisfies [BtnVariant, string][])(
+      'should forward `variant="%s"` to Vuetify\'s `%s` variant',
+      (variant, vuetifyVariant) => {
+        const wrapper = mountBtn({ variant } as InstanceType<typeof Btn>["$props"]);
+        expect(wrapper.findComponent(VBtn).props("variant")).toBe(vuetifyVariant);
+      },
+    );
 
     it("should default to the elevated variant when not set", () => {
       const wrapper = mountBtn();
@@ -54,10 +62,20 @@ describe("btn", () => {
   });
 
   describe("color prop", () => {
-    it("should forward `color` to the underlying component", () => {
-      const wrapper = mountBtn({ color: "secondary" } as InstanceType<typeof Btn>["$props"]);
-      expect(wrapper.findComponent(VBtn).props("color")).toBe("secondary");
-    });
+    it.each([
+      ["primary", "primary"],
+      ["secondary", "secondary"],
+      ["positive", "success"],
+      ["informative", "info"],
+      ["caution", "warning"],
+      ["danger", "error"],
+    ] satisfies [BtnColor, string][])(
+      'should forward `color="%s"` to Vuetify\'s `%s` color',
+      (color, vuetifyColor) => {
+        const wrapper = mountBtn({ color } as InstanceType<typeof Btn>["$props"]);
+        expect(wrapper.findComponent(VBtn).props("color")).toBe(vuetifyColor);
+      },
+    );
 
     it("should have `primary` color by default", () => {
       const wrapper = mountBtn();
