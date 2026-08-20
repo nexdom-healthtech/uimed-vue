@@ -55,6 +55,14 @@ vpr test
 vp run test
 ```
 
+- Run the e2e tests:
+
+```bash
+vpr test:e2e
+# Or
+vp run test:e2e
+```
+
 - Run architecture checks:
 
 ```bash
