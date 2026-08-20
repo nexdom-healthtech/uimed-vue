@@ -63,6 +63,14 @@ vpr test:e2e
 vp run test:e2e
 ```
 
+- Run mutation tests:
+
+```bash
+vpr test:mutations
+# Or
+vp run test:mutations
+```
+
 - Run architecture checks:
 
 ```bash
