@@ -2,8 +2,8 @@
   <v-btn
     :variant="vuetifyVariant"
     :color="vuetifyColor"
-    :disabled="disabled"
-    :loading="loading"
+    :disabled="props.disabled"
+    :loading="props.loading"
     @click="$emit('click', $event)"
   >
     <template #default>
@@ -13,7 +13,7 @@
 </template>
 
 <script lang="ts">
- /**
+/**
  * Button component to be used throughout the application.
  *
  * @example
@@ -25,27 +25,20 @@
  *
  * @see {@link https://nexdom-healthtech.github.io/uimed-vue/guide/components/btn | Guia do Btn}
  */
+export default {
+  inheritAttrs: false,
+};
 </script>
 
 <script setup lang="ts">
 import { computed } from "vue";
 import { VBtn } from "vuetify/components";
 import type { BtnProps, BtnEmits } from "@/components/btn/types.ts";
-import { btnVariantToVuetifyVariant, btnColorToVuetifyColor } from "@/components/btn/consts.ts";
+import { resolveBtnColor, resolveBtnVariant } from "@/components/btn/consts.ts";
 
-defineOptions({
-  inheritAttrs: false,
-});
-
-const {
-  variant = "primary",
-  color = "primary",
-  disabled = false,
-  loading = false,
-} = defineProps<BtnProps>();
-
+const props = defineProps<BtnProps>();
 const emit = defineEmits<BtnEmits>();
 
-const vuetifyVariant = computed(() => btnVariantToVuetifyVariant[variant]);
-const vuetifyColor = computed(() => btnColorToVuetifyColor[color]);
+const vuetifyVariant = computed(() => resolveBtnVariant(props.variant));
+const vuetifyColor = computed(() => resolveBtnColor(props.color));
 </script>
