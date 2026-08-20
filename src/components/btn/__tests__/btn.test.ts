@@ -1,6 +1,7 @@
 import { VBtn, VProgressCircular } from "vuetify/components";
 import { mount } from "@vue/test-utils";
 import Btn from "@/components/btn/btn.vue";
+import { resolveBtnColor, resolveBtnVariant } from "@/components/btn/consts.ts";
 import type { BtnColor, BtnVariant } from "@/components/btn/types.ts";
 
 import { createVuetify } from "vuetify";
@@ -59,6 +60,14 @@ describe("btn", () => {
       const wrapper = mountBtn();
       expect(wrapper.findComponent(VBtn).props("variant")).toBe("elevated");
     });
+
+    it("should resolve to the primary variant's mapping when variant is undefined", () => {
+      expect(resolveBtnVariant(undefined)).toBe("elevated");
+    });
+
+    it("should resolve to the primary variant's mapping when variant is not a mapped key", () => {
+      expect(resolveBtnVariant("" as BtnVariant)).toBe("elevated");
+    });
   });
 
   describe("color prop", () => {
@@ -80,6 +89,10 @@ describe("btn", () => {
     it("should have `primary` color by default", () => {
       const wrapper = mountBtn();
       expect(wrapper.findComponent(VBtn).props("color")).toBe("primary");
+    });
+
+    it("should resolve to the primary color's mapping when color is not a mapped key", () => {
+      expect(resolveBtnColor("" as BtnColor)).toBe("primary");
     });
   });
 
