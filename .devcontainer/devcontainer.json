@@ -13,7 +13,8 @@
         "VoidZero.vite-plus-extension-pack",
         "streetsidesoftware.code-spell-checker",
         "streetsidesoftware.code-spell-checker-portuguese-brazilian",
-        "Vue.volar"
+        "Vue.volar",
+        "ms-vscode.live-server"
       ],
       "settings": {
         "js/ts.preferences.importModuleSpecifier": "non-relative",
