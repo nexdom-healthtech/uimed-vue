@@ -24,7 +24,7 @@ export default defineConfig({
     },
   ],
   webServer: {
-    command: "vpx vitepress preview docs",
+    command: "vpx vitepress preview docs --port 4173 --strictPort",
     url: "http://localhost:4173/uimed-vue/",
     reuseExistingServer: !process.env.CI,
     timeout: 120_000,
