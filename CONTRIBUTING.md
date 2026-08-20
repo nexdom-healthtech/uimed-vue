@@ -94,10 +94,18 @@ Since `@nexdom/uimed-vue` is a frameworks, we shall not expose any trace of its 
 To do so, **the following code is recommended for every component**, since it restricts a component use to the exposed API only:
 
 ```vue
-<script setup lang="ts">
-defineOptions({
+<script lang="ts">
+/**
+ * A short description of the component, shown when hovering it in the
+ * editor.
+ */
+export default {
   inheritAttrs: false,
-});
+};
+</script>
+
+<script setup lang="ts">
+// component's implementation
 </script>
 ```
 
