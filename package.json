@@ -65,7 +65,7 @@
     "conventional-changelog-conventionalcommits": "^9.3.1",
     "dependency-cruiser": "^18.1.1",
     "jsdom": "^30.0.1",
-    "oxc-minify": "^0.143.0",
+    "oxc-minify": "^0.146.0",
     "postcss": "^8.5.25",
     "resize-observer-polyfill": "^1.5.1",
     "type-fest": "^5.8.0",
