@@ -39,7 +39,6 @@
     "test": "vp test",
     "test:mutations": "stryker run",
     "test:e2e": "vpx playwright test",
-    "test:e2e:report": "vpr test:e2e --reporter html && vpx playwright show-report --host 0.0.0.0",
     "check": "vp check",
     "prepublishOnly": "vpr build",
     "prepare": "vp config",

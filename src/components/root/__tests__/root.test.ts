@@ -1,5 +1,5 @@
 import { VApp } from "vuetify/components";
-import Root from "@/components/root.vue";
+import Root from "@/components/root/root.vue";
 import { mount } from "@vue/test-utils";
 
 import { createVuetify } from "vuetify";
@@ -8,10 +8,13 @@ import * as directives from "vuetify/directives";
 
 const vuetify = createVuetify({ components, directives });
 
+const testId = "root-test-component";
+
 describe("root", () => {
   const wrapper = mount(Root, {
     attrs: {
-      "data-testid": "root",
+      "data-testid": testId,
+      "random-attribute": "random-value",
     },
     global: {
       plugins: [vuetify],
@@ -26,7 +29,11 @@ describe("root", () => {
     expect(wrapper.findComponent(VApp).exists()).toBe(true);
   });
 
-  it('should not inherit "data-testid" attribute', () => {
-    expect(wrapper.attributes("data-testid")).toBeUndefined();
+  it('should inherit "data-testid" attribute', () => {
+    expect(wrapper.attributes("data-testid")).toBe(testId);
+  });
+
+  it("should not inherit unexpected attributes", () => {
+    expect(wrapper.attributes("random-attribute")).toBeUndefined();
   });
 });
