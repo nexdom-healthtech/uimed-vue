@@ -2,7 +2,7 @@ import { VBtn, VProgressCircular } from "vuetify/components";
 import { mount } from "@vue/test-utils";
 import Btn from "@/components/btn/btn.vue";
 import { resolveBtnColor, resolveBtnVariant } from "@/components/btn/consts.ts";
-import type { BtnColor, BtnVariant } from "@/components/btn/types.ts";
+import type { BtnColor, BtnProps, BtnVariant } from "@/components/btn/types.ts";
 
 import { createVuetify } from "vuetify";
 import * as components from "vuetify/components";
@@ -10,22 +10,21 @@ import * as directives from "vuetify/directives";
 
 const vuetify = createVuetify({ components, directives });
 
-const mountBtn = (
-  props: InstanceType<typeof Btn>["$props"] = {},
-  slots: Record<string, string> = {},
-  attrs: Record<string, unknown> = {},
-) =>
-  mount(Btn, {
-    props,
-    attrs: {
-      "data-testid": "button",
-      ...attrs,
-    },
-    slots,
-    global: {
-      plugins: [vuetify],
-    },
-  });
+const variants: [BtnVariant, string][] = [
+  ["primary", "elevated"],
+  ["secondary", "flat"],
+  ["ghost", "outlined"],
+];
+const colors: [BtnColor, string][] = [
+  ["primary", "primary"],
+  ["secondary", "secondary"],
+  ["positive", "success"],
+  ["informative", "info"],
+  ["caution", "warning"],
+  ["danger", "error"],
+];
+
+const testId = "button-test-id";
 
 describe("btn", () => {
   it("should exists", () => {
@@ -38,20 +37,21 @@ describe("btn", () => {
     expect(wrapper.findComponent(VBtn).exists()).toBe(true);
   });
 
-  it('should not inherit "data-testid" attribute', () => {
+  it('should inherit "data-testid" attribute', () => {
     const wrapper = mountBtn();
-    expect(wrapper.attributes("data-testid")).toBeUndefined();
+    expect(wrapper.attributes("data-testid")).toBe(testId);
+  });
+
+  it("should not inherit unexpected attributes", () => {
+    const wrapper = mountBtn();
+    expect(wrapper.attributes("random-attribute")).toBeUndefined();
   });
 
   describe("variant prop", () => {
-    it.each([
-      ["primary", "elevated"],
-      ["secondary", "flat"],
-      ["ghost", "outlined"],
-    ] satisfies [BtnVariant, string][])(
+    it.each(variants)(
       'should forward `variant="%s"` to Vuetify\'s `%s` variant',
       (variant, vuetifyVariant) => {
-        const wrapper = mountBtn({ variant } as InstanceType<typeof Btn>["$props"]);
+        const wrapper = mountBtn({ variant });
         expect(wrapper.findComponent(VBtn).props("variant")).toBe(vuetifyVariant);
       },
     );
@@ -71,17 +71,10 @@ describe("btn", () => {
   });
 
   describe("color prop", () => {
-    it.each([
-      ["primary", "primary"],
-      ["secondary", "secondary"],
-      ["positive", "success"],
-      ["informative", "info"],
-      ["caution", "warning"],
-      ["danger", "error"],
-    ] satisfies [BtnColor, string][])(
+    it.each(colors)(
       'should forward `color="%s"` to Vuetify\'s `%s` color',
       (color, vuetifyColor) => {
-        const wrapper = mountBtn({ color } as InstanceType<typeof Btn>["$props"]);
+        const wrapper = mountBtn({ color });
         expect(wrapper.findComponent(VBtn).props("color")).toBe(vuetifyColor);
       },
     );
@@ -98,7 +91,7 @@ describe("btn", () => {
 
   describe("disabled prop", () => {
     it("should forward `disabled` to the underlying component", () => {
-      const wrapper = mountBtn({ disabled: true } as InstanceType<typeof Btn>["$props"]);
+      const wrapper = mountBtn({ disabled: true });
       expect(wrapper.findComponent(VBtn).props("disabled")).toBe(true);
     });
 
@@ -110,7 +103,7 @@ describe("btn", () => {
 
   describe("loading prop", () => {
     it("should forward a boolean `loading` to the underlying component", () => {
-      const wrapper = mountBtn({ loading: true } as InstanceType<typeof Btn>["$props"]);
+      const wrapper = mountBtn({ loading: true });
       expect(wrapper.findComponent(VBtn).props("loading")).toBe(true);
     });
 
@@ -120,7 +113,7 @@ describe("btn", () => {
     });
 
     it("should render the underlying component's default spinner when loading", () => {
-      const wrapper = mountBtn({ loading: true } as InstanceType<typeof Btn>["$props"]);
+      const wrapper = mountBtn({ loading: true });
       expect(wrapper.findComponent(VProgressCircular).exists()).toBe(true);
     });
   });
@@ -149,11 +142,7 @@ describe("btn", () => {
 
     it("should not call the `onClick` handler when the button is disabled", async () => {
       const onClick = vi.fn();
-      const wrapper = mountBtn(
-        { disabled: true } as InstanceType<typeof Btn>["$props"],
-        {},
-        { onClick },
-      );
+      const wrapper = mountBtn({ disabled: true }, {}, { onClick });
 
       await wrapper.trigger("click");
 
@@ -161,3 +150,22 @@ describe("btn", () => {
     });
   });
 });
+
+function mountBtn(
+  props: Partial<BtnProps> = {},
+  slots: Record<string, string> = {},
+  attrs: Record<string, unknown> = {},
+) {
+  return mount(Btn, {
+    props,
+    attrs: {
+      "data-testid": testId,
+      "random-attribute": "random-value",
+      ...attrs,
+    },
+    slots,
+    global: {
+      plugins: [vuetify],
+    },
+  });
+}
