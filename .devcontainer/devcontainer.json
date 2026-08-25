@@ -15,7 +15,8 @@
         "streetsidesoftware.code-spell-checker-portuguese-brazilian",
         "Vue.volar",
         "ms-vscode.live-server",
-        "stryker-mutator.stryker-mutator"
+        "stryker-mutator.stryker-mutator",
+        "ms-playwright.playwright"
       ],
       "settings": {
         "js/ts.preferences.importModuleSpecifier": "non-relative",
