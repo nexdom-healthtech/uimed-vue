@@ -23,6 +23,10 @@ import { Root } from "@nexdom/uimed-vue/components";
 </script>
 ```
 
+## Ver também
+
+Consulte a [referência de API do Root](../../api/components/root) para a lista completa de props, slots e eventos.
+
 <script lang="ts" setup>
   import { Root } from "../../../dist/components.js"
 </script>

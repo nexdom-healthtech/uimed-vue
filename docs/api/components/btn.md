@@ -4,12 +4,13 @@ Componente principal para utilização de botões.
 
 ## Props
 
-| Prop       | Tipo                                                                               | Padrão      | Descrição                                           |
-| ---------- | ---------------------------------------------------------------------------------- | ----------- | --------------------------------------------------- |
-| `variant`  | `"primary" \| "secondary" \| "ghost"`                                              | `"primary"` | Aplica uma variação de estilo distinta ao botão.    |
-| `color`    | `"primary" \| "secondary" \| "positive" \| "informative" \| "caution" \| "danger"` | `"primary"` | Aplica uma cor ao botão.                            |
-| `disabled` | `boolean`                                                                          | `false`     | Remove a possibilidade de clicar ou focar no botão. |
-| `loading`  | `boolean`                                                                          | `false`     | Exibe um indicador de carregamento.                 |
+| Prop         | Tipo                                                                               | Padrão      | Descrição                                                     |
+| ------------ | ---------------------------------------------------------------------------------- | ----------- | ------------------------------------------------------------- |
+| `variant`    | `"primary" \| "secondary" \| "ghost"`                                              | `"primary"` | Aplica uma variação de estilo distinta ao botão.              |
+| `color`      | `"primary" \| "secondary" \| "positive" \| "informative" \| "caution" \| "danger"` | `"primary"` | Aplica uma cor ao botão.                                      |
+| `disabled`   | `boolean`                                                                          | `false`     | Remove a possibilidade de clicar ou focar no botão.           |
+| `loading`    | `boolean`                                                                          | `false`     | Exibe um indicador de carregamento.                           |
+| `dataTestid` | `string`                                                                           |             | Aplica atributo `data-testid` para testes sobre o componente. |
 
 ## Slots
 

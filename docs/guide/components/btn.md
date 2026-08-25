@@ -1,14 +1,16 @@
 # Btn
 
-Componente utilizado como abstração do botão.
-Deve ser utilizado ao invés do `<button>` nativo.
+Componente para botão.
+
+> [!Warning]
+> Deve ser utilizado no lugar do `<button>` nativo.
 
 ## Variantes
 
 A prop `variant` define a variação de estilo aplicada ao botão. O padrão é `primary`.
 
 ::: raw
-<div class="btn-demo-row" data-test="btn-demo-variants">
+<div class="btn-demo-row">
   <btn variant="primary">Primary</btn>
   <btn variant="secondary">Secondary</btn>
   <btn variant="ghost">Ghost</btn>
@@ -32,7 +34,7 @@ import { Btn } from "@nexdom/uimed-vue/components";
 A prop `color` aceita um dos valores da paleta do componente: `primary`, `secondary`, `positive`, `informative`, `caution` ou `danger`.
 
 ::: raw
-<div class="btn-demo-row" data-test="btn-demo-colors">
+<div class="btn-demo-row" >
   <btn color="primary">Primary</btn>
   <btn color="secondary">Secondary</btn>
   <btn color="positive">Positive</btn>
@@ -64,7 +66,7 @@ import { Btn } from "@nexdom/uimed-vue/components";
 Utilize a prop `disabled` para remover a possibilidade de clicar ou focar no botão.
 
 ::: raw
-<div class="btn-demo-row" data-test="btn-demo-disabled">
+<div class="btn-demo-row" >
   <btn disabled>Desabilitado</btn>
 </div>
 :::
@@ -84,7 +86,7 @@ import { Btn } from "@nexdom/uimed-vue/components";
 A prop `loading` exibe um indicador de carregamento e desabilita a interação com o botão enquanto ativa.
 
 ::: raw
-<div class="btn-demo-row" data-test="btn-demo-loading">
+<div class="btn-demo-row" >
   <btn loading>Carregando</btn>
 </div>
 :::
@@ -104,35 +106,11 @@ import { Btn } from "@nexdom/uimed-vue/components";
 O evento `click` é emitido ao clicar no botão, repassando o `MouseEvent` nativo. Ele não é disparado quando o botão está `disabled`.
 
 ::: raw
-<div class="btn-demo-row" data-test="btn-demo-click">
-  <btn @click="onClick">Me clique</btn>
-  <span data-test="btn-demo-click-count">{{ clicks }} clique(s)</span>
+<div class="btn-demo-row" >
+  <btn data-testid="btn-demo-click" @click="onClick">Me clique</btn>
+  <span data-testid="btn-demo-click-count">{{ clicks }} clique(s)</span>
 </div>
 :::
-
-<script lang="ts" setup>
-  import { ref } from "vue"
-  import { Btn } from "../../../dist/components.js"
-  import { VSelect, VSwitch, VTextField } from "vuetify/components"
-
-  const clicks = ref(0)
-
-  function onClick() {
-    clicks.value++
-  }
-
-  type PlaygroundVariant = "primary" | "secondary" | "ghost"
-  type PlaygroundColor = "primary" | "secondary" | "positive" | "informative" | "caution" | "danger"
-
-  const playgroundVariantOptions: PlaygroundVariant[] = ["primary", "secondary", "ghost"]
-  const playgroundColorOptions: PlaygroundColor[] = ["primary", "secondary", "positive", "informative", "caution", "danger"]
-
-  const playgroundVariant = ref<PlaygroundVariant>("primary")
-  const playgroundColor = ref<PlaygroundColor>("primary")
-  const playgroundLabel = ref("Me clique")
-  const playgroundDisabled = ref(false)
-  const playgroundLoading = ref(false)
-</script>
 
 ```vue
 <template>
@@ -156,73 +134,54 @@ function onClick() {
 Experimente as combinações de props do componente.
 
 ::: raw
-<div class="btn-playground" data-test="btn-playground">
-  <div class="btn-playground-preview" data-test="btn-playground-preview">
-    <btn :variant="playgroundVariant" :color="playgroundColor" :disabled="playgroundDisabled" :loading="playgroundLoading">
-      {{ playgroundLabel }}
-    </btn>
-  </div>
-  <div class="btn-playground-controls" data-test="btn-playground-controls">
-    <v-select v-model="playgroundVariant" label="Variante" :items="playgroundVariantOptions" density="compact" data-test="btn-playground-variant" />
-    <v-select v-model="playgroundColor" label="Cor" :items="playgroundColorOptions" density="compact" data-test="btn-playground-color" />
-    <v-text-field v-model="playgroundLabel" label="Rótulo" density="compact" data-test="btn-playground-label" />
-    <div class="btn-playground-switches">
-      <v-switch v-model="playgroundDisabled" label="Desabilitado" density="compact" hide-details data-test="btn-playground-disabled" />
-      <v-switch v-model="playgroundLoading" label="Carregando" density="compact" hide-details data-test="btn-playground-loading" />
-    </div>
-  </div>
-</div>
+<playground>
+<btn :variant="playgroundVariant" :color="playgroundColor" :disabled="playgroundDisabled" :loading="playgroundLoading" data-testid="btn-preview">
+{{ playgroundLabel }}
+</btn>
+
+<template #actions>
+<v-select v-model="playgroundVariant" label="Variante" :items="playgroundVariantOptions" density="compact" data-testid="btn-playground-variant" />
+
+<v-select v-model="playgroundColor" label="Cor" :items="playgroundColorOptions" density="compact" data-testid="btn-playground-color" />
+
+<v-text-field v-model="playgroundLabel" label="Texto" density="compact" data-testid="btn-playground-label" />
+
+<v-checkbox v-model="playgroundDisabled" label="Desabilitado" density="compact" hide-details data-testid="btn-playground-disabled" />
+
+<v-checkbox v-model="playgroundLoading" label="Carregando" density="compact" hide-details />
+</template>
+</playground>
 :::
 
 ## Ver também
 
-Consulte a [referência de API do Btn](../../api/components/btn.md) para a lista completa de props, slots e eventos.
+Consulte a [referência de API do Btn](../../api/components/btn) para a lista completa de props, slots e eventos.
 
-<style scoped>
+<script lang="ts" setup>
+  import { ref } from "vue"
+  import { Btn } from "../../../dist/components.js"
+  import { VSelect, VCheckbox, VTextField } from "vuetify/components"
+
+  const clicks = ref(0);
+
+  function onClick() {
+    clicks.value++
+  }
+
+  const playgroundVariantOptions: Array<InstanceType<typeof Btn>["$props"]["variant"]> = ["primary", "secondary", "ghost"];
+  const playgroundColorOptions: Array<InstanceType<typeof Btn>["$props"]["color"]> = ["primary", "secondary", "positive", "informative", "caution", "danger"];
+
+  const playgroundVariant = ref(playgroundVariantOptions[0]);
+  const playgroundColor = ref(playgroundColorOptions[0]);
+  const playgroundLabel = ref("Me clique")
+  const playgroundDisabled = ref(false)
+  const playgroundLoading = ref(false)
+</script>
+
+<style lang="scss" scoped>
 .btn-demo-row {
   display: flex;
   flex-wrap: wrap;
-  align-items: center;
-  gap: 12px;
-}
-
-.btn-playground {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(260px, 320px);
-  grid-template-areas: "preview controls";
-  gap: 16px;
-}
-
-@media (max-width: 719px) {
-  .btn-playground {
-    grid-template-columns: 1fr;
-    grid-template-areas:
-      "preview"
-      "controls";
-  }
-}
-
-.btn-playground-preview {
-  grid-area: preview;
-  position: relative;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  min-height: 160px;
-  padding: 16px;
-  border: 1px solid var(--vp-c-divider);
-  border-radius: 8px;
-}
-
-.btn-playground-controls {
-  grid-area: controls;
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-}
-
-.btn-playground-switches {
-  display: flex;
-  gap: 16px;
+  gap: .5rem;
 }
 </style>
