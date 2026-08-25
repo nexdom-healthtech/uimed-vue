@@ -70,7 +70,7 @@ test.describe("btn", () => {
     test("matches the accessible snapshot of the click demo", async ({ page }) => {
       await page.goto("guide/components/btn");
 
-      const demo = page.getByTestId("btn-demo-click");
+      const demo = page.getByTestId("demo-click-event");
 
       await expect(demo).toMatchAriaSnapshot();
     });
