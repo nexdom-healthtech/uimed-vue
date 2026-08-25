@@ -55,12 +55,20 @@ vpr test
 vp run test
 ```
 
-- Run the e2e tests:
+- Run the E2E tests:
 
 ```bash
 vpr test:e2e
 # Or
 vp run test:e2e
+```
+
+- Run the E2E tests and serve HTML report:
+
+```bash
+vpr test:e2e:report
+# Or
+vp run test:e2e:report
 ```
 
 - Run mutation tests:
