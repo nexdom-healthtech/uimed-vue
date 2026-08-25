@@ -1,5 +1,5 @@
 <template>
-  <VApp>
+  <VApp :data-testid="props.dataTestid">
     <slot />
   </VApp>
 </template>
@@ -14,5 +14,8 @@ export default {
 </script>
 
 <script setup lang="ts">
+import { type RootProps } from "@/components/root/types.ts";
 import { VApp } from "vuetify/components";
+
+const props = defineProps<RootProps>();
 </script>

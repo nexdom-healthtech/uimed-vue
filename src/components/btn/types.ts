@@ -36,6 +36,10 @@ export type BtnProps = {
    * @default false
    */
   loading?: boolean;
+  /**
+   * Component id to use on automated tests.
+   */
+  dataTestid?: string;
 };
 
 /**
@@ -47,5 +51,5 @@ export type BtnEmits = {
    * @param {MouseEvent} event - The native `MouseEvent` object associated with the click.
    * @returns void
    */
-  click: (event: MouseEvent) => void;
+  (e: "click", event: MouseEvent): void;
 };
