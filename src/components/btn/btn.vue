@@ -4,7 +4,8 @@
     :color="vuetifyColor"
     :disabled="props.disabled"
     :loading="props.loading"
-    @click="$emit('click', $event)"
+    :data-testid="props.dataTestid"
+    @click="onClick"
   >
     <template #default>
       <slot name="default" />
@@ -41,4 +42,8 @@ const emit = defineEmits<BtnEmits>();
 
 const vuetifyVariant = computed(() => resolveBtnVariant(props.variant));
 const vuetifyColor = computed(() => resolveBtnColor(props.color));
+
+function onClick(event: MouseEvent) {
+  emit("click", event);
+}
 </script>
