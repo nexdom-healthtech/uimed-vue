@@ -16,6 +16,7 @@ export default defineConfig({
     trace: "on-first-retry",
     screenshot: "only-on-failure",
     testIdAttribute: "data-test",
+    video: process.env.CI ? "off" : "on",
   },
   projects: [
     {
@@ -24,7 +25,7 @@ export default defineConfig({
     },
   ],
   webServer: {
-    command: "vpx vitepress preview docs --port 4173 --strictPort",
+    command: "vpr docs",
     url: "http://localhost:4173/uimed-vue/",
     reuseExistingServer: !process.env.CI,
     timeout: 120_000,

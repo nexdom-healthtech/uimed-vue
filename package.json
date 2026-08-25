@@ -38,13 +38,16 @@
     "dev": "vp pack --watch",
     "test": "vp test",
     "test:mutations": "stryker run",
+    "test:e2e": "vpx playwright test",
+    "test:e2e:report": "vpr test:e2e --reporter html && vpx playwright show-report --host 0.0.0.0",
     "check": "vp check",
     "prepublishOnly": "vpr build",
     "prepare": "vp config",
     "depcruise": "depcruise src --output-type err-long",
     "depcruise:graph": "depcruise src --output-type dot| dot -T svg > dependencygraph.svg",
     "depcruise:graph:no-tests": "depcruise src --exclude \"__tests__\"  --output-type dot | dot -T svg > dependencygraph.no-tests.svg",
-    "docs:dev": "vitepress dev docs --host --port 5173 --strictPort"
+    "docs:dev": "vitepress dev docs --host --port 4173 --strictPort",
+    "postinstall": "playwright install --with-deps chromium"
   },
   "devDependencies": {
     "@commitlint/cli": "^21.2.1",
