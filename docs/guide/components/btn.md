@@ -106,7 +106,7 @@ import { Btn } from "@nexdom/uimed-vue/components";
 O evento `click` é emitido ao clicar no botão, repassando o `MouseEvent` nativo. Ele não é disparado quando o botão está `disabled`.
 
 ::: raw
-<div class="btn-demo-row" >
+<div class="btn-demo-row" data-testid="demo-click-event">
   <btn data-testid="btn-demo-click" @click="onClick">Me clique</btn>
   <span data-testid="btn-demo-click-count">{{ clicks }} clique(s)</span>
 </div>
