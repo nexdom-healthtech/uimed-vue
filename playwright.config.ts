@@ -10,6 +10,9 @@ export default defineConfig({
     toMatchAriaSnapshot: {
       pathTemplate: "{testDir}/{testFileDir}/__snapshots__/{testFileName}/{arg}{ext}",
     },
+    toHaveScreenshot: {
+      pathTemplate: "{testDir}/{testFileDir}/__screenshot__/{testFileName}/{arg}{ext}",
+    },
   },
   use: {
     baseURL: "http://localhost:4173/uimed-vue/",
