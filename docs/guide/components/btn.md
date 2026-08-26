@@ -9,13 +9,11 @@ Componente para botão.
 
 A prop `variant` define a variação de estilo aplicada ao botão. O padrão é `primary`.
 
-::: raw
-<div class="btn-demo-row">
-  <btn variant="primary">Primary</btn>
-  <btn variant="secondary">Secondary</btn>
-  <btn variant="ghost">Ghost</btn>
-</div>
-:::
+<demo>
+<btn variant="primary">Primary</btn>
+<btn variant="secondary">Secondary</btn>
+<btn variant="ghost">Ghost</btn>
+</demo>
 
 ```vue
 <template>
@@ -33,16 +31,14 @@ import { Btn } from "@nexdom/uimed-vue/components";
 
 A prop `color` aceita um dos valores da paleta do componente: `primary`, `secondary`, `positive`, `informative`, `caution` ou `danger`.
 
-::: raw
-<div class="btn-demo-row" >
-  <btn color="primary">Primary</btn>
-  <btn color="secondary">Secondary</btn>
-  <btn color="positive">Positive</btn>
-  <btn color="informative">Informative</btn>
-  <btn color="caution">Caution</btn>
-  <btn color="danger">Danger</btn>
-</div>
-:::
+<demo>
+<btn color="primary">Primary</btn>
+<btn color="secondary">Secondary</btn>
+<btn color="positive">Positive</btn>
+<btn color="informative">Informative</btn>
+<btn color="caution">Caution</btn>
+<btn color="danger">Danger</btn>
+</demo>
 
 ```vue
 <template>
@@ -65,11 +61,9 @@ import { Btn } from "@nexdom/uimed-vue/components";
 
 Utilize a prop `disabled` para remover a possibilidade de clicar ou focar no botão.
 
-::: raw
-<div class="btn-demo-row" >
-  <btn disabled>Desabilitado</btn>
-</div>
-:::
+<demo>
+<btn disabled>Desabilitado</btn>
+</demo>
 
 ```vue
 <template>
@@ -85,11 +79,9 @@ import { Btn } from "@nexdom/uimed-vue/components";
 
 A prop `loading` exibe um indicador de carregamento e desabilita a interação com o botão enquanto ativa.
 
-::: raw
-<div class="btn-demo-row" >
-  <btn loading>Carregando</btn>
-</div>
-:::
+<demo>
+<btn loading>Carregando</btn>
+</demo>
 
 ```vue
 <template>
@@ -105,12 +97,10 @@ import { Btn } from "@nexdom/uimed-vue/components";
 
 O evento `click` é emitido ao clicar no botão, repassando o `MouseEvent` nativo. Ele não é disparado quando o botão está `disabled`.
 
-::: raw
-<div class="btn-demo-row" data-testid="demo-click-event">
-  <btn data-testid="btn-demo-click" @click="onClick">Me clique</btn>
-  <span data-testid="btn-demo-click-count">{{ clicks }} clique(s)</span>
-</div>
-:::
+<demo data-testid="demo-click-event">
+<btn data-testid="btn-demo-click" @click="onClick">Me clique</btn>
+<span data-testid="btn-demo-click-count">{{ clicks }} clique(s)</span>
+</demo>
 
 ```vue
 <template>
@@ -133,7 +123,6 @@ function onClick() {
 
 Experimente as combinações de props do componente.
 
-::: raw
 <playground>
 <btn :variant="playgroundVariant" :color="playgroundColor" :disabled="playgroundDisabled" :loading="playgroundLoading" data-testid="btn-preview">
 {{ playgroundLabel }}
@@ -151,7 +140,6 @@ Experimente as combinações de props do componente.
 <v-checkbox v-model="playgroundLoading" label="Carregando" density="compact" hide-details />
 </template>
 </playground>
-:::
 
 ## Ver também
 
@@ -177,11 +165,3 @@ Consulte a [referência de API do Btn](../../api/components/btn) para a lista co
   const playgroundDisabled = ref(false)
   const playgroundLoading = ref(false)
 </script>
-
-<style lang="scss" scoped>
-.btn-demo-row {
-  display: flex;
-  flex-wrap: wrap;
-  gap: .5rem;
-}
-</style>
