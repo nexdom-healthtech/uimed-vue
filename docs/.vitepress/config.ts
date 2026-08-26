@@ -97,6 +97,7 @@ export default defineConfig({
           items: [
             { text: "O que é uimed-vue?", link: "/guide/" },
             { text: "Iniciando", link: "/guide/getting-started" },
+            { text: "Testes Unitários", link: "/guide/unit-testing" },
           ],
         },
         {
