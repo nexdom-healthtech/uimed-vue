@@ -1,5 +1,5 @@
 <template>
-  <div class="playground">
+  <div class="playground vp-raw">
     <div class="playground-preview">
       <slot />
     </div>

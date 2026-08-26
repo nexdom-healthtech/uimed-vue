@@ -7,6 +7,7 @@ import "./style.css";
 
 import { createUimed } from "../../../dist/index.js";
 import Playground from "./components/playground.vue";
+import Demo from "./components/demo.vue";
 
 export default {
   extends: DefaultTheme,
@@ -18,5 +19,6 @@ export default {
   enhanceApp({ app }) {
     app.use(createUimed());
     app.component("Playground", Playground);
+    app.component("Demo", Demo);
   },
 } satisfies Theme;
