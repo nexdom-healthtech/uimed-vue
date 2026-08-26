@@ -27,7 +27,7 @@ yarn add @nexdom/uimed-vue
 Add Vite config:
 
 ```ts
-// vite.config.js
+// vite.config.ts
 import { vitePluginUimed } from "@nexdom/uimed-vue/plugins.ts";
 
 /// ...
