@@ -28,7 +28,7 @@ $ yarn add @nexdom/uimed-vue
 
 Adicione o plugin ao arquivo de configurações do Vite:
 
-```js [vite.config.js]
+```js [vite.config.ts]
 import { defineConfig } from 'vite'
 import vue from "@vitejs/plugin-vue";
 import { vitePluginUimed } from "@nexdom/uimed-vue/plugins.ts"; // [!code ++]
