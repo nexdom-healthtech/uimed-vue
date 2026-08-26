@@ -25,6 +25,8 @@ const colors: [BtnColor, string][] = [
 ];
 
 const testId = "button-test-id";
+const styleValue = "random-style";
+const classValue = "random-class";
 
 describe("btn", () => {
   it("should exists", () => {
@@ -44,7 +46,9 @@ describe("btn", () => {
 
   it("should not inherit unexpected attributes", () => {
     const wrapper = mountBtn();
-    expect(wrapper.attributes("random-attribute")).toBeUndefined();
+    expect(wrapper.attributes("style")).toBeUndefined();
+    expect(wrapper.attributes("class")).not.toBeUndefined();
+    expect(wrapper.attributes("class")).not.toBe(classValue);
   });
 
   describe("variant prop", () => {
@@ -160,7 +164,8 @@ function mountBtn(
     props,
     attrs: {
       "data-testid": testId,
-      "random-attribute": "random-value",
+      style: styleValue,
+      class: classValue,
       ...attrs,
     },
     slots,
