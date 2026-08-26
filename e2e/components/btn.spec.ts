@@ -1,10 +1,12 @@
 import { test, expect, type Page } from "@playwright/test";
 
 test.describe("btn", () => {
+  test.beforeEach(async ({ page }) => {
+    await gotoBtnGuide(page);
+  });
+
   test.describe("playground", () => {
     test("updates variant when playground-variant changes", async ({ page }) => {
-      await gotoPlayground(page);
-
       const previewButton = getPreviewButton(page);
       await expect(previewButton).toHaveClass(/v-btn--variant-elevated/);
 
@@ -13,8 +15,6 @@ test.describe("btn", () => {
     });
 
     test("updates label text when playground-label changes", async ({ page }) => {
-      await gotoPlayground(page);
-
       await page.getByTestId("btn-playground-label").locator("input").fill("Confirmar");
 
       const previewButton = getPreviewButton(page);
@@ -22,8 +22,6 @@ test.describe("btn", () => {
     });
 
     test("updates color when playground-color changes", async ({ page }) => {
-      await gotoPlayground(page);
-
       const previewButton = getPreviewButton(page);
       await expect(previewButton).toHaveClass(/bg-primary/);
 
@@ -32,8 +30,6 @@ test.describe("btn", () => {
     });
 
     test("disables when playground-disabled is toggled", async ({ page }) => {
-      await gotoPlayground(page);
-
       const previewButton = getPreviewButton(page);
       await expect(previewButton).toBeEnabled();
 
@@ -45,8 +41,6 @@ test.describe("btn", () => {
     test("matches the accessible snapshot of the preview button in its default state", async ({
       page,
     }) => {
-      await gotoPlayground(page);
-
       const previewButton = getPreviewButton(page);
       await expect(previewButton).toMatchAriaSnapshot();
     });
@@ -75,10 +69,17 @@ test.describe("btn", () => {
       await expect(demo).toMatchAriaSnapshot();
     });
   });
+
+  test.describe("UI consistency", () => {
+    test("matches last screenshot", async ({ page }) => {
+      await expect(page).toHaveScreenshot({ fullPage: true });
+    });
+  });
 });
 
-async function gotoPlayground(page: Page) {
-  return await page.goto("guide/components/btn");
+async function gotoBtnGuide(page: Page) {
+  await page.goto("guide/components/btn");
+  await page.locator("h1").waitFor({ state: "visible" });
 }
 
 function getPreviewButton(page: Page) {
