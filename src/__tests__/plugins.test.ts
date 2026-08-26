@@ -1,4 +1,4 @@
-import { vitePluginUimed } from "@/plugins.ts";
+import { vitePluginUimed, vitestServerPluginUimed } from "@/plugins.ts";
 import vitePluginVuetify from "vite-plugin-vuetify";
 
 vi.mock("vite-plugin-vuetify", () => ({ default: vi.fn() }));
@@ -12,6 +12,13 @@ describe("plugins", () => {
 
       expect(vitePluginVuetify).toHaveBeenCalledOnce();
       expect(vitePluginVuetify).toHaveBeenCalledWith({ autoImport: false });
+    });
+  });
+
+  describe("vitestServerPluginUimed", () => {
+    it("should return vuetify as inline deps", () => {
+      const server = vitestServerPluginUimed();
+      expect(server).toEqual({ deps: { inline: ["vuetify"] } });
     });
   });
 });

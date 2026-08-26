@@ -1,5 +1,3 @@
-global.ResizeObserver = require("resize-observer-polyfill");
-
 beforeAll(() => {
   vi.useFakeTimers();
   vi.spyOn(console, "error").mockImplementation(() => {});

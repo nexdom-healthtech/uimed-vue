@@ -1,12 +1,7 @@
 import { VApp } from "vuetify/components";
 import Root from "@/components/root/root.vue";
 import { mount } from "@vue/test-utils";
-
-import { createVuetify } from "vuetify";
-import * as components from "vuetify/components";
-import * as directives from "vuetify/directives";
-
-const vuetify = createVuetify({ components, directives });
+import { vueTestUtilsPluginUimed } from "@/unit-test.ts";
 
 const testId = "root-test-component";
 const styleValue = "random-style";
@@ -42,7 +37,7 @@ function mountRoot() {
       class: classValue,
     },
     global: {
-      plugins: [vuetify],
+      plugins: [vueTestUtilsPluginUimed()],
     },
   });
 }

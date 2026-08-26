@@ -111,7 +111,7 @@ module.exports = {
       comment: `The root folders from this project must be components or composables only.`,
       severity: "error",
       from: {
-        pathNot: ["src/(__tests__|index|plugins|components|composables)"],
+        pathNot: ["src/(__tests__|index|plugins|unit-test|components|composables)"],
       },
       to: {},
     },
