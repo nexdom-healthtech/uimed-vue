@@ -5,11 +5,11 @@ Responsável por carregar os estilos necessários para os demais componentes.
 
 ## Uso
 
-::: raw
+<demo>
 <Root>
   <h2>Testando...</h2>
 </Root>
-:::
+</demo>
 
 ```vue
 <template>
