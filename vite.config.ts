@@ -1,3 +1,4 @@
+import { vitestServerPluginUimed } from "./src/plugins.ts";
 import path from "path";
 import { defineConfig } from "vite-plus";
 import vue from "@vitejs/plugin-vue";
@@ -27,6 +28,7 @@ export default defineConfig({
     entry: {
       index: "src/index.ts",
       plugins: "src/plugins.ts",
+      "unit-test": "src/unit-test.ts",
       components: "src/components/index.ts",
     },
     platform: "neutral",
@@ -56,10 +58,6 @@ export default defineConfig({
     exclude: ["e2e/**", "**/node_modules/**", "**/.git/**", "**/.stryker-tmp/**"],
     coverage: { reporter: ["text"] },
     setupFiles: ["src/__tests__/setup.ts"],
-    server: {
-      deps: {
-        inline: ["vuetify"],
-      },
-    },
+    server: vitestServerPluginUimed(),
   },
 });

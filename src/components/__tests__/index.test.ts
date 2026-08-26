@@ -5,4 +5,9 @@ describe("components", () => {
     expect(components).not.toBeUndefined();
     expect(Object.keys(components).length).toBeGreaterThan(0);
   });
+
+  it("should avoid breaking changes", () => {
+    expect(components.Root).not.toBeUndefined();
+    expect(components.Btn).not.toBeUndefined();
+  });
 });
