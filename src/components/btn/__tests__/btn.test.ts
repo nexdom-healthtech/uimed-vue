@@ -3,12 +3,7 @@ import { mount } from "@vue/test-utils";
 import Btn from "@/components/btn/btn.vue";
 import { resolveBtnColor, resolveBtnVariant } from "@/components/btn/consts.ts";
 import type { BtnColor, BtnProps, BtnVariant } from "@/components/btn/types.ts";
-
-import { createVuetify } from "vuetify";
-import * as components from "vuetify/components";
-import * as directives from "vuetify/directives";
-
-const vuetify = createVuetify({ components, directives });
+import { vueTestUtilsPluginUimed } from "@/unit-test.ts";
 
 const variants: [BtnVariant, string][] = [
   ["primary", "elevated"],
@@ -170,7 +165,7 @@ function mountBtn(
     },
     slots,
     global: {
-      plugins: [vuetify],
+      plugins: [vueTestUtilsPluginUimed()],
     },
   });
 }
