@@ -9,17 +9,11 @@ import * as directives from "vuetify/directives";
 const vuetify = createVuetify({ components, directives });
 
 const testId = "root-test-component";
+const styleValue = "random-style";
+const classValue = "random-class";
 
 describe("root", () => {
-  const wrapper = mount(Root, {
-    attrs: {
-      "data-testid": testId,
-      "random-attribute": "random-value",
-    },
-    global: {
-      plugins: [vuetify],
-    },
-  });
+  const wrapper = mountRoot();
 
   it("should exists", () => {
     expect(wrapper.exists()).toBe(true);
@@ -34,6 +28,21 @@ describe("root", () => {
   });
 
   it("should not inherit unexpected attributes", () => {
-    expect(wrapper.attributes("random-attribute")).toBeUndefined();
+    expect(wrapper.attributes("style")).toBeUndefined();
+    expect(wrapper.attributes("class")).not.toBeUndefined();
+    expect(wrapper.attributes("class")).not.toBe(classValue);
   });
 });
+
+function mountRoot() {
+  return mount(Root, {
+    attrs: {
+      "data-testid": testId,
+      style: styleValue,
+      class: classValue,
+    },
+    global: {
+      plugins: [vuetify],
+    },
+  });
+}
