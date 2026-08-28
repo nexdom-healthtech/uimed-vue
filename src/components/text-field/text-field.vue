@@ -20,7 +20,7 @@
  *
  * @example
  * ```vue
- * <text-field label="E-mail" type="email" required />
+ * <text-field label="E-mail" type="email" />
  * ```
  *
  * @see {@link https://nexdom-healthtech.github.io/uimed-vue/guide/components/text-field | TextField Guide}
