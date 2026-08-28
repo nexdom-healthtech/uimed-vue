@@ -9,5 +9,7 @@
   "plugins": ["@stryker-mutator/vitest-runner"],
   "ignorePatterns": ["docs", ".*", "reports"],
   "ignoreStatic": true,
-  "thresholds": { "high": 95, "low": 90, "break": 90 }
+  "thresholds": { "high": 95, "low": 90, "break": 90 },
+  "appendPlugins": ["stryker-vue-ignorer"],
+  "ignorers": ["vue"]
 }
