@@ -1,0 +1,45 @@
+<template>
+  <v-text-field
+    v-model="modelValue"
+    :variant="vuetifyVariant"
+    :type="vuetifyType"
+    :data-testid="props.dataTestid"
+    :disabled="props.disabled"
+    :loading="props.loading"
+    :readonly="props.readonly"
+    :label="props.label"
+    :placeholder="props.placeholder"
+    :hint="props.hint"
+    :clearable="computedClearable"
+  />
+</template>
+
+<script lang="ts">
+/**
+ * Text field component to be used throughout the application.
+ *
+ * @example
+ * ```vue
+ * <text-field label="E-mail" type="email" required />
+ * ```
+ *
+ * @see {@link https://nexdom-healthtech.github.io/uimed-vue/guide/components/text-field | TextField Guide}
+ */
+export default {
+  inheritAttrs: false,
+};
+</script>
+
+<script setup lang="ts">
+import type { TextFieldProps } from "@/components/text-field/types.ts";
+import { useTextFieldType, useTextFieldVariant } from "@/components/text-field/composables.ts";
+import { VTextField } from "vuetify/components";
+import { computed } from "vue";
+
+const modelValue = defineModel<string>({ default: "" });
+const props = withDefaults(defineProps<TextFieldProps>(), { clearable: undefined });
+
+const vuetifyVariant = useTextFieldVariant(() => props.variant);
+const vuetifyType = useTextFieldType(() => props.type);
+const computedClearable = computed(() => props.clearable ?? props.type === "search");
+</script>
