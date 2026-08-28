@@ -1,0 +1,4 @@
+- text: Label
+- textbox "Label":
+    - /placeholder: Placeholder
+- alert
