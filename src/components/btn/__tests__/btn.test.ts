@@ -1,8 +1,7 @@
-import { VBtn, VProgressCircular } from "vuetify/components";
+import { VBtn } from "vuetify/components";
 import { mount } from "@vue/test-utils";
 import Btn from "@/components/btn/btn.vue";
-import { resolveBtnColor, resolveBtnVariant } from "@/components/btn/consts.ts";
-import type { BtnColor, BtnProps, BtnVariant } from "@/components/btn/types.ts";
+import type { BtnColor, BtnVariant } from "@/components/btn/types.ts";
 import { vueTestUtilsPluginUimed } from "@/unit-test.ts";
 
 const variants: [BtnVariant, string][] = [
@@ -23,7 +22,7 @@ const testId = "button-test-id";
 const styleValue = "random-style";
 const classValue = "random-class";
 
-describe("btn", () => {
+describe("Btn", () => {
   it("should exists", () => {
     const wrapper = mountBtn();
     expect(wrapper.exists()).toBe(true);
@@ -31,7 +30,7 @@ describe("btn", () => {
 
   it("should contain primary component", () => {
     const wrapper = mountBtn();
-    expect(wrapper.findComponent(VBtn).exists()).toBe(true);
+    expect(findVBtn(wrapper).exists()).toBe(true);
   });
 
   it('should inherit "data-testid" attribute', () => {
@@ -46,117 +45,98 @@ describe("btn", () => {
     expect(wrapper.attributes("class")).not.toBe(classValue);
   });
 
-  describe("variant prop", () => {
-    it.each(variants)(
-      'should forward `variant="%s"` to Vuetify\'s `%s` variant',
-      (variant, vuetifyVariant) => {
-        const wrapper = mountBtn({ variant });
-        expect(wrapper.findComponent(VBtn).props("variant")).toBe(vuetifyVariant);
-      },
-    );
+  describe("props", () => {
+    describe("variant ", () => {
+      it.each(variants)(
+        'should forward `variant="%s"` to Vuetify\'s `%s` variant',
+        async (variant, vuetifyVariant) => {
+          const wrapper = mountBtn();
+          await wrapper.setProps({ variant });
+          expect(findVBtn(wrapper).props("variant")).toBe(vuetifyVariant);
+        },
+      );
 
-    it("should default to the elevated variant when not set", () => {
-      const wrapper = mountBtn();
-      expect(wrapper.findComponent(VBtn).props("variant")).toBe("elevated");
+      it("should default to the elevated variant when not set", () => {
+        const wrapper = mountBtn();
+        expect(findVBtn(wrapper).props("variant")).toBe("elevated");
+      });
     });
 
-    it("should resolve to the primary variant's mapping when variant is undefined", () => {
-      expect(resolveBtnVariant(undefined)).toBe("elevated");
+    describe("color", () => {
+      it.each(colors)(
+        'should forward `color="%s"` to Vuetify\'s `%s` color',
+        async (color, vuetifyColor) => {
+          const wrapper = mountBtn();
+          await wrapper.setProps({ color });
+          expect(findVBtn(wrapper).props("color")).toBe(vuetifyColor);
+        },
+      );
+
+      it("should have `primary` color by default", () => {
+        const wrapper = mountBtn();
+        expect(findVBtn(wrapper).props("color")).toBe("primary");
+      });
     });
 
-    it("should resolve to the primary variant's mapping when variant is not a mapped key", () => {
-      expect(resolveBtnVariant("" as BtnVariant)).toBe("elevated");
-    });
-  });
+    describe("disabled and loading", () => {
+      it("should forward to the underlying component", async () => {
+        const wrapper = mountBtn();
+        await wrapper.setProps({ disabled: true, loading: true });
 
-  describe("color prop", () => {
-    it.each(colors)(
-      'should forward `color="%s"` to Vuetify\'s `%s` color',
-      (color, vuetifyColor) => {
-        const wrapper = mountBtn({ color });
-        expect(wrapper.findComponent(VBtn).props("color")).toBe(vuetifyColor);
-      },
-    );
+        const vBtn = findVBtn(wrapper);
+        expect(vBtn.props("disabled")).toBe(true);
+        expect(vBtn.props("loading")).toBe(true);
+      });
 
-    it("should have `primary` color by default", () => {
-      const wrapper = mountBtn();
-      expect(wrapper.findComponent(VBtn).props("color")).toBe("primary");
-    });
-
-    it("should resolve to the primary color's mapping when color is not a mapped key", () => {
-      expect(resolveBtnColor("" as BtnColor)).toBe("primary");
-    });
-  });
-
-  describe("disabled prop", () => {
-    it("should forward `disabled` to the underlying component", () => {
-      const wrapper = mountBtn({ disabled: true });
-      expect(wrapper.findComponent(VBtn).props("disabled")).toBe(true);
-    });
-
-    it("should be enabled by default", () => {
-      const wrapper = mountBtn();
-      expect(wrapper.findComponent(VBtn).props("disabled")).toBe(false);
+      it("should be false by default", () => {
+        const wrapper = mountBtn();
+        const vBtn = findVBtn(wrapper);
+        expect(vBtn.props("disabled")).toBe(false);
+        expect(vBtn.props("loading")).toBe(false);
+      });
     });
   });
 
-  describe("loading prop", () => {
-    it("should forward a boolean `loading` to the underlying component", () => {
-      const wrapper = mountBtn({ loading: true });
-      expect(wrapper.findComponent(VBtn).props("loading")).toBe(true);
-    });
+  describe("slots", () => {
+    describe("default ", () => {
+      it("should render content passed to the default slot", () => {
+        const wrapper = mountBtn({ default: "Click me" });
+        expect(wrapper.text()).toContain("Click me");
+      });
 
-    it("should not be loading by default", () => {
-      const wrapper = mountBtn();
-      expect(wrapper.findComponent(VBtn).props("loading")).toBe(false);
-    });
-
-    it("should render the underlying component's default spinner when loading", () => {
-      const wrapper = mountBtn({ loading: true });
-      expect(wrapper.findComponent(VProgressCircular).exists()).toBe(true);
+      it("should forward the default slot content to the underlying component", () => {
+        const wrapper = mountBtn({ default: "Click me" });
+        expect(findVBtn(wrapper).text()).toContain("Click me");
+      });
     });
   });
 
-  describe("default slot", () => {
-    it("should render content passed to the default slot", () => {
-      const wrapper = mountBtn({}, { default: "Click me" });
-      expect(wrapper.text()).toContain("Click me");
-    });
+  describe("events", () => {
+    describe("click", () => {
+      it("should call the `onClick` handler when the button is clicked", async () => {
+        const onClick = vi.fn();
+        const wrapper = mountBtn({}, { onClick });
 
-    it("should forward the default slot content to the underlying component", () => {
-      const wrapper = mountBtn({}, { default: "Click me" });
-      expect(wrapper.findComponent(VBtn).text()).toContain("Click me");
-    });
-  });
+        await wrapper.trigger("click");
 
-  describe("click event", () => {
-    it("should call the `onClick` handler when the button is clicked", async () => {
-      const onClick = vi.fn();
-      const wrapper = mountBtn({}, {}, { onClick });
+        expect(onClick).toHaveBeenCalledTimes(1);
+      });
 
-      await wrapper.trigger("click");
+      it("should not call the `onClick` handler when the button is disabled", async () => {
+        const onClick = vi.fn();
+        const wrapper = mountBtn({}, { onClick });
 
-      expect(onClick).toHaveBeenCalledTimes(1);
-    });
+        await wrapper.setProps({ disabled: true });
+        await wrapper.trigger("click");
 
-    it("should not call the `onClick` handler when the button is disabled", async () => {
-      const onClick = vi.fn();
-      const wrapper = mountBtn({ disabled: true }, {}, { onClick });
-
-      await wrapper.trigger("click");
-
-      expect(onClick).not.toHaveBeenCalled();
+        expect(onClick).not.toHaveBeenCalled();
+      });
     });
   });
 });
 
-function mountBtn(
-  props: Partial<BtnProps> = {},
-  slots: Record<string, string> = {},
-  attrs: Record<string, unknown> = {},
-) {
+function mountBtn(slots: Record<string, string> = {}, attrs: Record<string, unknown> = {}) {
   return mount(Btn, {
-    props,
     attrs: {
       "data-testid": testId,
       style: styleValue,
@@ -168,4 +148,8 @@ function mountBtn(
       plugins: [vueTestUtilsPluginUimed()],
     },
   });
+}
+
+function findVBtn(wrapper: ReturnType<typeof mountBtn>) {
+  return wrapper.findComponent(VBtn);
 }

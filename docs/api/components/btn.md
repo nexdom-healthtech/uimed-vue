@@ -1,6 +1,6 @@
 # Btn
 
-Componente principal para utilização de botões.
+Componente para utilização de botões.
 
 ## Props
 
@@ -11,6 +11,12 @@ Componente principal para utilização de botões.
 | `disabled`   | `boolean`                                                                          | `false`     | Remove a possibilidade de clicar ou focar no botão.           |
 | `loading`    | `boolean`                                                                          | `false`     | Exibe um indicador de carregamento.                           |
 | `dataTestid` | `string`                                                                           |             | Aplica atributo `data-testid` para testes sobre o componente. |
+
+## Eventos
+
+| Evento  | Retorno                                                                     | Descrição                           |
+| ------- | --------------------------------------------------------------------------- | ----------------------------------- |
+| `click` | [`MouseEvent`](https://developer.mozilla.org/pt-BR/docs/Web/API/MouseEvent) | Disparado quando o botão é clicado. |
 
 ## Slots
 
