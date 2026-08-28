@@ -37,7 +37,7 @@ vp env doctor
 vp env setup
 ```
 
-- Run checks (Lint, formmater and type-check):
+- Run checks (Lint, formatter and type-check):
 
 ```bash
 vpr check
@@ -108,6 +108,15 @@ export default {
 // component's implementation
 </script>
 ```
+
+### Workarounds
+
+- [Instrumenting Vue compiler macro arguments (defineModel/defineOptions/defineProps) produces code the SFC compiler hoists out of the helper's scope](https://github.com/stryker-mutator/stryker-js/issues/6178)
+  - To fix it temporarily we adopted [stryker-vue-ignorer](https://github.com/davidlandais/stryker-vue-ignorer), which we should remove as soon as the mentioned issue gets fixed
+  - We also have a backup [fork](https://github.com/rafael-perini/stryker-vue-ignorer).
+- [oxlint: better vue support](https://github.com/oxc-project/oxc/issues/15761)
+  - This issue led us to use `vue-tsc` for `typeCheck`, disabling `vite`'s `typeCheck` config.
+  - When the mentioned issue get solved, we should remove `vue-tsc` and enable Vite+ `typeCheck` again.
 
 ## Documentation
 

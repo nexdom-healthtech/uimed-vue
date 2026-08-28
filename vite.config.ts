@@ -41,13 +41,16 @@ export default defineConfig({
   lint: {
     options: {
       typeAware: true,
-      typeCheck: true,
+      // False only until the following issue gets fixed: https://github.com/oxc-project/oxc/issues/15761
+      // As a workaround, we added vue-tsc to perform type-check.
+      typeCheck: false,
     },
   },
   fmt: {},
   resolve: {
     alias: {
       "@": path.resolve(__dirname, "./src"),
+      "@e2e": path.resolve(__dirname, "./e2e"),
     },
   },
   plugins: [vue()],
@@ -55,7 +58,7 @@ export default defineConfig({
     globals: true,
     clearMocks: true,
     environment: "jsdom",
-    exclude: ["e2e/**", "**/node_modules/**", "**/.git/**", "**/.stryker-tmp/**"],
+    exclude: [".pnpm-store/", "e2e/**", "**/node_modules/**", "**/.git/**", "**/.stryker-tmp/**"],
     coverage: { reporter: ["text"] },
     setupFiles: ["src/__tests__/setup.ts"],
     server: vitestServerPluginUimed(),
