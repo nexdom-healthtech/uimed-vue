@@ -1,6 +1,7 @@
 {
   "include": [
     "src/**/*",
+    "e2e/**/*",
     "*.md",
     "*.ts",
     "docs/**/*.ts",
@@ -29,7 +30,8 @@
     "verbatimModuleSyntax": true,
     "skipLibCheck": true,
     "paths": {
-      "@/*": ["./src/*"]
+      "@/*": ["./src/*"],
+      "@e2e/*": ["./e2e/*"]
     }
   }
 }
