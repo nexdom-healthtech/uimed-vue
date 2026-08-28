@@ -24,6 +24,7 @@
     min-width: 275px;
     border: 1px solid var(--vp-c-divider);
     border-radius: 8px;
+    padding: 1rem;
   }
 
   &-controls {

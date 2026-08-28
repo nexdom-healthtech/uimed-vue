@@ -103,8 +103,18 @@ export default defineConfig({
         {
           text: "Componentes",
           items: [
-            { text: "Root", link: "/guide/components/root" },
-            { text: "Btn", link: "/guide/components/btn" },
+            {
+              text: "Ações",
+              items: [{ text: "Btn", link: "/guide/components/btn" }],
+            },
+            {
+              text: "Campos e formulários",
+              items: [{ text: "TextField", link: "/guide/components/text-field" }],
+            },
+            {
+              text: "Conteúdo",
+              items: [{ text: "Root", link: "/guide/components/root" }],
+            },
           ],
         },
       ],
@@ -114,12 +124,16 @@ export default defineConfig({
           collapsed: false,
           items: [
             {
+              text: "Btn",
+              link: "/api/components/btn",
+            },
+            {
               text: "Root",
               link: "/api/components/root",
             },
             {
-              text: "Btn",
-              link: "/api/components/btn",
+              text: "TextField",
+              link: "/api/components/text-field",
             },
           ],
         },
