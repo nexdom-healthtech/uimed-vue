@@ -1,13 +1,4 @@
-/**
- * Style variation for the {@link Btn} component.
- * {@link btnVariantToVuetifyVariant} for the mapping applied when rendering.
- */
 export type BtnVariant = "primary" | "secondary" | "ghost";
-
-/**
- * Color palette for the {@link Btn} component.
- * {@link btnColorToVuetifyColor} for the mapping applied when rendering.
- */
 export type BtnColor = "primary" | "secondary" | "positive" | "informative" | "caution" | "danger";
 
 /**
@@ -20,22 +11,26 @@ export type BtnProps = {
    * @default "primary"
    */
   variant?: BtnVariant;
+
   /**
    * Applies a color to the button.
    * One of `primary`, `secondary`, `positive`, `informative`, `caution`, or `danger`.
    * @default "primary"
    */
   color?: BtnColor;
+
   /**
    * Removes the ability to click or target the button.
    * @default false
    */
   disabled?: boolean;
+
   /**
    * Displays a loading indicator on the button, disabling interaction.
    * @default false
    */
   loading?: boolean;
+
   /**
    * Component id to use on automated tests.
    */
