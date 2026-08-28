@@ -1,32 +1,42 @@
 import { test, expect, type Page } from "@playwright/test";
+import { gotoPage, selectOption } from "@e2e/utils.ts";
 
 test.describe("btn", () => {
   test.beforeEach(async ({ page }) => {
-    await gotoBtnGuide(page);
+    await gotoPage(page, "guide/components/btn");
   });
 
   test.describe("playground", () => {
     test("updates variant when playground-variant changes", async ({ page }) => {
       const previewButton = getPreviewButton(page);
-      await expect(previewButton).toHaveClass(/v-btn--variant-elevated/);
+      await expect(previewButton).toContainClass("v-btn--variant-elevated");
 
       await selectOption(page, "btn-playground-variant", "ghost");
-      await expect(previewButton).toHaveClass(/v-btn--variant-outlined/);
+      await expect(previewButton).toContainClass("v-btn--variant-outlined");
     });
 
     test("updates label text when playground-label changes", async ({ page }) => {
-      await page.getByTestId("btn-playground-label").locator("input").fill("Confirmar");
+      const text = "Confirmar";
+      await page.getByTestId("btn-playground-label").locator("input").fill(text);
 
       const previewButton = getPreviewButton(page);
-      await expect(previewButton).toContainText("Confirmar");
+      await expect(previewButton).toContainText(text);
     });
 
     test("updates color when playground-color changes", async ({ page }) => {
       const previewButton = getPreviewButton(page);
-      await expect(previewButton).toHaveClass(/bg-primary/);
+      await expect(previewButton).toContainClass("bg-primary");
 
       await selectOption(page, "btn-playground-color", "danger");
-      await expect(previewButton).toHaveClass(/bg-error/);
+      await expect(previewButton).toContainClass("bg-error");
+    });
+
+    test("presents loading when playground-loading is toggled", async ({ page }) => {
+      const previewButton = getPreviewButton(page);
+      await expect(previewButton.locator(".v-btn__loader")).not.toBeAttached();
+
+      await page.getByTestId("btn-playground-loading").locator("input").click();
+      await expect(previewButton.locator(".v-btn__loader")).toBeAttached();
     });
 
     test("disables when playground-disabled is toggled", async ({ page }) => {
@@ -47,9 +57,7 @@ test.describe("btn", () => {
   });
 
   test.describe("events demo", () => {
-    test("increments the click counter and blocks clicks while disabled", async ({ page }) => {
-      await page.goto("guide/components/btn");
-
+    test("increments the click counter", async ({ page }) => {
       const counterText = page.getByTestId("btn-demo-click-count");
       const clickButton = page.getByTestId("btn-demo-click");
 
@@ -62,8 +70,6 @@ test.describe("btn", () => {
     });
 
     test("matches the accessible snapshot of the click demo", async ({ page }) => {
-      await page.goto("guide/components/btn");
-
       const demo = page.getByTestId("demo-click-event");
 
       await expect(demo).toMatchAriaSnapshot();
@@ -77,16 +83,6 @@ test.describe("btn", () => {
   });
 });
 
-async function gotoBtnGuide(page: Page) {
-  await page.goto("guide/components/btn");
-  await page.locator("h1").waitFor({ state: "visible" });
-}
-
 function getPreviewButton(page: Page) {
   return page.getByTestId("btn-preview");
-}
-
-async function selectOption(page: Page, testId: string, option: string) {
-  await page.getByTestId(testId).locator("input").click({ force: true });
-  await page.getByRole("option", { name: option, exact: true }).click();
 }

@@ -1,3 +1,7 @@
+---
+outline: deep
+---
+
 # Btn
 
 Componente para botão.
@@ -5,7 +9,9 @@ Componente para botão.
 > [!Warning]
 > Deve ser utilizado no lugar do `<button>` nativo.
 
-## Variantes
+## Propriedades
+
+### Variantes
 
 A prop `variant` define a variação de estilo aplicada ao botão. O padrão é `primary`.
 
@@ -27,7 +33,7 @@ import { Btn } from "@nexdom/uimed-vue/components";
 </script>
 ```
 
-## Cores
+### Cores
 
 A prop `color` aceita um dos valores da paleta do componente: `primary`, `secondary`, `positive`, `informative`, `caution` ou `danger`.
 
@@ -55,9 +61,9 @@ import { Btn } from "@nexdom/uimed-vue/components";
 </script>
 ```
 
-## Estados
+### Estados
 
-### Desabilitado
+#### Desabilitado
 
 Utilize a prop `disabled` para remover a possibilidade de clicar ou focar no botão.
 
@@ -75,7 +81,7 @@ import { Btn } from "@nexdom/uimed-vue/components";
 </script>
 ```
 
-### Carregamento
+#### Carregamento
 
 A prop `loading` exibe um indicador de carregamento e desabilita a interação com o botão enquanto ativa.
 
@@ -94,6 +100,8 @@ import { Btn } from "@nexdom/uimed-vue/components";
 ```
 
 ## Eventos
+
+### Clique
 
 O evento `click` é emitido ao clicar no botão, repassando o `MouseEvent` nativo. Ele não é disparado quando o botão está `disabled`.
 
@@ -137,16 +145,16 @@ Experimente as combinações de props do componente.
 
 <v-checkbox v-model="playgroundDisabled" label="Desabilitado" density="compact" hide-details data-testid="btn-playground-disabled" />
 
-<v-checkbox v-model="playgroundLoading" label="Carregando" density="compact" hide-details />
+<v-checkbox v-model="playgroundLoading" label="Carregando" density="compact" hide-details data-testid="btn-playground-loading" />
 </template>
 </playground>
 
 ## Ver também
 
-Consulte a [referência de API do Btn](../../api/components/btn) para a lista completa de props, slots e eventos.
+Consulte a referência de [API do Btn](../../api/components/btn) para a lista completa de props, slots e eventos.
 
 <script lang="ts" setup>
-  import { ref } from "vue"
+  import { ref, type ExtractPublicPropTypes } from "vue"
   import { Btn } from "../../../dist/components.js"
   import { VSelect, VCheckbox, VTextField } from "vuetify/components"
 
@@ -156,8 +164,9 @@ Consulte a [referência de API do Btn](../../api/components/btn) para a lista co
     clicks.value++
   }
 
-  const playgroundVariantOptions: Array<InstanceType<typeof Btn>["$props"]["variant"]> = ["primary", "secondary", "ghost"];
-  const playgroundColorOptions: Array<InstanceType<typeof Btn>["$props"]["color"]> = ["primary", "secondary", "positive", "informative", "caution", "danger"];
+type Props = ExtractPublicPropTypes<InstanceType<typeof Btn>>
+  const playgroundVariantOptions: Array<Props["variant"]> = ["primary", "secondary", "ghost"];
+  const playgroundColorOptions: Array<Props["color"]> = ["primary", "secondary", "positive", "informative", "caution", "danger"];
 
   const playgroundVariant = ref(playgroundVariantOptions[0]);
   const playgroundColor = ref(playgroundColorOptions[0]);
