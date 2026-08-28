@@ -7,6 +7,15 @@
 <script lang="ts">
 /**
  * Root component to be placed at the top of the component tree.
+ *
+ * @example
+ * ```vue
+ * <root>
+ *   <!-- uimed-components -->
+ * </root>
+ * ```
+ *
+ * @see {@link https://nexdom-healthtech.github.io/uimed-vue/guide/components/root | Root Guide}
  */
 export default {
   inheritAttrs: false,

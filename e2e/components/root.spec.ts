@@ -1,8 +1,9 @@
-import { test, expect, type Page } from "@playwright/test";
+import { gotoPage } from "@e2e/utils.ts";
+import { test, expect } from "@playwright/test";
 
 test.describe("root", () => {
   test.beforeEach(async ({ page }) => {
-    await gotoRootGuide(page);
+    await gotoPage(page, "guide/components/root");
   });
 
   test.describe("UI consistency", () => {
@@ -11,8 +12,3 @@ test.describe("root", () => {
     });
   });
 });
-
-async function gotoRootGuide(page: Page) {
-  await page.goto("guide/components/root");
-  await page.locator("h1").waitFor({ state: "visible" });
-}
