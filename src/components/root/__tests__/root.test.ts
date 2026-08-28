@@ -7,7 +7,7 @@ const testId = "root-test-component";
 const styleValue = "random-style";
 const classValue = "random-class";
 
-describe("root", () => {
+describe("Root", () => {
   const wrapper = mountRoot();
 
   it("should exists", () => {
