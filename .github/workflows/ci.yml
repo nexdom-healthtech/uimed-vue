@@ -31,7 +31,7 @@ jobs:
         run: vp pack
 
       - name: Check
-        run: vp check
+        run: vpr check
 
       - name: Check Dependencies
         run: vpr depcruise
