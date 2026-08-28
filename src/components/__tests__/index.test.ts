@@ -9,5 +9,6 @@ describe("components", () => {
   it("should avoid breaking changes", () => {
     expect(components.Root).not.toBeUndefined();
     expect(components.Btn).not.toBeUndefined();
+    expect(components.TextField).not.toBeUndefined();
   });
 });
