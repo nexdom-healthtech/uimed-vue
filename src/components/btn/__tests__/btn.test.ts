@@ -78,6 +78,40 @@ describe("Btn", () => {
       });
     });
 
+    describe("form", () => {
+      it("should forward to the underlying component", async () => {
+        const form = "form-id";
+        const wrapper = mountBtn();
+        await wrapper.setProps({ form });
+
+        const vBtn = findVBtn(wrapper);
+        expect(vBtn.attributes("form")).toBe(form);
+      });
+
+      it("should be undefined by default", () => {
+        const wrapper = mountBtn();
+        const vBtn = findVBtn(wrapper);
+        expect(vBtn.attributes("form")).toBeUndefined();
+      });
+    });
+
+    describe("type", () => {
+      it("should forward to the underlying component", async () => {
+        const type = "submit";
+        const wrapper = mountBtn();
+        await wrapper.setProps({ type });
+
+        const vBtn = findVBtn(wrapper);
+        expect(vBtn.attributes("type")).toBe(type);
+      });
+
+      it("should be button by default", () => {
+        const wrapper = mountBtn();
+        const vBtn = findVBtn(wrapper);
+        expect(vBtn.attributes("type")).toBe("button");
+      });
+    });
+
     describe("disabled and loading", () => {
       it("should forward to the underlying component", async () => {
         const wrapper = mountBtn();

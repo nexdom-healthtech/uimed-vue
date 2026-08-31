@@ -1,10 +1,13 @@
+020
 <template>
   <v-btn
-    :variant="vuetifyVariant"
-    :color="vuetifyColor"
     :disabled="props.disabled"
     :loading="props.loading"
     :data-testid="props.dataTestid"
+    :variant
+    :color
+    :type
+    :form
     @click="onClick"
   >
     <slot name="default" />
@@ -32,13 +35,20 @@ export default {
 <script setup lang="ts">
 import { VBtn } from "vuetify/components";
 import type { BtnProps, BtnEmits } from "@/components/btn/types.ts";
-import { useBtnColor, useBtnVariant } from "@/components/btn/composables.ts";
+import {
+  useBtnColor,
+  useBtnForm,
+  useBtnType,
+  useBtnVariant,
+} from "@/components/btn/composables.ts";
 
 const props = defineProps<BtnProps>();
 const emit = defineEmits<BtnEmits>();
 
-const vuetifyVariant = useBtnVariant(() => props.variant);
-const vuetifyColor = useBtnColor(() => props.color);
+const variant = useBtnVariant(() => props.variant);
+const color = useBtnColor(() => props.color);
+const type = useBtnType(() => props.type);
+const form = useBtnForm(() => props.form);
 
 function onClick(event: MouseEvent) {
   emit("click", event);
