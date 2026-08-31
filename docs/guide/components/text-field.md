@@ -200,7 +200,7 @@ Consulte a referência de [API do TextField](../../api/components/text-field) pa
 <script lang="ts" setup>
   import { computed, ref, type ExtractPublicPropTypes } from "vue"
   import { TextField } from "../../../dist/components.js"
-  import { VSelect, VCheckbox, VTextField } from "vuetify/components"
+  import { VSelect, VCheckbox } from "vuetify/components"
 
   const modelValue = ref("Me altere!");
   const changes = ref(0);
