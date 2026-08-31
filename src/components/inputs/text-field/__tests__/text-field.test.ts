@@ -1,6 +1,6 @@
-import { required } from "@/components/text-field/rules.ts";
-import TextField from "@/components/text-field/text-field.vue";
-import type { TextFieldType, TextFieldVariant } from "@/components/text-field/types.ts";
+import { required } from "@/components/inputs/rules.ts";
+import TextField from "@/components/inputs/text-field/text-field.vue";
+import type { TextFieldType, TextFieldVariant } from "@/components/inputs/text-field/types.ts";
 import { vueTestUtilsPluginUimed } from "@/unit-test.ts";
 import { mount } from "@vue/test-utils";
 import { VTextField } from "vuetify/components";

@@ -1,9 +1,9 @@
-import { required } from "@/components/text-field/rules.ts";
+import { required } from "@/components/inputs/rules.ts";
 import type {
   TextFieldProps,
   TextFieldType,
   TextFieldVariant,
-} from "@/components/text-field/types.ts";
+} from "@/components/inputs/text-field/types.ts";
 import { computed, toValue, type ComputedRef, type MaybeRefOrGetter } from "vue";
 import type { VTextField } from "vuetify/components";
 
