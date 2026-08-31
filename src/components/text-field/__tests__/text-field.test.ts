@@ -1,3 +1,4 @@
+import { required } from "@/components/text-field/rules.ts";
 import TextField from "@/components/text-field/text-field.vue";
 import type { TextFieldType, TextFieldVariant } from "@/components/text-field/types.ts";
 import { vueTestUtilsPluginUimed } from "@/unit-test.ts";
@@ -71,6 +72,8 @@ describe("TextField", () => {
         expect(wrapper.findComponent(VTextField).props("type")).toBe(htmlType);
       });
 
+      // TODO: add validation according to types
+
       it("should use text with clearable for search", async () => {
         const wrapper = mountTextField();
         await wrapper.setProps({ type: "search" });
@@ -83,6 +86,25 @@ describe("TextField", () => {
       it("should default to text type when not set", () => {
         const wrapper = mountTextField();
         expect(wrapper.findComponent(VTextField).props("type")).toBe("text");
+      });
+    });
+
+    describe("required", () => {
+      it("should generate rule to underlying component", async () => {
+        const wrapper = mountTextField();
+        await wrapper.setProps({ required: true });
+
+        const vTextField = findVTextField(wrapper);
+
+        expect(vTextField.props("rules")).toHaveLength(1);
+        expect(vTextField.props("rules")).toContain(required);
+      });
+
+      it("shouldn't change rules by default", () => {
+        const wrapper = mountTextField();
+        const vTextField = findVTextField(wrapper);
+
+        expect(vTextField.props("rules")).toHaveLength(0);
       });
     });
 
