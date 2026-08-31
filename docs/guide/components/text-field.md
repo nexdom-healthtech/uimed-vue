@@ -2,9 +2,9 @@
 outline: deep
 ---
 
-# TextField
+# Campos de texto
 
-Componente para campos de texto.
+O componente para campos de texto se chama `TextField`.
 
 > [!Warning]
 > Deve ser utilizado no lugar do `<input>` nativo.
@@ -177,17 +177,11 @@ function onUpdateValue(newValue: string) {
 
 Experimente as combinações de props do componente.
 
-<playground>
-<text-field :label="playgroundLabel" :placeholder="playgroundPlaceholder" :hint="playgroundHint" :variant="playgroundVariant" :disabled="playgroundDisabled" :readonly="playgroundReadonly" :loading="playgroundLoading" :clearable="playgroundClearable" data-testid="text-field-preview" />
+<playground v-model:actions="playgroundActions">
+<text-field :label="playgroundActions.label.value" :placeholder="playgroundActions.placeholder.value" :hint="playgroundActions.hint.value" :variant="playgroundVariant" :disabled="playgroundDisabled" :readonly="playgroundReadonly" :loading="playgroundLoading" :clearable="playgroundClearable" data-testid="text-field-preview" />
 
 <template #actions>
 <v-select v-model="playgroundVariant" label="Variante" :items="playgroundVariantOptions" density="compact" data-testid="text-field-playground-variant" />
-
-<v-text-field v-model="playgroundLabel" label="Label" density="compact" data-testid="text-field-playground-label" />
-
-<v-text-field v-model="playgroundPlaceholder" label="Placeholder" density="compact" data-testid="text-field-playground-placeholder" />
-
-<v-text-field v-model="playgroundHint" label="Mensagem" density="compact" data-testid="text-field-playground-hint" />
 
 <v-checkbox v-model="playgroundDisabled" label="Desabilitado" density="compact" hide-details data-testid="text-field-playground-disabled" />
 
@@ -220,10 +214,26 @@ Consulte a referência de [API do TextField](../../api/components/text-field) pa
   type Props = ExtractPublicPropTypes<InstanceType<typeof TextField>>;
   const playgroundVariantOptions: Array<Props["variant"]> = ["primary", "secondary"];
 
+  const playgroundActions = ref({
+    label: {
+      label: "Label",
+      value: "Label",
+      dataTestid: "text-field-playground-label"
+    },
+    placeholder: {
+      label: "Placeholder",
+      value: "Placeholder",
+      dataTestid: "text-field-playground-placeholder",
+    },
+    hint: {
+      label: "Mensagem",
+      value: "Hint",
+      dataTestid: "text-field-playground-hint"
+    },
+  });
+
   const playgroundVariant = ref(playgroundVariantOptions[0]);
-  const playgroundLabel = ref("Label");
-  const playgroundPlaceholder = ref("Placeholder");
-  const playgroundHint = ref("Hint");
+
   const playgroundDisabled = ref(false);
   const playgroundReadonly = ref(false);
   const playgroundLoading = ref(false);
