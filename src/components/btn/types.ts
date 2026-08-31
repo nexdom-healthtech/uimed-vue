@@ -13,6 +13,13 @@ export type BtnProps = {
   variant?: BtnVariant;
 
   /**
+   * Applies a distinct behavior to the button.
+   * One of `button` or `submit`.
+   * @default "action"
+   */
+  type?: "submit" | "button";
+
+  /**
    * Applies a color to the button.
    * One of `primary`, `secondary`, `positive`, `informative`, `caution`, or `danger`.
    * @default "primary"
@@ -30,6 +37,11 @@ export type BtnProps = {
    * @default false
    */
   loading?: boolean;
+
+  /**
+   * Associated [form](https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Attributes/form) id.
+   */
+  form?: string;
 
   /**
    * Component id to use on automated tests.
