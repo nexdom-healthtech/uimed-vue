@@ -40,7 +40,7 @@ import {
   useBtnForm,
   useBtnType,
   useBtnVariant,
-} from "@/components/btn/composables.ts";
+} from "@/composables/btn/composables.ts";
 
 const props = defineProps<BtnProps>();
 const emit = defineEmits<BtnEmits>();
