@@ -44,6 +44,12 @@ export type TextFieldProps = {
   readonly?: boolean;
 
   /**
+   * Add `rules` to require field to be filled before form submission.
+   * @default false
+   */
+  required?: boolean;
+
+  /**
    * Field label.
    */
   label?: string;

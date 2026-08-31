@@ -12,6 +12,7 @@ Componente para utilização de campos de text.
 | `label`       | `string`                                                           |             | Título dado ao campo.                                                                          |
 | `placeholder` | `string`                                                           |             | Exemplo de valor para preenchimento do campo.                                                  |
 | `hint`        | `string`                                                           |             | Dica, instrução ou mensagem relacionada ao campo.                                              |
+| `required`    | `boolean`                                                          | `false`     | Torna o campo obrigatório para a submissão do formulário.                                      |
 | `disabled`    | `boolean`                                                          | `false`     | Remove a possibilidade de interação com o campo.                                               |
 | `readonly`    | `boolean`                                                          | `false`     | Remove a possibilidade de edição do campo.                                                     |
 | `loading`     | `boolean`                                                          | `false`     | Exibe um indicador de carregamento.                                                            |

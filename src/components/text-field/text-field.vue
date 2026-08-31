@@ -3,6 +3,7 @@
     v-model="modelValue"
     :variant="vuetifyVariant"
     :type="vuetifyType"
+    :rules
     :data-testid="props.dataTestid"
     :disabled="props.disabled"
     :loading="props.loading"
@@ -32,7 +33,11 @@ export default {
 
 <script setup lang="ts">
 import type { TextFieldProps } from "@/components/text-field/types.ts";
-import { useTextFieldType, useTextFieldVariant } from "@/components/text-field/composables.ts";
+import {
+  useTextFieldRules,
+  useTextFieldType,
+  useTextFieldVariant,
+} from "@/components/text-field/composables.ts";
 import { VTextField } from "vuetify/components";
 import { computed } from "vue";
 
@@ -41,5 +46,6 @@ const { clearable = undefined, ...props } = defineProps<TextFieldProps>();
 
 const vuetifyVariant = useTextFieldVariant(() => props.variant);
 const vuetifyType = useTextFieldType(() => props.type);
+const rules = useTextFieldRules(props);
 const computedClearable = computed(() => clearable ?? props.type === "search");
 </script>

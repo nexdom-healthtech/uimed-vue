@@ -1,4 +1,9 @@
-import type { TextFieldType, TextFieldVariant } from "@/components/text-field/types.ts";
+import { required } from "@/components/text-field/rules.ts";
+import type {
+  TextFieldProps,
+  TextFieldType,
+  TextFieldVariant,
+} from "@/components/text-field/types.ts";
 import { computed, toValue, type ComputedRef, type MaybeRefOrGetter } from "vue";
 import type { VTextField } from "vuetify/components";
 
@@ -39,5 +44,15 @@ export function useTextFieldType(
   return computed(() => {
     const typeValue = toValue(type);
     return typeValue ? textFieldTypeToVuetifyType[typeValue] : textFieldTypeToVuetifyType.text;
+  });
+}
+
+export function useTextFieldRules(props: TextFieldProps) {
+  return computed(() => {
+    const rules = [];
+
+    if (props.required) rules.push(required);
+
+    return rules;
   });
 }
