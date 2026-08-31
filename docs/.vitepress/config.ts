@@ -105,15 +105,15 @@ export default defineConfig({
           items: [
             {
               text: "Ações",
-              items: [{ text: "Btn", link: "/guide/components/btn" }],
+              items: [{ text: "Botões", link: "/guide/components/btn" }],
             },
             {
               text: "Campos e formulários",
-              items: [{ text: "TextField", link: "/guide/components/text-field" }],
+              items: [{ text: "Campos de texto", link: "/guide/components/text-field" }],
             },
             {
               text: "Conteúdo",
-              items: [{ text: "Root", link: "/guide/components/root" }],
+              items: [{ text: "Componente base", link: "/guide/components/root" }],
             },
           ],
         },
