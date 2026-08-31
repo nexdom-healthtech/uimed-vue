@@ -2,9 +2,9 @@
 outline: deep
 ---
 
-# Btn
+# Botões
 
-Componente para botão.
+O componente padrão para botões se chama `Btn`.
 
 > [!Warning]
 > Deve ser utilizado no lugar do `<button>` nativo.
@@ -131,17 +131,15 @@ function onClick() {
 
 Experimente as combinações de props do componente.
 
-<playground>
+<playground v-model:actions="playgroundActions">
 <btn :variant="playgroundVariant" :color="playgroundColor" :disabled="playgroundDisabled" :loading="playgroundLoading" data-testid="btn-preview">
-{{ playgroundLabel }}
+{{ playgroundActions.label.value }}
 </btn>
 
 <template #actions>
 <v-select v-model="playgroundVariant" label="Variante" :items="playgroundVariantOptions" density="compact" data-testid="btn-playground-variant" />
 
 <v-select v-model="playgroundColor" label="Cor" :items="playgroundColorOptions" density="compact" data-testid="btn-playground-color" />
-
-<v-text-field v-model="playgroundLabel" label="Texto" density="compact" data-testid="btn-playground-label" />
 
 <v-checkbox v-model="playgroundDisabled" label="Desabilitado" density="compact" hide-details data-testid="btn-playground-disabled" />
 
@@ -156,7 +154,7 @@ Consulte a referência de [API do Btn](../../api/components/btn) para a lista co
 <script lang="ts" setup>
   import { ref, type ExtractPublicPropTypes } from "vue"
   import { Btn } from "../../../dist/components.js"
-  import { VSelect, VCheckbox, VTextField } from "vuetify/components"
+  import { VSelect, VCheckbox } from "vuetify/components"
 
   const clicks = ref(0);
 
@@ -168,9 +166,16 @@ type Props = ExtractPublicPropTypes<InstanceType<typeof Btn>>
   const playgroundVariantOptions: Array<Props["variant"]> = ["primary", "secondary", "ghost"];
   const playgroundColorOptions: Array<Props["color"]> = ["primary", "secondary", "positive", "informative", "caution", "danger"];
 
+  const playgroundActions = ref({
+    label: {
+      label: "Texto",
+      value: "Me clique",
+      dataTestid: "btn-playground-label"
+    },
+  });
+
   const playgroundVariant = ref(playgroundVariantOptions[0]);
   const playgroundColor = ref(playgroundColorOptions[0]);
-  const playgroundLabel = ref("Me clique")
   const playgroundDisabled = ref(false)
   const playgroundLoading = ref(false)
 </script>

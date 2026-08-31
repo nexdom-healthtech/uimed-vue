@@ -1,7 +1,8 @@
-# Root
+# Componente base
 
-Componente destinado a raiz do projeto.
-Responsável por carregar os estilos necessários para os demais componentes.
+O componente destinado a raiz do projeto se chama `Root`.
+
+É responsável por carregar os estilos necessários para os demais componentes.
 
 ## Uso
 
