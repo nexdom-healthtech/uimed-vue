@@ -32,12 +32,12 @@ export default {
 </script>
 
 <script setup lang="ts">
-import type { TextFieldProps } from "@/components/text-field/types.ts";
+import type { TextFieldProps } from "@/components/inputs/text-field/types.ts";
 import {
   useTextFieldRules,
   useTextFieldType,
   useTextFieldVariant,
-} from "@/composables/text-field/composables.ts";
+} from "@/composables/text-field.ts";
 import { VTextField } from "vuetify/components";
 import { computed } from "vue";
 
