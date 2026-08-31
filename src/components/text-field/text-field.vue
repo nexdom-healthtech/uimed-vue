@@ -37,7 +37,7 @@ import {
   useTextFieldRules,
   useTextFieldType,
   useTextFieldVariant,
-} from "@/components/text-field/composables.ts";
+} from "@/composables/text-field/composables.ts";
 import { VTextField } from "vuetify/components";
 import { computed } from "vue";
 
