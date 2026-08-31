@@ -1,4 +1,4 @@
-import { required } from "@/components/text-field/rules.ts";
+import { required } from "@/components/inputs/rules.ts";
 
 describe("rules", () => {
   describe("required", () => {
