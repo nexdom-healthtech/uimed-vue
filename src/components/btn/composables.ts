@@ -1,4 +1,4 @@
-import type { BtnColor, BtnVariant } from "@/components/btn/types.ts";
+import type { BtnColor, BtnProps, BtnVariant } from "@/components/btn/types.ts";
 import { computed, toValue, type ComputedRef, type MaybeRefOrGetter } from "vue";
 import type { VBtn } from "vuetify/components";
 
@@ -22,7 +22,7 @@ const btnColorToVuetifyColor: Record<BtnColor, string> = {
 };
 
 export function useBtnVariant(
-  variant: MaybeRefOrGetter<BtnVariant | undefined>,
+  variant: MaybeRefOrGetter<BtnProps["variant"]>,
 ): ComputedRef<VuetifyVariant> {
   return computed(() => {
     const variantValue = toValue(variant);
@@ -33,9 +33,20 @@ export function useBtnVariant(
   });
 }
 
-export function useBtnColor(color: MaybeRefOrGetter<BtnColor | undefined>): ComputedRef<string> {
+export function useBtnColor(color: MaybeRefOrGetter<BtnProps["color"]>) {
   return computed(() => {
     const colorValue = toValue(color);
     return colorValue ? btnColorToVuetifyColor[colorValue] : btnColorToVuetifyColor.primary;
   });
+}
+
+export function useBtnType(type: MaybeRefOrGetter<BtnProps["type"]>) {
+  return computed(() => {
+    const typeValue = toValue(type);
+    return typeValue ?? "button";
+  });
+}
+
+export function useBtnForm(form: MaybeRefOrGetter<BtnProps["form"]>) {
+  return computed(() => toValue(form));
 }

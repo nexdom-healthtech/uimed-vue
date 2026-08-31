@@ -4,13 +4,15 @@ Componente para utilização de botões.
 
 ## Props
 
-| Prop         | Tipo                                                                               | Padrão      | Descrição                                                     |
-| ------------ | ---------------------------------------------------------------------------------- | ----------- | ------------------------------------------------------------- |
-| `variant`    | `"primary" \| "secondary" \| "ghost"`                                              | `"primary"` | Aplica uma variação de estilo distinta ao botão.              |
-| `color`      | `"primary" \| "secondary" \| "positive" \| "informative" \| "caution" \| "danger"` | `"primary"` | Aplica uma cor ao botão.                                      |
-| `disabled`   | `boolean`                                                                          | `false`     | Remove a possibilidade de clicar ou focar no botão.           |
-| `loading`    | `boolean`                                                                          | `false`     | Exibe um indicador de carregamento.                           |
-| `dataTestid` | `string`                                                                           |             | Aplica atributo `data-testid` para testes sobre o componente. |
+| Prop         | Tipo                                                                               | Padrão      | Descrição                                                                                                                                                              |
+| ------------ | ---------------------------------------------------------------------------------- | ----------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `variant`    | `"primary" \| "secondary" \| "ghost"`                                              | `"primary"` | Aplica uma variação de estilo distinta ao botão.                                                                                                                       |
+| `color`      | `"primary" \| "secondary" \| "positive" \| "informative" \| "caution" \| "danger"` | `"primary"` | Aplica uma cor ao botão.                                                                                                                                               |
+| `disabled`   | `boolean`                                                                          | `false`     | Remove a possibilidade de clicar ou focar no botão.                                                                                                                    |
+| `loading`    | `boolean`                                                                          | `false`     | Exibe um indicador de carregamento.                                                                                                                                    |
+| `type`       | `"button" \| "submit"`                                                             | `button`    | Aplica atributo [`type`](https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/button#type) para modificar o comportamento do componente.               |
+| `form`       | `string`                                                                           |             | Aplica atributo [`form`](https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/button#form), com o `id` do formulário com que o botão está relacionado. |
+| `dataTestid` | `string`                                                                           |             | Aplica atributo `data-testid` para testes sobre o componente.                                                                                                          |
 
 ## Eventos
 
