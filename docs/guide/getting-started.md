@@ -6,6 +6,7 @@
 
 - [Node.js](https://nodejs.org/) na versão 22 ou superior.
 - [Vue.js](https://vuejs.org/) na versão 3 ou superior.
+- [@nexdom/shared](https://nexdom-healthtech.github.io/shared/) na versão 2.1.1 ou superior.
 - Editor de texto com suporte a sintaxe [Markdown](https://en.wikipedia.org/wiki/Markdown).
   - [VSCode](https://code.visualstudio.com/) é recomendado, junto com a [extensão oficial Vue](https://marketplace.visualstudio.com/items?itemName=Vue.volar).
 
@@ -70,9 +71,9 @@ Importe o componente [`Root`](../api/components/root) para dentro do seu `App.vu
 
 ```vue [App.vue]
 <template>
-  <Root>
+  <root>
     <!-- ... -->
-  </Root>
+  </root>
 </template>
 
 <script lang="ts" setup>
