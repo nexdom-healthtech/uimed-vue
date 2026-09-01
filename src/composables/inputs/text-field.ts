@@ -1,9 +1,11 @@
-import { required } from "@/components/inputs/rules.ts";
 import type {
   TextFieldProps,
   TextFieldType,
   TextFieldVariant,
 } from "@/components/inputs/text-field/types.ts";
+import { email, phone, url } from "@/composables/inputs/rules.ts";
+import type { Rule } from "@/composables/inputs/types.ts";
+import useRules from "@/composables/inputs/use-rules.ts";
 import { computed, toValue, type ComputedRef, type MaybeRefOrGetter } from "vue";
 import type { VTextField } from "vuetify/components";
 
@@ -27,6 +29,15 @@ const textFieldTypeToVuetifyType: Record<TextFieldType, VuetifyType> = {
   search: "text",
 };
 
+const textFieldTypeToVuetifyRule: Record<
+  Extract<TextFieldType, "phone" | "email" | "url">,
+  Rule
+> = {
+  phone: phone,
+  email: email,
+  url: url,
+};
+
 export function useTextFieldVariant(
   variant: MaybeRefOrGetter<TextFieldVariant | undefined>,
 ): ComputedRef<VuetifyVariant> {
@@ -47,12 +58,21 @@ export function useTextFieldType(
   });
 }
 
-export function useTextFieldRules(props: TextFieldProps) {
-  return computed(() => {
-    const rules = [];
+export function useTextFieldRules(props: TextFieldProps): ComputedRef<Array<Rule>> {
+  const defaultRules = useRules(props);
 
-    if (props.required) rules.push(required);
+  return computed(() => {
+    const rules = [...defaultRules.value];
+
+    const typeRule = associatedRuleType(props.type)
+      ? textFieldTypeToVuetifyRule[props.type]
+      : undefined;
+    if (typeRule) rules.push(typeRule);
 
     return rules;
   });
+}
+
+function associatedRuleType(type?: TextFieldType): type is keyof typeof textFieldTypeToVuetifyRule {
+  return type! in textFieldTypeToVuetifyRule;
 }

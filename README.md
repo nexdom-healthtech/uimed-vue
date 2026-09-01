@@ -58,9 +58,9 @@ Add the `Root` component to you `App.vue`, then add the rest of the components a
 ```vue
 <!-- App.vue -->
 <template>
-  <Root>
+  <root>
     <!-- ... -->
-  </Root>
+  </root>
 </template>
 
 <script setup lang="ts">

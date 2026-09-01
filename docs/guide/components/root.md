@@ -7,16 +7,16 @@ O componente destinado a raiz do projeto se chama `Root`.
 ## Uso
 
 <demo>
-<Root>
+<root>
   <h2>Testando...</h2>
-</Root>
+</root>
 </demo>
 
 ```vue
 <template>
-  <Root>
+  <root>
     <h2>Testando...</h2>
-  </Root>
+  </root>
 </template>
 
 <script lang="ts" setup>
