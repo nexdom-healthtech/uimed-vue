@@ -18,9 +18,9 @@ Componente principal do projeto.
 
 ```vue
 <template>
-  <Root>
+  <root>
     <!-- ... -->
-  </Root>
+  </root>
 </template>
 
 <script lang="ts" setup>

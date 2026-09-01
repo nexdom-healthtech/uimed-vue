@@ -25,12 +25,12 @@ const classValue = "random-class";
 describe("Btn", () => {
   it("should exists", () => {
     const wrapper = mountBtn();
-    expect(wrapper.exists()).toBe(true);
+    expect(wrapper.exists()).toBeTruthy();
   });
 
   it("should contain primary component", () => {
     const wrapper = mountBtn();
-    expect(findVBtn(wrapper).exists()).toBe(true);
+    expect(findVBtn(wrapper).exists()).toBeTruthy();
   });
 
   it('should inherit "data-testid" attribute', () => {
@@ -153,7 +153,7 @@ describe("Btn", () => {
 
         await wrapper.trigger("click");
 
-        expect(onClick).toHaveBeenCalledTimes(1);
+        expect(onClick).toHaveBeenCalledOnce();
       });
 
       it("should not call the `onClick` handler when the button is disabled", async () => {

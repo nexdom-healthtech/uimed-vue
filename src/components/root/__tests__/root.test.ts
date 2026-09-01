@@ -11,11 +11,11 @@ describe("Root", () => {
   const wrapper = mountRoot();
 
   it("should exists", () => {
-    expect(wrapper.exists()).toBe(true);
+    expect(wrapper.exists()).toBeTruthy();
   });
 
   it("should contain primary component", () => {
-    expect(wrapper.findComponent(VApp).exists()).toBe(true);
+    expect(wrapper.findComponent(VApp).exists()).toBeTruthy();
   });
 
   it('should inherit "data-testid" attribute', () => {

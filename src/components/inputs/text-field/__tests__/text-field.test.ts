@@ -1,9 +1,10 @@
-import { required } from "@/components/inputs/rules.ts";
+import { email, phone, required, url } from "@/composables/inputs/rules.ts";
 import TextField from "@/components/inputs/text-field/text-field.vue";
 import type { TextFieldType, TextFieldVariant } from "@/components/inputs/text-field/types.ts";
 import { vueTestUtilsPluginUimed } from "@/unit-test.ts";
 import { mount } from "@vue/test-utils";
 import { VTextField } from "vuetify/components";
+import type { Rule } from "@/composables/inputs/types.ts";
 
 const variants: [TextFieldVariant, string][] = [
   ["primary", "underlined"],
@@ -19,6 +20,16 @@ const types: [TextFieldType, string][] = [
   ["search", "text"],
 ];
 
+const ruledTypes: [TextFieldType, Rule][] = [
+  ["phone", phone],
+  ["email", email],
+  ["url", url],
+];
+
+const unruledTypes = types.filter(
+  ([type]) => !ruledTypes.some(([ruledType]) => ruledType === type),
+);
+
 const testId = "button-test-id";
 const styleValue = "random-style";
 const classValue = "random-class";
@@ -26,12 +37,12 @@ const classValue = "random-class";
 describe("TextField", () => {
   it("should exists", () => {
     const wrapper = mountTextField();
-    expect(wrapper.exists()).toBe(true);
+    expect(wrapper.exists()).toBeTruthy();
   });
 
   it("should contain primary component", () => {
     const wrapper = mountTextField();
-    expect(wrapper.findComponent(VTextField).exists()).toBe(true);
+    expect(wrapper.findComponent(VTextField).exists()).toBeTruthy();
   });
 
   it('should inherit "data-testid" attribute', () => {
@@ -72,7 +83,24 @@ describe("TextField", () => {
         expect(wrapper.findComponent(VTextField).props("type")).toBe(htmlType);
       });
 
-      // TODO: add validation according to types
+      it.each(ruledTypes)('should apply rule for type "%s"', async (type, rule) => {
+        const wrapper = mountTextField();
+        await wrapper.setProps({ type });
+
+        const vTextField = findVTextField(wrapper);
+
+        expect(vTextField.props("rules")).toHaveLength(1);
+        expect(vTextField.props("rules")).toContain(rule);
+      });
+
+      it.each(unruledTypes)(`shouldn't apply rule for type "%s"`, async (type) => {
+        const wrapper = mountTextField();
+        await wrapper.setProps({ type });
+
+        const vTextField = findVTextField(wrapper);
+
+        expect(vTextField.props("rules")).toHaveLength(0);
+      });
 
       it("should use text with clearable for search", async () => {
         const wrapper = mountTextField();
