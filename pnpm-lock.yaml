@@ -20,6 +20,9 @@ importers:
       '@mdi/font':
         specifier: ^7.4.47
         version: 7.4.47
+      '@nexdom/shared':
+        specifier: ^2.1.0
+        version: 2.1.1(type-fest@5.9.0)
       '@playwright/test':
         specifier: ^1.62.1
         version: 1.62.1
@@ -71,9 +74,6 @@ importers:
       stryker-vue-ignorer:
         specifier: github:davidlandais/stryker-vue-ignorer
         version: https://codeload.github.com/davidlandais/stryker-vue-ignorer/tar.gz/e35c501e0c6a755055c79b48b92bfd068da572a5(@stryker-mutator/api@10.0.0)
-      type-fest:
-        specifier: ^5.8.0
-        version: 5.9.0
       typescript:
         specifier: ^6.0.3
         version: 6.0.3
@@ -695,6 +695,11 @@ packages:
 
   '@mdi/font@7.4.47':
     resolution: {integrity: sha512-43MtGpd585SNzHZPcYowu/84Vz2a2g31TvPMTm9uTiCSWzaheQySUcSyUH/46fPnuPQWof2yd0pGBtzee/IQWw==}
+
+  '@nexdom/shared@2.1.1':
+    resolution: {integrity: sha512-5GeKihI4GSmNFYi7SftNDkQ+SAnmASxHDstXx6YWHl9mbzVsXVys0z9wgRNF2At6B0fICbDa+JDV5W1TB9uC0A==}
+    peerDependencies:
+      type-fest: ^5.8.0
 
   '@one-ini/wasm@0.2.1':
     resolution: {integrity: sha512-TUqERXGNTifZ9y2g3wPxQrw3HpHv/02DsW3D90T9x0hhonrL1ZqpSmNrU2XkoIq0fP1N6gZfVQzy2Fw1ZvGBNg==}
@@ -4268,6 +4273,10 @@ snapshots:
       '@jridgewell/sourcemap-codec': 1.6.0
 
   '@mdi/font@7.4.47': {}
+
+  '@nexdom/shared@2.1.1(type-fest@5.9.0)':
+    dependencies:
+      type-fest: 5.9.0
 
   '@one-ini/wasm@0.2.1': {}
 

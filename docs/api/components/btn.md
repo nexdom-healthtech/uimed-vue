@@ -30,7 +30,7 @@ Componente para utilização de botões.
 
 ```vue
 <template>
-  <btn variant="ghost" color="danger" :loading="loading" @click="onClick"> </btn>
+  <btn variant="ghost" color="danger" :loading="loading" @click="onClick">Excluir</btn>
 </template>
 
 <script lang="ts" setup>
