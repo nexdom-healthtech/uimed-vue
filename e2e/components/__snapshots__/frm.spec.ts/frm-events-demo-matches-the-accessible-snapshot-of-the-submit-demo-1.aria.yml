@@ -1,0 +1,8 @@
+- text: Nome
+- textbox "Nome"
+- alert
+- text: Sobrenome
+- textbox "Sobrenome"
+- alert
+- button "Enviar"
+- text: 0 envio(s)
