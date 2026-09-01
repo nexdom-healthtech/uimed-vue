@@ -112,7 +112,10 @@ export default defineConfig({
             },
             {
               text: "Campos e formulários",
-              items: [{ text: "Campos de texto", link: "/guide/components/text-field" }],
+              items: [
+                { text: "Campos de texto", link: "/guide/components/text-field" },
+                { text: "Formulários", link: "/guide/components/frm" },
+              ],
             },
             {
               text: "Ações",
@@ -129,6 +132,10 @@ export default defineConfig({
             {
               text: "Btn",
               link: "/api/components/btn",
+            },
+            {
+              text: "Frm",
+              link: "/api/components/frm",
             },
             {
               text: "Grid",
