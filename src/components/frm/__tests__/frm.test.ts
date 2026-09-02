@@ -30,6 +30,19 @@ describe("Frm", () => {
     expect(wrapper.attributes("class")).not.toBe(classValue);
   });
 
+  describe("props", () => {
+    describe("id", () => {
+      it('should send the "id" prop to the primary component', async () => {
+        const id = "random-id";
+        const wrapper = mountFrm();
+
+        await wrapper.setProps({ id });
+
+        expect(wrapper.findComponent(VForm).attributes("id")).toBe(id);
+      });
+    });
+  });
+
   describe("events", () => {
     describe("submit", () => {
       it("should call the `onSubmit` handler when the form is submitted", async () => {
