@@ -1,5 +1,5 @@
 <template>
-  <v-col cols="12" :sm="cols" :data-testid="props.dataTestid">
+  <v-col cols="12" :sm="props.cols" :data-testid="props.dataTestid">
     <slot />
   </v-col>
 </template>
@@ -30,5 +30,7 @@ export default {
 import { type ColumnProps } from "@/components/grid/column/types.ts";
 import { VCol } from "vuetify/components";
 
-const { cols = "12", ...props } = defineProps<ColumnProps>();
+const props = withDefaults(defineProps<ColumnProps>(), {
+  cols: "12",
+});
 </script>

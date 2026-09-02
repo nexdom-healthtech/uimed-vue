@@ -5,7 +5,7 @@
 ### Pré-requisitos
 
 - [Node.js](https://nodejs.org/) na versão 22 ou superior.
-- [Vue.js](https://vuejs.org/) na versão 3.5 ou superior.
+- [Vue.js](https://vuejs.org/) na versão 3 ou superior.
 - Editor de texto com suporte a sintaxe [Markdown](https://en.wikipedia.org/wiki/Markdown).
   - [VSCode](https://code.visualstudio.com/) é recomendado, junto com a [extensão oficial Vue](https://marketplace.visualstudio.com/items?itemName=Vue.volar).
 
