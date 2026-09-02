@@ -1,21 +1,21 @@
-import { VApp } from "vuetify/components";
-import Root from "@/components/root/root.vue";
+import { VRow } from "vuetify/components";
+import Row from "@/components/grid/row/row.vue";
 import { mount } from "@vue/test-utils";
 import { vueTestUtilsPluginUimed } from "@/unit-test.ts";
 
-const testId = "root-test-component";
+const testId = "row-test-component";
 const styleValue = "random-style";
 const classValue = "random-class";
 
-describe("Root", () => {
-  const wrapper = mountRoot();
+describe("Row", () => {
+  const wrapper = mountRow();
 
   it("should exists", () => {
-    expect(wrapper.exists()).toBe(true);
+    expect(wrapper.exists()).toBeTruthy();
   });
 
   it("should contain primary component", () => {
-    expect(wrapper.findComponent(VApp).exists()).toBe(true);
+    expect(wrapper.findComponent(VRow).exists()).toBeTruthy();
   });
 
   it('should inherit "data-testid" attribute', () => {
@@ -29,8 +29,8 @@ describe("Root", () => {
   });
 });
 
-function mountRoot() {
-  return mount(Root, {
+function mountRow() {
+  return mount(Row, {
     attrs: {
       "data-testid": testId,
       style: styleValue,

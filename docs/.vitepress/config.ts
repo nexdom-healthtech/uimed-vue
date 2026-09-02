@@ -104,16 +104,19 @@ export default defineConfig({
           text: "Componentes",
           items: [
             {
-              text: "Ações",
-              items: [{ text: "Botões", link: "/guide/components/btn" }],
+              text: "Conteúdo",
+              items: [
+                { text: "Componente base", link: "/guide/components/root" },
+                { text: "Componentes de layout", link: "/guide/components/layout" },
+              ],
             },
             {
               text: "Campos e formulários",
               items: [{ text: "Campos de texto", link: "/guide/components/text-field" }],
             },
             {
-              text: "Conteúdo",
-              items: [{ text: "Componente base", link: "/guide/components/root" }],
+              text: "Ações",
+              items: [{ text: "Botões", link: "/guide/components/btn" }],
             },
           ],
         },
@@ -126,6 +129,24 @@ export default defineConfig({
             {
               text: "Btn",
               link: "/api/components/btn",
+            },
+            {
+              text: "Grid",
+              collapsed: false,
+              items: [
+                {
+                  text: "Container",
+                  link: "/api/components/grid/container",
+                },
+                {
+                  text: "Row",
+                  link: "/api/components/grid/row",
+                },
+                {
+                  text: "Column",
+                  link: "/api/components/grid/column",
+                },
+              ],
             },
             {
               text: "Root",
