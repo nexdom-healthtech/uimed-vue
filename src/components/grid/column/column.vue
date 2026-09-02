@@ -19,7 +19,7 @@
  * </container>
  * ```
  *
- * @see {@link https://nexdom-healthtech.github.io/uimed-vue/guide/components/layout#linhas-e-colunas | Column Guide}
+ * @see {@link https://nexdom-healthtech.github.io/uimed-vue/guide/components/layout | Column Guide}
  */
 export default {
   inheritAttrs: false,
