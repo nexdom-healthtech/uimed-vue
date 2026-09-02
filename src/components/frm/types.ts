@@ -3,6 +3,11 @@
  */
 export type FrmProps = {
   /**
+   * Id to set on `form` native element.
+   */
+  id?: string;
+
+  /**
    * Component id to use on automated tests.
    */
   dataTestid?: string;
