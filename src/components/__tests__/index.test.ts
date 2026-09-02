@@ -10,5 +10,8 @@ describe("components", () => {
     expect(components.Root).not.toBeUndefined();
     expect(components.Btn).not.toBeUndefined();
     expect(components.TextField).not.toBeUndefined();
+    expect(components.Container).not.toBeUndefined();
+    expect(components.Row).not.toBeUndefined();
+    expect(components.Column).not.toBeUndefined();
   });
 });
