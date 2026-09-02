@@ -59,7 +59,12 @@ export default defineConfig({
     clearMocks: true,
     environment: "jsdom",
     exclude: [".pnpm-store/", "e2e/**", "**/node_modules/**", "**/.git/**", "**/.stryker-tmp/**"],
-    coverage: { reporter: ["text"] },
+    coverage: {
+      reporter: ["text"],
+      thresholds: {
+        lines: 95,
+      },
+    },
     setupFiles: ["src/__tests__/setup.ts"],
     server: vitestServerPluginUimed(),
   },
