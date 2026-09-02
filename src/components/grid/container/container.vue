@@ -15,7 +15,7 @@
  * </container>
  * ```
  *
- * @see {@link https://nexdom-healthtech.github.io/uimed-vue/guide/components/layout#container | Container Guide}
+ * @see {@link https://nexdom-healthtech.github.io/uimed-vue/guide/components/grid#container | Container Guide}
  */
 export default {
   inheritAttrs: false,
@@ -23,7 +23,7 @@ export default {
 </script>
 
 <script setup lang="ts">
-import { type ContainerProps } from "@/components/grid/container/types";
+import { type ContainerProps } from "@/components/grid/container/types.ts";
 import { VContainer } from "vuetify/components";
 
 const props = defineProps<ContainerProps>();
