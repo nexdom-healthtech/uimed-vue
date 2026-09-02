@@ -11,9 +11,9 @@ Componente para utilização de formulários.
 
 ## Eventos
 
-| Evento   | Retorno                                                                       | Descrição                                                              |
-| -------- | ----------------------------------------------------------------------------- | ---------------------------------------------------------------------- |
-| `submit` | [`SubmitEvent`](https://developer.mozilla.org/en-US/docs/Web/API/SubmitEvent) | Disparado quando o formulário é submetido sem pendências de validação. |
+| Evento   | Retorno                                                                       | Descrição                                                                                                                                                                                       |
+| -------- | ----------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `submit` | [`SubmitEvent`](https://developer.mozilla.org/en-US/docs/Web/API/SubmitEvent) | Disparado quando o formulário é submetido sem pendências de validação. O evento nativo já vem com o [`defaultPrevented`](https://developer.mozilla.org/en-US/docs/Web/API/Event/preventDefault) |
 
 ## Slots
 
