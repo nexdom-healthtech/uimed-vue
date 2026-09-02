@@ -21,7 +21,7 @@ importers:
         specifier: ^7.4.47
         version: 7.4.47
       '@nexdom/shared':
-        specifier: ^2.1.0
+        specifier: ^2.1.1
         version: 2.1.1(type-fest@5.9.0)
       '@playwright/test':
         specifier: ^1.62.1
