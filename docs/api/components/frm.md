@@ -2,6 +2,13 @@
 
 Componente para utilização de formulários.
 
+## Props
+
+| Prop         | Tipo     | Padrão | Descrição                                                                                                                    |
+| ------------ | -------- | ------ | ---------------------------------------------------------------------------------------------------------------------------- |
+| `id`         | `string` |        | Aplica atributo `id` no elemento [`form`](https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/form) nativo. |
+| `dataTestid` | `string` |        | Aplica atributo `data-testid` para testes sobre o componente.                                                                |
+
 ## Eventos
 
 | Evento   | Retorno                                                                       | Descrição                                                              |

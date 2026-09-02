@@ -1,5 +1,5 @@
 <template>
-  <VForm :data-testid="props.dataTestid" @submit.prevent="onSubmit">
+  <VForm :id="props.id" :data-testid="props.dataTestid" @submit.prevent="onSubmit">
     <slot />
   </VForm>
 </template>
