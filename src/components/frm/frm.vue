@@ -23,7 +23,6 @@ export default {
 };
 </script>
 
-<!-- TODO: generate docs (guide and API) for this component, along with E2E validations -->
 <script setup lang="ts">
 import { type FrmEmits, type FrmProps } from "@/components/frm/types.ts";
 import type { SubmitEventPromise } from "vuetify";
