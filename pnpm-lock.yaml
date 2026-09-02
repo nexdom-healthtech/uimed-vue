@@ -21,8 +21,8 @@ importers:
         specifier: ^7.4.47
         version: 7.4.47
       '@nexdom/shared':
-        specifier: ^2.1.0
-        version: 2.1.0(type-fest@5.8.0)
+        specifier: ^2.1.1
+        version: 2.1.1(type-fest@5.9.0)
       '@playwright/test':
         specifier: ^1.62.1
         version: 1.62.1
@@ -696,8 +696,8 @@ packages:
   '@mdi/font@7.4.47':
     resolution: {integrity: sha512-43MtGpd585SNzHZPcYowu/84Vz2a2g31TvPMTm9uTiCSWzaheQySUcSyUH/46fPnuPQWof2yd0pGBtzee/IQWw==}
 
-  '@nexdom/shared@2.1.0':
-    resolution: {integrity: sha512-z5U4CBRDziZYr3IFBiTZFrc3VXpS+0Fw6Wq+Ya5atzHSHyQmQG7nUoWEDpfR0SpH4PxGf4zUf0RngdnhlcmMVQ==}
+  '@nexdom/shared@2.1.1':
+    resolution: {integrity: sha512-5GeKihI4GSmNFYi7SftNDkQ+SAnmASxHDstXx6YWHl9mbzVsXVys0z9wgRNF2At6B0fICbDa+JDV5W1TB9uC0A==}
     peerDependencies:
       type-fest: ^5.8.0
 
@@ -3256,8 +3256,8 @@ packages:
     resolution: {integrity: sha512-1h/Lnq9yajKY2PEbBadPXj3VxsDDu844OnaAo52UVmIzIvwwtBPIuNvkjuzBlTWpfJyUbG3ez0KSBibQkj4ojg==}
     engines: {node: '>=0.6.11 <=0.7.0 || >=0.7.3'}
 
-  type-fest@5.8.0:
-    resolution: {integrity: sha512-YGYEVz3Fm5iy/AybuA0oyNFq7H4CgQNfRp/qfe8nurE1kuCeNm3/vfm9X4Mtl+qLyaKJUh5xrFZwogr41SMjYA==}
+  type-fest@5.9.0:
+    resolution: {integrity: sha512-yANm3Jr3GiJ1qgJlxGAVxTOIcEOk1rhQHamlXtnrCK7EHP4HeM9OGxtMg/W7HFdrVzw/ZWJKGVIJusVH85sLtw==}
     engines: {node: '>=20'}
 
   typed-inject@5.0.0:
@@ -4274,9 +4274,9 @@ snapshots:
 
   '@mdi/font@7.4.47': {}
 
-  '@nexdom/shared@2.1.0(type-fest@5.8.0)':
+  '@nexdom/shared@2.1.1(type-fest@5.9.0)':
     dependencies:
-      type-fest: 5.8.0
+      type-fest: 5.9.0
 
   '@one-ini/wasm@0.2.1': {}
 
@@ -6429,7 +6429,7 @@ snapshots:
 
   tunnel@0.0.6: {}
 
-  type-fest@5.8.0:
+  type-fest@5.9.0:
     dependencies:
       tagged-tag: 1.0.0
 
