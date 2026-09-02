@@ -15,7 +15,7 @@ export type BtnProps = {
   /**
    * Applies a distinct behavior to the button.
    * One of `button` or `submit`.
-   * @default "action"
+   * @default "button"
    */
   type?: "submit" | "button";
 
