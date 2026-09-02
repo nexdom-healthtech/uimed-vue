@@ -15,7 +15,7 @@
  * </container>
  * ```
  *
- * @see {@link https://nexdom-healthtech.github.io/uimed-vue/guide/components/grid#container | Container Guide}
+ * @see {@link https://nexdom-healthtech.github.io/uimed-vue/guide/components/layout | Container Guide}
  */
 export default {
   inheritAttrs: false,
