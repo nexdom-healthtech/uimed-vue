@@ -42,7 +42,7 @@ describe("Btn", () => {
     const wrapper = mountBtn();
     expect(wrapper.attributes("style")).toBeUndefined();
     expect(wrapper.attributes("class")).not.toBeUndefined();
-    expect(wrapper.attributes("class")).not.toBe(classValue);
+    expect(wrapper.attributes("class")).not.toContain(classValue);
   });
 
   describe("props", () => {
