@@ -1,21 +1,23 @@
-import { VApp } from "vuetify/components";
-import Root from "@/components/root/root.vue";
+import { VContainer } from "vuetify/components";
+import Container from "@/components/grid/container/container.vue";
 import { mount } from "@vue/test-utils";
 import { vueTestUtilsPluginUimed } from "@/unit-test.ts";
 
-const testId = "root-test-component";
+const testId = "container-test-component";
 const styleValue = "random-style";
 const classValue = "random-class";
 
-describe("Root", () => {
-  const wrapper = mountRoot();
+describe("Container", () => {
+  const wrapper = mountContainer();
 
   it("should exists", () => {
-    expect(wrapper.exists()).toBe(true);
+    expect(wrapper.exists()).toBeTruthy();
   });
 
-  it("should contain primary component", () => {
-    expect(wrapper.findComponent(VApp).exists()).toBe(true);
+  it("should use fluid container", () => {
+    const vContainer = findVContainer(wrapper);
+    expect(vContainer.exists()).toBeTruthy();
+    expect(vContainer.props("fluid")).toBeTruthy();
   });
 
   it('should inherit "data-testid" attribute', () => {
@@ -29,8 +31,8 @@ describe("Root", () => {
   });
 });
 
-function mountRoot() {
-  return mount(Root, {
+function mountContainer() {
+  return mount(Container, {
     attrs: {
       "data-testid": testId,
       style: styleValue,
@@ -40,4 +42,8 @@ function mountRoot() {
       plugins: [vueTestUtilsPluginUimed()],
     },
   });
+}
+
+function findVContainer(wrapper: ReturnType<typeof mountContainer>) {
+  return wrapper.findComponent(VContainer);
 }

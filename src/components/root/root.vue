@@ -1,7 +1,7 @@
 <template>
-  <VApp :data-testid="props.dataTestid">
+  <v-app :data-testid="props.dataTestid">
     <slot />
-  </VApp>
+  </v-app>
 </template>
 
 <script lang="ts">
