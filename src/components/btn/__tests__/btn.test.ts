@@ -1,15 +1,16 @@
 import { VBtn } from "vuetify/components";
 import { mount } from "@vue/test-utils";
 import Btn from "@/components/btn/btn.vue";
-import type { BtnColor, BtnVariant } from "@/components/btn/types.ts";
+import type { BtnVariant } from "@/components/btn/types.ts";
 import { vueTestUtilsPluginUimed } from "@/unit-test.ts";
+import type { ColorVariant } from "@/composables/colors/types.ts";
 
 const variants: [BtnVariant, string][] = [
   ["primary", "elevated"],
   ["secondary", "flat"],
   ["ghost", "outlined"],
 ];
-const colors: [BtnColor, string][] = [
+const colors: [ColorVariant, string][] = [
   ["primary", "primary"],
   ["secondary", "secondary"],
   ["positive", "success"],

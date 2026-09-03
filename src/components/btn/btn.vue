@@ -35,13 +35,14 @@ export default {
 <script setup lang="ts">
 import { VBtn } from "vuetify/components";
 import type { BtnProps, BtnEmits } from "@/components/btn/types.ts";
-import { useBtnColor, useBtnForm, useBtnType, useBtnVariant } from "@/composables/btn.ts";
+import { useBtnForm, useBtnType, useBtnVariant } from "@/composables/btn.ts";
+import useVuetifyColor from "@/composables/colors/use-vuetify-color.ts";
 
 const props = defineProps<BtnProps>();
 const emit = defineEmits<BtnEmits>();
 
 const variant = useBtnVariant(() => props.variant);
-const color = useBtnColor(() => props.color);
+const color = useVuetifyColor(() => props.color);
 const type = useBtnType(() => props.type);
 const form = useBtnForm(() => props.form);
 
