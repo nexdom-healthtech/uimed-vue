@@ -1,4 +1,4 @@
-import type { BtnColor, BtnProps, BtnVariant } from "@/components/btn/types.ts";
+import type { BtnProps, BtnVariant } from "@/components/btn/types.ts";
 import { computed, toValue, type ComputedRef, type MaybeRefOrGetter } from "vue";
 import type { VBtn } from "vuetify/components";
 
@@ -12,15 +12,6 @@ const btnVariantToVuetifyVariant: Record<BtnVariant, VuetifyVariant> = {
   ghost: "outlined",
 };
 
-const btnColorToVuetifyColor: Record<BtnColor, string> = {
-  primary: "primary",
-  secondary: "secondary",
-  positive: "success",
-  informative: "info",
-  caution: "warning",
-  danger: "error",
-};
-
 export function useBtnVariant(
   variant: MaybeRefOrGetter<BtnProps["variant"]>,
 ): ComputedRef<VuetifyVariant> {
@@ -30,13 +21,6 @@ export function useBtnVariant(
     return variantValue
       ? btnVariantToVuetifyVariant[variantValue]
       : btnVariantToVuetifyVariant.primary;
-  });
-}
-
-export function useBtnColor(color: MaybeRefOrGetter<BtnProps["color"]>) {
-  return computed(() => {
-    const colorValue = toValue(color);
-    return colorValue ? btnColorToVuetifyColor[colorValue] : btnColorToVuetifyColor.primary;
   });
 }
 

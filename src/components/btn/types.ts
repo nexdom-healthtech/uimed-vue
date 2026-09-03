@@ -1,5 +1,6 @@
+import type { ColorVariant } from "@/composables/colors/types.ts";
+
 export type BtnVariant = "primary" | "secondary" | "ghost";
-export type BtnColor = "primary" | "secondary" | "positive" | "informative" | "caution" | "danger";
 
 /**
  * Props exposed by the {@link Btn} component.
@@ -24,7 +25,7 @@ export type BtnProps = {
    * One of `primary`, `secondary`, `positive`, `informative`, `caution`, or `danger`.
    * @default "primary"
    */
-  color?: BtnColor;
+  color?: ColorVariant;
 
   /**
    * Removes the ability to click or target the button.
