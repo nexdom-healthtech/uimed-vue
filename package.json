@@ -27,6 +27,7 @@
   "exports": {
     ".": "./dist/index.js",
     "./components": "./dist/components.js",
+    "./composables": "./dist/composables.js",
     "./plugins": "./dist/plugins.js",
     "./unit-test": "./dist/unit-test.js",
     "./package.json": "./package.json"

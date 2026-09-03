@@ -30,6 +30,7 @@ export default defineConfig({
       plugins: "src/plugins.ts",
       "unit-test": "src/unit-test.ts",
       components: "src/components/index.ts",
+      composables: "src/composables/index.ts",
     },
     platform: "neutral",
     plugins: [vue()],
