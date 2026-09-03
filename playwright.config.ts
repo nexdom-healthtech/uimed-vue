@@ -29,7 +29,7 @@ export default defineConfig({
     },
   ],
   webServer: {
-    command: "vpr docs",
+    command: "vpr docs:preview",
     url: "http://localhost:4173/uimed-vue/",
     reuseExistingServer: !process.env.CI,
     timeout: 120_000,
