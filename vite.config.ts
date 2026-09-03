@@ -19,7 +19,7 @@ export default defineConfig({
         dependsOn: ["build"],
       },
       "docs:preview": {
-        command: "vpx vitepress preview docs",
+        command: "vpx vitepress preview docs  --host --port 4173 --strictPort",
         dependsOn: ["docs:build"],
       },
     },
