@@ -6,6 +6,6 @@ export async function gotoPage(page: Page, url: string) {
 }
 
 export async function selectOption(page: Page, testId: string, option: string) {
-  await page.getByTestId(testId).locator("input").click({ force: true });
+  await page.getByTestId(testId).locator("input:visible").click({ force: true });
   await page.getByRole("option", { name: option, exact: true }).click();
 }
