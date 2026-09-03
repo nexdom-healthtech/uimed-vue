@@ -80,7 +80,7 @@
     "vitepress-plugin-group-icons": "^1.7.6",
     "vue": "^3.5.40",
     "vue-tsc": "^3.3.9",
-    "vuetify": "^4.1.7"
+    "vuetify": "^4.2.0"
   },
   "peerDependencies": {
     "@fontsource/roboto": "^5.3.0",
