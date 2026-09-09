@@ -8,5 +8,6 @@ describe("composables", () => {
 
   it("should avoid breaking changes", () => {
     expect(composables.useToast).not.toBeUndefined();
+    expect(composables.useRunOrToast).not.toBeUndefined();
   });
 });

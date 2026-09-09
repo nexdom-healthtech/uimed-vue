@@ -1,0 +1,4 @@
+- button "Executar com falha":
+    - text: ""
+    - progressbar:
+        - img
