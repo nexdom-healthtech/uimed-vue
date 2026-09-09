@@ -33,6 +33,7 @@ São funções que possibilitam a reutilização de recursos entre diversos comp
 
 As composables a seguir possuem exemplos práticos de utilização dentro desta documentação.
 
-| Recurso                           | Descrição                                      |
-| --------------------------------- | ---------------------------------------------- |
-| [Toasts](./composables/use-toast) | Composables para apresentar mensagens `toast`. |
+| Recurso                                      | Descrição                                                                          |
+| -------------------------------------------- | ---------------------------------------------------------------------------------- |
+| [Toasts](./composables/use-toast)            | Composables para apresentar mensagens `toast`.                                     |
+| [RunOrToast](./composables/use-run-or-toast) | Composables para executar métodos e apresentar mensagens `toast` em caso de falha. |

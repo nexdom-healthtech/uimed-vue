@@ -1,6 +1,6 @@
 # Toasts
 
-Uma vez que carregamos o nosso [Componente base](../components/root), podemos estar tirando proveito da nossa composable para apresentação de mensagens _toast_.
+Uma vez que carregamos o [Componente base](../components/root), podemos estar tirando proveito da nossa composable para apresentação de mensagens _toast_.
 
 ## Uso
 

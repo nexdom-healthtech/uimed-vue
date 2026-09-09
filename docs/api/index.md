@@ -39,6 +39,7 @@ const apis = [
         group: "Composables",
         methods: [
             { text: "useToast", link: "./composables/use-toast" },
+            { text: "useRunOrToast", link: "./composables/use-run-or-toast" },
         ]
     },
 ];
