@@ -1,6 +1,10 @@
 <template>
   <v-app :data-testid="props.dataTestid">
-    <slot />
+    <v-main>
+      <container>
+        <slot />
+      </container>
+    </v-main>
   </v-app>
 </template>
 
@@ -24,7 +28,8 @@ export default {
 
 <script setup lang="ts">
 import { type RootProps } from "@/components/root/types.ts";
-import { VApp } from "vuetify/components";
+import { VApp, VMain } from "vuetify/components";
+import Container from "@/components/grid/container/container.vue";
 
 const props = defineProps<RootProps>();
 </script>
