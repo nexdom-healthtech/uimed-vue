@@ -63,7 +63,7 @@ export default defineConfig({
     coverage: {
       reporter: ["text"],
       thresholds: {
-        lines: 95,
+        "100": true,
       },
     },
     setupFiles: ["src/__tests__/setup.ts"],
