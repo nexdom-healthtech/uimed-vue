@@ -15,9 +15,7 @@ outline: deep
 
 ### Componentes
 
-Recursos que permitem a elaboração de interface gráfica.
-
-#### Lista
+São recursos que permitem a elaboração e reutilização de interface gráfica.
 
 Os componentes a seguir possuem exemplos práticos de utilização dentro desta documentação.
 
@@ -29,4 +27,12 @@ Os componentes a seguir possuem exemplos práticos de utilização dentro desta 
 | [Componentes de layout](./components/layout) | Componentes para seguir o grid system. |
 | [Formulários](./components/frm)              | Componente de formulário.              |
 
-<!-- TODO: adicionar composables -->
+### Composables
+
+São funções que possibilitam a reutilização de recursos entre diversos componentes.
+
+As composables a seguir possuem exemplos práticos de utilização dentro desta documentação.
+
+| Recurso                           | Descrição                                      |
+| --------------------------------- | ---------------------------------------------- |
+| [Toasts](./composables/use-toast) | Composables para apresentar mensagens `toast`. |
