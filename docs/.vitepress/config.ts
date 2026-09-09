@@ -1,5 +1,6 @@
 import { defineConfig } from "vitepress";
 import { groupIconMdPlugin, groupIconVitePlugin } from "vitepress-plugin-group-icons";
+import { vitePluginUimed } from "../../dist/plugins.js";
 
 const pkg = require("../../package.json");
 const releaseYear = 2026;
@@ -34,7 +35,7 @@ export default defineConfig({
     },
   },
   vite: {
-    plugins: [groupIconVitePlugin()],
+    plugins: [vitePluginUimed(), groupIconVitePlugin()],
     ssr: {
       noExternal: [/\.css$/, /^vuetify/],
     },
@@ -102,6 +103,7 @@ export default defineConfig({
         },
         {
           text: "Componentes",
+          collapsed: false,
           items: [
             {
               text: "Conteúdo",
@@ -121,6 +123,13 @@ export default defineConfig({
               text: "Ações",
               items: [{ text: "Botões", link: "/guide/components/btn" }],
             },
+          ],
+        },
+        {
+          text: "Composables",
+          collapsed: false,
+          items: [
+            { text: "Diálogos", items: [{ text: "Toasts", link: "/guide/composables/use-toast" }] },
           ],
         },
       ],
@@ -162,6 +171,16 @@ export default defineConfig({
             {
               text: "TextField",
               link: "/api/components/text-field",
+            },
+          ],
+        },
+        {
+          text: "Composables",
+          collapsed: false,
+          items: [
+            {
+              text: "useToast",
+              link: "/api/composables/use-toast",
             },
           ],
         },

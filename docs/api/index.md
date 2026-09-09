@@ -35,5 +35,11 @@ const apis = [
             { text: "TextField", link: "./components/text-field" }
         ]
     },
+    {
+        group: "Composables",
+        methods: [
+            { text: "useToast", link: "./composables/use-toast" },
+        ]
+    },
 ];
 </script>
