@@ -1,7 +1,9 @@
-import { VApp } from "vuetify/components";
+import { VApp, VMain } from "vuetify/components";
 import Root from "@/components/root/root.vue";
 import { mount } from "@vue/test-utils";
 import { vueTestUtilsPluginUimed } from "@/unit-test.ts";
+import { Container } from "@/components/index.ts";
+import Toast from "@/components/dialogs/toast.vue";
 
 const testId = "root-test-component";
 const styleValue = "random-style";
@@ -14,8 +16,15 @@ describe("Root", () => {
     expect(wrapper.exists()).toBeTruthy();
   });
 
-  it("should contain primary component", () => {
+  it("should contain primary components", () => {
     expect(wrapper.findComponent(VApp).exists()).toBeTruthy();
+    expect(wrapper.findComponent(VMain).exists()).toBeTruthy();
+    expect(wrapper.findComponent(Container).exists()).toBeTruthy();
+  });
+
+  it("should contain toast component", () => {
+    const toast = wrapper.findComponent(Toast);
+    expect(toast.exists()).toBeTruthy();
   });
 
   it('should inherit "data-testid" attribute', () => {
