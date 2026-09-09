@@ -3,6 +3,7 @@
     <v-main>
       <container>
         <slot />
+        <toast />
       </container>
     </v-main>
   </v-app>
@@ -30,6 +31,7 @@ export default {
 import { type RootProps } from "@/components/root/types.ts";
 import { VApp, VMain } from "vuetify/components";
 import Container from "@/components/grid/container/container.vue";
+import Toast from "@/components/dialogs/toast.vue";
 
 const props = defineProps<RootProps>();
 </script>
