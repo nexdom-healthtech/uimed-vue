@@ -1,0 +1,6 @@
+- status: Mensagem informativa.
+- button "Fechar"
+- status: Mensagem de atenção.
+- button "Fechar"
+- status: Mensagem de perigo.
+- button "Fechar"
