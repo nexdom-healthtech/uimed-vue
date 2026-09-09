@@ -129,7 +129,13 @@ export default defineConfig({
           text: "Composables",
           collapsed: false,
           items: [
-            { text: "Diálogos", items: [{ text: "Toasts", link: "/guide/composables/use-toast" }] },
+            {
+              text: "Diálogos",
+              items: [
+                { text: "Toasts", link: "/guide/composables/use-toast" },
+                { text: "Run or toast", link: "/guide/composables/use-run-or-toast" },
+              ],
+            },
           ],
         },
       ],
@@ -181,6 +187,10 @@ export default defineConfig({
             {
               text: "useToast",
               link: "/api/composables/use-toast",
+            },
+            {
+              text: "useRunOrToast",
+              link: "/api/composables/use-run-or-toast",
             },
           ],
         },
