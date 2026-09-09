@@ -1,6 +1,6 @@
-import type { ColorVariant } from "@/composables/colors/types.ts";
+import useVuetifyColor from "@/composables/colors/use-vuetify-color.ts";
 import type { ToastMessage, ToastOptions } from "@/composables/dialogs/types.ts";
-import { ref, toRaw } from "vue";
+import { ref } from "vue";
 
 export const messages = ref<Array<ToastMessage>>([]);
 
@@ -9,45 +9,26 @@ export const messages = ref<Array<ToastMessage>>([]);
  *
  * @example
  * ```ts
- * const { toast, dismiss } = useToast();
+ * const { toast } = useToast();
  * toast({ message: "Hello, World!" });
- *
- * // To dismiss all toast messages:
- * dismiss();
  * ```
  */
 export default function useToast() {
-  return { toast, dismiss: dismissAll };
+  return { toast };
 }
 
 /**
- * Dismiss all toast messages.
- */
-function dismissAll() {
-  messages.value = [];
-}
-
-/**
- * Displays a toast message and returns a function to dismiss it.
+ * Displays a toast message.
  * @param {ToastOptions} options - Options for the toast message.
- * @returns A function to dismiss the toast message.
  *
  * @example
  * ```ts
- * const dismiss = toast({ message: "Hello, World!" });
- *
- * // To dismiss the toast message later:
- * dismiss();
+ * toast({ message: "Hello, World!" });
  * ```
  */
-function toast(options: ToastOptions): () => void {
-  const color: ColorVariant = options.color ?? "informative";
-  const toastMessage: ToastMessage = { ...options, color };
+function toast(options: ToastOptions): void {
+  const text = options.message;
+  const color = useVuetifyColor(options.color ?? "informative");
+  const toastMessage: ToastMessage = { text, color: color.value, prependIcon: `$${color.value}` };
   messages.value.push(toastMessage);
-  return () => dismiss(toastMessage);
-}
-
-function dismiss(options: ToastMessage): void {
-  const index = toRaw(messages.value).findIndex((message) => message === options);
-  if (index >= 0) messages.value.splice(index, 1);
 }

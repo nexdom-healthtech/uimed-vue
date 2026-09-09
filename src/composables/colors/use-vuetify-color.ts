@@ -1,16 +1,10 @@
-import type { ColorVariant } from "@/composables/colors/types.ts";
-import { computed, toValue, type MaybeRefOrGetter } from "vue";
+import { colorToVuetifyColor } from "@/composables/colors/constants.ts";
+import type { ColorVariant, VuetifyColor } from "@/composables/colors/types.ts";
+import { computed, toValue, type ComputedRef, type MaybeRefOrGetter } from "vue";
 
-const colorToVuetifyColor: Record<ColorVariant, string> = {
-  primary: "primary",
-  secondary: "secondary",
-  positive: "success",
-  informative: "info",
-  caution: "warning",
-  danger: "error",
-};
-
-export default function useVuetifyColor(color: MaybeRefOrGetter<ColorVariant | undefined>) {
+export default function useVuetifyColor(
+  color: MaybeRefOrGetter<ColorVariant | undefined>,
+): ComputedRef<VuetifyColor> {
   return computed(() => {
     const colorValue = toValue(color);
     return colorValue ? colorToVuetifyColor[colorValue] : colorToVuetifyColor.primary;

@@ -1,4 +1,4 @@
-import type { ColorVariant } from "@/composables/colors/types.ts";
+import type { FeedbackColorVariant, VuetifyColor } from "@/composables/colors/types.ts";
 
 export interface ToastOptions {
   /**
@@ -8,10 +8,14 @@ export interface ToastOptions {
 
   /**
    * Applies a color to the button.
-   * One of `primary`, `secondary`, `positive`, `informative`, `caution`, or `danger`.
+   * One of `positive`, `informative`, `caution`, or `danger`.
    * @default "informative"
    */
-  color?: ColorVariant;
+  color?: FeedbackColorVariant;
 }
 
-export type ToastMessage = Required<ToastOptions>;
+export interface ToastMessage {
+  text: string;
+  color: VuetifyColor;
+  prependIcon?: string;
+}
