@@ -3,21 +3,15 @@ import { mount } from "@vue/test-utils";
 import Btn from "@/components/btn/btn.vue";
 import type { BtnVariant } from "@/components/btn/types.ts";
 import { vueTestUtilsPluginUimed } from "@/unit-test.ts";
-import type { ColorVariant } from "@/composables/colors/types.ts";
+import type { ColorVariant, VuetifyColor } from "@/composables/colors/types.ts";
+import { colorToVuetifyColor } from "@/composables/colors/constants.ts";
 
 const variants: [BtnVariant, string][] = [
   ["primary", "elevated"],
   ["secondary", "flat"],
   ["ghost", "outlined"],
 ];
-const colors: [ColorVariant, string][] = [
-  ["primary", "primary"],
-  ["secondary", "secondary"],
-  ["positive", "success"],
-  ["informative", "info"],
-  ["caution", "warning"],
-  ["danger", "error"],
-];
+const colors = Object.entries(colorToVuetifyColor) as [ColorVariant, VuetifyColor][];
 
 const testId = "button-test-id";
 const styleValue = "random-style";
