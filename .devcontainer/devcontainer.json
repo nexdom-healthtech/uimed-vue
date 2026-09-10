@@ -16,7 +16,8 @@
         "Vue.volar",
         "ms-vscode.live-server",
         "stryker-mutator.stryker-mutator",
-        "ms-playwright.playwright"
+        "ms-playwright.playwright",
+        "lukas-tr.materialdesignicons-intellisense"
       ],
       "settings": {
         "js/ts.preferences.importModuleSpecifier": "non-relative",
