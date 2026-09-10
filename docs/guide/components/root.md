@@ -2,7 +2,7 @@
 
 O componente destinado a raiz do projeto se chama `Root`.
 
-É responsável por carregar os estilos necessários para os demais componentes.
+É responsável por carregar o componente utilizado pelos composables de [Toasts](../composables/use-toast) e os estilos necessários para os demais componentes.
 
 ## Uso
 
