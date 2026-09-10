@@ -1,11 +1,19 @@
 <template>
-  <div class="vp-raw demo" :class="{ 'demo-col': col }">
+  <div class="vp-raw demo" :class="classes">
     <slot />
   </div>
 </template>
 
 <script lang="ts" setup>
-defineProps<{ col?: boolean }>();
+import { computed } from "vue";
+
+interface Props {
+  col?: boolean;
+  contained?: boolean;
+}
+
+const props = defineProps<Props>();
+const classes = computed(() => ({ "demo-col": props.col, "demo-contained": props.contained }));
 </script>
 
 <style lang="scss" scoped>
@@ -13,6 +21,10 @@ defineProps<{ col?: boolean }>();
   display: flex;
   flex-wrap: wrap;
   gap: 0.5rem;
+
+  &-contained {
+    contain: layout;
+  }
 
   &-col {
     flex-direction: column;
