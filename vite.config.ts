@@ -61,7 +61,7 @@ export default defineConfig({
     environment: "jsdom",
     exclude: [".pnpm-store/", "e2e/**", "**/node_modules/**", "**/.git/**", "**/.stryker-tmp/**"],
     coverage: {
-      reporter: ["text"],
+      reporter: process.env.CI ? ["text"] : ["text", "html"],
       thresholds: {
         "100": true,
       },
