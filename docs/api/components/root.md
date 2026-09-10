@@ -2,6 +2,8 @@
 
 Componente principal do projeto.
 
+Responsável por carregar todos os estilos e componentes para as composables de [Toasts](../composables/use-toast).
+
 ## Props
 
 | Prop         | Tipo     | Padrão | Descrição                                                     |
