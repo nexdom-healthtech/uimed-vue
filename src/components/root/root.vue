@@ -1,5 +1,7 @@
 <template>
   <v-app :data-testid="props.dataTestid">
+    <app-bar v-if="props.appBar" v-bind="props.appBar" />
+
     <v-main>
       <container>
         <slot />
@@ -28,6 +30,7 @@ export default {
 </script>
 
 <script setup lang="ts">
+import AppBar from "@/components/app-bar/app-bar.vue";
 import { type RootProps } from "@/components/root/types.ts";
 import { VApp, VMain } from "vuetify/components";
 import Container from "@/components/grid/container/container.vue";
