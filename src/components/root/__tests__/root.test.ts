@@ -4,6 +4,7 @@ import { mount } from "@vue/test-utils";
 import { vueTestUtilsPluginUimed } from "@/unit-test.ts";
 import { Container } from "@/components/index.ts";
 import Toast from "@/components/dialogs/toast.vue";
+import AppBar from "@/components/app-bar/app-bar.vue";
 
 const testId = "root-test-component";
 const styleValue = "random-style";
@@ -36,6 +37,26 @@ describe("Root", () => {
     expect(wrapper.attributes("class")).not.toBeUndefined();
     expect(wrapper.attributes("class")).not.toContain(classValue);
   });
+
+  it("should load app bar when its prop is filled", async () => {
+    expect(wrapper.findComponent(AppBar).exists()).toBeFalsy();
+
+    const title = "Application";
+    await wrapper.setProps({ appBar: { title } });
+    expect(wrapper.findComponent(AppBar).exists()).toBeTruthy();
+  });
+
+  describe("props", () => {
+    describe("appBar", () => {
+      it("should forward props to the app bar", async () => {
+        const title = "AI Chat";
+        await wrapper.setProps({ appBar: { title } });
+
+        const appBar = findAppBar(wrapper);
+        expect(appBar.props("title")).toBe(title);
+      });
+    });
+  });
 });
 
 function mountRoot() {
@@ -49,4 +70,8 @@ function mountRoot() {
       plugins: [vueTestUtilsPluginUimed()],
     },
   });
+}
+
+function findAppBar(wrapper: ReturnType<typeof mountRoot>) {
+  return wrapper.findComponent(AppBar);
 }
