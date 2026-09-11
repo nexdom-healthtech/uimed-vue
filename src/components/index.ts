@@ -8,4 +8,7 @@ export { default as Column } from "@/components/grid/column/column.vue";
 export { default as Frm } from "@/components/frm/frm.vue";
 
 // Types
-export type { AppBarProps as AppBarConfig } from "@/components/app-bar/types.ts";
+export type {
+  AppBarProps as AppBarConfig,
+  AppBarUserProps as AppBarUserConfig,
+} from "@/components/app-bar/types.ts";
