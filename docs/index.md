@@ -3,12 +3,12 @@
 layout: home
 
 hero:
-  name: "uimed-vue"
+  name: "UIMed-Vue"
   text: "UI Framework"
   tagline: Sinergia em camada visual
   actions:
     - theme: brand
-      text: O que é uimed-vue?
+      text: O que é UIMed-Vue?
       link: /guide
     - theme: alt
       text: Iniciando

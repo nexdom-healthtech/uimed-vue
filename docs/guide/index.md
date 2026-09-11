@@ -2,7 +2,7 @@
 outline: deep
 ---
 
-# O que é uimed-vue?
+# O que é UIMed-Vue?
 
 É um framework de UI, para [Vuejs](https://vuejs.org/), com diversos componentes e funções reutilizáveis entre eles (_components_ e _composables_).
 
