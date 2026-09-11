@@ -64,7 +64,7 @@
     "@vitest/coverage-v8": "4.1.10",
     "@vue/test-utils": "^2.4.11",
     "bumpp": "^12.1.1",
-    "conventional-changelog-conventionalcommits": "^9.3.1",
+    "conventional-changelog-conventionalcommits": "^10.4.0",
     "dependency-cruiser": "^18.1.1",
     "jsdom": "^30.0.1",
     "oxc-minify": "^0.147.0",
