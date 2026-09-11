@@ -1,6 +1,6 @@
 # Testes Unitários
 
-Testes unitários com o uimed-vue são muito simples, pois este framework já vem com plugins que atendem as ferramentas que serão listadas a seguir.
+Testes unitários com o UIMed-Vue são muito simples, pois este framework já vem com plugins que atendem as ferramentas que serão listadas a seguir.
 
 ## Usando Vitest
 

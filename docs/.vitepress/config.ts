@@ -10,7 +10,7 @@ const currentYearText = currentYear > releaseYear ? `-${currentYear}` : "";
 // https://vitepress.dev/reference/site-config
 export default defineConfig({
   lang: "pt-BR",
-  title: "uimed-vue | NEXDOM",
+  title: "UIMed-Vue | NEXDOM",
   base: "/uimed-vue/",
   head: [["link", { rel: "icon", href: "/uimed-vue/favicon.svg" }]],
   description: "Um template para a criação validando de libs NEXDOM.",
@@ -43,7 +43,7 @@ export default defineConfig({
   themeConfig: {
     // https://vitepress.dev/reference/default-theme-config
     logo: "/favicon.svg",
-    siteTitle: "uimed-vue",
+    siteTitle: "UIMed-Vue",
     darkModeSwitchLabel: "Tema Escuro",
     darkModeSwitchTitle: "Mudar para Modo Escuro",
     lightModeSwitchTitle: "Mudar para Modo Claro",
@@ -96,7 +96,7 @@ export default defineConfig({
         {
           text: "Introdução",
           items: [
-            { text: "O que é uimed-vue?", link: "/guide/" },
+            { text: "O que é UIMed-Vue?", link: "/guide/" },
             { text: "Iniciando", link: "/guide/getting-started" },
             { text: "Testes Unitários", link: "/guide/unit-testing" },
           ],

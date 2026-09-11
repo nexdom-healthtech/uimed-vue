@@ -4,7 +4,7 @@ outline: deep
 
 # Componentes para layout
 
-O layout do uimed-vue é baseado no [Grid system do Bootstrap](https://getbootstrap.com/docs/4.0/layout/grid/), dividindo cada linha em 12 colunas.
+O layout do UIMed-Vue é baseado no [Grid system do Bootstrap](https://getbootstrap.com/docs/4.0/layout/grid/), dividindo cada linha em 12 colunas.
 
 Os componentes que implementam esse _grid system_ são:
 
