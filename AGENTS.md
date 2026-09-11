@@ -70,6 +70,8 @@ import { Root } from "@nexdom/uimed-vue/components";
 </script>
 ```
 
+Never write CSS, classes or any kind of styling. Always use component props.
+
 Available entry points: `@nexdom/uimed-vue` (root), `@nexdom/uimed-vue/components`, `@nexdom/uimed-vue/composables`, `@nexdom/uimed-vue/plugins`, `@nexdom/uimed-vue/unit-test` (test helpers, e.g. `vueTestUtilsPluginUimed()` for mounting components with Vuetify in Vitest).
 
 Full component/composable reference lives in the [docs](https://nexdom-healthtech.github.io/uimed-vue/).
@@ -103,7 +105,7 @@ CI (`.github/workflows/ci.yml`) runs, in order: commitlint on PR commits, `vp pa
 ## Code conventions
 
 - All `src` code is written in English. `docs` content is written in Portuguese (aimed at Brazilian users), even though file/dir names stay in English.
-- Never write CSS. Always use component props.
+- Never write CSS, classes or any kind of styling. Always use component props.
 - Path aliases: `@/*` → `src/*`, `@e2e/*` → `e2e/*`.
 - Every public component follows this pattern to block access to internals and give it an editor-hover description:
 
