@@ -17,7 +17,8 @@
         "ms-vscode.live-server",
         "stryker-mutator.stryker-mutator",
         "ms-playwright.playwright",
-        "lukas-tr.materialdesignicons-intellisense"
+        "lukas-tr.materialdesignicons-intellisense",
+        "anthropic.claude-code"
       ],
       "settings": {
         "js/ts.preferences.importModuleSpecifier": "non-relative",
