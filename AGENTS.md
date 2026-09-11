@@ -1,4 +1,4 @@
-# AGENT.md
+# AGENTS.md
 
 ## Project
 
@@ -6,7 +6,79 @@
 
 Tooling is built around [Vite+](https://github.com/voidzero-dev/vite-plus) (`vp`/`vpr`/`vpx` CLIs), not raw `vite`/`vitest`/`eslint` invocations.
 
-## Setup
+## Using this library in an app
+
+These steps are for developers _consuming_ `@nexdom/uimed-vue` in a Vue application (not for contributing to this repo — see the rest of this document for that).
+
+### Install
+
+```bash
+vp add @nexdom/uimed-vue
+# But, if you're not using Vite+ yet...
+npm i @nexdom/uimed-vue
+# Or
+pnpm add @nexdom/uimed-vue
+# Or
+yarn add @nexdom/uimed-vue
+```
+
+Peer dependencies (`@fontsource/roboto`, `@mdi/font`, `@nexdom/shared`, `resize-observer-polyfill`, `vite-plugin-vuetify`, `vite-plus`, `vue`, `vue-router`, `vuetify`) must be installed alongside it — most package managers install these automatically, but confirm versions match what's declared in `package.json`'s `peerDependencies`.
+
+### Setup
+
+Add the Vite plugin:
+
+```ts
+// vite.config.ts
+import { vitePluginUimed } from "@nexdom/uimed-vue/plugins.ts";
+
+// ...
+
+plugins: [vue(), vitePluginUimed()];
+
+// ...
+```
+
+Register the plugin in the Vue app:
+
+```ts
+// main.js or main.ts
+import { createApp } from "vue";
+import { createUimed } from "@nexdom/uimed-vue";
+
+import App from "./App.vue";
+
+const uimed = createUimed();
+
+createApp(App).use(uimed).mount("#app");
+```
+
+### Usage
+
+Place the `Root` component at the top of `App.vue`, then add other components as needed:
+
+```vue
+<!-- App.vue -->
+<template>
+  <root>
+    <!-- ... -->
+  </root>
+</template>
+
+<script setup lang="ts">
+import { Root } from "@nexdom/uimed-vue/components";
+</script>
+```
+
+Available entry points: `@nexdom/uimed-vue` (root), `@nexdom/uimed-vue/components`, `@nexdom/uimed-vue/composables`, `@nexdom/uimed-vue/plugins`, `@nexdom/uimed-vue/unit-test` (test helpers, e.g. `vueTestUtilsPluginUimed()` for mounting components with Vuetify in Vitest).
+
+Full component/composable reference lives in the [docs](https://nexdom-healthtech.github.io/uimed-vue/).
+
+## Contributing to this repo
+
+The sections below are for developers working _on_ this library itself.
+
+### Dev environment setup
 
 This project expects to be opened inside its devcontainer (VSCode). If commands below fail with missing shims/commands, run:
 
