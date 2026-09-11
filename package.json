@@ -21,7 +21,8 @@
     "home": "https://github.com/nexdom-healthtech/uimed-vue#readme"
   },
   "files": [
-    "dist"
+    "dist",
+    "AGENTS.md"
   ],
   "type": "module",
   "exports": {
