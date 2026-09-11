@@ -20,7 +20,7 @@ import { createVuetify } from "vuetify";
 import { type Plugin } from "vue";
 
 /**
- * Create an uimed-vue instance to be installed after [createApp](https://vuejs.org/guide/essentials/application.html#the-application-instance).
+ * Create an UIMed-Vue instance to be installed after [createApp](https://vuejs.org/guide/essentials/application.html#the-application-instance).
  * @returns an instance to be used with [app.use](https://vuejs.org/guide/essentials/application.html#the-application-instance)
  */
 export function createUimed(): Plugin {
