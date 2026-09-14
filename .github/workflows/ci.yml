@@ -37,7 +37,7 @@ jobs:
         run: vpr depcruise
 
       - name: Unit Test
-        run: vp test
+        run: vp test --coverage
 
       - name: Mutation Test
         run: vpr test:mutations
