@@ -48,12 +48,31 @@ describe("Root", () => {
 
   describe("props", () => {
     describe("appBar", () => {
+      const title = "AI Chat";
+
       it("should forward props to the app bar", async () => {
-        const title = "AI Chat";
         await wrapper.setProps({ appBar: { title } });
 
         const appBar = findAppBar(wrapper);
         expect(appBar.props("title")).toBe(title);
+      });
+
+      describe("notificationsOpen", () => {
+        it("should forward notificationsOpen prop to the app bar", async () => {
+          await wrapper.setProps({ appBar: { title }, notificationsOpen: true });
+
+          const appBar = findAppBar(wrapper);
+          expect(appBar.props("notificationsOpen")).toBe(true);
+        });
+
+        it("should emit update:notificationsOpen when the app bar emits it", async () => {
+          await wrapper.setProps({ appBar: { title }, notificationsOpen: false });
+
+          const appBar = findAppBar(wrapper);
+          appBar.vm.$emit("update:notificationsOpen", true);
+
+          expect(wrapper.emitted("update:notificationsOpen")?.at(-1)).toEqual([true]);
+        });
       });
     });
   });
