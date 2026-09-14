@@ -1,4 +1,6 @@
 - text: Menu superior
 - link:
     - /url: https://google.com
+- button "Badge":
+    - status "Badge": "2"
 - button
