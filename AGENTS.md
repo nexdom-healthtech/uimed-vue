@@ -134,7 +134,7 @@ CI (`.github/workflows/ci.yml`) runs, in order: commitlint on PR commits, `vp pa
 
 - Unit tests use Vitest + `@vue/test-utils`, with `vueTestUtilsPluginUimed()` from `@/unit-test.ts` to mount a Vuetify instance.
 - Global unit test setup (`src/__tests__/setup.ts`) stubs `visualViewport`, uses fake timers, and silences `console.error/warn/log`.
-- Coverage threshold is 100%; mutation testing threshold is 95%+ (break at 95). Don't add code paths without covering tests.
+- Coverage threshold is 100%; mutation testing threshold is 100% (break at 100). Don't add code paths without covering tests.
 - E2E tests (Playwright, `e2e/`) run against the built docs preview (`http://localhost:4173/uimed-vue/`). Snapshots/screenshots live under `__snapshots__`/`__screenshot__` next to each spec.
 
 ## Git workflow
