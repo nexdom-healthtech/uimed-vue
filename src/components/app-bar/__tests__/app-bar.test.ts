@@ -1,9 +1,20 @@
-import { VAppBar, VAvatar, VBtn, VCard, VListGroup, VListItem, VMenu } from "vuetify/components";
+import {
+  VAppBar,
+  VAvatar,
+  VBadge,
+  VBtn,
+  VCard,
+  VIcon,
+  VListGroup,
+  VListItem,
+  VMenu,
+} from "vuetify/components";
 import AppBar from "@/components/app-bar/app-bar.vue";
 import { mount } from "@vue/test-utils";
 import { vueTestUtilsPluginUimed } from "@/unit-test.ts";
 import useRouteProps, { isExternalRoute } from "@/composables/navigation/use-route-props.ts";
 import type { AppBarUserProps, Option, ParentOption } from "@/components/app-bar/types.ts";
+import { formatDateTime, navigatePeriod } from "@nexdom/shared/utils";
 
 const testId = "app-bar-test-component";
 const styleValue = "random-style";
@@ -66,6 +77,190 @@ describe("AppBar", () => {
         const vBtn = findVBtn(wrapper);
         expect(vBtn.props("to")).toBe(help);
         expect(vBtn.props("href")).toBeUndefined();
+      });
+    });
+
+    describe("notifications", () => {
+      const notifications = [
+        { title: "First notification", subtitle: "Details", read: false },
+        { title: "Second notification", subtitle: "More details", read: true },
+        { title: "Third notification", subtitle: "Even more details", read: false },
+        { title: "Fourth notification", subtitle: "Furthermore details", read: true },
+        { title: "Fifth notification", subtitle: "Furthermore details", read: true },
+      ];
+
+      it("should add a button to access notifications menu", async () => {
+        let vBtn = findVBtn(wrapper);
+        expect(vBtn.exists()).toBeFalsy();
+
+        await wrapper.setProps({ notifications });
+
+        vBtn = findVBtn(wrapper);
+        expect(vBtn.exists()).toBeTruthy();
+        expect(vBtn.attributes("data-testid")).toBe(`${testId}-notifications`);
+
+        const vBtnIcon = vBtn.findComponent(VIcon);
+        expect(vBtnIcon.props("icon")).toBe("mdi-bell-outline");
+      });
+
+      it("should show the button even when notifications is an empty array", async () => {
+        await wrapper.setProps({ notifications: [] });
+
+        const vBtn = findVBtn(wrapper);
+        expect(vBtn.exists()).toBeTruthy();
+      });
+
+      it("should open notifications menu when button is clicked", async () => {
+        await wrapper.setProps({ notifications });
+
+        const vBtn = findVBtn(wrapper);
+        const vMenu = findVMenu(wrapper);
+
+        expect(vMenu.exists()).toBeTruthy();
+        expect(vMenu.props("closeOnContentClick")).toBeFalsy();
+        expect(vMenu.emitted("update:modelValue")).toBeFalsy();
+
+        await vBtn.trigger("click");
+        expect(vMenu.emitted("update:modelValue")).toBeTruthy();
+        expect(vMenu.emitted("update:modelValue")?.[0]).toBeTruthy();
+      });
+
+      describe("badge", () => {
+        it("should reflect the unread notifications count", async () => {
+          await wrapper.setProps({ notifications });
+
+          const vBadge = findVBadge(wrapper);
+          expect(vBadge.exists()).toBeTruthy();
+          expect(vBadge.props("modelValue")).toBeTruthy();
+          expect(vBadge.props("content")).toBe(2);
+        });
+
+        it("should be hidden when there are no unread notifications", async () => {
+          await wrapper.setProps({
+            notifications: notifications.map((notification) => ({ ...notification, read: true })),
+          });
+
+          const vBadge = findVBadge(wrapper);
+          expect(vBadge.props("modelValue")).toBeFalsy();
+          expect(vBadge.props("content")).toBe(0);
+        });
+      });
+
+      describe("notificationsOpen", () => {
+        it("should forward value to the notifications menu", async () => {
+          await wrapper.setProps({ notifications, notificationsOpen: true });
+
+          const vMenu = findVMenu(wrapper);
+          expect(vMenu.props("modelValue")).toBe(true);
+        });
+
+        it("should emit update:notificationsOpen when the menu changes internally", async () => {
+          await wrapper.setProps({ notifications });
+
+          const vMenu = findVMenu(wrapper);
+          vMenu.vm.$emit("update:modelValue", true);
+
+          expect(wrapper.emitted("update:notificationsOpen")?.[0]).toEqual([true]);
+        });
+      });
+
+      describe("content", () => {
+        it("should list each notification's title and subtitle in order", async () => {
+          await wrapper.setProps({ notifications });
+
+          const vBtn = findVBtn(wrapper);
+          await vBtn.trigger("click");
+
+          const vCard = findVCard(wrapper);
+          expect(vCard.attributes("data-testid")).toBe(`${testId}-notifications-menu`);
+
+          const vCardNotifications = findVCardNotifications(vCard);
+          expect(vCardNotifications).toHaveLength(notifications.length);
+
+          vCardNotifications.forEach((vListItem, index) => {
+            expect(vListItem.props("title")).toBe(notifications[index].title);
+            expect(vListItem.props("subtitle")).toBe(notifications[index].subtitle);
+          });
+        });
+
+        it("should indicate unread notifications", async () => {
+          await wrapper.setProps({ notifications });
+
+          const vBtn = findVBtn(wrapper);
+          await vBtn.trigger("click");
+
+          const vCard = findVCard(wrapper);
+          const vCardNotifications = findVCardNotifications(vCard);
+
+          vCardNotifications.forEach((vCardNotification, index) => {
+            expect(vCardNotification.props("activeClass")).toBe("text-primary");
+            expect(vCardNotification.props("active")).toBe(!notifications[index].read);
+          });
+        });
+
+        it("should not present notification date/time when none is provided", async () => {
+          await wrapper.setProps({ notifications });
+
+          const vBtn = findVBtn(wrapper);
+          await vBtn.trigger("click");
+
+          const vCard = findVCard(wrapper);
+          const vCardNotifications = findVCardNotifications(vCard);
+
+          vCardNotifications.forEach((vCardNotification) => {
+            expect(findNotificationDate(vCardNotification).exists()).toBeFalsy();
+          });
+        });
+
+        it("should handle notification date/time presentation", async () => {
+          const date = new Date();
+          const dates = [
+            { provide: date, expect: formatDateTime(date, "HH:mm") },
+            { provide: navigatePeriod(date, { days: -1 }), expect: "Ontem" },
+            {
+              provide: navigatePeriod(date, { days: -2 }),
+              expect: formatDateTime(navigatePeriod(date, { days: -2 }), "DD/MM/YYYY"),
+            },
+            {
+              provide: navigatePeriod(date, { months: -1 }),
+              expect: formatDateTime(navigatePeriod(date, { months: -1 }), "DD/MM/YYYY"),
+            },
+            {
+              provide: navigatePeriod(date, { years: -1 }),
+              expect: formatDateTime(navigatePeriod(date, { years: -1 }), "DD/MM/YYYY"),
+            },
+          ];
+          expect(dates).toHaveLength(notifications.length);
+
+          const updateNotifications = notifications.map((notification, index) => ({
+            ...notification,
+            date: dates[index].provide,
+          }));
+          await wrapper.setProps({ notifications: updateNotifications });
+
+          const vBtn = findVBtn(wrapper);
+          await vBtn.trigger("click");
+
+          const vCard = findVCard(wrapper);
+          const vCardNotifications = findVCardNotifications(vCard);
+          expect(vCardNotifications).toHaveLength(notifications.length);
+
+          vCardNotifications.forEach((vCardNotification, index) => {
+            expect(vCardNotification.exists()).toBeTruthy();
+            expect(findNotificationDate(vCardNotification).text()).toBe(dates[index].expect);
+          });
+        });
+
+        it("should show an empty state when there are no notifications", async () => {
+          await wrapper.setProps({ notifications: [] });
+
+          const vBtn = findVBtn(wrapper);
+          await vBtn.trigger("click");
+
+          const vCard = findVCard(wrapper);
+          expect(findVCardNotifications(vCard)).toHaveLength(0);
+          expect(vCard.text()).toContain("Nenhuma notificação");
+        });
       });
     });
 
@@ -251,6 +446,20 @@ function findVCard(wrapper: ReturnType<typeof mountAppBar>) {
 
 function findVAvatar(wrapper: ReturnType<typeof mountAppBar>) {
   return wrapper.findComponent(VAvatar);
+}
+
+function findVBadge(wrapper: ReturnType<typeof mountAppBar>) {
+  return wrapper.findComponent(VBadge);
+}
+
+function findVCardNotifications(vCard: ReturnType<typeof findVCard>) {
+  return vCard.findAllComponents(VListItem);
+}
+
+function findNotificationDate(
+  vCardNotification: ReturnType<typeof findVCardNotifications>[number],
+) {
+  return vCardNotification.find(".opacity-60");
 }
 
 function findVCardAvatar(vCard: ReturnType<typeof findVCard>) {
