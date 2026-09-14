@@ -105,17 +105,86 @@ function toggleNotifications(open: boolean) {
 </script>
 ```
 
-<!-- TODO: adicionar playground -->
+## Eventos
+
+### Notificações
+
+O evento `update:notificationsOpen` é emitido sempre que o menu de notificações é aberto ou fechado.
+
+<demo contained data-testid="demo-notifications-open-event">
+<root :app-bar="eventsAppBar" @update:notifications-open="onNotificationsOpen" data-testid="root-demo-notifications-open">
+  <h2 data-testid="root-demo-notifications-open-count">
+    {{ notificationsOpenCount }} interação(ões)
+  </h2>
+</root>
+</demo>
+
+```vue
+<template>
+  <root :app-bar="appBar" @update:notifications-open="onNotificationsOpen">
+    <h2>{{ notificationsOpenCount }} interação(ões)</h2>
+  </root>
+</template>
+
+<script lang="ts" setup>
+import { ref } from "vue";
+import { Root, type AppBarConfig } from "@nexdom/uimed-vue/components";
+
+const notificationsOpenCount = ref(0);
+
+const appBar: AppBarConfig = {
+  title: "Menu superior",
+  notifications: [],
+};
+
+function onNotificationsOpen() {
+  notificationsOpenCount.value++;
+}
+</script>
+```
+
+## Playground
+
+Experimente as combinações de props do componente.
+
+<playground v-model:actions="playgroundActions">
+<demo contained>
+<root :app-bar="playgroundAppBar" data-testid="root-preview">
+  <h2>O conteúdo da página vai aqui...</h2>
+</root>
+</demo>
+
+<template #actions>
+<v-checkbox v-model="playgroundShowNotifications" label="Exibir notificações" density="compact" hide-details data-testid="root-playground-show-notifications" />
+
+<v-checkbox v-model="playgroundShowUser" label="Exibir usuário" density="compact" hide-details data-testid="root-playground-show-user" />
+</template>
+</playground>
 
 ## Ver também
 
 Consulte a referência de [API do Root](../../api/components/root) para a lista completa de props, slots e eventos.
 
 <script lang="ts" setup>
-  import { reactive } from "vue"
+  import { computed, reactive, ref } from "vue"
   import { Root, type AppBarConfig } from "../../../dist/components.js"
+  import { VCheckbox } from "vuetify/components"
 
   const today = new Date()
+
+  const notificationsOpenCount = ref(0);
+  const playgroundShowUser = ref(false);
+  const playgroundShowNotifications = ref(true);
+
+  const eventsAppBar = reactive<AppBarConfig>({
+    title: "Menu superior",
+    dataTestid: "demo-root-events-app-bar",
+    notifications: [],
+  });
+
+  function onNotificationsOpen() {
+    notificationsOpenCount.value++;
+  }
   
   const appBar = reactive<AppBarConfig>({
     title: "Menu superior",
@@ -182,4 +251,47 @@ Consulte a referência de [API do Root](../../api/components/root) para a lista 
         read: true,
       }));
   }
+
+  const playgroundActions = ref({
+    title: {
+      label: "Título",
+      value: "Menu do playground",
+      dataTestid: "root-playground-title",
+    },
+    help: {
+      label: "Link para ajuda",
+      value: "https://google.com",
+      dataTestid: "root-playground-help",
+    },
+    addNotification: {
+      type: 'button',
+      label: "Adicionar notificação",
+      dataTestid: "root-playground-add-notification",
+      action: addPlaygroundNotification,
+    },
+    removeNotification: {
+      type: 'button',
+      label: "Remover notificação",
+      dataTestid: "root-playground-remove-notification",
+      action: removePlaygroundNotification,
+    }
+  });
+
+  const playgroundNotifications = ref<Required<AppBarConfig>["notifications"]>([]);
+
+  function addPlaygroundNotification() {
+    playgroundNotifications.value.push({ title: "Lorem ipsum...", read: false, date: new Date() })
+  }
+
+  function removePlaygroundNotification() {
+    playgroundNotifications.value.pop();
+  }
+
+  const playgroundAppBar = computed<AppBarConfig>(() => ({
+    dataTestid: "root-playground-app-bar",
+    title: playgroundActions.value.title.value,
+    help: playgroundActions.value.help.value || undefined,
+    notifications: playgroundShowNotifications.value ? playgroundNotifications.value : undefined,
+    user: playgroundShowUser.value ? appBar.user : undefined
+  }));
 </script>
