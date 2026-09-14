@@ -23,7 +23,37 @@ export type AppBarProps = {
    * Resources available to the user in the app-bar
    */
   user?: AppBarUserProps;
+
+  /**
+   * List of notifications to show in the {@link AppBar}.
+   */
+  notifications?: Array<AppBarNotification>;
 };
+
+/**
+ * A single notification entry shown in the {@link AppBar}.
+ */
+interface AppBarNotification {
+  /**
+   * Main text describing the notification.
+   */
+  title: string;
+
+  /**
+   * Complementary text with additional details.
+   */
+  subtitle?: string;
+
+  /**
+   * Whether the notification has already been read.
+   */
+  read?: boolean;
+
+  /**
+   * Date the notification was generated.
+   */
+  date?: Date;
+}
 
 export interface AppBarUserProps {
   /**

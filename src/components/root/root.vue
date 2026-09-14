@@ -1,6 +1,10 @@
 <template>
   <v-app :data-testid="props.dataTestid">
-    <app-bar v-if="props.appBar" v-bind="props.appBar" />
+    <app-bar
+      v-if="props.appBar"
+      v-bind="props.appBar"
+      v-model:notifications-open="notificationsOpen"
+    />
 
     <v-main>
       <container>
@@ -37,4 +41,5 @@ import Container from "@/components/grid/container/container.vue";
 import Toast from "@/components/dialogs/toast.vue";
 
 const props = defineProps<RootProps>();
+const notificationsOpen = defineModel<boolean>("notificationsOpen", { default: false });
 </script>
