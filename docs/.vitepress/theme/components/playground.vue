@@ -5,7 +5,13 @@
     </div>
     <div class="playground-controls">
       <template v-for="[index, action] in Object.entries(actions)">
+        <row v-if="action.type === 'button'">
+          <column>
+            <btn :data-testid="action.dataTestid" @click="action.action">{{ action.label }}</btn>
+          </column>
+        </row>
         <text-field
+          v-else
           :model-value="action.value"
           :label="action.label"
           :data-testid="action.dataTestid"
@@ -18,7 +24,7 @@
 </template>
 
 <script lang="ts" setup>
-import { TextField } from "../../../../dist/components.js";
+import { TextField, Btn, Row, Column } from "../../../../dist/components.js";
 
 interface Input {
   type: "text";
@@ -27,7 +33,14 @@ interface Input {
   dataTestid: string;
 }
 
-const actions = defineModel<Record<string, Input>>("actions", { default: () => ({}) });
+interface Button {
+  type: "button";
+  label: string;
+  dataTestid: string;
+  action: () => void;
+}
+
+const actions = defineModel<Record<string, Input | Button>>("actions", { default: () => ({}) });
 
 function updateActions(index: keyof typeof actions.value, newValue: string) {
   const action = actions.value[index];
