@@ -22,6 +22,27 @@ test.describe("root", () => {
         });
       });
 
+      test.describe("notifications", () => {
+        test("opens the notifications menu on click", async ({ page }) => {
+          const notificationsButton = getNotificationsButton(page);
+          await notificationsButton.click();
+
+          const notificationsMenu = getNotificationsMenu(page);
+          await expect(notificationsMenu).toBeVisible();
+        });
+
+        test("dismisses the unread badge after the menu is closed", async ({ page }) => {
+          const notificationsButton = getNotificationsButton(page);
+          const badge = getNotificationsBadge(page);
+          await expect(badge).toBeVisible();
+
+          await notificationsButton.click();
+          await page.keyboard.press("Escape");
+
+          await expect(badge).not.toBeVisible();
+        });
+      });
+
       test.describe("user", () => {
         test("navigate to provided route", async ({ page }) => {
           const userButton = getUserButton(page);
@@ -59,6 +80,13 @@ test.describe("root", () => {
       const userMenu = getUserMenu(page);
       await userMenu.getByRole("listitem").first().click();
       await expect(page).toHaveScreenshot({ fullPage: true });
+
+      const notificationsButton = getNotificationsButton(page);
+      await notificationsButton.click();
+      await expect(page).toHaveScreenshot({ fullPage: true });
+
+      await page.keyboard.press("Escape");
+      await expect(page).toHaveScreenshot({ fullPage: true });
     });
   });
 });
@@ -69,6 +97,18 @@ function getAppBar(page: Page) {
 
 function getHelpButton(page: Page) {
   return page.getByTestId("demo-root-app-bar-help");
+}
+
+function getNotificationsButton(page: Page) {
+  return page.getByTestId("demo-root-app-bar-notifications");
+}
+
+function getNotificationsBadge(page: Page) {
+  return getNotificationsButton(page).locator(".v-badge__badge");
+}
+
+function getNotificationsMenu(page: Page) {
+  return page.getByTestId("demo-root-app-bar-notifications-menu");
 }
 
 function getUserButton(page: Page) {
