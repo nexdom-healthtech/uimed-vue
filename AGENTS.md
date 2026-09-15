@@ -93,7 +93,7 @@ vp install      # install dependencies
 ## Commands
 
 - `vpr check` — lint, formatter, and type-check (requires `build`/`pack` to have run first for the type-check step)
-- `vp test --coverage` — unit tests (Vitest, jsdom, 100% coverage threshold enforced)
+- `vp test --coverage` — unit tests with coverage (Vitest, jsdom, 100% coverage threshold enforced)
 - `vpr test:mutations` — mutation tests (Stryker; thresholds: high 100, low 95, break 95)
 - `vpr test:e2e` — E2E tests (Playwright, runs against the built docs preview site)
 - `vpr depcruise` — architecture/dependency rules (dependency-cruiser)
