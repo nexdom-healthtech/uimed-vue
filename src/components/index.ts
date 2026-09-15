@@ -12,3 +12,4 @@ export type {
   AppBarProps as AppBarConfig,
   AppBarUserProps as AppBarUserConfig,
 } from "@/components/app-bar/types.ts";
+export type { NavigationMenuProps as NavigationMenuConfig } from "@/components/navigation-menu/types.ts";
