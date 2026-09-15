@@ -104,10 +104,14 @@ describe("TextField", () => {
 
       it("should use text with clearable for search", async () => {
         const wrapper = mountTextField();
+        const vTextField = findVTextField(wrapper);
+        expect(vTextField.props("prependInnerIcon")).toBeUndefined();
+        expect(vTextField.props("clearable")).toBeFalsy();
+
         await wrapper.setProps({ type: "search" });
 
-        const vTextField = findVTextField(wrapper);
         expect(vTextField.props("type")).toBe("text");
+        expect(vTextField.props("prependInnerIcon")).toBe("mdi-magnify");
         expect(vTextField.props("clearable")).toBeTruthy();
       });
 
@@ -133,6 +137,24 @@ describe("TextField", () => {
         const vTextField = findVTextField(wrapper);
 
         expect(vTextField.props("rules")).toHaveLength(0);
+      });
+    });
+
+    describe("clearable", () => {
+      it("should change modelValue to empty string when cleared", async () => {
+        const modelValue = "Testing...";
+
+        const wrapper = mountTextField();
+        await wrapper.setProps({ clearable: true, modelValue });
+
+        expect(wrapper.props("modelValue")).toBe(modelValue);
+
+        const vTextField = findVTextField(wrapper);
+        vTextField.vm.$emit("click:clear");
+
+        expect(wrapper.emitted("update:modelValue")).toBeTruthy();
+        expect(wrapper.emitted("update:modelValue")).toHaveLength(1);
+        expect(wrapper.emitted("update:modelValue")?.[0]).toEqual([""]);
       });
     });
 

@@ -5,6 +5,8 @@ import { vueTestUtilsPluginUimed } from "@/unit-test.ts";
 import { Container } from "@/components/index.ts";
 import Toast from "@/components/dialogs/toast.vue";
 import AppBar from "@/components/app-bar/app-bar.vue";
+import NavigationMenu from "@/components/navigation-menu/navigation-menu.vue";
+import { nextTick } from "vue";
 
 const testId = "root-test-component";
 const styleValue = "random-style";
@@ -38,23 +40,34 @@ describe("Root", () => {
     expect(wrapper.attributes("class")).not.toContain(classValue);
   });
 
-  it("should load app bar when its prop is filled", async () => {
-    expect(wrapper.findComponent(AppBar).exists()).toBeFalsy();
-
-    const title = "Application";
-    await wrapper.setProps({ appBar: { title } });
-    expect(wrapper.findComponent(AppBar).exists()).toBeTruthy();
-  });
-
   describe("props", () => {
     describe("appBar", () => {
       const title = "AI Chat";
+
+      it("should only load app bar when its prop is filled", async () => {
+        expect(wrapper.findComponent(AppBar).exists()).toBeFalsy();
+
+        const title = "Application";
+        await wrapper.setProps({ appBar: { title } });
+        expect(wrapper.findComponent(AppBar).exists()).toBeTruthy();
+      });
 
       it("should forward props to the app bar", async () => {
         await wrapper.setProps({ appBar: { title } });
 
         const appBar = findAppBar(wrapper);
         expect(appBar.props("title")).toBe(title);
+      });
+
+      it("should reflect navigation menu presence in the navigation prop", async () => {
+        await wrapper.setProps({ appBar: { title }, navigationMenu: undefined });
+        expect(findAppBar(wrapper).props("navigation")).toBe(false);
+
+        await wrapper.setProps({ navigationMenu: { items: [{ description: "Home" }] } });
+        expect(findAppBar(wrapper).props("navigation")).toBe(true);
+
+        // Cleanup for subsequent tests
+        await wrapper.setProps({ navigationMenu: undefined });
       });
 
       describe("notificationsOpen", () => {
@@ -75,6 +88,53 @@ describe("Root", () => {
         });
       });
     });
+
+    describe("navigationMenu", () => {
+      const items = [{ description: "Home", route: "/" }];
+
+      it("should only load navigation menu when its prop is filled", async () => {
+        expect(wrapper.findComponent(NavigationMenu).exists()).toBeFalsy();
+
+        await wrapper.setProps({ navigationMenu: { items } });
+
+        const navigationMenu = wrapper.findComponent(NavigationMenu);
+        expect(navigationMenu.exists()).toBeTruthy();
+        expect(navigationMenu.props("modelValue")).toBeFalsy();
+
+        await wrapper.setData({ navigationMenuOpen: true });
+        expect(navigationMenu.props("modelValue")).toBeTruthy();
+      });
+
+      it("should forward props to the navigation menu", async () => {
+        await wrapper.setProps({ navigationMenu: { items } });
+
+        const navigationMenu = findNavigationMenu(wrapper);
+        expect(navigationMenu.props("items")).toEqual(items);
+      });
+
+      it("should open the navigation menu when the app bar emits update:navigationOpen", async () => {
+        await wrapper.setProps({ appBar: { title: "AI Chat" }, navigationMenu: { items } });
+
+        const appBar = findAppBar(wrapper);
+        const navigationMenu = findNavigationMenu(wrapper);
+
+        appBar.vm.$emit("update:navigationOpen", true);
+
+        expect(navigationMenu.props("modelValue")).toBe(true);
+      });
+
+      it("should sync the app bar when the navigation menu emits update:modelValue", async () => {
+        await wrapper.setProps({ appBar: { title: "AI Chat" }, navigationMenu: { items } });
+
+        const appBar = findAppBar(wrapper);
+        const navigationMenu = findNavigationMenu(wrapper);
+
+        navigationMenu.vm.$emit("update:modelValue", false);
+        await nextTick();
+
+        expect(appBar.props("navigationOpen")).toBe(false);
+      });
+    });
   });
 });
 
@@ -93,4 +153,8 @@ function mountRoot() {
 
 function findAppBar(wrapper: ReturnType<typeof mountRoot>) {
   return wrapper.findComponent(AppBar);
+}
+
+function findNavigationMenu(wrapper: ReturnType<typeof mountRoot>) {
+  return wrapper.findComponent(NavigationMenu);
 }

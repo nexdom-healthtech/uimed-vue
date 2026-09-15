@@ -1,5 +1,13 @@
 <template>
   <v-app-bar :title="props.title" :data-testid="props.dataTestid">
+    <template #prepend>
+      <v-app-bar-nav-icon
+        v-if="navigation"
+        :data-testid="navigationBtnDataTestid"
+        @click="navigationOpen = !navigationOpen"
+      />
+    </template>
+
     <template #append>
       <v-btn
         v-if="showHelp"
@@ -105,6 +113,7 @@ import { formatDateTime, toPeriodInterval } from "@nexdom/shared/utils";
 import { computed } from "vue";
 import {
   VAppBar,
+  VAppBarNavIcon,
   VBtn,
   VMenu,
   VCard,
@@ -120,11 +129,13 @@ import {
   VListItemAction,
 } from "vuetify/components";
 
-const props = defineProps<AppBarProps>();
+const props = defineProps<AppBarProps & { navigation: boolean }>();
 const notificationsOpen = defineModel<boolean>("notificationsOpen", { default: false });
+const navigationOpen = defineModel<boolean>("navigationOpen");
 
 const helpBtnDataTestid = computed(() => `${props.dataTestid}-help`);
 const notificationsBtnDataTestid = computed(() => `${props.dataTestid}-notifications`);
+const navigationBtnDataTestid = computed(() => `${props.dataTestid}-navigation`);
 const notificationsMenuDataTestid = computed(() => `${props.dataTestid}-notifications-menu`);
 const userBtnDataTestid = computed(() => `${props.dataTestid}-user`);
 const userMenuDataTestid = computed(() => `${props.dataTestid}-user-menu`);

@@ -1,4 +1,5 @@
 import type { AppBarProps } from "@/components/app-bar/types.ts";
+import type { NavigationMenuProps } from "@/components/navigation-menu/types.ts";
 
 /**
  * Props exposed by the {@link Root} component.
@@ -13,4 +14,9 @@ export type RootProps = {
    * App bar properties.
    */
   appBar?: AppBarProps;
+
+  /**
+   * Navigation menu properties.
+   */
+  navigationMenu?: NavigationMenuProps;
 };

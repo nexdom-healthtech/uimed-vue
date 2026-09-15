@@ -70,6 +70,46 @@ test.describe("root", () => {
         });
       });
     });
+
+    test.describe("navigation-menu", () => {
+      test.beforeEach(async ({ page }) => {
+        const button = getNavigationToggleButton(page);
+        await button.click();
+      });
+
+      test("matches the accessible snapshot of the navigation menu demo", async ({ page }) => {
+        const demo = getNavigationMenu(page);
+        await expect(demo).toMatchAriaSnapshot();
+      });
+
+      test("triggers action callback", async ({ page }) => {
+        const demo = getNavigationMenu(page);
+
+        const dialogPromise = page.waitForEvent("dialog");
+        await demo.getByText("Configurações").click();
+
+        const dialog = await dialogPromise;
+        expect(dialog).toBeTruthy();
+        expect(dialog.type()).toBe("alert");
+        expect(dialog.message()).toBe("Abrindo configurações...");
+      });
+
+      test("filters items when typing in search field", async ({ page }) => {
+        const searchField = getNavigationMenuSearch(page);
+        const inicioItem = getNavigationMenu(page).getByText("Início");
+
+        await expect(inicioItem).toBeVisible();
+
+        await searchField.fill("Configurações");
+
+        await expect(inicioItem).not.toBeVisible();
+        await expect(getNavigationMenu(page).getByText("Configurações")).toBeVisible();
+
+        await searchField.clear();
+
+        await expect(inicioItem).toBeVisible();
+      });
+    });
   });
 
   test.describe("playground", () => {
@@ -135,6 +175,24 @@ test.describe("root", () => {
       await expect(userButton).not.toBeAttached();
     });
 
+    test("toggles the navigation menu when checkbox is toggled", async ({ page }) => {
+      const navigationMenu = getPlaygroundNavigationMenu(page);
+      await expect(navigationMenu).toBeAttached();
+
+      await getPlaygroundNavigationMenuToggleButton(page).click();
+      await expect(navigationMenu).not.toBeAttached();
+
+      await getPlaygroundNavigationMenuToggleButton(page).click();
+      await expect(navigationMenu).toBeAttached();
+    });
+
+    test("matches the accessible snapshot of the playground navigation menu in its default state", async ({
+      page,
+    }) => {
+      const navigationMenu = getPlaygroundNavigationMenu(page);
+      await expect(navigationMenu).toMatchAriaSnapshot();
+    });
+
     test("removes the last notification when playground-remove-notification is clicked", async ({
       page,
     }) => {
@@ -187,6 +245,26 @@ test.describe("root", () => {
     });
   });
 
+  test.describe("exemplos", () => {
+    test("matches the accessible snapshot of the navigation toggle demo", async ({ page }) => {
+      const demo = getNavigationToggleDemo(page);
+      await expect(demo).toMatchAriaSnapshot();
+    });
+
+    test("toggles drawer visibility with nav icon", async ({ page }) => {
+      const button = getNavigationToggleButton(page);
+      const drawer = getNavigationToggleDrawer(page);
+
+      await expect(drawer).not.toContainClass("v-navigation-drawer--active");
+
+      await button.click();
+      await expect(drawer).toContainClass("v-navigation-drawer--active");
+
+      await button.click();
+      await expect(drawer).not.toContainClass("v-navigation-drawer--active");
+    });
+  });
+
   test.describe("UI consistency", () => {
     test("matches last screenshot", async ({ page }) => {
       const userButton = getUserButton(page);
@@ -201,6 +279,13 @@ test.describe("root", () => {
       await expect(page).toHaveScreenshot({ fullPage: true });
 
       await page.keyboard.press("Escape");
+      await expect(page).toHaveScreenshot({ fullPage: true });
+
+      const navToggleButton = getNavigationToggleButton(page);
+      await navToggleButton.click();
+      await expect(page).toHaveScreenshot({ fullPage: true });
+
+      await navToggleButton.click();
       await expect(page).toHaveScreenshot({ fullPage: true });
     });
   });
@@ -272,4 +357,32 @@ function getEventsNotificationsButton(page: Page) {
 
 function getEventsNotificationsCounter(page: Page) {
   return page.getByTestId("root-demo-notifications-open-count");
+}
+
+function getNavigationMenu(page: Page) {
+  return page.getByTestId("demo-root-navigation-toggle-navigation-menu");
+}
+
+function getPlaygroundNavigationMenuToggleButton(page: Page) {
+  return page.getByTestId("root-playground-show-navigation-menu").locator("input");
+}
+
+function getPlaygroundNavigationMenu(page: Page) {
+  return page.getByTestId("root-playground-navigation-menu");
+}
+
+function getNavigationToggleDemo(page: Page) {
+  return page.getByTestId("demo-root-navigation-toggle");
+}
+
+function getNavigationToggleButton(page: Page) {
+  return page.getByTestId("demo-root-navigation-toggle-app-bar-navigation");
+}
+
+function getNavigationToggleDrawer(page: Page) {
+  return page.getByTestId("demo-root-navigation-toggle-navigation-menu");
+}
+
+function getNavigationMenuSearch(page: Page) {
+  return page.getByTestId("demo-root-navigation-toggle-navigation-menu-search").locator("input");
 }

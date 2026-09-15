@@ -3,6 +3,7 @@
     v-model="modelValue"
     :variant="vuetifyVariant"
     :type="vuetifyType"
+    :prepend-inner-icon="prependIcon"
     :rules
     :data-testid="props.dataTestid"
     :disabled="props.disabled"
@@ -12,6 +13,7 @@
     :placeholder="props.placeholder"
     :hint="props.hint"
     :clearable="computedClearable"
+    @click:clear="clear"
   />
 </template>
 
@@ -47,5 +49,11 @@ const { clearable = undefined, ...props } = defineProps<TextFieldProps>();
 const vuetifyVariant = useTextFieldVariant(() => props.variant);
 const vuetifyType = useTextFieldType(() => props.type);
 const rules = useTextFieldRules(props);
-const computedClearable = computed(() => clearable ?? props.type === "search");
+const isSearchField = computed(() => props.type === "search");
+const computedClearable = computed(() => clearable ?? isSearchField.value);
+const prependIcon = computed(() => (isSearchField.value ? "mdi-magnify" : undefined));
+
+function clear() {
+  modelValue.value = "";
+}
 </script>
