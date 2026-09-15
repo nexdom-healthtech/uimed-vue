@@ -37,5 +37,6 @@ but, since we don't actually use V-Layout, its class isn't bundled for productio
  */
 :deep(.v-layout) {
   flex: 1 1 auto;
+  overflow: hidden;
 }
 </style>

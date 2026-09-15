@@ -60,8 +60,6 @@ function updateActions(index: keyof typeof actions.value, newValue: string) {
     display: flex;
     align-items: center;
     justify-content: center;
-    min-height: 275px;
-    min-width: 275px;
     border: 1px solid var(--vp-c-divider);
     border-radius: 8px;
     padding: 1rem;
