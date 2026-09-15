@@ -1,0 +1,13 @@
+- button
+- text: Menu superior
+- navigation:
+    - text: Buscar
+    - textbox "Buscar"
+    - alert
+    - separator
+    - list:
+        - link "Início"
+        - listitem: Documentação
+        - listitem: Configurações
+- main:
+    - heading "O conteúdo da página vai aqui..." [level=2]
