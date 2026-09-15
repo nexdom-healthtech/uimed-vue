@@ -1,0 +1,8 @@
+- navigation:
+    - text: Buscar
+    - textbox "Buscar"
+    - alert
+    - separator
+    - list:
+        - link "Início"
+        - listitem: Documentação
