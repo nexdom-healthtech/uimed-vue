@@ -1,5 +1,6 @@
 import {
   VAppBar,
+  VAppBarNavIcon,
   VAvatar,
   VBadge,
   VBtn,
@@ -158,8 +159,10 @@ describe("AppBar", () => {
           await wrapper.setProps({ notifications });
 
           const vMenu = findVMenu(wrapper);
-          vMenu.vm.$emit("update:modelValue", true);
+          await vMenu.setValue(true);
 
+          const emitted = wrapper.emitted("update:notificationsOpen");
+          expect(emitted).toBeTruthy();
           expect(wrapper.emitted("update:notificationsOpen")?.[0]).toEqual([true]);
         });
       });
@@ -261,6 +264,41 @@ describe("AppBar", () => {
           expect(findVCardNotifications(vCard)).toHaveLength(0);
           expect(vCard.text()).toContain("Nenhuma notificação");
         });
+      });
+    });
+
+    describe("navigation", () => {
+      const navigation = true;
+
+      it("should not render nav icon by default", () => {
+        const vAppBarNavIcon = findVAppBarNavIcon(wrapper);
+        expect(vAppBarNavIcon.exists()).toBeFalsy();
+      });
+
+      it("should render nav icon when navigation prop is set", async () => {
+        await wrapper.setProps({ navigation });
+
+        const vAppBarNavIcon = findVAppBarNavIcon(wrapper);
+        expect(vAppBarNavIcon.exists()).toBeTruthy();
+        expect(vAppBarNavIcon.attributes("data-testid")).toBe(`${testId}-navigation`);
+      });
+
+      it("should emit update:navigationOpen with inverted value when icon is clicked", async () => {
+        await wrapper.setProps({ navigationOpen: true, navigation });
+
+        const vAppBarNavIcon = findVAppBarNavIcon(wrapper);
+        await vAppBarNavIcon.trigger("click");
+
+        expect(wrapper.emitted("update:navigationOpen")?.[0]).toEqual([false]);
+      });
+
+      it("should emit update:navigationOpen true when toggling from false to true", async () => {
+        await wrapper.setProps({ navigationOpen: false, navigation });
+
+        const vAppBarNavIcon = findVAppBarNavIcon(wrapper);
+        await vAppBarNavIcon.trigger("click");
+
+        expect(wrapper.emitted("update:navigationOpen")?.[0]).toEqual([true]);
       });
     });
 
@@ -417,6 +455,7 @@ function mountAppBar() {
           props: ["title"],
           template: `
             <div v-bind="$props">
+              <slot name="prepend" />
               <slot />
               <slot name="append" />
             </div>
@@ -430,6 +469,10 @@ function mountAppBar() {
 
 function findVAppBar(wrapper: ReturnType<typeof mountAppBar>) {
   return wrapper.findComponent(VAppBar);
+}
+
+function findVAppBarNavIcon(wrapper: ReturnType<typeof mountAppBar>) {
+  return wrapper.findComponent(VAppBarNavIcon);
 }
 
 function findVBtn(wrapper: ReturnType<typeof mountAppBar>) {
