@@ -6,7 +6,7 @@ outline: deep
 
 O componente destinado a raiz do projeto se chama `Root`.
 
-É responsável por carregar o menu superior, o componente utilizado pelos composables de [Toasts](../composables/use-toast) e os estilos necessários para os demais componentes.
+É responsável por carregar o menu superior, o menu de navegação lateral, o componente utilizado pelos composables de [Toasts](../composables/use-toast) e os estilos necessários para os demais componentes.
 
 ## Propriedades
 
@@ -37,7 +37,7 @@ const today = new Date();
 
 const appBar = reactive<AppBarConfig>({
   title: "Menu superior",
-  help: "https://google.com",
+  help: "https://www.google.com",
   notifications: [
     {
       title: "v1.1",
@@ -96,12 +96,70 @@ const appBar = reactive<AppBarConfig>({
 });
 
 function toggleNotifications(open: boolean) {
-  if (!open)
+  if (!open) {
     appBar.notifications = appBar.notifications?.map((notification) => ({
       ...notification,
       read: true,
     }));
+  }
 }
+</script>
+```
+
+### Menu de navegação
+
+A prop `navigation-menu` define as configurações para apresentação do menu lateral de navegação.
+
+Para ocultar o menu de navegação, basta omitir essa prop.
+
+O menu também conta com um campo de busca que filtra itens e grupos em tempo real, no formato _case-insensitive_.
+
+<demo contained data-testid="demo-root-navigation-toggle">
+<root :appBar="demoNavigationToggleAppBar" :navigationMenu="navigationMenu" data-testid="root-demo-navigation-toggle">
+  <h2>O conteúdo da página vai aqui...</h2>
+</root>
+</demo>
+
+```vue
+<template>
+  <root :appBar :navigationMenu>
+    <h2>O conteúdo da página vai aqui...</h2>
+  </root>
+</template>
+
+<script lang="ts" setup>
+import { ref, reactive } from "vue";
+import { Root, type AppBarConfig, type NavigationMenuConfig } from "@nexdom/uimed-vue/components";
+
+const appBar: AppBarConfig = {
+  title: "Menu superior",
+};
+
+const navigationMenu: NavigationMenuConfig = {
+  items: [
+    {
+      description: "Início",
+      route: "/",
+    },
+    {
+      description: "Documentação",
+      items: [
+        {
+          description: "Componentes",
+          route: "/components",
+        },
+        {
+          description: "Composables",
+          route: "/composables",
+        },
+      ],
+    },
+    {
+      description: "Configurações",
+      action: () => window.alert("Abrindo configurações..."),
+    },
+  ],
+};
 </script>
 ```
 
@@ -149,7 +207,7 @@ Experimente as combinações de props do componente.
 
 <playground v-model:actions="playgroundActions">
 <demo contained>
-<root :app-bar="playgroundAppBar" data-testid="root-preview">
+<root :app-bar="playgroundAppBar" :navigationMenu="playgroundShowNavigationMenu ? playgroundNavigationMenu : undefined" data-testid="root-preview">
   <h2>O conteúdo da página vai aqui...</h2>
 </root>
 </demo>
@@ -158,6 +216,8 @@ Experimente as combinações de props do componente.
 <v-checkbox v-model="playgroundShowNotifications" label="Exibir notificações" density="compact" hide-details data-testid="root-playground-show-notifications" />
 
 <v-checkbox v-model="playgroundShowUser" label="Exibir usuário" density="compact" hide-details data-testid="root-playground-show-user" />
+
+<v-checkbox v-model="playgroundShowNavigationMenu" label="Exibir menu de navegação" density="compact" hide-details data-testid="root-playground-show-navigation-menu" />
 </template>
 </playground>
 
@@ -167,7 +227,7 @@ Consulte a referência de [API do Root](../../api/components/root) para a lista 
 
 <script lang="ts" setup>
   import { computed, reactive, ref } from "vue"
-  import { Root, type AppBarConfig } from "../../../dist/components.js"
+  import { Root, type AppBarConfig, type NavigationMenuConfig } from "../../../dist/components.js"
   import { VCheckbox } from "vuetify/components"
 
   const today = new Date()
@@ -175,11 +235,40 @@ Consulte a referência de [API do Root](../../api/components/root) para a lista 
   const notificationsOpenCount = ref(0);
   const playgroundShowUser = ref(false);
   const playgroundShowNotifications = ref(true);
+  const playgroundShowNavigationMenu = ref(true);
 
   const eventsAppBar = reactive<AppBarConfig>({
     title: "Menu superior",
     dataTestid: "demo-root-events-app-bar",
     notifications: [],
+  });
+
+  const navigationMenu = reactive<NavigationMenuConfig>({
+    dataTestid: "demo-root-navigation-menu",
+    items: [
+      {
+        description: "Início",
+        route: "/",
+      },
+      {
+        description: "Documentação",
+        items: [
+          {
+            description: "Componentes",
+            route: "/components",
+          },
+          {
+            description: "Composables",
+            route: "/composables",
+          },
+        ],
+      },
+      {
+        description: "Configurações",
+        action: () => window.alert("Abrindo configurações..."),
+      },
+    ],
+    dataTestid: "demo-root-navigation-toggle-navigation-menu",
   });
 
   function onNotificationsOpen() {
@@ -188,7 +277,7 @@ Consulte a referência de [API do Root](../../api/components/root) para a lista 
   
   const appBar = reactive<AppBarConfig>({
     title: "Menu superior",
-    help: "https://google.com",
+    help: "https://www.google.com",
     dataTestid: "demo-root-app-bar",
     notifications: [
       {
@@ -245,11 +334,12 @@ Consulte a referência de [API do Root](../../api/components/root) para a lista 
   });
 
   function toggleNotifications(open: boolean) {
-    if (!open)
+    if (!open) {
       appBar.notifications = appBar.notifications?.map((notification) => ({
         ...notification,
         read: true,
-      }));
+      }))
+    };
   }
 
   const playgroundActions = ref({
@@ -260,7 +350,7 @@ Consulte a referência de [API do Root](../../api/components/root) para a lista 
     },
     help: {
       label: "Link para ajuda",
-      value: "https://google.com",
+      value: "https://www.google.com",
       dataTestid: "root-playground-help",
     },
     addNotification: {
@@ -294,4 +384,32 @@ Consulte a referência de [API do Root](../../api/components/root) para a lista 
     notifications: playgroundShowNotifications.value ? playgroundNotifications.value : undefined,
     user: playgroundShowUser.value ? appBar.user : undefined
   }));
+
+  const playgroundNavigationMenu = computed<NavigationMenuConfig>(() => ({
+    dataTestid: "root-playground-navigation-menu",
+    items: [
+      {
+        description: "Início",
+        route: "/",
+      },
+      {
+        description: "Documentação",
+        items: [
+          {
+            description: "Componentes",
+            route: "/components",
+          },
+          {
+            description: "Composables",
+            route: "/composables",
+          },
+        ],
+      },
+    ],
+  }));
+
+  const demoNavigationToggleAppBar = reactive<AppBarConfig>({
+    title: "Menu superior",
+    dataTestid: "demo-root-navigation-toggle-app-bar",
+  });
 </script>

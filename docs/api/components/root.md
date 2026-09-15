@@ -6,14 +6,15 @@ outline: deep
 
 Componente principal do projeto.
 
-Responsável por carregar o menu superior, componentes para as composables de [Toasts](../composables/use-toast) e os estilos para os demais componentes.
+Responsável por carregar o menu superior, o menu de navegação lateral, componentes para as composables de [Toasts](../composables/use-toast) e os estilos para os demais componentes.
 
 ## Props
 
-| Prop         | Tipo                            | Padrão | Descrição                                                     |
-| ------------ | ------------------------------- | ------ | ------------------------------------------------------------- |
-| `dataTestid` | `string`                        |        | Aplica atributo `data-testid` para testes sobre o componente. |
-| `appBar`     | [`AppBarConfig`](#appbarconfig) |        | Conjunto de propriedades para aplicar à barra superior.       |
+| Prop             | Tipo                                            | Padrão | Descrição                                                           |
+| ---------------- | ----------------------------------------------- | ------ | ------------------------------------------------------------------- |
+| `dataTestid`     | `string`                                        |        | Aplica atributo `data-testid` para testes sobre o componente.       |
+| `appBar`         | [`AppBarConfig`](#appbarconfig)                 |        | Conjunto de propriedades para aplicar à barra superior.             |
+| `navigationMenu` | [`NavigationMenuConfig`](#navigationmenuconfig) |        | Conjunto de propriedades para aplicar ao menu lateral de navegação. |
 
 ### `AppBarConfig`
 
@@ -58,6 +59,28 @@ Responsável por carregar o menu superior, componentes para as composables de [T
 | `description` | `string`                                                                                          |        | Título/descrição da ação.                                                                                                                            |
 | `route`       | [`RouteLocationRaw`](https://router.vuejs.org/api/type-aliases/RouteLocationRaw.html) \| `string` |        | Rota para direcionar o usuário ao acionar a ação, podendo essa ser uma rota externa (exemplo: `"https://google.com"`) ou local (exemplo: `"/help"`). |
 | `action`      | `() => void`                                                                                      |        | Função que será executada quando o usuário clicar na ação.                                                                                           |
+
+### `NavigationMenuConfig`
+
+| Prop         | Tipo                                                      | Padrão | Descrição                                                                                                                                                                               |
+| ------------ | --------------------------------------------------------- | ------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `dataTestid` | `string`                                                  |        | Aplica atributo `data-testid` para testes sobre o componente.                                                                                                                           |
+| `items`      | [`NavigationMenuItemConfig[]`](#navigationmenuitemconfig) |        | Lista de itens ([`NavigationMenuItemConfig`](#navigationmenuitemconfig) e/ou [`NavigationMenuParentItemConfig`](#navigationmenuparentitemconfig)) para apresentar no menu de navegação. |
+
+#### `NavigationMenuParentItemConfig`
+
+| Prop          | Tipo                                                      | Padrão | Descrição                                                                               |
+| ------------- | --------------------------------------------------------- | ------ | --------------------------------------------------------------------------------------- |
+| `description` | `string`                                                  |        | Título do agrupador de itens ([`NavigationMenuItemConfig`](#navigationmenuitemconfig)). |
+| `items`       | [`NavigationMenuItemConfig[]`](#navigationmenuitemconfig) |        | Lista de itens que serão agrupados neste tópico.                                        |
+
+#### `NavigationMenuItemConfig`
+
+| Prop          | Tipo                                                                                              | Padrão | Descrição                                                                                                                                        |
+| ------------- | ------------------------------------------------------------------------------------------------- | ------ | ------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `description` | `string`                                                                                          |        | Título/descrição do item.                                                                                                                        |
+| `route`       | [`RouteLocationRaw`](https://router.vuejs.org/api/type-aliases/RouteLocationRaw.html) \| `string` |        | Rota para direcionar o usuário ao clicar no item, podendo essa ser uma rota externa (exemplo: `"https://google.com"`) ou local (exemplo: `"/"`). |
+| `action`      | `() => void`                                                                                      |        | Função que será executada quando o usuário clicar no item.                                                                                       |
 
 ## Eventos
 
