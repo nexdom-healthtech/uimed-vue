@@ -39,26 +39,24 @@ const textFieldTypeToVuetifyRule: Record<
 };
 
 export function useTextFieldVariant(
-  variant: MaybeRefOrGetter<TextFieldVariant | undefined>,
+  variant: MaybeRefOrGetter<TextFieldVariant>,
 ): ComputedRef<VuetifyVariant> {
   return computed(() => {
     const variantValue = toValue(variant);
-    return variantValue
-      ? textFieldVariantToVuetifyVariant[variantValue]
-      : textFieldVariantToVuetifyVariant.primary;
+    return textFieldVariantToVuetifyVariant[variantValue];
   });
 }
 
-export function useTextFieldType(
-  type: MaybeRefOrGetter<TextFieldType | undefined>,
-): ComputedRef<VuetifyType> {
+export function useTextFieldType(type: MaybeRefOrGetter<TextFieldType>): ComputedRef<VuetifyType> {
   return computed(() => {
     const typeValue = toValue(type);
-    return typeValue ? textFieldTypeToVuetifyType[typeValue] : textFieldTypeToVuetifyType.text;
+    return textFieldTypeToVuetifyType[typeValue];
   });
 }
 
-export function useTextFieldRules(props: TextFieldProps): ComputedRef<Array<Rule>> {
+export function useTextFieldRules(
+  props: Required<Pick<TextFieldProps, "required" | "type">>,
+): ComputedRef<Array<Rule>> {
   const defaultRules = useRules(props);
 
   return computed(() => {
@@ -73,6 +71,6 @@ export function useTextFieldRules(props: TextFieldProps): ComputedRef<Array<Rule
   });
 }
 
-function associatedRuleType(type?: TextFieldType): type is keyof typeof textFieldTypeToVuetifyRule {
-  return type! in textFieldTypeToVuetifyRule;
+function associatedRuleType(type: TextFieldType): type is keyof typeof textFieldTypeToVuetifyRule {
+  return type in textFieldTypeToVuetifyRule;
 }

@@ -42,10 +42,14 @@ import { VTextField } from "vuetify/components";
 import { computed } from "vue";
 
 const modelValue = defineModel<string>({ default: "" });
-const { clearable = undefined, ...props } = defineProps<TextFieldProps>();
+const props = withDefaults(defineProps<TextFieldProps>(), {
+  clearable: undefined,
+  type: "text",
+  variant: "primary",
+});
 
 const vuetifyVariant = useTextFieldVariant(() => props.variant);
 const vuetifyType = useTextFieldType(() => props.type);
 const rules = useTextFieldRules(props);
-const computedClearable = computed(() => clearable ?? props.type === "search");
+const computedClearable = computed(() => props.clearable ?? props.type === "search");
 </script>

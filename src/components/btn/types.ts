@@ -53,11 +53,10 @@ export type BtnProps = {
 /**
  * Events emitted by the {@link Btn} component.
  */
-export type BtnEmits = {
+export type BtnEmits =
   /**
    * Emitted when the button is clicked.
    * @param {MouseEvent} event - The native `MouseEvent` object associated with the click.
    * @returns void
    */
-  (e: "click", event: MouseEvent): void;
-};
+  (e: "click", event: MouseEvent) => void;

@@ -8,7 +8,7 @@ const vuetify = createVuetify({ components, directives });
  * Vue Test Utils plugin for Uimed.
  */
 export function vueTestUtilsPluginUimed(): ReturnType<typeof createVuetify> {
-  global.ResizeObserver = require("resize-observer-polyfill");
+  globalThis.ResizeObserver = require("resize-observer-polyfill");
 
   return vuetify;
 }
