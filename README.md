@@ -4,6 +4,19 @@
 [![CD](https://github.com/nexdom-healthtech/uimed-vue/actions/workflows/cd.yml/badge.svg)](https://github.com/nexdom-healthtech/uimed-vue/actions/workflows/cd.yml)
 [![Dependabot](https://github.com/nexdom-healthtech/uimed-vue/actions/workflows/dependabot/dependabot-updates/badge.svg)](https://github.com/nexdom-healthtech/uimed-vue/actions/workflows/dependabot/dependabot-updates)
 
+[![Quality Gate Status](https://sonar-qube-public.services-dev.nexdom.tec.br/api/project_badges/measure?project=UIMed-Vue&metric=alert_status&token=sqb_12cf3033ebcf463511977eb64f95e614562e6773)](https://sonar-qube-public.services-dev.nexdom.tec.br/dashboard?id=UIMed-Vue)
+[![Maintainability Rating](https://sonar-qube-public.services-dev.nexdom.tec.br/api/project_badges/measure?project=UIMed-Vue&metric=software_quality_maintainability_rating&token=sqb_12cf3033ebcf463511977eb64f95e614562e6773)](https://sonar-qube-public.services-dev.nexdom.tec.br/dashboard?id=UIMed-Vue)
+[![Reliability Rating](https://sonar-qube-public.services-dev.nexdom.tec.br/api/project_badges/measure?project=UIMed-Vue&metric=software_quality_reliability_rating&token=sqb_12cf3033ebcf463511977eb64f95e614562e6773)](https://sonar-qube-public.services-dev.nexdom.tec.br/dashboard?id=UIMed-Vue)
+[![Security Rating](https://sonar-qube-public.services-dev.nexdom.tec.br/api/project_badges/measure?project=UIMed-Vue&metric=software_quality_security_rating&token=sqb_12cf3033ebcf463511977eb64f95e614562e6773)](https://sonar-qube-public.services-dev.nexdom.tec.br/dashboard?id=UIMed-Vue)
+[![Lines of Code](https://sonar-qube-public.services-dev.nexdom.tec.br/api/project_badges/measure?project=UIMed-Vue&metric=ncloc&token=sqb_12cf3033ebcf463511977eb64f95e614562e6773)](https://sonar-qube-public.services-dev.nexdom.tec.br/dashboard?id=UIMed-Vue)
+[![Coverage](https://sonar-qube-public.services-dev.nexdom.tec.br/api/project_badges/measure?project=UIMed-Vue&metric=coverage&token=sqb_12cf3033ebcf463511977eb64f95e614562e6773)](https://sonar-qube-public.services-dev.nexdom.tec.br/dashboard?id=UIMed-Vue)
+[![Duplicated Lines (%)](https://sonar-qube-public.services-dev.nexdom.tec.br/api/project_badges/measure?project=UIMed-Vue&metric=duplicated_lines_density&token=sqb_12cf3033ebcf463511977eb64f95e614562e6773)](https://sonar-qube-public.services-dev.nexdom.tec.br/dashboard?id=UIMed-Vue)
+[![Technical Debt](https://sonar-qube-public.services-dev.nexdom.tec.br/api/project_badges/measure?project=UIMed-Vue&metric=software_quality_maintainability_remediation_effort&token=sqb_12cf3033ebcf463511977eb64f95e614562e6773)](https://sonar-qube-public.services-dev.nexdom.tec.br/dashboard?id=UIMed-Vue)
+
+[![Docs Website](https://img.shields.io/website?url=https://nexdom-healthtech.github.io/uimed-vue/&label=Docs%20Website&logo=github)](https://nexdom-healthtech.github.io/uimed-vue)
+
+[![semantic-release: conventionalcommits](https://img.shields.io/badge/semantic--release-conventionalcommits-e10079?logo=semantic-release)](https://github.com/semantic-release/semantic-release)
+
 A ui framework for NEXDOM applications, based on [Material Design](https://m3.material.io/).
 
 For more examples and information, check the [docs page](https://nexdom-healthtech.github.io/uimed-vue/).
