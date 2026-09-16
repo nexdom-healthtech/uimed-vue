@@ -22,6 +22,9 @@ export default defineConfig({
         command: "vpx vitepress preview docs  --host --port 4173 --strictPort",
         dependsOn: ["docs:build"],
       },
+      sonar: {
+        command: "vpx sonar-scanner",
+      },
     },
   },
   pack: {
@@ -61,7 +64,7 @@ export default defineConfig({
     environment: "jsdom",
     exclude: [".pnpm-store/", "e2e/**", "**/node_modules/**", "**/.git/**", "**/.stryker-tmp/**"],
     coverage: {
-      reporter: process.env.CI ? ["text"] : ["text", "html"],
+      reporter: process.env.CI ? ["text", "lcov"] : ["text", "html"],
       thresholds: {
         "100": true,
       },

@@ -58,6 +58,7 @@
     "@mdi/font": "^7.4.47",
     "@nexdom/shared": "^2.1.1",
     "@playwright/test": "^1.62.1",
+    "@sonar/scan": "^5.0.0",
     "@stryker-mutator/core": "^10.0.0",
     "@stryker-mutator/vitest-runner": "^10.0.0",
     "@types/node": "^26.1.2",
