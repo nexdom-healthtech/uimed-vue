@@ -18,7 +18,8 @@
         "stryker-mutator.stryker-mutator",
         "ms-playwright.playwright",
         "lukas-tr.materialdesignicons-intellisense",
-        "anthropic.claude-code"
+        "anthropic.claude-code",
+        "SonarSource.sonarlint-vscode"
       ],
       "settings": {
         "js/ts.preferences.importModuleSpecifier": "non-relative",
