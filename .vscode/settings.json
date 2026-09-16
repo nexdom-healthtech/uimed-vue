@@ -21,5 +21,9 @@
   },
   "js/ts.preferences.importModuleSpecifier": "non-relative",
   "vue.server.includeLanguages": ["vue", "markdown"],
-  "cSpell.language": "en,pt,pt_BR"
+  "cSpell.language": "en,pt,pt_BR",
+  "sonarlint.connectedMode.project": {
+    "connectionId": "https-sonar-qube-public-services-dev-nexdom-tec-br",
+    "projectKey": "UIMed-Vue"
+  }
 }
