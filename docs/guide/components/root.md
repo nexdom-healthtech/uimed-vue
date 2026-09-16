@@ -244,7 +244,6 @@ Consulte a referência de [API do Root](../../api/components/root) para a lista 
   });
 
   const navigationMenu = reactive<NavigationMenuConfig>({
-    dataTestid: "demo-root-navigation-menu",
     items: [
       {
         description: "Início",
