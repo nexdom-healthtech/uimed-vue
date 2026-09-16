@@ -22,7 +22,8 @@
   },
   "files": [
     "dist",
-    "AGENTS.md"
+    "AGENTS.md",
+    "CLAUDE.md"
   ],
   "type": "module",
   "exports": {
