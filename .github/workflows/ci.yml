@@ -44,3 +44,6 @@ jobs:
 
       - name: E2E Test
         run: vpr test:e2e
+
+      - name: Static Analysis
+        run: vpr sonar -Dsonar.token=${{ secrets.SONAR_TOKEN }}
