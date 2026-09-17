@@ -23,7 +23,7 @@ export default defineConfig({
         dependsOn: ["docs:build"],
       },
       sonar: {
-        command: "vpx sonar-scanner",
+        command: "vpx @sonar/scan",
       },
     },
   },
