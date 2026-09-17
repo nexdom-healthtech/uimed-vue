@@ -54,7 +54,7 @@ const vuetifyVariant = useTextFieldVariant(() => props.variant);
 const vuetifyType = useTextFieldType(() => props.type);
 const rules = useTextFieldRules(props);
 const isSearchField = computed(() => props.type === "search");
-const computedClearable = computed(() => clearable ?? isSearchField.value);
+const computedClearable = computed(() => props.clearable ?? isSearchField.value);
 const prependIcon = computed(() => (isSearchField.value ? "mdi-magnify" : undefined));
 
 function clear() {
