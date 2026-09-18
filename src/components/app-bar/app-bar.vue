@@ -1,12 +1,21 @@
 <template>
-  <v-app-bar :title="props.title" :data-testid="props.dataTestid">
-    <template #prepend>
-      <v-app-bar-nav-icon
-        v-if="navigation"
-        :data-testid="navigationBtnDataTestid"
-        @click="navigationOpen = !navigationOpen"
-      />
-    </template>
+  <v-app-bar :data-testid="props.dataTestid">
+    <v-app-bar-nav-icon
+      v-if="navigation"
+      :data-testid="navigationBtnDataTestid"
+      @click="navigationOpen = !navigationOpen"
+    />
+
+    <v-img
+      v-if="logo"
+      :src="props.logo"
+      height="100%"
+      width="fit-content"
+      class="py-2 ml-5 mr-n3"
+      cover
+    />
+
+    <v-app-bar-title v-if="props.title">{{ props.title }}</v-app-bar-title>
 
     <template #append>
       <v-btn
@@ -113,6 +122,7 @@ import { formatDateTime, toPeriodInterval } from "@nexdom/shared/utils";
 import { computed } from "vue";
 import {
   VAppBar,
+  VAppBarTitle,
   VAppBarNavIcon,
   VBtn,
   VMenu,
@@ -122,6 +132,7 @@ import {
   VBadge,
   VIcon,
   VDivider,
+  VImg,
   VList,
   VListItem,
   VListGroup,
@@ -129,7 +140,12 @@ import {
   VListItemAction,
 } from "vuetify/components";
 
-const props = defineProps<AppBarProps & { navigation: boolean }>();
+type Props = AppBarProps & {
+  navigation?: boolean;
+  logo?: string;
+};
+
+const props = defineProps<Props>();
 const notificationsOpen = defineModel<boolean>("notificationsOpen", { default: false });
 const navigationOpen = defineModel<boolean>("navigationOpen");
 
