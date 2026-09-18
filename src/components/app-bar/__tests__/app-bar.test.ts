@@ -1,11 +1,13 @@
 import {
   VAppBar,
   VAppBarNavIcon,
+  VAppBarTitle,
   VAvatar,
   VBadge,
   VBtn,
   VCard,
   VIcon,
+  VImg,
   VListGroup,
   VListItem,
   VMenu,
@@ -32,7 +34,7 @@ describe("AppBar", () => {
   });
 
   it("should contain primary component", () => {
-    expect(wrapper.findComponent(VAppBar).exists()).toBeTruthy();
+    expect(findVAppBar(wrapper).exists()).toBeTruthy();
   });
 
   it('should inherit "data-testid" attribute', () => {
@@ -47,11 +49,15 @@ describe("AppBar", () => {
   describe("props", () => {
     describe("title", () => {
       it("should forward title to the app bar", async () => {
+        let vAppBarTitle = findVAppBarTitle(wrapper);
+        expect(vAppBarTitle.exists()).toBeFalsy();
+
         const title = "AI Chat";
         await wrapper.setProps({ title });
 
-        const vAppBar = findVAppBar(wrapper);
-        expect(vAppBar.props("title")).toBe(title);
+        vAppBarTitle = findVAppBarTitle(wrapper);
+        expect(vAppBarTitle.exists()).toBeTruthy();
+        expect(vAppBarTitle.text()).toBe(title);
       });
     });
 
@@ -302,6 +308,25 @@ describe("AppBar", () => {
       });
     });
 
+    describe("logo", () => {
+      it("should render an image", async () => {
+        const logo = "/logo.svg";
+
+        let vImg = findVImg(wrapper);
+        expect(vImg.exists()).toBeFalsy();
+
+        await wrapper.setProps({ logo });
+
+        vImg = findVImg(wrapper);
+        expect(vImg.exists()).toBeTruthy();
+        expect(vImg.props("cover")).toBeTruthy();
+        expect(vImg.props("src")).toBe(logo);
+        expect(vImg.props("height")).toBe("100%");
+        expect(vImg.props("width")).toBe("fit-content");
+        expect(vImg.props("class")).toContain("py-2 ml-5 mr-n3");
+      });
+    });
+
     describe("user", () => {
       const user = { title: "Beetlejuice", subtitle: "beetle3x@gmail.com" };
 
@@ -469,6 +494,14 @@ function mountAppBar() {
 
 function findVAppBar(wrapper: ReturnType<typeof mountAppBar>) {
   return wrapper.findComponent(VAppBar);
+}
+
+function findVImg(wrapper: ReturnType<typeof mountAppBar>) {
+  return wrapper.findComponent(VImg);
+}
+
+function findVAppBarTitle(wrapper: ReturnType<typeof mountAppBar>) {
+  return wrapper.findComponent(VAppBarTitle);
 }
 
 function findVAppBarNavIcon(wrapper: ReturnType<typeof mountAppBar>) {
