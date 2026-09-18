@@ -13,6 +13,7 @@ Responsável por carregar o menu superior, o menu de navegação lateral, compon
 | Prop             | Tipo                                            | Padrão | Descrição                                                           |
 | ---------------- | ----------------------------------------------- | ------ | ------------------------------------------------------------------- |
 | `dataTestid`     | `string`                                        |        | Aplica atributo `data-testid` para testes sobre o componente.       |
+| `logo`           | `string`                                        |        | URL utilizada para carregar a logo que será apresentada.            |
 | `appBar`         | [`AppBarConfig`](#appbarconfig)                 |        | Conjunto de propriedades para aplicar à barra superior.             |
 | `navigationMenu` | [`NavigationMenuConfig`](#navigationmenuconfig) |        | Conjunto de propriedades para aplicar ao menu lateral de navegação. |
 
