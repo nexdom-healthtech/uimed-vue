@@ -260,7 +260,7 @@ Consulte a referência de [API do ContentSet](../../api/components/content-set) 
 <script lang="ts" setup>
   import { ref, type ExtractPublicPropTypes } from "vue"
   import { Content, ContentSet } from "../../../dist/components.js"
-  import { VSelect, VTextField, VCheckbox } from "vuetify/components"
+  import { VSelect, VCheckbox } from "vuetify/components"
 
   type Props = ExtractPublicPropTypes<InstanceType<typeof ContentSet>>
 
