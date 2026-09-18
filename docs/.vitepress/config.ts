@@ -110,6 +110,7 @@ export default defineConfig({
               items: [
                 { text: "Componente base", link: "/guide/components/root" },
                 { text: "Componentes de layout", link: "/guide/components/layout" },
+                { text: "Agrupador de Conteúdo", link: "/guide/components/content-set" },
               ],
             },
             {
@@ -147,6 +148,20 @@ export default defineConfig({
             {
               text: "Btn",
               link: "/api/components/btn",
+            },
+            {
+              text: "Content Area",
+              collapsed: false,
+              items: [
+                {
+                  text: "ContentSet",
+                  link: "/api/components/content-set",
+                },
+                {
+                  text: "Content",
+                  link: "/api/components/content",
+                },
+              ],
             },
             {
               text: "Frm",
