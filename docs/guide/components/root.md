@@ -10,6 +10,35 @@ O componente destinado a raiz do projeto se chama `Root`.
 
 ## Propriedades
 
+### Logo
+
+A `logo` nos permite provisionar a URL que será utilizada pelo `Root` para orquestrar a apresentação de uma imagem de logo na aplicação.
+
+<demo contained>
+<root :appBar="{ title: appBar.title }" :logo>
+  <h2>O conteúdo da página vai aqui...</h2>
+</root>
+</demo>
+
+```vue
+<template>
+  <root :appBar :logo>
+    <h2>O conteúdo da página vai aqui...</h2>
+  </root>
+</template>
+
+<script lang="ts" setup>
+import { reactive, ref, watch } from "vue";
+import { Root, type AppBarConfig } from "@nexdom/uimed-vue/components";
+
+const logo = "/uimed-vue/favicon.svg";
+
+const appBar = reactive<AppBarConfig>({
+  title: "Menu superior",
+});
+</script>
+```
+
 ### Menu superior
 
 A prop `app-bar` define as configurações para apresentação do menu superior.
@@ -230,7 +259,8 @@ Consulte a referência de [API do Root](../../api/components/root) para a lista 
   import { Root, type AppBarConfig, type NavigationMenuConfig } from "../../../dist/components.js"
   import { VCheckbox } from "vuetify/components"
 
-  const today = new Date()
+  const today = new Date();
+  const logo = "/uimed-vue/favicon.svg";
 
   const notificationsOpenCount = ref(0);
   const playgroundShowUser = ref(false);
