@@ -13,7 +13,7 @@ const styleValue = "random-style";
 const classValue = "random-class";
 
 describe("Root", () => {
-  const wrapper = mountRoot();
+  let wrapper = mountRoot();
 
   it("should exists", () => {
     expect(wrapper.exists()).toBeTruthy();
@@ -41,15 +41,31 @@ describe("Root", () => {
   });
 
   describe("props", () => {
+    beforeEach(() => (wrapper = mountRoot()));
+
+    describe("logo", () => {
+      it("should forward logo to app bar", async () => {
+        const logo = "/logo.svg";
+        await wrapper.setProps({ logo, appBar: { title: "" } });
+
+        const appBar = findAppBar(wrapper);
+        expect(appBar.exists()).toBeTruthy();
+        expect(appBar.props("logo")).toBe(logo);
+      });
+    });
+
     describe("appBar", () => {
       const title = "AI Chat";
 
       it("should only load app bar when its prop is filled", async () => {
-        expect(wrapper.findComponent(AppBar).exists()).toBeFalsy();
+        let appBar = findAppBar(wrapper);
+        expect(appBar.exists()).toBeFalsy();
 
         const title = "Application";
         await wrapper.setProps({ appBar: { title } });
-        expect(wrapper.findComponent(AppBar).exists()).toBeTruthy();
+
+        appBar = findAppBar(wrapper);
+        expect(appBar.exists()).toBeTruthy();
       });
 
       it("should forward props to the app bar", async () => {
@@ -119,6 +135,7 @@ describe("Root", () => {
         const navigationMenu = findNavigationMenu(wrapper);
 
         appBar.vm.$emit("update:navigationOpen", true);
+        await nextTick();
 
         expect(navigationMenu.props("modelValue")).toBe(true);
       });
