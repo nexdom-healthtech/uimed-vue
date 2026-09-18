@@ -9,6 +9,11 @@ export default defineConfig({
   },
   run: {
     tasks: {
+      check: {
+        command: "vp check && vpx vue-tsc",
+        dependsOn: ["build"],
+        cache: false,
+      },
       docs: {
         command: "vpr docs:dev",
         dependsOn: ["build"],
