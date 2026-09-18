@@ -49,8 +49,8 @@ test.describe("frm", () => {
 });
 
 function locateDemoSubmitElements(page: Page) {
-  const counterText = page.getByTestId("btn-demo-submit-count");
-  const submitButton = page.getByTestId("btn-demo-submit");
+  const counterText = page.getByTestId("frm-demo-submit-count");
+  const submitButton = page.getByTestId("frm-demo-submit");
   const firstNameField = page.getByTestId("first-name-field-demo-submit");
   const lastNameField = page.getByTestId("last-name-field-demo-submit");
 
