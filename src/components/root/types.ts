@@ -11,6 +11,11 @@ export type RootProps = {
   dataTestid?: string;
 
   /**
+   * URL to logo image.
+   */
+  logo?: string;
+
+  /**
    * App bar properties.
    */
   appBar?: AppBarProps;
