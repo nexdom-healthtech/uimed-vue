@@ -10,7 +10,7 @@
     :form
     @click="onClick"
   >
-    <slot name="default" />
+    <slot />
   </v-btn>
 </template>
 
