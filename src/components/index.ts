@@ -6,6 +6,8 @@ export { default as Container } from "@/components/grid/container/container.vue"
 export { default as Row } from "@/components/grid/row/row.vue";
 export { default as Column } from "@/components/grid/column/column.vue";
 export { default as Frm } from "@/components/frm/frm.vue";
+export { default as Content } from "@/components/content/content.vue";
+export { default as ContentSet } from "@/components/content/content-set.vue";
 
 // Types
 export type {
@@ -13,3 +15,4 @@ export type {
   AppBarUserProps as AppBarUserConfig,
 } from "@/components/app-bar/types.ts";
 export type { NavigationMenuProps as NavigationMenuConfig } from "@/components/navigation-menu/types.ts";
+export type { ContentSetAction } from "@/components/content/types.ts";

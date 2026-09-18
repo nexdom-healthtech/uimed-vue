@@ -14,5 +14,7 @@ describe("components", () => {
     expect(components.Row).not.toBeUndefined();
     expect(components.Column).not.toBeUndefined();
     expect(components.Frm).not.toBeUndefined();
+    expect(components.Content).not.toBeUndefined();
+    expect(components.ContentSet).not.toBeUndefined();
   });
 });
