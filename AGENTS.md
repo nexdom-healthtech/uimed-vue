@@ -105,6 +105,7 @@ CI (`.github/workflows/ci.yml`) runs, in order: commitlint on PR commits, `vp pa
 ## Code conventions
 
 - All `src` code is written in English. `docs` content is written in Portuguese (aimed at Brazilian users), even though file/dir names stay in English.
+  - `docs` must not mention Vuetify
 - Never write CSS, classes or any kind of styling. Always use component props.
 - Path aliases: `@/*` → `src/*`, `@e2e/*` → `e2e/*`.
 - Every public component follows this pattern to block access to internals and give it an editor-hover description:
