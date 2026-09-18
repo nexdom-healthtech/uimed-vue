@@ -51,7 +51,9 @@ import { computed, ref } from "vue";
 
 const props = defineProps<RootProps>();
 const appBarProps = computed(() =>
-  props.appBar ? { ...props.appBar, navigation: props.navigationMenu !== undefined } : undefined,
+  props.appBar
+    ? { ...props.appBar, logo: props.logo, navigation: props.navigationMenu !== undefined }
+    : undefined,
 );
 
 const notificationsOpen = defineModel<boolean>("notificationsOpen", { default: false });
