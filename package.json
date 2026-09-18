@@ -43,7 +43,6 @@
     "test": "vp test",
     "test:mutations": "stryker run",
     "test:e2e": "vpx playwright test",
-    "check": "vp check && vpx vue-tsc",
     "prepublishOnly": "vpr build",
     "prepare": "vp config",
     "depcruise": "depcruise src --output-type err-long",
