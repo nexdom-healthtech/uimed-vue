@@ -105,13 +105,13 @@ describe("TextField", () => {
       it("should use text with clearable for search", async () => {
         const wrapper = mountTextField();
         const vTextField = findVTextField(wrapper);
-        expect(vTextField.props("prependInnerIcon")).toBeUndefined();
+        expect(vTextField.props("appendInnerIcon")).toBeUndefined();
         expect(vTextField.props("clearable")).toBeFalsy();
 
         await wrapper.setProps({ type: "search" });
 
         expect(vTextField.props("type")).toBe("text");
-        expect(vTextField.props("prependInnerIcon")).toBe("mdi-magnify");
+        expect(vTextField.props("appendInnerIcon")).toBe("mdi-magnify");
         expect(vTextField.props("clearable")).toBeTruthy();
       });
 
