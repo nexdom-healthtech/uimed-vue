@@ -115,6 +115,18 @@ module.exports = {
       },
       to: {},
     },
+    {
+      name: "components-composables-own-folder",
+      comment:
+        "Components and composables must live in their own folder (src/components/<name>/ or " +
+        "src/composables/<name>/), not directly at the components/composables root.",
+      severity: "error",
+      from: {
+        path: "^src/(?:components|composables)/[^/]+[.](?:vue|ts)$",
+        pathNot: "^src/(?:components|composables)/index[.]ts$",
+      },
+      to: {},
+    },
   ],
   options: {
     // Which modules not to follow further when encountered
