@@ -255,7 +255,7 @@ data-testid="content-set-playground-loading"
 
 ## Ver também
 
-Consulte a referência de [API do USection](../../api/components/section) e da [API do USectionContent](../../api/components/section-content) para a lista completa de props, slots e eventos.
+Consulte a referência de [API do USection](../../api/components/sections/section) e da [API do USectionContent](../../api/components/sections/section-content) para a lista completa de props, slots e eventos.
 
 <script lang="ts" setup>
   import { ref, type ExtractPublicPropTypes } from "vue"

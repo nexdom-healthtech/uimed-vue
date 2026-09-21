@@ -146,27 +146,27 @@ export default defineConfig({
           text: "Componentes",
           collapsed: false,
           items: [
-            { text: "Button", link: "/api/components/button" },
+            { text: "UButton", link: "/api/components/button" },
             {
               text: "Content Area",
               collapsed: false,
               items: [
-                { text: "Section", link: "/api/components/section" },
-                { text: "SectionContent", link: "/api/components/section-content" },
+                { text: "USection", link: "/api/components/sections/section" },
+                { text: "USectionContent", link: "/api/components/sections/section-content" },
               ],
             },
-            { text: "Form", link: "/api/components/form" },
+            { text: "UForm", link: "/api/components/form" },
             {
-              text: "Grid",
+              text: "UGrid",
               collapsed: false,
               items: [
-                { text: "Container", link: "/api/components/grid/container" },
-                { text: "Row", link: "/api/components/grid/row" },
-                { text: "Column", link: "/api/components/grid/column" },
+                { text: "UContainer", link: "/api/components/grid/container" },
+                { text: "URow", link: "/api/components/grid/row" },
+                { text: "UColumn", link: "/api/components/grid/column" },
               ],
             },
-            { text: "Main", link: "/api/components/main" },
-            { text: "TextField", link: "/api/components/text-field" },
+            { text: "UMain", link: "/api/components/main" },
+            { text: "UTextField", link: "/api/components/text-field" },
           ],
         },
         {

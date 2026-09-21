@@ -29,7 +29,7 @@ const apis = [
         group: "Componentes",
         methods: [
             { text: "Button", link: "./components/button" },
-            { text: "Content Area", link: "./components/section" },
+            { text: "Content Area", link: "./components/sections/section" },
             { text: "Form", link: "./components/form" },
             { text: "Grid", link: './components/grid/container' },
             { text: "Main", link: './components/main' },

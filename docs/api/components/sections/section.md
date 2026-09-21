@@ -18,7 +18,7 @@ Inclui suporte para ações sobre esses conteúdos, como botões para salvar, et
 
 ### SectionAction
 
-Estende [`UButtonProps`](./button#props) com as seguintes propriedades adicionais:
+Estende [`UButtonProps`](../button#props) com as seguintes propriedades adicionais:
 
 | Prop      | Tipo              | Descrição                                 |
 | --------- | ----------------- | ----------------------------------------- |
