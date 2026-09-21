@@ -24,16 +24,16 @@
 
 <script lang="ts">
 /**
- * Root component to be placed at the top of the component tree.
+ * Main component to be placed at the top of the component tree.
  *
  * @example
  * ```vue
- * <root>
+ * <main>
  *   <!-- uimed-components -->
- * </root>
+ * </main>
  * ```
  *
- * @see {@link https://nexdom-healthtech.github.io/uimed-vue/guide/components/root | Root Guide}
+ * @see {@link https://nexdom-healthtech.github.io/uimed-vue/guide/components/main | Main Guide}
  */
 export default {
   inheritAttrs: false,
@@ -43,13 +43,13 @@ export default {
 <script setup lang="ts">
 import AppBar from "@/components/app-bar/app-bar.vue";
 import NavigationMenu from "@/components/navigation-menu/navigation-menu.vue";
-import { type RootProps } from "@/components/root/types.ts";
+import { type MainProps } from "@/components/main/types.ts";
 import { VApp, VMain } from "vuetify/components";
 import Container from "@/components/grid/container/container.vue";
 import Toast from "@/components/dialogs/toast.vue";
 import { computed, ref } from "vue";
 
-const props = defineProps<RootProps>();
+const props = defineProps<MainProps>();
 const appBarProps = computed(() =>
   props.appBar
     ? { ...props.appBar, logo: props.logo, navigation: props.navigationMenu !== undefined }

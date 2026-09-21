@@ -1,16 +1,16 @@
 import { VForm } from "vuetify/components";
 import { h, type VNode } from "vue";
-import Frm from "@/components/frm/frm.vue";
+import Form from "@/components/form/form.vue";
 import TextField from "@/components/inputs/text-field/text-field.vue";
 import { flushPromises, mount } from "@vue/test-utils";
 import { vueTestUtilsPluginUimed } from "@/unit-test.ts";
 
-const testId = "frm-test-component";
+const testId = "form-test-component";
 const styleValue = "random-style";
 const classValue = "random-class";
 
-describe("Frm", () => {
-  const wrapper = mountFrm();
+describe("Form", () => {
+  const wrapper = mountForm();
 
   it("should exists", () => {
     expect(wrapper.exists()).toBeTruthy();
@@ -34,7 +34,7 @@ describe("Frm", () => {
     describe("id", () => {
       it('should send the "id" prop to the primary component', async () => {
         const id = "random-id";
-        const wrapper = mountFrm();
+        const wrapper = mountForm();
 
         await wrapper.setProps({ id });
 
@@ -47,7 +47,7 @@ describe("Frm", () => {
     describe("submit", () => {
       it("should call the `onSubmit` handler when the form is submitted", async () => {
         const onSubmit = vi.fn();
-        const wrapper = mountFrm({}, { onSubmit });
+        const wrapper = mountForm({}, { onSubmit });
 
         await wrapper.trigger("submit");
 
@@ -57,7 +57,10 @@ describe("Frm", () => {
 
       it("shouldn't call the `onSubmit` handler when the form contains invalid fields", async () => {
         const onSubmit = vi.fn();
-        const wrapper = mountFrm({ default: () => h(TextField, { required: true }) }, { onSubmit });
+        const wrapper = mountForm(
+          { default: () => h(TextField, { required: true }) },
+          { onSubmit },
+        );
 
         await wrapper.trigger("submit");
         await flushPromises();
@@ -71,8 +74,8 @@ describe("Frm", () => {
   });
 });
 
-function mountFrm(slots: Record<string, () => VNode> = {}, attrs: Record<string, unknown> = {}) {
-  return mount(Frm, {
+function mountForm(slots: Record<string, () => VNode> = {}, attrs: Record<string, unknown> = {}) {
+  return mount(Form, {
     attrs: {
       "data-testid": testId,
       style: styleValue,

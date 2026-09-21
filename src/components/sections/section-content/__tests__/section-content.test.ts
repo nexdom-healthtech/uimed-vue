@@ -1,24 +1,24 @@
 import { VCardText } from "vuetify/components";
 import { mount } from "@vue/test-utils";
-import Content from "@/components/content/content.vue";
+import SectionContent from "@/components/sections/section-content/section-content.vue";
 import { vueTestUtilsPluginUimed } from "@/unit-test.ts";
 
 const styleValue = "random-style";
 const classValue = "random-class";
 
-describe("Content", () => {
+describe("SectionContent", () => {
   it("should exist", () => {
-    const wrapper = mountContent();
+    const wrapper = mountSectionContent();
     expect(wrapper.exists()).toBeTruthy();
   });
 
   it("should contain v-card-text", () => {
-    const wrapper = mountContent();
+    const wrapper = mountSectionContent();
     expect(findVCardText(wrapper).exists()).toBeTruthy();
   });
 
   it("should not inherit unexpected attributes", () => {
-    const wrapper = mountContent();
+    const wrapper = mountSectionContent();
     expect(wrapper.attributes("style")).toBeUndefined();
     expect(wrapper.attributes("class")).not.toContain(classValue);
   });
@@ -26,20 +26,20 @@ describe("Content", () => {
   describe("slots", () => {
     describe("default", () => {
       it("should render content passed to the default slot", () => {
-        const wrapper = mountContent({ default: "Test Content" });
+        const wrapper = mountSectionContent({ default: "Test Content" });
         expect(wrapper.text()).toContain("Test Content");
       });
 
       it("should forward the default slot content to v-card-text", () => {
-        const wrapper = mountContent({ default: "Test Content" });
+        const wrapper = mountSectionContent({ default: "Test Content" });
         expect(findVCardText(wrapper).text()).toContain("Test Content");
       });
     });
   });
 });
 
-function mountContent(slots: Record<string, string> = {}) {
-  return mount(Content, {
+function mountSectionContent(slots: Record<string, string> = {}) {
+  return mount(SectionContent, {
     attrs: {
       style: styleValue,
       class: classValue,
@@ -51,6 +51,6 @@ function mountContent(slots: Record<string, string> = {}) {
   });
 }
 
-function findVCardText(wrapper: ReturnType<typeof mountContent>) {
+function findVCardText(wrapper: ReturnType<typeof mountSectionContent>) {
   return wrapper.findComponent(VCardText);
 }

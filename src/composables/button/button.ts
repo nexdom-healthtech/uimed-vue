@@ -1,4 +1,4 @@
-import type { BtnProps, BtnVariant } from "@/components/btn/types.ts";
+import type { ButtonProps, ButtonVariant } from "@/components/button/types.ts";
 import { computed, toValue, type ComputedRef, type MaybeRefOrGetter } from "vue";
 import type { VBtn } from "vuetify/components";
 
@@ -6,31 +6,31 @@ type VBtnProps = InstanceType<typeof VBtn>["$props"];
 
 type VuetifyVariant = NonNullable<VBtnProps["variant"]>;
 
-const btnVariantToVuetifyVariant: Record<BtnVariant, VuetifyVariant> = {
+const buttonVariantToVuetifyVariant: Record<ButtonVariant, VuetifyVariant> = {
   primary: "elevated",
   secondary: "flat",
   ghost: "outlined",
 };
 
-export function useBtnVariant(
-  variant: MaybeRefOrGetter<BtnProps["variant"]>,
+export function useButtonVariant(
+  variant: MaybeRefOrGetter<ButtonProps["variant"]>,
 ): ComputedRef<VuetifyVariant> {
   return computed(() => {
     const variantValue = toValue(variant);
 
     return variantValue
-      ? btnVariantToVuetifyVariant[variantValue]
-      : btnVariantToVuetifyVariant.primary;
+      ? buttonVariantToVuetifyVariant[variantValue]
+      : buttonVariantToVuetifyVariant.primary;
   });
 }
 
-export function useBtnType(type: MaybeRefOrGetter<BtnProps["type"]>) {
+export function useButtonType(type: MaybeRefOrGetter<ButtonProps["type"]>) {
   return computed(() => {
     const typeValue = toValue(type);
     return typeValue ?? "button";
   });
 }
 
-export function useBtnForm(form: MaybeRefOrGetter<BtnProps["form"]>) {
+export function useButtonForm(form: MaybeRefOrGetter<ButtonProps["form"]>) {
   return computed(() => toValue(form));
 }

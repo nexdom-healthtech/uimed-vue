@@ -1,20 +1,20 @@
-import type { BtnProps } from "@/components/btn/types.ts";
+import type { ButtonProps } from "@/components/button/types.ts";
 
-export type ContentSetVariant = "primary" | "secondary";
+export type SectionVariant = "primary" | "secondary";
 
 /**
- * Props exposed by the {@link ContentSet} component.
+ * Props exposed by the {@link Section} component.
  */
-export type ContentSetProps = {
+export type SectionProps = {
   /**
-   * Applies a distinct style variation to the content set.
+   * Applies a distinct style variation to the section.
    * One of `primary` or `secondary`.
    * @default "primary"
    */
-  variant?: ContentSetVariant;
+  variant?: SectionVariant;
 
   /**
-   * Title displayed at the top of the content set.
+   * Title displayed at the top of the section.
    */
   title?: string;
 
@@ -24,19 +24,19 @@ export type ContentSetProps = {
   subtitle?: string;
 
   /**
-   * List of actions displayed at the bottom of the content set, inside
+   * List of actions displayed at the bottom of the section, inside
    * `v-card-actions`. When undefined or empty, no actions area is rendered.
    */
-  actions?: ContentSetAction[];
+  actions?: SectionAction[];
 
   /**
-   * Makes the content set occupy 100% of its parent's width.
+   * Makes the section occupy 100% of its parent's width.
    * @default false
    */
   fullWidth?: boolean;
 
   /**
-   * Makes the content set occupy 100% of its parent's height.
+   * Makes the section occupy 100% of its parent's height.
    * @default false
    */
   fullHeight?: boolean;
@@ -55,9 +55,9 @@ export type ContentSetProps = {
 };
 
 /**
- * A single action rendered inside {@link ContentSet}'s actions area.
+ * A single action rendered inside {@link Section}'s actions area.
  */
-export interface ContentSetAction extends BtnProps {
+export interface SectionAction extends ButtonProps {
   /**
    * Text displayed on the action button.
    */

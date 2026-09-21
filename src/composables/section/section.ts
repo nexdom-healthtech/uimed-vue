@@ -1,22 +1,22 @@
-import type { ContentSetProps, ContentSetVariant } from "@/components/content/types.ts";
+import type { SectionProps, SectionVariant } from "@/components/sections/section/types.ts";
 import { computed, toValue, type ComputedRef, type MaybeRefOrGetter } from "vue";
 import type { VCard } from "vuetify/components";
 
 type VCardProps = InstanceType<typeof VCard>["$props"];
 type VuetifyVariant = NonNullable<VCardProps["variant"]>;
 
-const contentSetVariantToVuetifyVariant: Record<ContentSetVariant, VuetifyVariant> = {
+const sectionVariantToVuetifyVariant: Record<SectionVariant, VuetifyVariant> = {
   primary: "elevated",
   secondary: "outlined",
 };
 
-export function useContentSetVariant(
-  variant: MaybeRefOrGetter<ContentSetProps["variant"]>,
+export function useSectionVariant(
+  variant: MaybeRefOrGetter<SectionProps["variant"]>,
 ): ComputedRef<VuetifyVariant> {
   return computed(() => {
     const variantValue = toValue(variant);
     return variantValue
-      ? contentSetVariantToVuetifyVariant[variantValue]
-      : contentSetVariantToVuetifyVariant.primary;
+      ? sectionVariantToVuetifyVariant[variantValue]
+      : sectionVariantToVuetifyVariant.primary;
   });
 }

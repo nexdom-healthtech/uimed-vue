@@ -1,13 +1,13 @@
 // Components
-export { default as Root } from "@/components/root/root.vue";
-export { default as Btn } from "@/components/btn/btn.vue";
-export { default as TextField } from "@/components/inputs/text-field/text-field.vue";
-export { default as Container } from "@/components/grid/container/container.vue";
-export { default as Row } from "@/components/grid/row/row.vue";
-export { default as Column } from "@/components/grid/column/column.vue";
-export { default as Frm } from "@/components/frm/frm.vue";
-export { default as Content } from "@/components/content/content.vue";
-export { default as ContentSet } from "@/components/content/content-set.vue";
+export { default as UMain } from "@/components/main/main.vue";
+export { default as UButton } from "@/components/button/button.vue";
+export { default as UTextField } from "@/components/inputs/text-field/text-field.vue";
+export { default as UContainer } from "@/components/grid/container/container.vue";
+export { default as URow } from "@/components/grid/row/row.vue";
+export { default as UColumn } from "@/components/grid/column/column.vue";
+export { default as UForm } from "@/components/form/form.vue";
+export { default as USectionContent } from "@/components/sections/section-content/section-content.vue";
+export { default as USection } from "@/components/sections/section/section.vue";
 
 // Types
 export type {
@@ -15,4 +15,4 @@ export type {
   AppBarUserProps as AppBarUserConfig,
 } from "@/components/app-bar/types.ts";
 export type { NavigationMenuProps as NavigationMenuConfig } from "@/components/navigation-menu/types.ts";
-export type { ContentSetAction } from "@/components/content/types.ts";
+export type { SectionAction } from "@/components/sections/section/types.ts";

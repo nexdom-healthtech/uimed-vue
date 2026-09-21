@@ -12,14 +12,14 @@
       <slot />
 
       <v-card-actions v-if="showActions" class="mt-auto">
-        <btn
+        <Button
           v-for="({ label, onClick, ...action }, index) in props.actions"
           :key="index"
           v-bind="action"
           @click="onClick"
         >
           {{ label }}
-        </btn>
+        </Button>
       </v-card-actions>
     </v-card>
   </v-skeleton-loader>
@@ -27,17 +27,17 @@
 
 <script lang="ts">
 /**
- * Content set component to group related content and actions, to be used
+ * Section component to group related content and actions, to be used
  * throughout the application.
  *
  * @example
  * ```vue
- * <content-set title="Title" subtitle="Subtitle">
+ * <section title="Title" subtitle="Subtitle">
  *   Content
- * </content-set>
+ * </section>
  * ```
  *
- * @see {@link https://nexdom-healthtech.github.io/uimed-vue/guide/components/content-set | ContentSet Guide}
+ * @see {@link https://nexdom-healthtech.github.io/uimed-vue/guide/components/section | Section Guide}
  */
 export default {
   inheritAttrs: false,
@@ -47,13 +47,13 @@ export default {
 <script setup lang="ts">
 import { computed } from "vue";
 import { VCard, VCardActions, VSkeletonLoader } from "vuetify/components";
-import Btn from "@/components/btn/btn.vue";
-import type { ContentSetProps } from "@/components/content/types.ts";
-import { useContentSetVariant } from "@/composables/content-set.ts";
+import Button from "@/components/button/button.vue";
+import type { SectionProps } from "@/components/sections/section/types.ts";
+import { useSectionVariant } from "@/composables/section/section.ts";
 
-const props = defineProps<ContentSetProps>();
+const props = defineProps<SectionProps>();
 
-const variant = useContentSetVariant(() => props.variant);
+const variant = useSectionVariant(() => props.variant);
 const title = computed(() => props.title || undefined);
 const subtitle = computed(() => props.subtitle || undefined);
 const width = computed(() => (props.fullWidth ? "100%" : undefined));

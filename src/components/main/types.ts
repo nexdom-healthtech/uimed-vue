@@ -2,9 +2,9 @@ import type { AppBarProps } from "@/components/app-bar/types.ts";
 import type { NavigationMenuProps } from "@/components/navigation-menu/types.ts";
 
 /**
- * Props exposed by the {@link Root} component.
+ * Props exposed by the {@link Main} component.
  */
-export type RootProps = {
+export type MainProps = {
   /**
    * Component id to use on automated tests.
    */

@@ -7,16 +7,16 @@
 <script lang="ts">
 /**
  * Proxy component for Vuetify's `v-card-text`, used to structure content
- * displayed inside a {@link ContentSet}.
+ * displayed inside a {@link Section}.
  *
  * @example
  * ```vue
- * <content-set title="Title">
- *   <content>Content</content>
- * </content-set>
+ * <section title="Title">
+ *   <section-content>Content</section-content>
+ * </section>
  * ```
  *
- * @see {@link https://nexdom-healthtech.github.io/uimed-vue/guide/components/content-set | ContentSet Guide}
+ * @see {@link https://nexdom-healthtech.github.io/uimed-vue/guide/components/section | Section Guide}
  */
 export default {
   inheritAttrs: false,

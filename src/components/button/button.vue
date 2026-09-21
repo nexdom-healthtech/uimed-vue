@@ -1,4 +1,3 @@
-020
 <template>
   <v-btn
     :disabled="props.disabled"
@@ -20,12 +19,12 @@
  *
  * @example
  * ```vue
- * <btn color="danger" @click="onClick">
+ * <button color="danger" @click="onClick">
  *   Confirmar
- * </btn>
+ * </button>
  * ```
  *
- * @see {@link https://nexdom-healthtech.github.io/uimed-vue/guide/components/btn | Btn Guide}
+ * @see {@link https://nexdom-healthtech.github.io/uimed-vue/guide/components/button | Button Guide}
  */
 export default {
   inheritAttrs: false,
@@ -34,17 +33,17 @@ export default {
 
 <script setup lang="ts">
 import { VBtn } from "vuetify/components";
-import type { BtnProps, BtnEmits } from "@/components/btn/types.ts";
-import { useBtnForm, useBtnType, useBtnVariant } from "@/composables/btn.ts";
+import type { ButtonProps, ButtonEmits } from "@/components/button/types.ts";
+import { useButtonForm, useButtonType, useButtonVariant } from "@/composables/button/button.ts";
 import useVuetifyColor from "@/composables/colors/use-vuetify-color.ts";
 
-const props = defineProps<BtnProps>();
-const emit = defineEmits<BtnEmits>();
+const props = defineProps<ButtonProps>();
+const emit = defineEmits<ButtonEmits>();
 
-const variant = useBtnVariant(() => props.variant);
+const variant = useButtonVariant(() => props.variant);
 const color = useVuetifyColor(() => props.color);
-const type = useBtnType(() => props.type);
-const form = useBtnForm(() => props.form);
+const type = useButtonType(() => props.type);
+const form = useButtonForm(() => props.form);
 
 function onClick(event: MouseEvent) {
   emit("click", event);

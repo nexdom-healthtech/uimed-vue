@@ -1,19 +1,19 @@
 import { VApp, VMain } from "vuetify/components";
-import Root from "@/components/root/root.vue";
+import Main from "@/components/main/main.vue";
 import { mount } from "@vue/test-utils";
 import { vueTestUtilsPluginUimed } from "@/unit-test.ts";
-import { Container } from "@/components/index.ts";
+import { UContainer } from "@/components/index.ts";
 import Toast from "@/components/dialogs/toast.vue";
 import AppBar from "@/components/app-bar/app-bar.vue";
 import NavigationMenu from "@/components/navigation-menu/navigation-menu.vue";
 import { nextTick } from "vue";
 
-const testId = "root-test-component";
+const testId = "main-test-component";
 const styleValue = "random-style";
 const classValue = "random-class";
 
-describe("Root", () => {
-  let wrapper = mountRoot();
+describe("Main", () => {
+  let wrapper = mountMain();
 
   it("should exists", () => {
     expect(wrapper.exists()).toBeTruthy();
@@ -22,7 +22,7 @@ describe("Root", () => {
   it("should contain primary components", () => {
     expect(wrapper.findComponent(VApp).exists()).toBeTruthy();
     expect(wrapper.findComponent(VMain).exists()).toBeTruthy();
-    expect(wrapper.findComponent(Container).exists()).toBeTruthy();
+    expect(wrapper.findComponent(UContainer).exists()).toBeTruthy();
   });
 
   it("should contain toast component", () => {
@@ -41,7 +41,7 @@ describe("Root", () => {
   });
 
   describe("props", () => {
-    beforeEach(() => (wrapper = mountRoot()));
+    beforeEach(() => (wrapper = mountMain()));
 
     describe("logo", () => {
       it("should forward logo to app bar", async () => {
@@ -155,8 +155,8 @@ describe("Root", () => {
   });
 });
 
-function mountRoot() {
-  return mount(Root, {
+function mountMain() {
+  return mount(Main, {
     attrs: {
       "data-testid": testId,
       style: styleValue,
@@ -168,10 +168,10 @@ function mountRoot() {
   });
 }
 
-function findAppBar(wrapper: ReturnType<typeof mountRoot>) {
+function findAppBar(wrapper: ReturnType<typeof mountMain>) {
   return wrapper.findComponent(AppBar);
 }
 
-function findNavigationMenu(wrapper: ReturnType<typeof mountRoot>) {
+function findNavigationMenu(wrapper: ReturnType<typeof mountMain>) {
   return wrapper.findComponent(NavigationMenu);
 }

@@ -1,7 +1,7 @@
 /**
- * Props exposed by the {@link Frm} component.
+ * Props exposed by the {@link Form} component.
  */
-export type FrmProps = {
+export type FormProps = {
   /**
    * Id to set on `form` native element.
    */
@@ -14,9 +14,9 @@ export type FrmProps = {
 };
 
 /**
- * Events emitted by the {@link Frm} component.
+ * Events emitted by the {@link Form} component.
  */
-export type FrmEmits =
+export type FormEmits =
   /**
    * Emitted when the form is submitted.
    * @param {SubmitEvent} event - The native `SubmitEvent` object associated with the form, **already default prevented**.

@@ -1,17 +1,17 @@
 import type { ColorVariant } from "@/composables/colors/types.ts";
 
-export type BtnVariant = "primary" | "secondary" | "ghost";
+export type ButtonVariant = "primary" | "secondary" | "ghost";
 
 /**
- * Props exposed by the {@link Btn} component.
+ * Props exposed by the {@link Button} component.
  */
-export type BtnProps = {
+export type ButtonProps = {
   /**
    * Applies a distinct style variation to the button.
    * One of `primary`, `secondary`, or `ghost`.
    * @default "primary"
    */
-  variant?: BtnVariant;
+  variant?: ButtonVariant;
 
   /**
    * Applies a distinct behavior to the button.
@@ -51,9 +51,9 @@ export type BtnProps = {
 };
 
 /**
- * Events emitted by the {@link Btn} component.
+ * Events emitted by the {@link Button} component.
  */
-export type BtnEmits =
+export type ButtonEmits =
   /**
    * Emitted when the button is clicked.
    * @param {MouseEvent} event - The native `MouseEvent` object associated with the click.

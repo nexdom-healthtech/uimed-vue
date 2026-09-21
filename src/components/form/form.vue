@@ -10,13 +10,13 @@
  *
  * @example
  * ```vue
- * <frm @submit="onSubmit">
+ * <form @submit="onSubmit">
  *   <!-- uimed-field-components -->
  *   <!-- uimed-submit-btn-component -->
- * </frm>
+ * </form>
  * ```
  *
- * @see {@link https://nexdom-healthtech.github.io/uimed-vue/guide/components/frm | Form Guide}
+ * @see {@link https://nexdom-healthtech.github.io/uimed-vue/guide/components/form | Form Guide}
  */
 export default {
   inheritAttrs: false,
@@ -24,12 +24,12 @@ export default {
 </script>
 
 <script setup lang="ts">
-import { type FrmEmits, type FrmProps } from "@/components/frm/types.ts";
+import { type FormEmits, type FormProps } from "@/components/form/types.ts";
 import type { SubmitEventPromise } from "vuetify";
 import { VForm } from "vuetify/components";
 
-const props = defineProps<FrmProps>();
-const emit = defineEmits<FrmEmits>();
+const props = defineProps<FormProps>();
+const emit = defineEmits<FormEmits>();
 
 async function onSubmit(event: SubmitEventPromise) {
   const { valid } = await event;
