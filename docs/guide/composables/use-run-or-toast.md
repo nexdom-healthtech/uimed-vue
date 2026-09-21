@@ -1,46 +1,46 @@
 # Run or toast
 
-Uma vez que carregamos o [Componente base](../components/root), podemos estar tirando proveito da nossa composable para execução de métodos assíncronos e apresentação de mensagens _toast_ em caso de exceções.
+Uma vez que carregamos o [Componente base](../components/main), podemos estar tirando proveito da nossa composable para execução de métodos assíncronos e apresentação de mensagens _toast_ em caso de exceções.
 
 ## Uso
 
 <demo>
-  <root>
-    <row>
-      <column cols="auto">
-        <btn :loading="isRunningSuccessfully" data-testid="btn-positive" color="positive" @click="runSuccessfully">
+  <u-main>
+    <u-row>
+      <u-column cols="auto">
+        <u-button :loading="isRunningSuccessfully" data-testid="btn-positive" color="positive" @click="runSuccessfully">
           Executar com sucesso
-        </btn>
-      </column>
-      <column cols="auto">
-        <btn :loading="isRunningUnsuccessfully" data-testid="btn-danger" color="danger" @click="runUnsuccessfully">
+        </u-button>
+      </u-column>
+      <u-column cols="auto">
+        <u-button :loading="isRunningUnsuccessfully" data-testid="btn-danger" color="danger" @click="runUnsuccessfully">
           Executar com falha
-        </btn>
-      </column>
-    </row>
-  </root>
+        </u-button>
+      </u-column>
+    </u-row>
+  </u-main>
 </demo>
 
 ```vue
 <template>
-  <root>
-    <row>
-      <column cols="auto">
-        <btn :loading="isRunningSuccessfully" color="positive" @click="runSuccessfully">
+  <u-main>
+    <u-row>
+      <u-column cols="auto">
+        <u-button :loading="isRunningSuccessfully" color="positive" @click="runSuccessfully">
           Executar com sucesso
-        </btn>
-      </column>
-      <column cols="auto">
-        <btn :loading="isRunningUnsuccessfully" color="danger" @click="runUnsuccessfully">
+        </u-button>
+      </u-column>
+      <u-column cols="auto">
+        <u-button :loading="isRunningUnsuccessfully" color="danger" @click="runUnsuccessfully">
           Executar com falha
-        </btn>
-      </column>
-    </row>
-  </root>
+        </u-button>
+      </u-column>
+    </u-row>
+  </u-main>
 </template>
 
 <script lang="ts" setup>
-import { Root, Row, Column, Btn } from "@nexdom/uimed-vue/components";
+import { UMain, URow, UColumn, UButton } from "@nexdom/uimed-vue/components";
 import { useRunOrToast } from "@nexdom/uimed-vue/composables";
 
 const { run: runSucceeding, isRunning: isRunningSuccessfully } = useRunOrToast();
@@ -72,7 +72,7 @@ function runUnsuccessfully() {
 Consulte a referência de [API do useRunOrToast](../../api/composables/use-run-or-toast) para mais informações.
 
 <script lang="ts" setup>
-  import { Root, Row, Column, Btn } from "../../../dist/components.js";
+  import { UMain, URow, UColumn, UButton } from "../../../dist/components.js";
   import { useRunOrToast } from "../../../dist/composables.js";
 
   const { run: runSucceeding, isRunning: isRunningSuccessfully } = useRunOrToast();

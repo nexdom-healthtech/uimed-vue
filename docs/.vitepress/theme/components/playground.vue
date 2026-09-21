@@ -5,12 +5,14 @@
     </div>
     <div class="playground-controls">
       <template v-for="[index, action] in Object.entries(actions)">
-        <row v-if="action.type === 'button'">
-          <column>
-            <btn :data-testid="action.dataTestid" @click="action.action">{{ action.label }}</btn>
-          </column>
-        </row>
-        <text-field
+        <u-row v-if="action.type === 'button'">
+          <u-column>
+            <u-button :data-testid="action.dataTestid" @click="action.action">{{
+              action.label
+            }}</u-button>
+          </u-column>
+        </u-row>
+        <u-text-field
           v-else
           :model-value="action.value"
           :label="action.label"
@@ -24,7 +26,7 @@
 </template>
 
 <script lang="ts" setup>
-import { TextField, Btn, Row, Column } from "../../../../dist/components.js";
+import { UTextField, UButton, URow, UColumn } from "../../../../dist/components.js";
 
 interface Input {
   type: "text";

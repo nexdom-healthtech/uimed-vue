@@ -4,9 +4,9 @@ outline: deep
 
 # Agrupador de Conteúdo
 
-O componente padrão para agrupar conteúdo relacionado se chama `ContentSet`.
+O componente padrão para agrupar conteúdo relacionado se chama `Section`.
 
-Dentro do mesmo também podemos adicionar o [`Content`](#componente-content).
+Dentro do mesmo também podemos adicionar o [`SectionContent`](#componente-sectioncontent).
 
 ## Propriedades
 
@@ -15,18 +15,18 @@ Dentro do mesmo também podemos adicionar o [`Content`](#componente-content).
 A prop `variant` define a variação de estilo aplicada ao agrupador de conteúdo. O padrão é `primary`.
 
 <demo>
-<content-set variant="primary" title="Primary">Conteúdo do agrupador primary</content-set>
-<content-set variant="secondary" title="Secondary">Conteúdo do agrupador secondary</content-set>
+<u-section variant="primary" title="Primary">Conteúdo do agrupador primary</u-section>
+<u-section variant="secondary" title="Secondary">Conteúdo do agrupador secondary</u-section>
 </demo>
 
 ```vue
 <template>
-  <content-set variant="primary" title="Primary">Conteúdo do agrupador primary</content-set>
-  <content-set variant="secondary" title="Secondary">Conteúdo do agrupador secondary</content-set>
+  <u-section variant="primary" title="Primary">Conteúdo do agrupador primary</u-section>
+  <u-section variant="secondary" title="Secondary">Conteúdo do agrupador secondary</u-section>
 </template>
 
 <script lang="ts" setup>
-import { ContentSet } from "@nexdom/uimed-vue/components";
+import { USection } from "@nexdom/uimed-vue/components";
 </script>
 ```
 
@@ -35,20 +35,20 @@ import { ContentSet } from "@nexdom/uimed-vue/components";
 As props `title` e `subtitle` definem o título e o subtítulo exibidos no topo do agrupador.
 
 <demo>
-<content-set title="Título do Agrupador" subtitle="Subtítulo descritivo">
+<u-section title="Título do Agrupador" subtitle="Subtítulo descritivo">
   Conteúdo do agrupador com título e subtítulo 
-</content-set>
+</u-section>
 </demo>
 
 ```vue
 <template>
-  <content-set title="Título do Agrupador" subtitle="Subtítulo descritivo">
+  <u-section title="Título do Agrupador" subtitle="Subtítulo descritivo">
     Conteúdo do agrupador com título e subtítulo
-  </content-set>
+  </u-section>
 </template>
 
 <script lang="ts" setup>
-import { ContentSet } from "@nexdom/uimed-vue/components";
+import { USection } from "@nexdom/uimed-vue/components";
 </script>
 ```
 
@@ -59,20 +59,20 @@ import { ContentSet } from "@nexdom/uimed-vue/components";
 Utilize a prop `fullWidth` para fazer o agrupador ocupar 100% da largura do seu container.
 
 <demo>
-<content-set title="Agrupador com 100% de largura" full-width>
+<u-section title="Agrupador com 100% de largura" full-width>
   Conteúdo preenchendo toda a largura disponível
-</content-set>
+</u-section>
 </demo>
 
 ```vue
 <template>
-  <content-set title="Agrupador com 100% de largura" full-width>
+  <u-section title="Agrupador com 100% de largura" full-width>
     Conteúdo preenchendo toda a largura disponível
-  </content-set>
+  </u-section>
 </template>
 
 <script lang="ts" setup>
-import { ContentSet } from "@nexdom/uimed-vue/components";
+import { USection } from "@nexdom/uimed-vue/components";
 </script>
 ```
 
@@ -82,23 +82,23 @@ Utilize a prop `fullHeight` para fazer o agrupador ocupar 100% da altura do seu 
 
 <demo>
 <div style="height: 300px;">
-  <content-set title="Agrupador com 100% de altura" full-height>
+  <u-section title="Agrupador com 100% de altura" full-height>
     Conteúdo preenchendo toda a altura disponível
-  </content-set>
+  </u-section>
 </div>
 </demo>
 
 ```vue
 <template>
   <div style="height: 300px;">
-    <content-set title="Agrupador com 100% de altura" full-height>
+    <u-section title="Agrupador com 100% de altura" full-height>
       Conteúdo preenchendo toda a altura disponível
-    </content-set>
+    </u-section>
   </div>
 </template>
 
 <script lang="ts" setup>
-import { ContentSet } from "@nexdom/uimed-vue/components";
+import { USection } from "@nexdom/uimed-vue/components";
 </script>
 ```
 
@@ -108,24 +108,24 @@ A prop `actions` define uma lista de botões exibidos na área de ações (rodap
 
 <demo>
 <div style="height: 300px;">
-  <content-set title="Agrupador com Ações" :actions="demoActions" full-height>
+  <u-section title="Agrupador com Ações" :actions="demoActions" full-height>
     Conteúdo com ações disponíveis no rodapé
-  </content-set>
+  </u-section>
 </div>
 </demo>
 
 ```vue
 <template>
   <div style="height: 300px;">
-    <content-set title="Agrupador com Ações" :actions="actions" full-height>
+    <u-section title="Agrupador com Ações" :actions="actions" full-height>
       Conteúdo com ações disponíveis no rodapé
-    </content-set>
+    </u-section>
   </div>
 </template>
 
 <script lang="ts" setup>
 import { ref } from "vue";
-import { ContentSet } from "@nexdom/uimed-vue/components";
+import { USection } from "@nexdom/uimed-vue/components";
 
 const actions = ref([
   {
@@ -147,48 +147,48 @@ const actions = ref([
 A prop `loading` exibe um skeleton loader no lugar do conteúdo enquanto uma operação está em andamento.
 
 <demo col>
-<content-set title="Carregando..." loading> Conteúdo do agrupador </content-set>
-<content-set
+<u-section title="Carregando..." loading> Conteúdo do agrupador </u-section>
+<u-section
   title="Carregando com actions..."
   :actions="[{ label: 'Salvar' }]"
   loading
 >
   Conteúdo do agrupador com actions
-</content-set>
+</u-section>
 </demo>
 
 ```vue
 <template>
-  <content-set title="Carregando..." loading> Conteúdo do agrupador </content-set>
-  <content-set title="Carregando com actions..." :actions="[{ label: 'Salvar' }]" loading>
+  <u-section title="Carregando..." loading> Conteúdo do agrupador </u-section>
+  <u-section title="Carregando com actions..." :actions="[{ label: 'Salvar' }]" loading>
     Conteúdo do agrupador com actions
-  </content-set>
+  </u-section>
 </template>
 
 <script lang="ts" setup>
-import { ContentSet } from "@nexdom/uimed-vue/components";
+import { USection } from "@nexdom/uimed-vue/components";
 </script>
 ```
 
-## Componente Content
+## Componente SectionContent
 
-O componente `Content` é utilizado para estruturar o conteúdo exibido dentro do `ContentSet`.
+O componente `SectionContent` é utilizado para estruturar o conteúdo exibido dentro do `Section`.
 
 <demo>
-<content-set title="Título do Agrupador">
-  <content>Conteúdo estruturado com o componente Content</content>
-</content-set>
+<u-section title="Título do Agrupador">
+  <u-section-content>Conteúdo estruturado com o componente SectionContent</u-section-content>
+</u-section>
 </demo>
 
 ```vue
 <template>
-  <content-set title="Título do Agrupador">
-    <content>Conteúdo estruturado com o componente Content</content>
-  </content-set>
+  <u-section title="Título do Agrupador">
+    <u-section-content>Conteúdo estruturado com o componente SectionContent</u-section-content>
+  </u-section>
 </template>
 
 <script lang="ts" setup>
-import { Content, ContentSet } from "@nexdom/uimed-vue/components";
+import { USectionContent, USection } from "@nexdom/uimed-vue/components";
 </script>
 ```
 
@@ -197,7 +197,7 @@ import { Content, ContentSet } from "@nexdom/uimed-vue/components";
 Experimente as combinações de props do componente.
 
 <playground v-model:actions="playgroundActions">
-<content-set
+<u-section
   :variant="playgroundVariant"
   :title="playgroundActions.title.value"
   :subtitle="playgroundActions.subtitle.value"
@@ -208,7 +208,7 @@ Experimente as combinações de props do componente.
   data-testid="content-set-preview"
 >
   {{ playgroundActions.content.value }}
-</content-set>
+</u-section>
 
 <template #actions>
 <v-select
@@ -255,14 +255,14 @@ data-testid="content-set-playground-loading"
 
 ## Ver também
 
-Consulte a referência de [API do ContentSet](../../api/components/content-set) e da [API do Content](../../api/components/content) para a lista completa de props, slots e eventos.
+Consulte a referência de [API do USection](../../api/components/section) e da [API do USectionContent](../../api/components/section-content) para a lista completa de props, slots e eventos.
 
 <script lang="ts" setup>
   import { ref, type ExtractPublicPropTypes } from "vue"
-  import { Content, ContentSet } from "../../../dist/components.js"
+  import { USection } from "../../../dist/components.js"
   import { VSelect, VCheckbox } from "vuetify/components"
 
-  type Props = ExtractPublicPropTypes<InstanceType<typeof ContentSet>>
+  type Props = ExtractPublicPropTypes<InstanceType<typeof USection>>
 
   const demoActions = ref<Props["actions"]>([
     {
@@ -282,7 +282,7 @@ Consulte a referência de [API do ContentSet](../../api/components/content-set) 
   const playgroundActions = ref({
     content: {
       label: "Conteúdo",
-      value: "Teste o componente ContentSet com diferentes combinações de props",
+      value: "Teste o componente Section com diferentes combinações de props",
       dataTestid: "content-set-playground-content"
     },
     title: {

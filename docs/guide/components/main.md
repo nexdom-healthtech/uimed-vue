@@ -4,7 +4,7 @@ outline: deep
 
 # Componente base
 
-O componente destinado a raiz do projeto se chama `Root`.
+O componente destinado a raiz do projeto se chama `Main`.
 
 É responsável por carregar o menu superior, o menu de navegação lateral, o componente utilizado pelos composables de [Toasts](../composables/use-toast) e os estilos necessários para os demais componentes.
 
@@ -12,24 +12,24 @@ O componente destinado a raiz do projeto se chama `Root`.
 
 ### Logo
 
-A `logo` nos permite provisionar a URL que será utilizada pelo `Root` para orquestrar a apresentação de uma imagem de logo na aplicação.
+A `logo` nos permite provisionar a URL que será utilizada pelo `Main` para orquestrar a apresentação de uma imagem de logo na aplicação.
 
 <demo contained>
-<root :appBar="{ title: appBar.title }" :logo>
+<u-main :appBar="{ title: appBar.title }" :logo>
   <h2>O conteúdo da página vai aqui...</h2>
-</root>
+</u-main>
 </demo>
 
 ```vue
 <template>
-  <root :appBar :logo>
+  <u-main :appBar :logo>
     <h2>O conteúdo da página vai aqui...</h2>
-  </root>
+  </u-main>
 </template>
 
 <script lang="ts" setup>
 import { reactive, ref, watch } from "vue";
-import { Root, type AppBarConfig } from "@nexdom/uimed-vue/components";
+import { UMain, type AppBarConfig } from "@nexdom/uimed-vue/components";
 
 const logo = "/uimed-vue/favicon.svg";
 
@@ -46,21 +46,21 @@ A prop `app-bar` define as configurações para apresentação do menu superior.
 Para ocultar o menu superior, basta omitir essa prop.
 
 <demo contained>
-<root :appBar @update:notifications-open="toggleNotifications">
+<u-main :appBar @update:notifications-open="toggleNotifications">
   <h2>O conteúdo da página vai aqui...</h2>
-</root>
+</u-main>
 </demo>
 
 ```vue
 <template>
-  <root :appBar @update:notifications-open="toggleNotifications">
+  <u-main :appBar @update:notifications-open="toggleNotifications">
     <h2>O conteúdo da página vai aqui...</h2>
-  </root>
+  </u-main>
 </template>
 
 <script lang="ts" setup>
 import { reactive, ref, watch } from "vue";
-import { Root, type AppBarConfig } from "@nexdom/uimed-vue/components";
+import { UMain, type AppBarConfig } from "@nexdom/uimed-vue/components";
 
 const today = new Date();
 
@@ -144,21 +144,21 @@ Para ocultar o menu de navegação, basta omitir essa prop.
 O menu também conta com um campo de busca que filtra itens e grupos em tempo real, no formato _case-insensitive_.
 
 <demo contained data-testid="demo-root-navigation-toggle">
-<root :appBar="demoNavigationToggleAppBar" :navigationMenu="navigationMenu" data-testid="root-demo-navigation-toggle">
+<u-main :appBar="demoNavigationToggleAppBar" :navigationMenu="navigationMenu" data-testid="root-demo-navigation-toggle">
   <h2>O conteúdo da página vai aqui...</h2>
-</root>
+</u-main>
 </demo>
 
 ```vue
 <template>
-  <root :appBar :navigationMenu>
+  <u-main :appBar :navigationMenu>
     <h2>O conteúdo da página vai aqui...</h2>
-  </root>
+  </u-main>
 </template>
 
 <script lang="ts" setup>
 import { ref, reactive } from "vue";
-import { Root, type AppBarConfig, type NavigationMenuConfig } from "@nexdom/uimed-vue/components";
+import { UMain, type AppBarConfig, type NavigationMenuConfig } from "@nexdom/uimed-vue/components";
 
 const appBar: AppBarConfig = {
   title: "Menu superior",
@@ -199,23 +199,23 @@ const navigationMenu: NavigationMenuConfig = {
 O evento `update:notificationsOpen` é emitido sempre que o menu de notificações é aberto ou fechado.
 
 <demo contained data-testid="demo-notifications-open-event">
-<root :app-bar="eventsAppBar" @update:notifications-open="onNotificationsOpen" data-testid="root-demo-notifications-open">
+<u-main :app-bar="eventsAppBar" @update:notifications-open="onNotificationsOpen" data-testid="root-demo-notifications-open">
   <h2 data-testid="root-demo-notifications-open-count">
     {{ notificationsOpenCount }} interação(ões)
   </h2>
-</root>
+</u-main>
 </demo>
 
 ```vue
 <template>
-  <root :app-bar="appBar" @update:notifications-open="onNotificationsOpen">
+  <u-main :app-bar="appBar" @update:notifications-open="onNotificationsOpen">
     <h2>{{ notificationsOpenCount }} interação(ões)</h2>
-  </root>
+  </u-main>
 </template>
 
 <script lang="ts" setup>
 import { ref } from "vue";
-import { Root, type AppBarConfig } from "@nexdom/uimed-vue/components";
+import { UMain, type AppBarConfig } from "@nexdom/uimed-vue/components";
 
 const notificationsOpenCount = ref(0);
 
@@ -236,9 +236,9 @@ Experimente as combinações de props do componente.
 
 <playground v-model:actions="playgroundActions">
 <demo contained>
-<root :app-bar="playgroundAppBar" :navigationMenu="playgroundShowNavigationMenu ? playgroundNavigationMenu : undefined" data-testid="root-preview">
+<u-main :app-bar="playgroundAppBar" :navigationMenu="playgroundShowNavigationMenu ? playgroundNavigationMenu : undefined" data-testid="root-preview">
   <h2>O conteúdo da página vai aqui...</h2>
-</root>
+</u-main>
 </demo>
 
 <template #actions>
@@ -252,11 +252,11 @@ Experimente as combinações de props do componente.
 
 ## Ver também
 
-Consulte a referência de [API do Root](../../api/components/root) para a lista completa de props, slots e eventos.
+Consulte a referência de [API do UMain](../../api/components/main) para a lista completa de props, slots e eventos.
 
 <script lang="ts" setup>
   import { computed, reactive, ref } from "vue"
-  import { Root, type AppBarConfig, type NavigationMenuConfig } from "../../../dist/components.js"
+  import { UMain, type AppBarConfig, type NavigationMenuConfig } from "../../../dist/components.js"
   import { VCheckbox } from "vuetify/components"
 
   const today = new Date();

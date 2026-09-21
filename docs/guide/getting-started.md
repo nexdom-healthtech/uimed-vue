@@ -67,17 +67,17 @@ createApp(App)
 
 ## E agora?
 
-Importe o componente [`Root`](../api/components/root) para dentro do seu `App.vue`, conforme o exemplo a seguir e então você poderá utilizar todos os recursos do `@nexdom/uimed-vue` a vontade.
+Importe o componente [`Main`](../api/components/main) para dentro do seu `App.vue`, conforme o exemplo a seguir e então você poderá utilizar todos os recursos do `@nexdom/uimed-vue` a vontade.
 
 ```vue [App.vue]
 <template>
-  <root>
+  <u-main>
     <!-- ... -->
-  </root>
+  </u-main>
 </template>
 
 <script lang="ts" setup>
-import { Root } from "@nexdom/uimed-vue/components";
+import { UMain } from "@nexdom/uimed-vue/components";
 </script>
 ```
 

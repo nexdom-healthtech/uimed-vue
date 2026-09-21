@@ -1,4 +1,4 @@
-# Container
+# UContainer
 
 Principal componente do grid system.
 
@@ -12,20 +12,20 @@ Responsável por agrupar diversos [componentes de linha](./row).
 
 ## Slots
 
-| Slot      | Descrição                                                                                                   |
-| --------- | ----------------------------------------------------------------------------------------------------------- |
-| `default` | Conteúdo a ser exibido dentro do componente. A raiz do mesmo deve conter apenas componentes [`row`](./row). |
+| Slot      | Descrição                                                                                                    |
+| --------- | ------------------------------------------------------------------------------------------------------------ |
+| `default` | Conteúdo a ser exibido dentro do componente. A raiz do mesmo deve conter apenas componentes [`URow`](./row). |
 
 ## Exemplo
 
 ```vue
 <template>
-  <container>
+  <u-container>
     <!-- ... -->
-  </container>
+  </u-container>
 </template>
 
 <script lang="ts" setup>
-import { Container } from "@nexdom/uimed-vue/components";
+import { UContainer } from "@nexdom/uimed-vue/components";
 </script>
 ```

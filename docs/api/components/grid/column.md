@@ -1,4 +1,4 @@
-# Column
+# UColumn
 
 Componente para colunas das linhas do grid system.
 
@@ -21,20 +21,20 @@ Deve ser colocado exclusivamente dentro de [componentes de linha](./row).
 
 ```vue
 <template>
-  <container>
-    <row>
-      <column cols="6"><!-- ... --></column>
-      <column cols="6"><!-- ... --></column>
-    </row>
-    <row>
-      <column cols="4"><!-- ... --></column>
-      <column cols="4"><!-- ... --></column>
-      <column cols="4"><!-- ... --></column>
-    </row>
-  </container>
+  <u-container>
+    <u-row>
+      <u-column cols="6"><!-- ... --></u-column>
+      <u-column cols="6"><!-- ... --></u-column>
+    </u-row>
+    <u-row>
+      <u-column cols="4"><!-- ... --></u-column>
+      <u-column cols="4"><!-- ... --></u-column>
+      <u-column cols="4"><!-- ... --></u-column>
+    </u-row>
+  </u-container>
 </template>
 
 <script lang="ts" setup>
-import { Container, Row, Column } from "@nexdom/uimed-vue/components";
+import { UContainer, URow, UColumn } from "@nexdom/uimed-vue/components";
 </script>
 ```

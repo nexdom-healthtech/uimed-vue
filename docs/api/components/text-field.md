@@ -1,4 +1,4 @@
-# TextField
+# UTextField
 
 Componente para utilização de campos de text.
 
@@ -29,13 +29,13 @@ Componente para utilização de campos de text.
 
 ```vue
 <template>
-  <text-field v-model="name" label="Nome" />
+  <u-text-field v-model="name" label="Nome" />
   Olá, {{ name }}!
 </template>
 
 <script lang="ts" setup>
 import { ref } from "vue";
-import { TextField } from "@nexdom/uimed-vue/components";
+import { UTextField } from "@nexdom/uimed-vue/components";
 
 const name = ref("");
 </script>

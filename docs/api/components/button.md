@@ -1,4 +1,4 @@
-# Btn
+# UButton
 
 Componente para utilização de botões.
 
@@ -30,12 +30,12 @@ Componente para utilização de botões.
 
 ```vue
 <template>
-  <btn variant="ghost" color="danger" :loading="loading" @click="onClick">Excluir</btn>
+  <u-button variant="ghost" color="danger" :loading="loading" @click="onClick">Excluir</u-button>
 </template>
 
 <script lang="ts" setup>
 import { ref } from "vue";
-import { Btn } from "@nexdom/uimed-vue/components";
+import { UButton } from "@nexdom/uimed-vue/components";
 
 const loading = ref(false);
 

@@ -28,11 +28,11 @@ const apis = [
     {
         group: "Componentes",
         methods: [
-            { text: "Btn", link: "./components/btn" },
-            { text: "Content Area", link: "./components/content-set" },
-            { text: "Frm", link: "./components/frm" },
+            { text: "Button", link: "./components/button" },
+            { text: "Content Area", link: "./components/section" },
+            { text: "Form", link: "./components/form" },
             { text: "Grid", link: './components/grid/container' },
-            { text: "Root", link: './components/root' },
+            { text: "Main", link: './components/main' },
             { text: "TextField", link: "./components/text-field" }
         ]
     },

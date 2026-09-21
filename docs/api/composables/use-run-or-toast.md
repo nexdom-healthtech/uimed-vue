@@ -26,12 +26,12 @@ Se houver qualquer erro durante a execução da função (`run`), a mesma irá c
 
 ```vue
 <template>
-  <root>
+  <u-main>
     <!-- ... -->
-  </root>
+  </u-main>
 </template>
 <script lang="ts" setup>
-import { Root } from "@nexdom/uimed-vue/components";
+import { UMain } from "@nexdom/uimed-vue/components";
 import { useRunOrToast } from "@nexdom/uimed-vue/composables";
 
 const { run, isRunning } = useRunOrToast();

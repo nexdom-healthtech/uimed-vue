@@ -99,6 +99,7 @@ export default defineConfig({
             { text: "O que é UIMed-Vue?", link: "/guide/" },
             { text: "Iniciando", link: "/guide/getting-started" },
             { text: "Testes Unitários", link: "/guide/unit-testing" },
+            { text: "Migrando de v1 para v2", link: "/guide/migration-v1-to-v2" },
           ],
         },
         {
@@ -108,21 +109,21 @@ export default defineConfig({
             {
               text: "Conteúdo",
               items: [
-                { text: "Componente base", link: "/guide/components/root" },
+                { text: "Componente base", link: "/guide/components/main" },
                 { text: "Componentes de layout", link: "/guide/components/layout" },
-                { text: "Agrupador de Conteúdo", link: "/guide/components/content-set" },
+                { text: "Agrupador de Conteúdo", link: "/guide/components/section" },
               ],
             },
             {
               text: "Campos e formulários",
               items: [
                 { text: "Campos de texto", link: "/guide/components/text-field" },
-                { text: "Formulários", link: "/guide/components/frm" },
+                { text: "Formulários", link: "/guide/components/form" },
               ],
             },
             {
               text: "Ações",
-              items: [{ text: "Botões", link: "/guide/components/btn" }],
+              items: [{ text: "Botões", link: "/guide/components/button" }],
             },
           ],
         },
@@ -145,54 +146,27 @@ export default defineConfig({
           text: "Componentes",
           collapsed: false,
           items: [
-            {
-              text: "Btn",
-              link: "/api/components/btn",
-            },
+            { text: "Button", link: "/api/components/button" },
             {
               text: "Content Area",
               collapsed: false,
               items: [
-                {
-                  text: "ContentSet",
-                  link: "/api/components/content-set",
-                },
-                {
-                  text: "Content",
-                  link: "/api/components/content",
-                },
+                { text: "Section", link: "/api/components/section" },
+                { text: "SectionContent", link: "/api/components/section-content" },
               ],
             },
-            {
-              text: "Frm",
-              link: "/api/components/frm",
-            },
+            { text: "Form", link: "/api/components/form" },
             {
               text: "Grid",
               collapsed: false,
               items: [
-                {
-                  text: "Container",
-                  link: "/api/components/grid/container",
-                },
-                {
-                  text: "Row",
-                  link: "/api/components/grid/row",
-                },
-                {
-                  text: "Column",
-                  link: "/api/components/grid/column",
-                },
+                { text: "Container", link: "/api/components/grid/container" },
+                { text: "Row", link: "/api/components/grid/row" },
+                { text: "Column", link: "/api/components/grid/column" },
               ],
             },
-            {
-              text: "Root",
-              link: "/api/components/root",
-            },
-            {
-              text: "TextField",
-              link: "/api/components/text-field",
-            },
+            { text: "Main", link: "/api/components/main" },
+            { text: "TextField", link: "/api/components/text-field" },
           ],
         },
         {

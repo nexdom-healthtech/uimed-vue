@@ -2,7 +2,7 @@
 outline: deep
 ---
 
-# Root
+# UMain
 
 Componente principal do projeto.
 
@@ -99,14 +99,14 @@ Responsável por carregar o menu superior, o menu de navegação lateral, compon
 
 ```vue
 <template>
-  <root :app-bar="appBar" v-model:notifications-open="notificationsOpen">
+  <u-main :app-bar="appBar" v-model:notifications-open="notificationsOpen">
     <!-- ... -->
-  </root>
+  </u-main>
 </template>
 
 <script lang="ts" setup>
 import { ref } from "vue";
-import { Root, type AppBarConfig } from "@nexdom/uimed-vue/components";
+import { UMain, type AppBarConfig } from "@nexdom/uimed-vue/components";
 
 const notificationsOpen = ref(false);
 

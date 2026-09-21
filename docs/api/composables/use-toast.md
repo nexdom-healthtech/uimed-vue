@@ -29,12 +29,12 @@ Se nenhuma cor (`color`) for informada, o toast assume e mensagem como `"informa
 
 ```vue
 <template>
-  <root>
+  <u-main>
     <!-- ... -->
-  </root>
+  </u-main>
 </template>
 <script lang="ts" setup>
-import { Root } from "@nexdom/uimed-vue/components";
+import { UMain } from "@nexdom/uimed-vue/components";
 import { useToast } from "@nexdom/uimed-vue/composables";
 
 const { toast } = useToast();

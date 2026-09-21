@@ -19,14 +19,14 @@ São recursos que permitem a elaboração e reutilização de interface gráfica
 
 Os componentes a seguir possuem exemplos práticos de utilização dentro desta documentação.
 
-| Recurso                                           | Descrição                              |
-| ------------------------------------------------- | -------------------------------------- |
-| [Botões](./components/btn)                        | Componente de botão.                   |
-| [Campos de texto](./components/text-field)        | Componente para campo de texto.        |
-| [Componente base](./components/root)              | Componente raiz.                       |
-| [Componentes de layout](./components/layout)      | Componentes para seguir o grid system. |
-| [Agrupador de Conteúdo](./components/content-set) | Componente para agrupar conteúdo.      |
-| [Formulários](./components/frm)                   | Componente de formulário.              |
+| Recurso                                       | Descrição                              |
+| --------------------------------------------- | -------------------------------------- |
+| [Botões](./components/button)                 | Componente de botão.                   |
+| [Campos de texto](./components/text-field)    | Componente para campo de texto.        |
+| [Componente base](./components/main)          | Componente raiz.                       |
+| [Componentes de layout](./components/layout)  | Componentes para seguir o grid system. |
+| [Agrupador de Conteúdo](./components/section) | Componente para agrupar conteúdo.      |
+| [Formulários](./components/form)              | Componente de formulário.              |
 
 ### Composables
 

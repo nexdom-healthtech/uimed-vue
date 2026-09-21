@@ -1,4 +1,4 @@
-# Frm
+# UForm
 
 Componente para utilização de formulários.
 
@@ -25,16 +25,16 @@ Componente para utilização de formulários.
 
 ```vue
 <template>
-  <frm @submit="onSubmit">
-    <text-field label="Nome" required />
-    <text-field label="Sobrenome" required />
+  <u-form @submit="onSubmit">
+    <u-text-field label="Nome" required />
+    <u-text-field label="Sobrenome" required />
 
-    <btn type="submit">Salvar</btn>
-  </frm>
+    <u-button type="submit">Salvar</u-button>
+  </u-form>
 </template>
 
 <script lang="ts" setup>
-import { Frm, Btn, TextField } from "@nexdom/uimed-vue/components";
+import { UForm, UButton, UTextField } from "@nexdom/uimed-vue/components";
 
 function onSubmit(event: SubmitEvent) {
   console.log("Formulário submetido!", event);
