@@ -109,6 +109,8 @@ export default {
 </script>
 ```
 
+Every component exported publicly from `src/components/index.ts` **must be re-exported with a `U` prefix** on its identifier, while the component's internal file, folder, and component name stay unprefixed. For example, a component internally named `Button` in `src/components/button/button.vue` should be exported as `export { default as UButton } from ...` from the index file. This convention applies to all future public components.
+
 ### Workarounds
 
 - [Instrumenting Vue compiler macro arguments (defineModel/defineOptions/defineProps) produces code the SFC compiler hoists out of the helper's scope](https://github.com/stryker-mutator/stryker-js/issues/6178)
