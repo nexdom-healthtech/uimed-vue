@@ -1,9 +1,9 @@
 import { test, expect, type Page } from "@playwright/test";
 import { gotoPage } from "@e2e/utils.ts";
 
-test.describe("frm", () => {
+test.describe("form", () => {
   test.beforeEach(async ({ page }) => {
-    await gotoPage(page, "guide/components/frm");
+    await gotoPage(page, "guide/components/form");
   });
 
   test.describe("events demo", () => {

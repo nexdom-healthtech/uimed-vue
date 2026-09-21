@@ -1,9 +1,9 @@
 import { test, expect, type Page } from "@playwright/test";
 import { gotoPage, selectOption } from "@e2e/utils.ts";
 
-test.describe("content-set", () => {
+test.describe("section", () => {
   test.beforeEach(async ({ page }) => {
-    await gotoPage(page, "guide/components/content-set");
+    await gotoPage(page, "guide/components/section");
     page.on("dialog", (dialog) => dialog.accept());
   });
 
@@ -111,10 +111,10 @@ test.describe("content-set", () => {
       await expect(bones.first()).toBeVisible();
     });
 
-    test("renders the Content component demo", async ({ page }) => {
+    test("renders the SectionContent component demo", async ({ page }) => {
       const vpdoc = page.locator(".vp-doc");
       await expect(
-        vpdoc.getByText("Conteúdo estruturado com o componente Content").first(),
+        vpdoc.getByText("Conteúdo estruturado com o componente SectionContent").first(),
       ).toBeVisible();
     });
   });

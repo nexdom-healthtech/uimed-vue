@@ -1,9 +1,9 @@
 import { test, expect, type Page } from "@playwright/test";
 import { gotoPage, selectOption } from "@e2e/utils.ts";
 
-test.describe("btn", () => {
+test.describe("button", () => {
   test.beforeEach(async ({ page }) => {
-    await gotoPage(page, "guide/components/btn");
+    await gotoPage(page, "guide/components/button");
   });
 
   test.describe("playground", () => {

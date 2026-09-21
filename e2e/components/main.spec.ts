@@ -1,9 +1,9 @@
 import { gotoPage } from "@e2e/utils.ts";
 import { test, expect, type Page } from "@playwright/test";
 
-test.describe("root", () => {
+test.describe("main", () => {
   test.beforeEach(async ({ page }) => {
-    await gotoPage(page, "guide/components/root");
+    await gotoPage(page, "guide/components/main");
     page.on("dialog", (dialog) => dialog.accept());
   });
 
