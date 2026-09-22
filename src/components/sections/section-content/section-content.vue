@@ -12,9 +12,9 @@
  * @example
  * ```vue
  * <template>
- *   <section title="Title">
- *     <section-content>Content</section-content>
- *   </section>
+ *   <u-section title="Title">
+ *     <u-section-content>Content</u-section-content>
+ *   </u-section>
  * </template>
  * ```
  *
