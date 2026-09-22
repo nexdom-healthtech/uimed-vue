@@ -8,6 +8,7 @@ export { default as UColumn } from "@/components/grid/column/column.vue";
 export { default as UForm } from "@/components/form/form.vue";
 export { default as USectionContent } from "@/components/sections/section-content/section-content.vue";
 export { default as USection } from "@/components/sections/section/section.vue";
+export { default as UTable } from "@/components/table/table.vue";
 
 // Types
 export type {
@@ -16,3 +17,4 @@ export type {
 } from "@/components/app-bar/types.ts";
 export type { NavigationMenuProps as NavigationMenuConfig } from "@/components/navigation-menu/types.ts";
 export type { SectionAction } from "@/components/sections/section/types.ts";
+export type { TableProps } from "@/components/table/types.ts";
