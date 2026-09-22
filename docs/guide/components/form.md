@@ -4,7 +4,7 @@ outline: deep
 
 # Formulários
 
-O componente que engloba os formulários se chama `UForm` dentro do uimed-vue.
+O componente que engloba os formulários se chama `Form` dentro do uimed-vue.
 
 > [!Warning]
 > Deve ser utilizado no lugar do `<form>` nativo.
