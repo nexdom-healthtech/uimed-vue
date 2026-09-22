@@ -10,9 +10,9 @@
  *
  * @example
  * ```vue
- * <container>
+ * <u-container>
  *   <!-- uimed-components -->
- * </container>
+ * </u-container>
  * ```
  *
  * @see {@link https://nexdom-healthtech.github.io/uimed-vue/guide/components/layout | Container Guide}

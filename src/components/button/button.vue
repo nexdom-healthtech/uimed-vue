@@ -19,9 +19,9 @@
  *
  * @example
  * ```vue
- * <button color="danger" @click="onClick">
+ * <u-button color="danger" @click="onClick">
  *   Confirmar
- * </button>
+ * </u-button>
  * ```
  *
  * @see {@link https://nexdom-healthtech.github.io/uimed-vue/guide/components/button | Button Guide}

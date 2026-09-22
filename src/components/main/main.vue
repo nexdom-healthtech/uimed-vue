@@ -28,9 +28,9 @@
  *
  * @example
  * ```vue
- * <main>
+ * <u-main>
  *   <!-- uimed-components -->
- * </main>
+ * </u-main>
  * ```
  *
  * @see {@link https://nexdom-healthtech.github.io/uimed-vue/guide/components/main | Main Guide}

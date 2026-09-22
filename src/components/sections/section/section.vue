@@ -32,9 +32,9 @@
  *
  * @example
  * ```vue
- * <section title="Title" subtitle="Subtitle">
+ * <u-section title="Title" subtitle="Subtitle">
  *   Content
- * </section>
+ * </u-section>
  * ```
  *
  * @see {@link https://nexdom-healthtech.github.io/uimed-vue/guide/components/section | Section Guide}
