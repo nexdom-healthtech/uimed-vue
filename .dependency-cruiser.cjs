@@ -100,10 +100,22 @@ module.exports = {
       severity: "error",
       from: {
         path: ["src"],
-        pathNot: ["__tests__"],
+        pathNot: ["src/(plugins|unit-test).ts", "__tests__"],
       },
       to: {
         dependencyTypesNot: ["local", "npm-peer"],
+      },
+    },
+    {
+      name: "use-peer-deps-or-core",
+      comment: `Since this project is a library, you should prefer to use peer or Node.js core dependencies.`,
+      severity: "error",
+      from: {
+        path: ["src/(plugins|unit-test).ts"],
+        pathNot: ["__tests__"],
+      },
+      to: {
+        dependencyTypesNot: ["local", "core", "npm-peer"],
       },
     },
     {

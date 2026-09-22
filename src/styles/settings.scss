@@ -1,0 +1,6 @@
+@use "fonts";
+
+@use "sass:string";
+@use "vuetify/settings" with (
+  $body-font-family: string.unquote('"Unimed Slab", sans-serif')
+);
