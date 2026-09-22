@@ -33,6 +33,7 @@ const apis = [
             { text: "Form", link: "./components/form" },
             { text: "Grid", link: './components/grid/container' },
             { text: "Main", link: './components/main' },
+            { text: "Table", link: "./components/table" },
             { text: "TextField", link: "./components/text-field" }
         ]
     },

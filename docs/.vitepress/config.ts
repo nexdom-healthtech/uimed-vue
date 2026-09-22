@@ -125,6 +125,10 @@ export default defineConfig({
               text: "Ações",
               items: [{ text: "Botões", link: "/guide/components/button" }],
             },
+            {
+              text: "Dados",
+              items: [{ text: "Tabela", link: "/guide/components/table" }],
+            },
           ],
         },
         {
@@ -166,6 +170,7 @@ export default defineConfig({
               ],
             },
             { text: "UMain", link: "/api/components/main" },
+            { text: "UTable", link: "/api/components/table" },
             { text: "UTextField", link: "/api/components/text-field" },
           ],
         },
