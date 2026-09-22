@@ -11,9 +11,11 @@
  *
  * @example
  * ```vue
- * <section title="Title">
- *   <section-content>Content</section-content>
- * </section>
+ * <template>
+ *   <section title="Title">
+ *     <section-content>Content</section-content>
+ *   </section>
+ * </template>
  * ```
  *
  * @see {@link https://nexdom-healthtech.github.io/uimed-vue/guide/components/section | Section Guide}
