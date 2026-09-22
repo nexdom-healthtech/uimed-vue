@@ -1,4 +1,4 @@
-import path from "path";
+import { resolve } from "node:path";
 import vitePluginVuetify from "vite-plugin-vuetify";
 import type { UserConfig } from "vite-plus";
 
@@ -8,7 +8,7 @@ import type { UserConfig } from "vite-plus";
 export function vitePluginUimed(): ReturnType<typeof vitePluginVuetify> {
   return vitePluginVuetify({
     autoImport: false,
-    styles: { configFile: path.resolve(__dirname, "styles/settings.scss") },
+    styles: { configFile: resolve(__dirname, "styles/settings.scss") },
   });
 }
 
