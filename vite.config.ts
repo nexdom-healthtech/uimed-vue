@@ -40,6 +40,7 @@ export default defineConfig({
       components: "src/components/index.ts",
       composables: "src/composables/index.ts",
     },
+    copy: "src/styles",
     platform: "neutral",
     plugins: [vue()],
     dts: {
