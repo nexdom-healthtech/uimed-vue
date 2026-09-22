@@ -10,10 +10,12 @@
  *
  * @example
  * ```vue
- * <u-form @submit="onSubmit">
- *   <!-- uimed-field-components -->
- *   <!-- uimed-submit-btn-component -->
- * </u-form>
+ * <template>
+ *  <u-form @submit="onSubmit">
+ *    <!-- uimed-field-components -->
+ *     <!-- uimed-submit-btn-component -->
+ *  </u-form>
+ * </template>
  * ```
  *
  * @see {@link https://nexdom-healthtech.github.io/uimed-vue/guide/components/form | Form Guide}

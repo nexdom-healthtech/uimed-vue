@@ -10,13 +10,15 @@
  *
  * @example
  * ```vue
- * <u-container>
- *   <u-row>
- *     <u-column>
- *       <!-- uimed-components -->
- *     </u-column>
- *   </u-row>
- * </u-container>
+ * <template>
+ *   <u-container>
+ *     <u-row>
+ *       <u-column>
+ *         <!-- uimed-components -->
+ *       </u-column>
+ *     </u-row>
+ *  </u-container>
+ * </template>
  * ```
  *
  * @see {@link https://nexdom-healthtech.github.io/uimed-vue/guide/components/layout | Column Guide}

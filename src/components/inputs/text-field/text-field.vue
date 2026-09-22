@@ -23,7 +23,9 @@
  *
  * @example
  * ```vue
- * <u-text-field label="E-mail" type="email" />
+ * <template>
+ *  <u-text-field label="E-mail" type="email" />
+ * <template>
  * ```
  *
  * @see {@link https://nexdom-healthtech.github.io/uimed-vue/guide/components/text-field | TextField Guide}
