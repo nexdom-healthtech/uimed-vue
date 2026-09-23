@@ -50,7 +50,7 @@ plugins: [vue(), vitePluginUimed()];
 // ...
 ```
 
-Use Uimed inside the Vue app:
+Use UIMed inside the Vue app:
 
 ```ts
 // main.js or main.ts
