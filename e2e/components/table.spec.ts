@@ -1,4 +1,4 @@
-import { test, expect } from "@playwright/test";
+import { test, expect, type Page } from "@playwright/test";
 import { gotoPage } from "@e2e/utils.ts";
 
 test.describe("table", () => {
@@ -31,37 +31,42 @@ test.describe("table", () => {
   });
 
   test.describe("playground", () => {
+    test("toggles header when checkbox is clicked", async ({ page }) => {
+      const headerCheckbox = page.getByTestId("table-playground-header");
+
+      const tables = getPlaygroundTables(page).locator("thead");
+      await expect(tables).toHaveCount(1);
+
+      await headerCheckbox.locator("input").click();
+      await expect(tables).toHaveCount(0);
+      await expect(page).toHaveScreenshot({ fullPage: true });
+
+      await headerCheckbox.locator("input").click();
+      await expect(tables).toHaveCount(1);
+    });
+
     test("toggles vertical layout when checkbox is clicked", async ({ page }) => {
       const verticalCheckbox = page.getByTestId("table-playground-vertical");
 
-      // Click to enable vertical
-      await verticalCheckbox.locator("input").click();
+      const tables = getPlaygroundTables(page);
+      await expect(tables).toHaveCount(1);
 
-      // After clicking, layout should change (vertical renders multiple tables)
-      // Wait a bit for update
-      await page.waitForTimeout(100);
-      const tables = page.getByRole("table");
-      const tableCount = await tables.count();
-      expect(tableCount).toBeGreaterThan(1);
+      await verticalCheckbox.locator("input").click();
+      await expect(tables).toHaveCount(2);
+      await expect(page).toHaveScreenshot({ fullPage: true });
     });
 
     test("toggles loading state when checkbox is clicked", async ({ page }) => {
       const loadingCheckbox = page.getByTestId("table-playground-loading");
-      const previewTable = page.getByTestId("table-playground-preview");
+      const previewTable = getPlaygroundTables(page);
 
-      // Initially table should be visible (not loading)
       await expect(previewTable).toBeVisible();
 
-      // Click to enable loading
       await loadingCheckbox.locator("input").click();
+      await expect(previewTable).not.toBeVisible();
+      await expect(page).toHaveScreenshot({ fullPage: true });
 
-      // Wait for state to update
-      await page.waitForTimeout(100);
-
-      // Click to disable loading again
       await loadingCheckbox.locator("input").click();
-
-      // Table should still be visible
       await expect(previewTable).toBeVisible();
     });
   });
@@ -72,3 +77,7 @@ test.describe("table", () => {
     });
   });
 });
+
+function getPlaygroundTables(page: Page) {
+  return page.locator("[data-testid^=table-playground-preview]");
+}
