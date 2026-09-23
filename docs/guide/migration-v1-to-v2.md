@@ -66,6 +66,6 @@ import { UMain, UButton, URow, UColumn, UTextField } from "@nexdom/uimed-vue/com
 
 1. Procure por todas as importações antigas e substitua pelos novos nomes com o prefixo `U`
 2. Atualize todos os templates para usar as novas tags em kebab-case (ex: `<u-button>` em vez de `<btn>`)
-3. Os tipos de props não são mais exportados pela biblioteca. Utilize `ComponentProps`, de `vue-component-type-helpers`, para obtê-los a partir do componente (veja [Tipagem de props](./getting-started#tipagem-de-props))
+3. Os tipos de props não são mais exportados pela biblioteca. Utilize `ComponentProps`, de [`vue-component-type-helpers`](https://www.npmjs.com/package/vue-component-type-helpers), para obtê-los a partir do componente (veja [Tipagem de props](./getting-started#tipagem-de-props))
 
 Para mais informações sobre cada componente, consulte a [Documentação da API](../api/).
