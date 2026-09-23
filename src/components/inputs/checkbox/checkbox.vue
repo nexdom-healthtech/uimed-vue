@@ -30,10 +30,10 @@ export default {
 };
 </script>
 
-<script setup lang="ts" generic="T = boolean">
+<script setup lang="ts" generic="T = any">
 import type { CheckboxProps } from "@/components/inputs/checkbox/types.ts";
 import { VCheckboxBtn } from "vuetify/components";
 
-const props = defineProps<CheckboxProps<T>>();
-const modelValue = defineModel<T>();
+const props = withDefaults(defineProps<CheckboxProps>(), { trueValue: true, falseValue: false });
+const modelValue = defineModel<T>({ default: (props: CheckboxProps) => props.falseValue });
 </script>
