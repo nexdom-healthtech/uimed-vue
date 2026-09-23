@@ -1,8 +1,9 @@
 import type { ButtonProps, ButtonVariant } from "@/components/button/types.ts";
 import { computed, toValue, type ComputedRef, type MaybeRefOrGetter } from "vue";
+import type { ComponentProps } from "vue-component-type-helpers";
 import type { VBtn } from "vuetify/components";
 
-type VBtnProps = InstanceType<typeof VBtn>["$props"];
+type VBtnProps = ComponentProps<typeof VBtn>;
 
 type VuetifyVariant = NonNullable<VBtnProps["variant"]>;
 

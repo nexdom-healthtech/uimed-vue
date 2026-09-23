@@ -198,9 +198,10 @@ Experimente as combinações de props do componente.
 Consulte a referência de [API do UTextField](../../api/components/text-field) para a lista completa de props, slots e eventos.
 
 <script lang="ts" setup>
-  import { computed, ref, type ExtractPublicPropTypes } from "vue"
+  import { computed, ref } from "vue"
   import { UTextField } from "../../../dist/components.js"
   import { VSelect, VCheckbox } from "vuetify/components"
+import type { ComponentProps } from "vue-component-type-helpers";
 
   const modelValue = ref("Me altere!");
   const changes = ref(0);
@@ -211,7 +212,7 @@ Consulte a referência de [API do UTextField](../../api/components/text-field) p
     changes.value++;
   }
 
-  type Props = ExtractPublicPropTypes<InstanceType<typeof UTextField>>;
+  type Props = ComponentProps<typeof UTextField>;
   const playgroundVariantOptions: Array<Props["variant"]> = ["primary", "secondary"];
 
   const playgroundActions = ref({

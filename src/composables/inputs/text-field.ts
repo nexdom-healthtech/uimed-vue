@@ -7,9 +7,10 @@ import { email, phone, url } from "@/composables/inputs/rules.ts";
 import type { Rule } from "@/composables/inputs/types.ts";
 import useRules from "@/composables/inputs/use-rules.ts";
 import { computed, toValue, type ComputedRef, type MaybeRefOrGetter } from "vue";
+import type { ComponentProps } from "vue-component-type-helpers";
 import type { VTextField } from "vuetify/components";
 
-type VTextFieldProps = InstanceType<typeof VTextField>["$props"];
+type VTextFieldProps = ComponentProps<typeof VTextField>;
 
 type VuetifyVariant = NonNullable<VTextFieldProps["variant"]>;
 

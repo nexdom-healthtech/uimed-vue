@@ -152,9 +152,10 @@ Experimente as combinações de props do componente.
 Consulte a referência de [API do UButton](../../api/components/button) para a lista completa de props, slots e eventos.
 
 <script lang="ts" setup>
-  import { ref, type ExtractPublicPropTypes } from "vue"
+  import { ref } from "vue"
   import { UButton } from "../../../dist/components.js"
   import { VSelect, VCheckbox } from "vuetify/components"
+import type { ComponentProps } from "vue-component-type-helpers";
 
   const clicks = ref(0);
 
@@ -162,7 +163,7 @@ Consulte a referência de [API do UButton](../../api/components/button) para a l
     clicks.value++
   }
 
-type Props = ExtractPublicPropTypes<InstanceType<typeof UButton>>
+type Props = ComponentProps<typeof UButton>;
   const playgroundVariantOptions: Array<Props["variant"]> = ["primary", "secondary", "ghost"];
   const playgroundColorOptions: Array<Props["color"]> = ["primary", "secondary", "positive", "informative", "caution", "danger"];
 

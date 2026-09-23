@@ -258,11 +258,12 @@ data-testid="content-set-playground-loading"
 Consulte a referência de [API do USection](../../api/components/sections/section) e da [API do USectionContent](../../api/components/sections/section-content) para a lista completa de props, slots e eventos.
 
 <script lang="ts" setup>
-  import { ref, type ExtractPublicPropTypes } from "vue"
+  import { ref } from "vue"
   import { USection } from "../../../dist/components.js"
   import { VSelect, VCheckbox } from "vuetify/components"
+import type { ComponentProps } from "vue-component-type-helpers";
 
-  type Props = ExtractPublicPropTypes<InstanceType<typeof USection>>
+  type Props = ComponentProps<typeof USection>;
 
   const demoActions = ref<Props["actions"]>([
     {
