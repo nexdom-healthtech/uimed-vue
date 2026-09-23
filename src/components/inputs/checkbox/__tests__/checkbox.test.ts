@@ -87,7 +87,7 @@ describe("Checkbox", () => {
     describe("modelValue", () => {
       it("should update modelValue when checkbox is toggled", async () => {
         const wrapper = mountCheckbox();
-        expect(wrapper.props("modelValue")).toBeUndefined();
+        expect(wrapper.props("modelValue")).toBe(false);
 
         const vCheckbox = findVCheckbox(wrapper);
 
