@@ -201,10 +201,10 @@ Experimente as combinações de props do componente.
   :variant="playgroundVariant"
   :title="playgroundActions.title.value"
   :subtitle="playgroundActions.subtitle.value"
-  :full-width="playgroundFullWidth"
-  :full-height="playgroundFullHeight"
-  :loading="playgroundLoading"
-  :actions="showPlaygroundActions ? playgroundActionsData : undefined"
+  :full-width="playgroundActions.fullWidth.value"
+  :full-height="playgroundActions.fullHeight.value"
+  :loading="playgroundActions.loading.value"
+  :actions="playgroundActions.showActions.value ? playgroundActionsData : undefined"
   data-testid="content-set-preview"
 >
   {{ playgroundActions.content.value }}
@@ -218,38 +218,6 @@ Experimente as combinações de props do componente.
   density="compact"
   data-testid="content-set-playground-variant"
 />
-
-<v-checkbox
-  v-model="playgroundFullWidth"
-  label="Largura Total"
-  density="compact"
-  hide-details
-  data-testid="content-set-playground-fullWidth"
-/>
-
-<v-checkbox
-  v-model="playgroundFullHeight"
-  label="Altura Total"
-  density="compact"
-  hide-details
-  data-testid="content-set-playground-fullHeight"
-/>
-
-<v-checkbox
-  v-model="playgroundLoading"
-  label="Carregando"
-  density="compact"
-  hide-details
-data-testid="content-set-playground-loading"
-/>
-
-<v-checkbox
-  v-model="showPlaygroundActions"
-  label="Exibir ações"
-  density="compact"
-  hide-details
-  data-testid="content-set-playground-actions"
-/>
 </template>
 </playground>
 
@@ -260,7 +228,7 @@ Consulte a referência de [API do USection](../../api/components/sections/sectio
 <script lang="ts" setup>
   import { ref } from "vue"
   import { USection } from "../../../dist/components.js"
-  import { VSelect, VCheckbox } from "vuetify/components"
+  import { VSelect } from "vuetify/components"
 import type { ComponentProps } from "vue-component-type-helpers";
 
   type Props = ComponentProps<typeof USection>;
@@ -282,27 +250,50 @@ import type { ComponentProps } from "vue-component-type-helpers";
   
   const playgroundActions = ref({
     content: {
+      type: "text",
       label: "Conteúdo",
       value: "Teste o componente Section com diferentes combinações de props",
       dataTestid: "content-set-playground-content"
     },
     title: {
+      type: "text",
       label: "Título",
       value: "Título do Agrupador",
       dataTestid: "content-set-playground-title"
     },
     subtitle: {
+      type: "text",
       label: "Subtítulo",
       value: "Subtítulo descritivo",
       dataTestid: "content-set-playground-subtitle"
     },
+    fullWidth: {
+      type: "checkbox",
+      value: false,
+      label: "Largura Total",
+      dataTestid: "content-set-playground-fullWidth"
+    },
+    fullHeight: {
+      type: "checkbox",
+      value: false,
+      label: "Altura Total",
+      dataTestid: "content-set-playground-fullHeight"
+    },
+    loading: {
+      type: "checkbox",
+      value: false,
+      label: "Carregando",
+      dataTestid: "content-set-playground-loading"
+    },
+    showActions: {
+      type: "checkbox",
+      value: true,
+      label: "Exibir ações",
+      dataTestid: "content-set-playground-actions"
+    },
   });
 
   const playgroundVariant = ref(playgroundVariantOptions[0]);
-  const playgroundFullWidth = ref(false);
-  const playgroundFullHeight = ref(false);
-  const playgroundLoading = ref(false);
-  const showPlaygroundActions = ref(true);
 
   const playgroundActionsData = ref<Props["actions"]>([
     {

@@ -132,7 +132,7 @@ function onClick() {
 Experimente as combinações de props do componente.
 
 <playground v-model:actions="playgroundActions">
-<u-button :variant="playgroundVariant" :color="playgroundColor" :disabled="playgroundDisabled" :loading="playgroundLoading" data-testid="btn-preview">
+<u-button :variant="playgroundVariant" :color="playgroundColor" :disabled="playgroundActions.disabled.value" :loading="playgroundActions.loading.value" data-testid="btn-preview">
 {{ playgroundActions.label.value }}
 </u-button>
 
@@ -140,10 +140,6 @@ Experimente as combinações de props do componente.
 <v-select v-model="playgroundVariant" label="Variante" :items="playgroundVariantOptions" density="compact" data-testid="btn-playground-variant" />
 
 <v-select v-model="playgroundColor" label="Cor" :items="playgroundColorOptions" density="compact" data-testid="btn-playground-color" />
-
-<v-checkbox v-model="playgroundDisabled" label="Desabilitado" density="compact" hide-details data-testid="btn-playground-disabled" />
-
-<v-checkbox v-model="playgroundLoading" label="Carregando" density="compact" hide-details data-testid="btn-playground-loading" />
 </template>
 </playground>
 
@@ -154,7 +150,7 @@ Consulte a referência de [API do UButton](../../api/components/button) para a l
 <script lang="ts" setup>
   import { ref } from "vue"
   import { UButton } from "../../../dist/components.js"
-  import { VSelect, VCheckbox } from "vuetify/components"
+  import { VSelect } from "vuetify/components"
 import type { ComponentProps } from "vue-component-type-helpers";
 
   const clicks = ref(0);
@@ -169,14 +165,25 @@ type Props = ComponentProps<typeof UButton>;
 
   const playgroundActions = ref({
     label: {
+      type: "text",
       label: "Texto",
       value: "Me clique",
       dataTestid: "btn-playground-label"
+    },
+    disabled: {
+      type: "checkbox",
+      value: false,
+      label: "Desabilitado",
+      dataTestid: "btn-playground-disabled"
+    },
+    loading: {
+      type: "checkbox",
+      value: false,
+      label: "Carregando",
+      dataTestid: "btn-playground-loading"
     },
   });
 
   const playgroundVariant = ref(playgroundVariantOptions[0]);
   const playgroundColor = ref(playgroundColorOptions[0]);
-  const playgroundDisabled = ref(false)
-  const playgroundLoading = ref(false)
 </script>

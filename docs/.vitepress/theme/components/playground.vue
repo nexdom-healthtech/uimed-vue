@@ -4,20 +4,27 @@
       <slot />
     </div>
     <div class="playground-controls">
-      <template v-for="[index, action] in Object.entries(actions)">
-        <u-row v-if="action.type === 'button'">
+      <template v-for="[index, action] in Object.entries(actions)" :key="index">
+        <u-row v-if="isButtonAction(action)">
           <u-column>
             <u-button :data-testid="action.dataTestid" @click="action.action">{{
               action.label
             }}</u-button>
           </u-column>
         </u-row>
+        <u-checkbox
+          v-else-if="isCheckboxAction(action)"
+          :model-value="action.value"
+          :label="action.label"
+          :data-testid="action.dataTestid"
+          @update:model-value="action.value = $event"
+        />
         <u-text-field
           v-else
           :model-value="action.value"
           :label="action.label"
           :data-testid="action.dataTestid"
-          @update:model-value="updateActions(index, $event)"
+          @update:model-value="action.value = $event"
         />
       </template>
       <slot name="actions" />
@@ -26,28 +33,44 @@
 </template>
 
 <script lang="ts" setup>
-import { UTextField, UButton, URow, UColumn } from "../../../../dist/components.js";
+import { UTextField, UButton, URow, UColumn, UCheckbox } from "../../../../dist/components.js";
 
-interface Input {
-  type: "text";
-  value: string;
-  label: string;
+interface BaseAction {
   dataTestid: string;
 }
 
-interface Button {
+interface BaseInputAction extends BaseAction {
+  label: string;
+}
+
+interface Input extends BaseInputAction {
+  type: "text";
+  value: string;
+}
+
+interface Checkbox extends BaseInputAction {
+  type: "checkbox";
+  value: boolean;
+}
+
+interface Button extends BaseAction {
   type: "button";
   label: string;
-  dataTestid: string;
   action: () => void;
 }
 
-const actions = defineModel<Record<string, Input | Button>>("actions", { default: () => ({}) });
+type Action = Input | Button | Checkbox;
 
-function updateActions(index: keyof typeof actions.value, newValue: string) {
-  const action = actions.value[index];
-  const newAction = { ...action, value: newValue };
-  actions.value = { ...actions.value, [index]: newAction };
+const actions = defineModel<Record<string, Action>>("actions", {
+  default: () => ({}),
+});
+
+function isButtonAction(action: Action): action is Button {
+  return action.type === "button";
+}
+
+function isCheckboxAction(action: Action): action is Checkbox {
+  return action.type === "checkbox";
 }
 </script>
 

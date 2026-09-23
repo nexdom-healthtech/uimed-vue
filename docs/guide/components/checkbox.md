@@ -132,13 +132,7 @@ function onUpdateValue(newValue: boolean | undefined) {
 Experimente as combinações de props do componente.
 
 <playground v-model:actions="playgroundActions">
-<u-checkbox :label="playgroundActions.label.value" :disabled="playgroundDisabled" :readonly="playgroundReadonly" data-testid="checkbox-preview" />
-
-<template #actions>
-<v-checkbox v-model="playgroundDisabled" label="Desabilitado" density="compact" hide-details data-testid="checkbox-playground-disabled" />
-
-<v-checkbox v-model="playgroundReadonly" label="Somente leitura" density="compact" hide-details data-testid="checkbox-playground-readonly" />
-</template>
+<u-checkbox :label="playgroundActions.label.value" :disabled="playgroundActions.disabled.value" :readonly="playgroundActions.readonly.value" data-testid="checkbox-preview" />
 </playground>
 
 ## Ver também
@@ -148,7 +142,6 @@ Consulte a referência de [API do UCheckbox](../../api/components/checkbox) para
 <script lang="ts" setup>
   import { ref } from "vue"
   import { UCheckbox } from "../../../dist/components.js"
-  import { VCheckbox } from "vuetify/components"
 
   const modelValue = ref(false);
   const changes = ref(0);
@@ -161,12 +154,22 @@ Consulte a referência de [API do UCheckbox](../../api/components/checkbox) para
 
   const playgroundActions = ref({
     label: {
+      type: "text",
       label: "Label",
       value: "Aceito os termos",
       dataTestid: "checkbox-playground-label"
     },
+    disabled: {
+      type: "checkbox",
+      value: false,
+      label: "Desabilitado",
+      dataTestid: "checkbox-playground-disabled"
+    },
+    readonly: {
+      type: "checkbox",
+      value: false,
+      label: "Somente leitura",
+      dataTestid: "checkbox-playground-readonly"
+    },
   });
-
-  const playgroundDisabled = ref(false);
-  const playgroundReadonly = ref(false);
 </script>

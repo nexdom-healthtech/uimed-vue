@@ -178,18 +178,10 @@ function onUpdateValue(newValue: string) {
 Experimente as combinações de props do componente.
 
 <playground v-model:actions="playgroundActions">
-<u-text-field :label="playgroundActions.label.value" :placeholder="playgroundActions.placeholder.value" :hint="playgroundActions.hint.value" :variant="playgroundVariant" :disabled="playgroundDisabled" :readonly="playgroundReadonly" :loading="playgroundLoading" :clearable="playgroundClearable" data-testid="text-field-preview" />
+<u-text-field :label="playgroundActions.label.value" :placeholder="playgroundActions.placeholder.value" :hint="playgroundActions.hint.value" :variant="playgroundVariant" :disabled="playgroundActions.disabled.value" :readonly="playgroundActions.readonly.value" :loading="playgroundActions.loading.value" :clearable="playgroundActions.clearable.value" data-testid="text-field-preview" />
 
 <template #actions>
 <v-select v-model="playgroundVariant" label="Variante" :items="playgroundVariantOptions" density="compact" data-testid="text-field-playground-variant" />
-
-<v-checkbox v-model="playgroundDisabled" label="Desabilitado" density="compact" hide-details data-testid="text-field-playground-disabled" />
-
-<v-checkbox v-model="playgroundReadonly" label="Somente leitura" density="compact" hide-details data-testid="text-field-playground-readonly" />
-
-<v-checkbox v-model="playgroundLoading" label="Carregando" density="compact" hide-details data-testid="text-field-playground-loading" />
-
-<v-checkbox v-model="playgroundClearable" label="Limpável" density="compact" hide-details data-testid="text-field-playground-clearable" />
 </template>
 </playground>
 
@@ -200,7 +192,7 @@ Consulte a referência de [API do UTextField](../../api/components/text-field) p
 <script lang="ts" setup>
   import { computed, ref } from "vue"
   import { UTextField } from "../../../dist/components.js"
-  import { VSelect, VCheckbox } from "vuetify/components"
+  import { VSelect } from "vuetify/components"
 import type { ComponentProps } from "vue-component-type-helpers";
 
   const modelValue = ref("Me altere!");
@@ -217,26 +209,48 @@ import type { ComponentProps } from "vue-component-type-helpers";
 
   const playgroundActions = ref({
     label: {
+      type: "text",
       label: "Label",
       value: "Label",
       dataTestid: "text-field-playground-label"
     },
     placeholder: {
+      type: "text",
       label: "Placeholder",
       value: "Placeholder",
       dataTestid: "text-field-playground-placeholder",
     },
     hint: {
+      type: "text",
       label: "Mensagem",
       value: "Hint",
       dataTestid: "text-field-playground-hint"
     },
+    disabled: {
+      type: "checkbox",
+      value: false,
+      label: "Desabilitado",
+      dataTestid: "text-field-playground-disabled"
+    },
+    readonly: {
+      type: "checkbox",
+      value: false,
+      label: "Somente leitura",
+      dataTestid: "text-field-playground-readonly"
+    },
+    loading: {
+      type: "checkbox",
+      value: false,
+      label: "Carregando",
+      dataTestid: "text-field-playground-loading"
+    },
+    clearable: {
+      type: "checkbox",
+      value: false,
+      label: "Limpável",
+      dataTestid: "text-field-playground-clearable"
+    },
   });
 
   const playgroundVariant = ref(playgroundVariantOptions[0]);
-
-  const playgroundDisabled = ref(false);
-  const playgroundReadonly = ref(false);
-  const playgroundLoading = ref(false);
-  const playgroundClearable = ref(false);
 </script>

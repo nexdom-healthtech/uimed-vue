@@ -248,18 +248,10 @@ Experimente as combinações de props do componente.
 
 <playground v-model:actions="playgroundActions">
 <demo contained>
-<u-main :app-bar="playgroundAppBar" :navigationMenu="playgroundShowNavigationMenu ? playgroundNavigationMenu : undefined" data-testid="root-preview">
+<u-main :app-bar="playgroundAppBar" :navigationMenu="playgroundActions.showNavigationMenu.value ? playgroundNavigationMenu : undefined" data-testid="root-preview">
   <h2>O conteúdo da página vai aqui...</h2>
 </u-main>
 </demo>
-
-<template #actions>
-<v-checkbox v-model="playgroundShowNotifications" label="Exibir notificações" density="compact" hide-details data-testid="root-playground-show-notifications" />
-
-<v-checkbox v-model="playgroundShowUser" label="Exibir usuário" density="compact" hide-details data-testid="root-playground-show-user" />
-
-<v-checkbox v-model="playgroundShowNavigationMenu" label="Exibir menu de navegação" density="compact" hide-details data-testid="root-playground-show-navigation-menu" />
-</template>
 </playground>
 
 ## Ver também
@@ -270,7 +262,6 @@ Consulte a referência de [API do UMain](../../api/components/main) para a lista
   import { computed, reactive, ref } from "vue"
   import type { ComponentProps } from "vue-component-type-helpers"
   import { UMain } from "../../../dist/components.js"
-  import { VCheckbox } from "vuetify/components"
 
   type MainProps = ComponentProps<typeof UMain>
 
@@ -278,9 +269,6 @@ Consulte a referência de [API do UMain](../../api/components/main) para a lista
   const logo = "/uimed-vue/favicon.svg";
 
   const notificationsOpenCount = ref(0);
-  const playgroundShowUser = ref(false);
-  const playgroundShowNotifications = ref(true);
-  const playgroundShowNavigationMenu = ref(true);
 
   const eventsAppBar = reactive<NonNullable<MainProps["appBar"]>>({
     title: "Menu superior",
@@ -388,11 +376,13 @@ Consulte a referência de [API do UMain](../../api/components/main) para a lista
 
   const playgroundActions = ref({
     title: {
+      type: "text",
       label: "Título",
       value: "Menu do playground",
       dataTestid: "root-playground-title",
     },
     help: {
+      type: "text",
       label: "Link para ajuda",
       value: "https://www.google.com",
       dataTestid: "root-playground-help",
@@ -408,7 +398,25 @@ Consulte a referência de [API do UMain](../../api/components/main) para a lista
       label: "Remover notificação",
       dataTestid: "root-playground-remove-notification",
       action: removePlaygroundNotification,
-    }
+    },
+    showNotifications: {
+      type: "checkbox",
+      value: true,
+      label: "Exibir notificações",
+      dataTestid: "root-playground-show-notifications"
+    },
+    showUser: {
+      type: "checkbox",
+      value: false,
+      label: "Exibir usuário",
+      dataTestid: "root-playground-show-user"
+    },
+    showNavigationMenu: {
+      type: "checkbox",
+      value: true,
+      label: "Exibir menu de navegação",
+      dataTestid: "root-playground-show-navigation-menu"
+    },
   });
 
   const playgroundNotifications = ref<NonNullable<NonNullable<MainProps["appBar"]>["notifications"]>>([]);
@@ -425,8 +433,8 @@ Consulte a referência de [API do UMain](../../api/components/main) para a lista
     dataTestid: "root-playground-app-bar",
     title: playgroundActions.value.title.value,
     help: playgroundActions.value.help.value || undefined,
-    notifications: playgroundShowNotifications.value ? playgroundNotifications.value : undefined,
-    user: playgroundShowUser.value ? appBar.user : undefined
+    notifications: playgroundActions.value.showNotifications.value ? playgroundNotifications.value : undefined,
+    user: playgroundActions.value.showUser.value ? appBar.user : undefined
   }));
 
   const playgroundNavigationMenu = computed<NonNullable<MainProps["navigationMenu"]>>(() => ({
