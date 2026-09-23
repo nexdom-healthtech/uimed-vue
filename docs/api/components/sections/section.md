@@ -16,7 +16,7 @@ Inclui suporte para ações sobre esses conteúdos, como botões para salvar, et
 | `loading`    | `boolean`                  | `false`     | Coloca o agrupador em estado de carregamento.                    |
 | `dataTestid` | `string`                   |             | Id do componente para uso em testes automatizados.               |
 
-### `action`
+### `Action`
 
 Estende [`UButtonProps`](../button#props) com as seguintes propriedades adicionais:
 
