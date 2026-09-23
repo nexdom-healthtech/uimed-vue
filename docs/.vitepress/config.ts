@@ -117,6 +117,7 @@ export default defineConfig({
             {
               text: "Campos e formulários",
               items: [
+                { text: "Caixas de seleção", link: "/guide/components/checkbox" },
                 { text: "Campos de texto", link: "/guide/components/text-field" },
                 { text: "Formulários", link: "/guide/components/form" },
               ],
@@ -151,6 +152,7 @@ export default defineConfig({
           collapsed: false,
           items: [
             { text: "UButton", link: "/api/components/button" },
+            { text: "UCheckbox", link: "/api/components/checkbox" },
             {
               text: "Content Area",
               collapsed: false,

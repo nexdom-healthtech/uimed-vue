@@ -22,6 +22,7 @@ Os componentes a seguir possuem exemplos práticos de utilização dentro desta 
 | Recurso                                       | Descrição                                         |
 | --------------------------------------------- | ------------------------------------------------- |
 | [Botões](./components/button)                 | Componente de botão.                              |
+| [Caixas de seleção](./components/checkbox)    | Componente para caixa de seleção.                 |
 | [Campos de texto](./components/text-field)    | Componente para campo de texto.                   |
 | [Componente base](./components/main)          | Componente raiz.                                  |
 | [Componentes de layout](./components/layout)  | Componentes para seguir o grid system.            |

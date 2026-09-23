@@ -105,7 +105,7 @@ import { UButton } from "@nexdom/uimed-vue/components";
 
 O evento `click` é emitido ao clicar no botão, repassando o `MouseEvent` nativo. Ele não é disparado quando o botão está `disabled`.
 
-<demo data-testid="demo-click-event">
+<demo data-testid="demo-click-event" items-center>
 <u-button data-testid="btn-demo-click" @click="onClick">Me clique</u-button>
 <span data-testid="btn-demo-click-count">{{ clicks }} clique(s)</span>
 </demo>

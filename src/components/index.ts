@@ -2,6 +2,7 @@
 export { default as UMain } from "@/components/main/main.vue";
 export { default as UButton } from "@/components/button/button.vue";
 export { default as UTextField } from "@/components/inputs/text-field/text-field.vue";
+export { default as UCheckbox } from "@/components/inputs/checkbox/checkbox.vue";
 export { default as UContainer } from "@/components/grid/container/container.vue";
 export { default as URow } from "@/components/grid/row/row.vue";
 export { default as UColumn } from "@/components/grid/column/column.vue";

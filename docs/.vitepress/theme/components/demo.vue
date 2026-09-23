@@ -10,10 +10,15 @@ import { computed } from "vue";
 interface Props {
   col?: boolean;
   contained?: boolean;
+  itemsCenter?: boolean;
 }
 
 const props = defineProps<Props>();
-const classes = computed(() => ({ "demo-col": props.col, "demo-contained": props.contained }));
+const classes = computed(() => ({
+  "demo-col": props.col,
+  "demo-contained": props.contained,
+  "demo-items-center": props.itemsCenter,
+}));
 </script>
 
 <style lang="scss" scoped>
@@ -21,6 +26,10 @@ const classes = computed(() => ({ "demo-col": props.col, "demo-contained": props
   display: flex;
   flex-wrap: wrap;
   gap: 0.5rem;
+
+  &-items-center {
+    align-items: center;
+  }
 
   &-contained {
     contain: layout;
