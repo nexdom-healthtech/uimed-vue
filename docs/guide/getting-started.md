@@ -7,6 +7,7 @@
 - [Node.js](https://nodejs.org/) na versão 22 ou superior.
 - [Vue.js](https://vuejs.org/) na versão 3 ou superior.
 - [@nexdom/shared](https://nexdom-healthtech.github.io/shared/) na versão 2.1.1 ou superior.
+- [vue-component-type-helpers](https://www.npmjs.com/package/vue-component-type-helpers) para tipagem de props.
 - Editor de texto com suporte a sintaxe [Markdown](https://en.wikipedia.org/wiki/Markdown).
   - [VSCode](https://code.visualstudio.com/) é recomendado, junto com a [extensão oficial Vue](https://marketplace.visualstudio.com/items?itemName=Vue.volar).
 
@@ -64,6 +65,42 @@ createApp(App)
   .use(uimed) // [!code ++]
   .mount("#app");
 ```
+
+## Tipagem de props
+
+A biblioteca não exporta tipos de props diretamente. A forma recomendada é utilizar `ComponentProps` do pacote `vue-component-type-helpers`, instalado como dependência de pares (_peer dependency_) da biblioteca.
+
+```vue [App.vue]
+<template>
+  <u-main :app-bar="appBar" :navigation-menu="navigationMenu">
+    <u-section :actions="sectionActions">
+      <!-- ... -->
+    </u-section>
+  </u-main>
+</template>
+
+<script lang="ts" setup>
+import type { ComponentProps } from "vue-component-type-helpers";
+import { UMain, USection } from "@nexdom/uimed-vue/components";
+
+type MainProps = ComponentProps<typeof UMain>;
+type AppBar = NonNullable<MainProps["appBar"]>;
+type NavigationMenu = NonNullable<MainProps["navigationMenu"]>;
+type SectionAction = NonNullable<ComponentProps<typeof USection>["actions"]>[number];
+
+const appBar: AppBar = {
+  title: "Meu App",
+};
+
+const navigationMenu: NavigationMenu = {
+  items: [{ description: "Home", route: "/" }],
+};
+
+const sectionActions: SectionAction[] = [{ type: "submit", label: "Salvar" }];
+</script>
+```
+
+`NonNullable` é necessário porque as props são opcionais: sem ele, o tipo também aceitaria `undefined`, impedindo o acesso a propriedades aninhadas (como `AppBar["user"]`) e o uso com `reactive<...>()` ou `computed<...>()`.
 
 ## E agora?
 

@@ -39,9 +39,11 @@ O evento `submit` é emitido quando o formulário é enviado, repassando o `Subm
 </template>
 
 <script lang="ts" setup>
+import type { ComponentProps } from "vue-component-type-helpers";
 import { UForm, UTextField, USection, USectionContent } from "@nexdom/uimed-vue/components";
-import type { SectionAction } from "@nexdom/uimed-vue/components";
 import { ref, useId, computed } from "vue";
+
+type SectionAction = NonNullable<ComponentProps<typeof USection>["actions"]>[number];
 
 const submits = ref(0);
 const formId = useId();
@@ -62,9 +64,11 @@ function onSubmit() {
 Consulte a referência de [API do UForm](../../api/components/form) para a lista completa de props, slots e eventos.
 
 <script lang="ts" setup>
+  import type { ComponentProps } from "vue-component-type-helpers"
   import { UForm, UTextField, USection, USectionContent } from "../../../dist/components.js"
-  import type { SectionAction } from "../../../dist/components.d.ts"
   import { ref, useId, computed } from "vue";
+
+  type SectionAction = NonNullable<ComponentProps<typeof USection>["actions"]>[number];
 
   const submits = ref(0);
   const formId = useId();

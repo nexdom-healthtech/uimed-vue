@@ -10,48 +10,39 @@ Responsável por carregar o menu superior, o menu de navegação lateral, compon
 
 ## Props
 
-| Prop             | Tipo                                            | Padrão | Descrição                                                           |
-| ---------------- | ----------------------------------------------- | ------ | ------------------------------------------------------------------- |
-| `dataTestid`     | `string`                                        |        | Aplica atributo `data-testid` para testes sobre o componente.       |
-| `logo`           | `string`                                        |        | URL utilizada para carregar a logo que será apresentada.            |
-| `appBar`         | [`AppBarConfig`](#appbarconfig)                 |        | Conjunto de propriedades para aplicar à barra superior.             |
-| `navigationMenu` | [`NavigationMenuConfig`](#navigationmenuconfig) |        | Conjunto de propriedades para aplicar ao menu lateral de navegação. |
+| Prop             | Tipo                                | Padrão | Descrição                                                           |
+| ---------------- | ----------------------------------- | ------ | ------------------------------------------------------------------- |
+| `dataTestid`     | `string`                            |        | Aplica atributo `data-testid` para testes sobre o componente.       |
+| `logo`           | `string`                            |        | URL utilizada para carregar a logo que será apresentada.            |
+| `appBar`         | [`AppBar`](#appbar)                 |        | Conjunto de propriedades para aplicar à barra superior.             |
+| `navigationMenu` | [`NavigationMenu`](#navigationmenu) |        | Conjunto de propriedades para aplicar ao menu lateral de navegação. |
 
-### `AppBarConfig`
+### `AppBar`
 
 | Prop                | Tipo                                                                                              | Padrão  | Descrição                                                                                                                                                                                                                |
 | ------------------- | ------------------------------------------------------------------------------------------------- | ------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
 | `dataTestid`        | `string`                                                                                          |         | Aplica atributo `data-testid` para testes sobre o componente.                                                                                                                                                            |
 | `title`             | `string`                                                                                          |         | Título para o cabeçalho, seja da página atual ou da aplicação como um todo.                                                                                                                                              |
 | `help`              | [`RouteLocationRaw`](https://router.vuejs.org/api/type-aliases/RouteLocationRaw.html) \| `string` |         | Rota para direcionar o usuário em necessidade de "ajuda", podendo essa ser uma rota externa (exemplo: `"https://google.com"`) ou local (exemplo: `"/help"`). **A opção será ocultada sempre que essa prop for omitida.** |
-| `user`              | [`AppBarUserConfig`](#appbaruserconfig)                                                           |         | Conjunto de propriedades para configurar o menu do usuário. **A opção será ocultada sempre que essa prop for omitida.**                                                                                                  |
-| `notifications`     | [`AppBarNotificationConfig[]`](#appbarnotificationconfig)                                         |         | Lista de notificações para apresentar no menu superior. **A opção será ocultada sempre que essa prop for omitida** (uma lista vazia ainda exibe o botão, com uma mensagem indicando a ausência de notificações).         |
+| `user`              | [`User`](#user)                                                                                   |         | Conjunto de propriedades para configurar o menu do usuário. **A opção será ocultada sempre que essa prop for omitida.**                                                                                                  |
+| `notifications`     | [`notification[]`](#notification)                                                                 |         | Lista de notificações para apresentar no menu superior. **A opção será ocultada sempre que essa prop for omitida** (uma lista vazia ainda exibe o botão, com uma mensagem indicando a ausência de notificações).         |
 | `notificationsOpen` | `boolean`                                                                                         | `false` | Reflete e permite controlar externamente se o menu de notificações está aberto.                                                                                                                                          |
 
-#### `AppBarUserConfig`
+#### `User`
 
-| Prop       | Tipo                     | Padrão | Descrição                                                                                                         |
-| ---------- | ------------------------ | ------ | ----------------------------------------------------------------------------------------------------------------- |
-| `title`    | `string`                 |        | Título para o menu do usuário. Geralmente o nome completo do mesmo.                                               |
-| `subtitle` | `string`                 |        | Subtítulo para o menu do usuário, como e-mail ou _username_.                                                      |
-| `img`      | `string`                 |        | URL da imagem para identificar o usuário. **Será apresentada uma imagem genérica em caso de omissão desta prop.** |
-| `options`  | `ParentOptionOrOption[]` |        | Lista de ações ([`ParentOption`](#parentoption) e/ou [`Option`](#option)) para apresentar com o menu do usuário.  |
-
-#### `AppBarNotificationConfig`
-
-| Prop       | Tipo      | Padrão | Descrição                                                                                        |
-| ---------- | --------- | ------ | ------------------------------------------------------------------------------------------------ |
-| `title`    | `string`  |        | Texto principal descrevendo a notificação.                                                       |
-| `subtitle` | `string`  |        | Texto complementar com detalhes adicionais.                                                      |
-| `read`     | `boolean` |        | Indica se a notificação já foi lida. **Notificações não lidas são destacadas com um indicador.** |
-| `date`     | `Date`    |        | Data em que a notificação foi gerada.                                                            |
+| Prop       | Tipo                         | Padrão | Descrição                                                                                                                 |
+| ---------- | ---------------------------- | ------ | ------------------------------------------------------------------------------------------------------------------------- |
+| `title`    | `string`                     |        | Título para o menu do usuário. Geralmente o nome completo do mesmo.                                                       |
+| `subtitle` | `string`                     |        | Subtítulo para o menu do usuário, como e-mail ou _username_.                                                              |
+| `img`      | `string`                     |        | URL da imagem para identificar o usuário. **Será apresentada uma imagem genérica em caso de omissão desta prop.**         |
+| `options`  | `(ParentOption \| Option)[]` |        | Lista de ações ([`ParentOption`](#parentoption)) e/ou opções ([`Option`](#option)) para apresentar com o menu do usuário. |
 
 ##### `ParentOption`
 
-| Prop          | Tipo                  | Padrão | Descrição                                                               |
-| ------------- | --------------------- | ------ | ----------------------------------------------------------------------- |
-| `description` | `string`              |        | Título do agrupador de opções ([`Option`](#option)).                    |
-| `items`       | [`Option[]`](#option) |        | Lista de opções ([`Option`](#option)) que serão agrupadas neste tópico. |
+| Prop          | Tipo                  | Padrão | Descrição                                                    |
+| ------------- | --------------------- | ------ | ------------------------------------------------------------ |
+| `description` | `string`              |        | Título do agrupador de opções ([opção](#option)).            |
+| `items`       | [`Option[]`](#option) |        | Lista de [opções](#option) que serão agrupadas neste tópico. |
 
 ##### `Option`
 
@@ -61,21 +52,30 @@ Responsável por carregar o menu superior, o menu de navegação lateral, compon
 | `route`       | [`RouteLocationRaw`](https://router.vuejs.org/api/type-aliases/RouteLocationRaw.html) \| `string` |        | Rota para direcionar o usuário ao acionar a ação, podendo essa ser uma rota externa (exemplo: `"https://google.com"`) ou local (exemplo: `"/help"`). |
 | `action`      | `() => void`                                                                                      |        | Função que será executada quando o usuário clicar na ação.                                                                                           |
 
-### `NavigationMenuConfig`
+#### `Notification`
 
-| Prop         | Tipo                                                      | Padrão | Descrição                                                                                                                                                                               |
-| ------------ | --------------------------------------------------------- | ------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `dataTestid` | `string`                                                  |        | Aplica atributo `data-testid` para testes sobre o componente.                                                                                                                           |
-| `items`      | [`NavigationMenuItemConfig[]`](#navigationmenuitemconfig) |        | Lista de itens ([`NavigationMenuItemConfig`](#navigationmenuitemconfig) e/ou [`NavigationMenuParentItemConfig`](#navigationmenuparentitemconfig)) para apresentar no menu de navegação. |
+| Prop       | Tipo      | Padrão | Descrição                                                                                        |
+| ---------- | --------- | ------ | ------------------------------------------------------------------------------------------------ |
+| `title`    | `string`  |        | Texto principal descrevendo a notificação.                                                       |
+| `subtitle` | `string`  |        | Texto complementar com detalhes adicionais.                                                      |
+| `read`     | `boolean` |        | Indica se a notificação já foi lida. **Notificações não lidas são destacadas com um indicador.** |
+| `date`     | `Date`    |        | Data em que a notificação foi gerada.                                                            |
 
-#### `NavigationMenuParentItemConfig`
+### `NavigationMenu`
 
-| Prop          | Tipo                                                      | Padrão | Descrição                                                                               |
-| ------------- | --------------------------------------------------------- | ------ | --------------------------------------------------------------------------------------- |
-| `description` | `string`                                                  |        | Título do agrupador de itens ([`NavigationMenuItemConfig`](#navigationmenuitemconfig)). |
-| `items`       | [`NavigationMenuItemConfig[]`](#navigationmenuitemconfig) |        | Lista de itens que serão agrupados neste tópico.                                        |
+| Prop         | Tipo                                             | Padrão | Descrição                                                                                                                 |
+| ------------ | ------------------------------------------------ | ------ | ------------------------------------------------------------------------------------------------------------------------- |
+| `dataTestid` | `string`                                         |        | Aplica atributo `data-testid` para testes sobre o componente.                                                             |
+| `items`      | `(NavigationMenuItem \| NavigationMenuParent)[]` |        | Lista de [itens](#navigationmenuitem) e/ou [grupos de itens](#navigationmenuparent) para apresentar no menu de navegação. |
 
-#### `NavigationMenuItemConfig`
+#### `NavigationMenuParent`
+
+| Prop          | Tipo                                          | Padrão | Descrição                                                               |
+| ------------- | --------------------------------------------- | ------ | ----------------------------------------------------------------------- |
+| `description` | `string`                                      |        | Título do agrupador de itens ([item](#navigationmenuitem)).             |
+| `items`       | [`NavigationMenuItem[]`](#navigationmenuitem) |        | Lista de [itens](#navigationmenuitem) que serão agrupados neste tópico. |
+
+#### `NavigationMenuItem`
 
 | Prop          | Tipo                                                                                              | Padrão | Descrição                                                                                                                                        |
 | ------------- | ------------------------------------------------------------------------------------------------- | ------ | ------------------------------------------------------------------------------------------------------------------------------------------------ |
@@ -106,11 +106,14 @@ Responsável por carregar o menu superior, o menu de navegação lateral, compon
 
 <script lang="ts" setup>
 import { ref } from "vue";
-import { UMain, type AppBarConfig } from "@nexdom/uimed-vue/components";
+import type { ComponentProps } from "vue-component-type-helpers";
+import { UMain } from "@nexdom/uimed-vue/components";
+
+type MainProps = ComponentProps<typeof UMain>;
 
 const notificationsOpen = ref(false);
 
-const appBar: AppBarConfig = {
+const appBar: NonNullable<MainProps["appBar"]> = {
   title: "Menu superior",
   help: "https://google.com",
   dataTestid: "root-app-bar",

@@ -72,6 +72,18 @@ import { Root } from "@nexdom/uimed-vue/components";
 
 Never write CSS, classes or any kind of styling. Always use component props.
 
+The library doesn't export prop types. Derive them with `ComponentProps` from `vue-component-type-helpers`:
+
+```ts
+import type { ComponentProps } from "vue-component-type-helpers";
+import { UMain, USection } from "@nexdom/uimed-vue/components";
+
+type MainProps = ComponentProps<typeof UMain>;
+type AppBar = NonNullable<MainProps["appBar"]>;
+type NavigationMenu = NonNullable<MainProps["navigationMenu"]>;
+type SectionAction = NonNullable<ComponentProps<typeof USection>["actions"]>[number];
+```
+
 Available entry points: `@nexdom/uimed-vue` (root), `@nexdom/uimed-vue/components`, `@nexdom/uimed-vue/composables`, `@nexdom/uimed-vue/plugins`, `@nexdom/uimed-vue/unit-test` (test helpers, e.g. `vueTestUtilsPluginUimed()` for mounting components with Vuetify in Vitest).
 
 Full component/composable reference lives in the [docs](https://nexdom-healthtech.github.io/uimed-vue/).

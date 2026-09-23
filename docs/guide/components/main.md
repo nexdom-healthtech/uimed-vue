@@ -29,11 +29,14 @@ A `logo` nos permite provisionar a URL que será utilizada pelo `Main` para orqu
 
 <script lang="ts" setup>
 import { reactive, ref, watch } from "vue";
-import { UMain, type AppBarConfig } from "@nexdom/uimed-vue/components";
+import type { ComponentProps } from "vue-component-type-helpers";
+import { UMain } from "@nexdom/uimed-vue/components";
+
+type MainProps = ComponentProps<typeof UMain>;
 
 const logo = "/uimed-vue/favicon.svg";
 
-const appBar = reactive<AppBarConfig>({
+const appBar = reactive<NonNullable<MainProps["appBar"]>>({
   title: "Menu superior",
 });
 </script>
@@ -60,11 +63,14 @@ Para ocultar o menu superior, basta omitir essa prop.
 
 <script lang="ts" setup>
 import { reactive, ref, watch } from "vue";
-import { UMain, type AppBarConfig } from "@nexdom/uimed-vue/components";
+import type { ComponentProps } from "vue-component-type-helpers";
+import { UMain } from "@nexdom/uimed-vue/components";
+
+type MainProps = ComponentProps<typeof UMain>;
 
 const today = new Date();
 
-const appBar = reactive<AppBarConfig>({
+const appBar = reactive<NonNullable<MainProps["appBar"]>>({
   title: "Menu superior",
   help: "https://www.google.com",
   notifications: [
@@ -158,13 +164,16 @@ O menu também conta com um campo de busca que filtra itens e grupos em tempo re
 
 <script lang="ts" setup>
 import { ref, reactive } from "vue";
-import { UMain, type AppBarConfig, type NavigationMenuConfig } from "@nexdom/uimed-vue/components";
+import type { ComponentProps } from "vue-component-type-helpers";
+import { UMain } from "@nexdom/uimed-vue/components";
 
-const appBar: AppBarConfig = {
+type MainProps = ComponentProps<typeof UMain>;
+
+const appBar: NonNullable<MainProps["appBar"]> = {
   title: "Menu superior",
 };
 
-const navigationMenu: NavigationMenuConfig = {
+const navigationMenu: NonNullable<MainProps["navigationMenu"]> = {
   items: [
     {
       description: "Início",
@@ -215,11 +224,14 @@ O evento `update:notificationsOpen` é emitido sempre que o menu de notificaçõ
 
 <script lang="ts" setup>
 import { ref } from "vue";
-import { UMain, type AppBarConfig } from "@nexdom/uimed-vue/components";
+import type { ComponentProps } from "vue-component-type-helpers";
+import { UMain } from "@nexdom/uimed-vue/components";
+
+type MainProps = ComponentProps<typeof UMain>;
 
 const notificationsOpenCount = ref(0);
 
-const appBar: AppBarConfig = {
+const appBar: NonNullable<MainProps["appBar"]> = {
   title: "Menu superior",
   notifications: [],
 };
@@ -256,8 +268,11 @@ Consulte a referência de [API do UMain](../../api/components/main) para a lista
 
 <script lang="ts" setup>
   import { computed, reactive, ref } from "vue"
-  import { UMain, type AppBarConfig, type NavigationMenuConfig } from "../../../dist/components.js"
+  import type { ComponentProps } from "vue-component-type-helpers"
+  import { UMain } from "../../../dist/components.js"
   import { VCheckbox } from "vuetify/components"
+
+  type MainProps = ComponentProps<typeof UMain>
 
   const today = new Date();
   const logo = "/uimed-vue/favicon.svg";
@@ -267,13 +282,13 @@ Consulte a referência de [API do UMain](../../api/components/main) para a lista
   const playgroundShowNotifications = ref(true);
   const playgroundShowNavigationMenu = ref(true);
 
-  const eventsAppBar = reactive<AppBarConfig>({
+  const eventsAppBar = reactive<NonNullable<MainProps["appBar"]>>({
     title: "Menu superior",
     dataTestid: "demo-root-events-app-bar",
     notifications: [],
   });
 
-  const navigationMenu = reactive<NavigationMenuConfig>({
+  const navigationMenu = reactive<NonNullable<MainProps["navigationMenu"]>>({
     items: [
       {
         description: "Início",
@@ -304,7 +319,7 @@ Consulte a referência de [API do UMain](../../api/components/main) para a lista
     notificationsOpenCount.value++;
   }
   
-  const appBar = reactive<AppBarConfig>({
+  const appBar = reactive<NonNullable<MainProps["appBar"]>>({
     title: "Menu superior",
     help: "https://www.google.com",
     dataTestid: "demo-root-app-bar",
@@ -396,7 +411,7 @@ Consulte a referência de [API do UMain](../../api/components/main) para a lista
     }
   });
 
-  const playgroundNotifications = ref<Required<AppBarConfig>["notifications"]>([]);
+  const playgroundNotifications = ref<NonNullable<NonNullable<MainProps["appBar"]>["notifications"]>>([]);
 
   function addPlaygroundNotification() {
     playgroundNotifications.value.push({ title: "Lorem ipsum...", read: false, date: new Date() })
@@ -406,7 +421,7 @@ Consulte a referência de [API do UMain](../../api/components/main) para a lista
     playgroundNotifications.value.pop();
   }
 
-  const playgroundAppBar = computed<AppBarConfig>(() => ({
+  const playgroundAppBar = computed<NonNullable<MainProps["appBar"]>>(() => ({
     dataTestid: "root-playground-app-bar",
     title: playgroundActions.value.title.value,
     help: playgroundActions.value.help.value || undefined,
@@ -414,7 +429,7 @@ Consulte a referência de [API do UMain](../../api/components/main) para a lista
     user: playgroundShowUser.value ? appBar.user : undefined
   }));
 
-  const playgroundNavigationMenu = computed<NavigationMenuConfig>(() => ({
+  const playgroundNavigationMenu = computed<NonNullable<MainProps["navigationMenu"]>>(() => ({
     dataTestid: "root-playground-navigation-menu",
     items: [
       {
@@ -437,7 +452,7 @@ Consulte a referência de [API do UMain](../../api/components/main) para a lista
     ],
   }));
 
-  const demoNavigationToggleAppBar = reactive<AppBarConfig>({
+  const demoNavigationToggleAppBar = reactive<NonNullable<MainProps["appBar"]>>({
     title: "Menu superior",
     dataTestid: "demo-root-navigation-toggle-app-bar",
   });
