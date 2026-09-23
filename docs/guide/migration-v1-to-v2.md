@@ -1,4 +1,4 @@
-# Migrando de v1 para v2
+# Migrando da v1 para v2
 
 A versão 2 do UIMed-Vue introduz uma mudança significativa: todos os componentes exportados agora possuem um prefixo `U`, padronizando a forma como você importa e utiliza os componentes. Além disso, alguns componentes receberam nomes mais descritivos internamente.
 
