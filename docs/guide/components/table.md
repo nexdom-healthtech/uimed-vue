@@ -138,7 +138,7 @@ Experimente as combinações de props do componente.
 <playground v-model:actions="playgroundActions">
 <demo col>
 <u-table
-  :headers="tableHeaders"
+  :headers="playgroundHeader ? tableHeaders : []"
   :items="tableItems"
   :vertical="playgroundVertical"
   :loading="playgroundLoading"
@@ -147,6 +147,14 @@ Experimente as combinações de props do componente.
 </demo>
 
 <template #actions>
+<v-checkbox
+  v-model="playgroundHeader"
+  label="Cabeçalho"
+  density="compact"
+  hide-details
+  data-testid="table-playground-header"
+/>
+
 <v-checkbox
   v-model="playgroundVertical"
   label="Vertical"
@@ -182,5 +190,6 @@ Consulte a referência de [API do UTable](../../api/components/table) para a lis
 
   const playgroundActions = ref({});
   const playgroundVertical = ref(false);
+  const playgroundHeader = ref(true);
   const playgroundLoading = ref(false);
 </script>
