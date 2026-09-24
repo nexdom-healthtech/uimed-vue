@@ -77,7 +77,6 @@ import {
   useDateTimeFieldPickerBounds,
   useDateTimeFieldRules,
 } from "@/composables/inputs/date-time-field.ts";
-import { useTextFieldVariant } from "@/composables/inputs/text-field.ts";
 import { formatDateTime as formatDate } from "@nexdom/shared/utils";
 import {
   VCard,
@@ -89,6 +88,7 @@ import {
 } from "vuetify/components";
 import { pt } from "vuetify/locale";
 import { computed, ref, watch } from "vue";
+import { useTextFieldVariant } from "@/composables/inputs/fields.ts";
 
 const modelValue = defineModel<string>({ default: "" });
 const props = withDefaults(defineProps<DateTimeFieldProps>(), {
