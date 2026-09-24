@@ -28,6 +28,7 @@ const apis = [
     {
         group: "Componentes",
         methods: [
+            { text: "AutocompleteField", link: "./components/autocomplete-field" },
             { text: "Button", link: "./components/button" },
             { text: "Checkbox", link: "./components/checkbox" },
             { text: "Content Area", link: "./components/sections/section" },
