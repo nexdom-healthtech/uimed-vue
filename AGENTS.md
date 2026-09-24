@@ -171,6 +171,8 @@ Besides this file, the repo ships Claude Code subagents in `.claude/agents/`:
 - `code-reviewer`: reviews a branch or PR against these conventions, without changing code.
 - `dependency-updater`: evaluates and applies dependency updates, such as Dependabot PRs.
 
+To resolve an issue, run `/resolve-issue <number>` (`.claude/skills/resolve-issue/`). It chains planner, implementer and reviewer, asks you about open questions and waits for your approval of the public API before any code is written.
+
 ## Git workflow
 
 - Trunk-based development. `main` is the only long-lived branch (`beta`/`alpha` exist only for pre-release/prototype work — see CONTRIBUTING.md for when to use them). `main`, `beta`, `alpha` are all protected against direct pushes.
