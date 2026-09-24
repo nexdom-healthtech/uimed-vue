@@ -34,6 +34,9 @@ export default {
 import type { CheckboxProps } from "@/components/inputs/checkbox/types.ts";
 import { VCheckboxBtn } from "vuetify/components";
 
-const props = withDefaults(defineProps<CheckboxProps>(), { trueValue: true, falseValue: false });
-const modelValue = defineModel<T>({ default: (props: CheckboxProps) => props.falseValue });
+const props = withDefaults(defineProps<CheckboxProps<T | boolean>>(), {
+  trueValue: true,
+  falseValue: false,
+});
+const modelValue = defineModel<T>({ default: (props: CheckboxProps<T>) => props.falseValue! });
 </script>

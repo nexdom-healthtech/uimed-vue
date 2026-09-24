@@ -1,7 +1,7 @@
 /**
  * Props exposed by the {@link Checkbox} component.
  */
-export type CheckboxProps = {
+export type CheckboxProps<T = boolean> = {
   /**
    * Field label.
    */
@@ -23,13 +23,13 @@ export type CheckboxProps = {
    * Value applied to the model when the checkbox is checked.
    * @default true
    */
-  trueValue?: any;
+  trueValue?: T;
 
   /**
    * Value applied to the model when the checkbox is unchecked.
    * @default false
    */
-  falseValue?: any;
+  falseValue?: T;
 
   /**
    * Component id to use on automated tests.
