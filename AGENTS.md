@@ -102,17 +102,44 @@ vp env setup    # create shims like vpr and vpx
 vp install      # install dependencies
 ```
 
+On Windows, prefer VSCode's "Dev Containers: Clone Repository in Container Volume" over opening a folder cloned on the host:
+
+- A host clone with `core.autocrlf=true` checks files out with CRLF, and `vpr check` then reports formatting issues on every file. `.gitattributes` enforces LF, but clones made before it was added need `git rm -rq --cached . && git reset --hard` to be re-normalized (commit or stash local changes first, since `reset --hard` discards them).
+- A host folder bind-mounted into the container is roughly 10x slower (unit tests alone go from seconds to minutes), which makes Stryker's initial test run time out.
+
 ## Commands
 
 - `vpr check` — lint, formatter, and type-check (requires `build`/`pack` to have run first for the type-check step)
 - `vp test --coverage` — unit tests with coverage (Vitest, jsdom, 100% coverage threshold enforced)
-- `vpr test:mutations` — mutation tests (Stryker; thresholds: high 100, low 95, break 95)
+- `vpr test:mutations` — mutation tests (Stryker; thresholds: high 100, low 100, break 100). It starts one test runner per CPU core; on machines with limited memory, run `vpx stryker run --concurrency 4` instead
 - `vpr test:e2e` — E2E tests (Playwright, runs against the built docs preview site)
 - `vpr depcruise` — architecture/dependency rules (dependency-cruiser)
 - `vp pack` / `vpr build` — build the library
 - `vpr docs` / `vpr docs:dev` — run docs site (imports the lib from `dist`, not `src` — run `vpr dev` in a second terminal to keep `dist` updated while iterating)
 
 CI (`.github/workflows/ci.yml`) runs, in order: commitlint on PR commits, `vp pack`, `vpr check`, `vpr depcruise`, `vp test --coverage`, `vpr test:mutations`, `vpr test:e2e`. Match this locally before opening a PR.
+
+### Focused runs while iterating
+
+The full suite takes minutes; while working on a single component or composable, scope each step to it (`button` below is an example) and run the full suite only before opening a PR:
+
+```bash
+vp test src/components/button                               # unit tests of one folder
+vp test src/components/button --coverage                    # same, with coverage of the files it loads
+vpx stryker run --mutate "src/components/button/button.vue" # mutation tests of one file
+vpr test:e2e e2e/components/button.spec.ts                  # one E2E spec
+```
+
+## Adding a new component
+
+Use an existing component (e.g. `button`) as the reference, and deliver all of the following in the same PR:
+
+1. `src/components/<name>/<name>.vue` (following the pattern in [Code conventions](#code-conventions)), `types.ts` and `__tests__/<name>.test.ts`.
+2. The `U`-prefixed export in `src/components/index.ts`.
+3. A usage guide at `docs/guide/components/<name>.md`, with `<demo>` examples (and a `<playground>` section when the component has configurable props), and an API reference at `docs/api/components/<name>.md` (props, events and slots tables). Both in Portuguese.
+4. Both pages registered in the sidebar at `docs/.vitepress/config.ts`.
+5. `e2e/components/<name>.spec.ts` covering the guide's interactive examples and a "UI consistency" screenshot check (plus accessible snapshots where relevant). Commit the generated files under `__snapshots__`/`__screenshot__`.
+6. The full CI sequence passing locally.
 
 ## Code conventions
 

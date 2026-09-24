@@ -2,6 +2,9 @@
 
 After clone this project, **open it inside its devContainer** using [VSCode](https://code.visualstudio.com/download).
 
+> [!Tip]
+> On Windows, prefer the "Dev Containers: Clone Repository in Container Volume" command over opening a folder cloned on the host. Host folders mounted into the container are much slower (enough to make mutation tests time out), and clones made with `core.autocrlf=true` before `.gitattributes` was added check files out with CRLF, which fails `vpr check`.
+
 Then, follow the next instructions according to your needs.
 
 _Don't forget to commit your changes using [Conventional Commits](https://www.conventionalcommits.org/en/v1.0.0/) messages._
