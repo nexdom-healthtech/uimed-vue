@@ -124,6 +124,10 @@ export default defineConfig({
                   link: "/guide/components/autocomplete-field",
                 },
                 { text: "Campos de data e hora", link: "/guide/components/date-time-field" },
+                {
+                  text: "Campos com preenchimento automático",
+                  link: "/guide/components/autocomplete-field",
+                },
                 { text: "Campos de texto", link: "/guide/components/text-field" },
                 { text: "Formulários", link: "/guide/components/form" },
               ],

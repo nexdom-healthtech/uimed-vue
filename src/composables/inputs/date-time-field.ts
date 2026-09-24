@@ -2,8 +2,8 @@ import type {
   DateTimeFieldProps,
   DateTimeFieldType,
 } from "@/components/inputs/date-time-field/types.ts";
+import { useRules } from "@/composables/inputs/fields.ts";
 import type { Rule } from "@/composables/inputs/types.ts";
-import useRules from "@/composables/inputs/use-rules.ts";
 import { computed, toValue, type ComputedRef, type MaybeRefOrGetter } from "vue";
 
 type BoundProps = Required<Pick<DateTimeFieldProps, "type">> &

@@ -251,13 +251,7 @@ O evento `update:modelValue` será emitido toda vez que o usuário escolher um v
 Experimente as combinações de props do componente.
 
 <playground v-model:actions="playgroundActions">
-<u-date-time-field :label="playgroundActions.label.value" :placeholder="playgroundActions.placeholder.value" :hint="playgroundActions.hint.value" :min="playgroundActions.min.value" :max="playgroundActions.max.value" :type="playgroundType" :variant="playgroundVariant" :disabled="playgroundActions.disabled.value" :readonly="playgroundActions.readonly.value" :loading="playgroundActions.loading.value" :clearable="playgroundActions.clearable.value" data-testid="date-time-field-preview" />
-
-<template #actions>
-<v-select v-model="playgroundType" label="Tipo" :items="playgroundTypeOptions" density="compact" data-testid="date-time-field-playground-type" />
-
-<v-select v-model="playgroundVariant" label="Variante" :items="playgroundVariantOptions" density="compact" data-testid="date-time-field-playground-variant" />
-</template>
+<u-date-time-field :label="playgroundActions.label.value" :placeholder="playgroundActions.placeholder.value" :hint="playgroundActions.hint.value" :min="playgroundActions.min.value" :max="playgroundActions.max.value" :type="playgroundActions.type.value" :variant="playgroundActions.variant.value" :disabled="playgroundActions.disabled.value" :readonly="playgroundActions.readonly.value" :loading="playgroundActions.loading.value" :clearable="playgroundActions.clearable.value" data-testid="date-time-field-preview" />
 </playground>
 
 ## Ver também
@@ -311,6 +305,20 @@ Consulte a referência de [API do UDateTimeField](../../api/components/date-time
       value: "",
       dataTestid: "date-time-field-playground-max"
     },
+    type: {
+      type: "combobox",
+      label: "Tipo",
+      value: playgroundTypeOptions[0],
+      dataTestid: "date-time-field-playground-type",
+      items: playgroundTypeOptions
+    },
+    variant: {
+      type: "combobox",
+      label: "Tipo",
+      value: playgroundVariantOptions[0],
+      dataTestid: "date-time-field-playground-variant",
+      items: playgroundVariantOptions
+    },
     disabled: {
       type: "checkbox",
       value: false,
@@ -336,7 +344,4 @@ Consulte a referência de [API do UDateTimeField](../../api/components/date-time
       dataTestid: "date-time-field-playground-clearable"
     },
   });
-
-  const playgroundType = ref(playgroundTypeOptions[0]);
-  const playgroundVariant = ref(playgroundVariantOptions[0]);
 </script>
