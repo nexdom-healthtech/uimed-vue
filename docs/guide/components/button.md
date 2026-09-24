@@ -132,15 +132,9 @@ function onClick() {
 Experimente as combinações de props do componente.
 
 <playground v-model:actions="playgroundActions">
-<u-button :variant="playgroundVariant" :color="playgroundColor" :disabled="playgroundActions.disabled.value" :loading="playgroundActions.loading.value" data-testid="btn-preview">
+<u-button :variant="playgroundActions.variant.value" :color="playgroundActions.color.value" :disabled="playgroundActions.disabled.value" :loading="playgroundActions.loading.value" data-testid="btn-preview">
 {{ playgroundActions.label.value }}
 </u-button>
-
-<template #actions>
-<v-select v-model="playgroundVariant" label="Variante" :items="playgroundVariantOptions" density="compact" data-testid="btn-playground-variant" />
-
-<v-select v-model="playgroundColor" label="Cor" :items="playgroundColorOptions" density="compact" data-testid="btn-playground-color" />
-</template>
 </playground>
 
 ## Ver também
@@ -150,7 +144,6 @@ Consulte a referência de [API do UButton](../../api/components/button) para a l
 <script lang="ts" setup>
   import { ref } from "vue"
   import { UButton } from "../../../dist/components.js"
-  import { VSelect } from "vuetify/components"
 import type { ComponentProps } from "vue-component-type-helpers";
 
   const clicks = ref(0);
@@ -170,6 +163,20 @@ type Props = ComponentProps<typeof UButton>;
       value: "Me clique",
       dataTestid: "btn-playground-label"
     },
+    variant: {
+      type: "combobox",
+      label: "Variante",
+      value: "primary",
+      dataTestid: "btn-playground-variant",
+      items: ["primary", "secondary", "ghost"]
+    },
+    color: {
+      type: "combobox",
+      label: "Cor",
+      value: "primary",
+      dataTestid: "btn-playground-color",
+      items: ["primary", "secondary", "positive", "informative", "caution", "danger"]
+    },
     disabled: {
       type: "checkbox",
       value: false,
@@ -183,7 +190,4 @@ type Props = ComponentProps<typeof UButton>;
       dataTestid: "btn-playground-loading"
     },
   });
-
-  const playgroundVariant = ref(playgroundVariantOptions[0]);
-  const playgroundColor = ref(playgroundColorOptions[0]);
 </script>
