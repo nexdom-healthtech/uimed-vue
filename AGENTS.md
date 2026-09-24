@@ -124,10 +124,19 @@ CI (`.github/workflows/ci.yml`) runs, in order: commitlint on PR commits, `vp pa
 The full suite takes minutes; while working on a single component or composable, scope each step to it (`button` below is an example) and run the full suite only before opening a PR:
 
 ```bash
-vp test src/components/button                               # unit tests of one folder
-vp test src/components/button --coverage                    # same, with coverage of the files it loads
-vpx stryker run --mutate "src/components/button/button.vue" # mutation tests of one file
-vpr test:e2e e2e/components/button.spec.ts                  # one E2E spec
+# Unit tests of one or more folders
+vp test src/components/button
+
+# Same, with coverage limited to the files you changed. Without `--coverage.include`, files that
+# are only imported (e.g. the children of `main.vue`) count as uncovered and fail the 100% threshold
+vp test src/components/button --coverage --coverage.include="src/components/button/**"
+
+# Mutation tests of specific files. List several files in a single comma-separated `--mutate`
+# (repeating the flag keeps only the last one)
+vpx stryker run --mutate "src/components/button/button.vue,src/composables/button/button.ts"
+
+# One E2E spec
+vpr test:e2e e2e/components/button.spec.ts
 ```
 
 ## Adding a new component
