@@ -27,6 +27,7 @@ Os componentes a seguir possuem exemplos práticos de utilização dentro desta 
 | [Componente base](./components/main)          | Componente raiz.                                  |
 | [Componentes de layout](./components/layout)  | Componentes para seguir o grid system.            |
 | [Agrupador de Conteúdo](./components/section) | Componente para agrupar conteúdo.                 |
+| [Conteúdo Expansível](./components/details)   | Componente para expandir e recolher conteúdo.     |
 | [Formulários](./components/form)              | Componente de formulário.                         |
 | [Tabelas](./components/table)                 | Componente para apresentação de dados em tabelas. |
 
