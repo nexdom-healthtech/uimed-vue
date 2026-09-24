@@ -112,6 +112,7 @@ export default defineConfig({
                 { text: "Componente base", link: "/guide/components/main" },
                 { text: "Componentes de layout", link: "/guide/components/layout" },
                 { text: "Agrupador de Conteúdo", link: "/guide/components/section" },
+                { text: "Conteúdo Expansível", link: "/guide/components/details" },
               ],
             },
             {
@@ -161,6 +162,7 @@ export default defineConfig({
                 { text: "USectionContent", link: "/api/components/sections/section-content" },
               ],
             },
+            { text: "UDetails", link: "/api/components/details" },
             { text: "UForm", link: "/api/components/form" },
             {
               text: "UGrid",
