@@ -37,11 +37,8 @@ export default {
 
 <script setup lang="ts">
 import type { TextFieldProps } from "@/components/inputs/text-field/types.ts";
-import {
-  useTextFieldRules,
-  useTextFieldType,
-  useTextFieldVariant,
-} from "@/composables/inputs/text-field.ts";
+import { useTextFieldRules, useTextFieldType } from "@/composables/inputs/text-field.ts";
+import { useTextFieldVariant } from "@/composables/inputs/fields.ts";
 import { VTextField } from "vuetify/components";
 import { computed } from "vue";
 

@@ -1,25 +1,14 @@
-import type {
-  TextFieldProps,
-  TextFieldType,
-  TextFieldVariant,
-} from "@/components/inputs/text-field/types.ts";
+import type { TextFieldProps, TextFieldType } from "@/components/inputs/text-field/types.ts";
 import { email, phone, url } from "@/composables/inputs/rules.ts";
 import type { Rule } from "@/composables/inputs/types.ts";
-import useRules from "@/composables/inputs/use-rules.ts";
+import { useRules } from "@/composables/inputs/fields.ts";
 import { computed, toValue, type ComputedRef, type MaybeRefOrGetter } from "vue";
 import type { ComponentProps } from "vue-component-type-helpers";
 import type { VTextField } from "vuetify/components";
 
 type VTextFieldProps = ComponentProps<typeof VTextField>;
 
-type VuetifyVariant = NonNullable<VTextFieldProps["variant"]>;
-
 type VuetifyType = NonNullable<VTextFieldProps["type"]>;
-
-const textFieldVariantToVuetifyVariant: Record<TextFieldVariant, VuetifyVariant> = {
-  primary: "underlined",
-  secondary: "outlined",
-};
 
 const textFieldTypeToVuetifyType: Record<TextFieldType, VuetifyType> = {
   text: "text",
@@ -38,15 +27,6 @@ const textFieldTypeToVuetifyRule: Record<
   email: email,
   url: url,
 };
-
-export function useTextFieldVariant(
-  variant: MaybeRefOrGetter<TextFieldVariant>,
-): ComputedRef<VuetifyVariant> {
-  return computed(() => {
-    const variantValue = toValue(variant);
-    return textFieldVariantToVuetifyVariant[variantValue];
-  });
-}
 
 export function useTextFieldType(type: MaybeRefOrGetter<TextFieldType>): ComputedRef<VuetifyType> {
   return computed(() => {
