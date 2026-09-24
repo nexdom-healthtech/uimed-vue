@@ -10,3 +10,4 @@ export { default as UForm } from "@/components/form/form.vue";
 export { default as USectionContent } from "@/components/sections/section-content/section-content.vue";
 export { default as USection } from "@/components/sections/section/section.vue";
 export { default as UTable } from "@/components/table/table.vue";
+export { default as UDetails } from "@/components/details/details.vue";
