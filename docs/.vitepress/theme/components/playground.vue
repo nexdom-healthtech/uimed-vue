@@ -5,7 +5,7 @@
     </div>
     <div class="playground-controls">
       <template v-for="[index, action] in Object.entries(actions)" :key="index">
-        <u-row v-if="isButtonAction(action)">
+        <u-row v-if="action.type === 'button'">
           <u-column>
             <u-button :data-testid="action.dataTestid" @click="action.action">{{
               action.label
@@ -13,27 +13,39 @@
           </u-column>
         </u-row>
         <u-checkbox
-          v-else-if="isCheckboxAction(action)"
-          :model-value="action.value"
+          v-else-if="action.type === 'checkbox'"
+          v-model="action.value"
           :label="action.label"
           :data-testid="action.dataTestid"
-          @update:model-value="action.value = $event"
+        />
+        <u-autocomplete-field
+          v-else-if="action.type === 'combobox'"
+          v-model="action.value"
+          :label="action.label"
+          :items="action.items"
+          :data-testid="action.dataTestid"
+          strict
         />
         <u-text-field
           v-else
-          :model-value="action.value"
+          v-model="action.value"
           :label="action.label"
           :data-testid="action.dataTestid"
-          @update:model-value="action.value = $event"
         />
       </template>
-      <slot name="actions" />
     </div>
   </div>
 </template>
 
 <script lang="ts" setup>
-import { UTextField, UButton, URow, UColumn, UCheckbox } from "../../../../dist/components.js";
+import {
+  UTextField,
+  UButton,
+  URow,
+  UColumn,
+  UCheckbox,
+  UAutocompleteField,
+} from "../../../../dist/components.js";
 
 interface BaseAction {
   dataTestid: string;
@@ -48,6 +60,12 @@ interface Input extends BaseInputAction {
   value: string;
 }
 
+interface Combobox extends BaseInputAction {
+  type: "combobox";
+  value: string;
+  items: (string | { label: string; value: string })[];
+}
+
 interface Checkbox extends BaseInputAction {
   type: "checkbox";
   value: boolean;
@@ -59,19 +77,11 @@ interface Button extends BaseAction {
   action: () => void;
 }
 
-type Action = Input | Button | Checkbox;
+type Action = Input | Combobox | Button | Checkbox;
 
 const actions = defineModel<Record<string, Action>>("actions", {
   default: () => ({}),
 });
-
-function isButtonAction(action: Action): action is Button {
-  return action.type === "button";
-}
-
-function isCheckboxAction(action: Action): action is Checkbox {
-  return action.type === "checkbox";
-}
 </script>
 
 <style lang="scss" scoped>

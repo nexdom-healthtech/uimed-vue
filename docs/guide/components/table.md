@@ -138,39 +138,13 @@ Experimente as combinações de props do componente.
 <playground v-model:actions="playgroundActions">
 <demo col>
 <u-table
-  :headers="playgroundHeader ? tableHeaders : []"
+  :headers="playgroundActions.header.value ? tableHeaders : []"
   :items="tableItems"
-  :vertical="playgroundVertical"
-  :loading="playgroundLoading"
+  :vertical="playgroundActions.vertical.value"
+  :loading="playgroundActions.loading.value"
   data-testid="table-playground-preview"
 />
 </demo>
-
-<template #actions>
-<v-checkbox
-  v-model="playgroundHeader"
-  label="Cabeçalho"
-  density="compact"
-  hide-details
-  data-testid="table-playground-header"
-/>
-
-<v-checkbox
-  v-model="playgroundVertical"
-  label="Vertical"
-  density="compact"
-  hide-details
-  data-testid="table-playground-vertical"
-/>
-
-<v-checkbox
-  v-model="playgroundLoading"
-  label="Carregando"
-  density="compact"
-  hide-details
-  data-testid="table-playground-loading"
-/>
-</template>
 </playground>
 
 ## Ver também
@@ -180,7 +154,6 @@ Consulte a referência de [API do UTable](../../api/components/table) para a lis
 <script lang="ts" setup>
   import { ref } from "vue"
   import { UTable } from "../../../dist/components.js"
-  import { VCheckbox } from "vuetify/components"
 
   const tableHeaders = ["Nome", "Idade", "Cidade"];
   const tableItems = [
@@ -188,8 +161,24 @@ Consulte a referência de [API do UTable](../../api/components/table) para a lis
     ["Bruno", "25", "Rio de Janeiro"],
   ];
 
-  const playgroundActions = ref({});
-  const playgroundVertical = ref(false);
-  const playgroundHeader = ref(true);
-  const playgroundLoading = ref(false);
+  const playgroundActions = ref({
+    header: {
+      type: "checkbox",
+      label: "Cabeçalho",
+      value: true,
+      dataTestid: "table-playground-header",
+    },
+    vertical: {
+      type: "checkbox",
+      label: "Vertical",
+      value: false,
+      dataTestid: "table-playground-vertical",
+    },
+    loading: {
+      type: "checkbox",
+      label: "Carregando",
+      value: false,
+      dataTestid: "table-playground-loading",
+    },
+  });
 </script>

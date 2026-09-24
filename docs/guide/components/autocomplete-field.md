@@ -307,23 +307,7 @@ function onUpdateValue(newValue: string | undefined) {
 Experimente as combinações de props do componente.
 
 <playground v-model:actions="playgroundActions">
-<u-autocomplete-field :label="playgroundActions.label.value" :placeholder="playgroundActions.placeholder.value" :hint="playgroundActions.hint.value" :variant="playgroundVariant" :disabled="playgroundDisabled" :readonly="playgroundReadonly" :loading="playgroundLoading" :clearable="playgroundClearable" :strict="playgroundStrict" :multiple="playgroundMultiple" :items="playgroundItems" data-testid="autocomplete-field-preview" />
-
-<template #actions>
-<v-select v-model="playgroundVariant" label="Variante" :items="playgroundVariantOptions" density="compact" data-testid="autocomplete-field-playground-variant" />
-
-<v-checkbox v-model="playgroundStrict" label="Modo restrito (strict)" density="compact" hide-details data-testid="autocomplete-field-playground-strict" />
-
-<v-checkbox v-model="playgroundMultiple" label="Seleção múltipla" density="compact" hide-details data-testid="autocomplete-field-playground-multiple" />
-
-<v-checkbox v-model="playgroundDisabled" label="Desabilitado" density="compact" hide-details data-testid="autocomplete-field-playground-disabled" />
-
-<v-checkbox v-model="playgroundReadonly" label="Somente leitura" density="compact" hide-details data-testid="autocomplete-field-playground-readonly" />
-
-<v-checkbox v-model="playgroundLoading" label="Carregando" density="compact" hide-details data-testid="autocomplete-field-playground-loading" />
-
-<v-checkbox v-model="playgroundClearable" label="Limpável" density="compact" hide-details data-testid="autocomplete-field-playground-clearable" />
-</template>
+<u-autocomplete-field :label="playgroundActions.label.value" :placeholder="playgroundActions.placeholder.value" :hint="playgroundActions.hint.value" :variant="(playgroundActions.variant.value as 'primary' | 'secondary')" :disabled="playgroundActions.disabled.value" :readonly="playgroundActions.readonly.value" :loading="playgroundActions.loading.value" :clearable="playgroundActions.clearable.value" :strict="playgroundActions.strict.value" :multiple="playgroundActions.multiple.value" :items="playgroundItems" data-testid="autocomplete-field-preview" />
 </playground>
 
 ## Ver também
@@ -333,7 +317,6 @@ Consulte a referência de [API do UAutocompleteField](../../api/components/autoc
 <script lang="ts" setup>
 import { ref, computed } from 'vue';
 import { UAutocompleteField } from '../../../dist/components.js';
-import { VSelect, VCheckbox } from 'vuetify/components';
 
 const modelValue = ref('Brasil');
 const changes = ref(0);
@@ -362,20 +345,53 @@ const playgroundActions = ref({
     value: 'Dica: Digite ou selecione',
     dataTestid: 'autocomplete-field-playground-hint',
   },
+  variant: {
+    type: "combobox",
+    label: "Variante",
+    value: "primary",
+    dataTestid: "autocomplete-field-playground-variant",
+    items: [
+      { label: "Primary", value: "primary" },
+      { label: "Secondary", value: "secondary" }
+    ]
+  },
+  strict: {
+    type: "checkbox",
+    label: "Modo restrito (strict)",
+    value: false,
+    dataTestid: "autocomplete-field-playground-strict",
+  },
+  multiple: {
+    type: "checkbox",
+    label: "Seleção múltipla",
+    value: false,
+    dataTestid: "autocomplete-field-playground-multiple",
+  },
+  disabled: {
+    type: "checkbox",
+    label: "Desabilitado",
+    value: false,
+    dataTestid: "autocomplete-field-playground-disabled",
+  },
+  readonly: {
+    type: "checkbox",
+    label: "Somente leitura",
+    value: false,
+    dataTestid: "autocomplete-field-playground-readonly",
+  },
+  loading: {
+    type: "checkbox",
+    label: "Carregando",
+    value: false,
+    dataTestid: "autocomplete-field-playground-loading",
+  },
+  clearable: {
+    type: "checkbox",
+    label: "Limpável",
+    value: false,
+    dataTestid: "autocomplete-field-playground-clearable",
+  },
 });
-
-const playgroundVariant = ref<'primary' | 'secondary'>('primary');
-const playgroundVariantOptions = [
-  { value: 'primary', title: 'Primary' },
-  { value: 'secondary', title: 'Secondary' },
-];
-
-const playgroundStrict = ref(false);
-const playgroundMultiple = ref(false);
-const playgroundDisabled = ref(false);
-const playgroundReadonly = ref(false);
-const playgroundLoading = ref(false);
-const playgroundClearable = ref(false);
 
 const playgroundItems = ['Brasil', 'Portugal', 'Moçambique'];
 
