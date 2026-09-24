@@ -35,7 +35,7 @@ export function createUimed(): Plugin {
           dark: true,
           colors: {
             ...light.colors,
-            background: "053321",
+            background: "#053321",
           },
           variables: {
             ...light.variables,
