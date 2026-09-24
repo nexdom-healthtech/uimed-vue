@@ -166,7 +166,7 @@ Use an existing component (e.g. `button`) as the reference, and deliver all of t
   ```
 
 - Component layout: `src/components/<name>/<name>.vue`, `types.ts` for prop/option types, `__tests__/<name>.test.ts` for unit tests. Composables follow the same shape under `src/composables/<name>/`.
-- Public components/composables/types are re-exported from `src/components/index.ts` and `src/composables/index.ts`.
+- Public components/composables are re-exported from `src/components/index.ts` and `src/composables/index.ts`. Prop types stay internal (`types.ts` is not re-exported); consumers derive them with `ComponentProps` (see [Usage](#usage)).
 - Every publicly exported component must use the `U` prefix on its export identifier (e.g., `UButton`, `UMain`), while internal file names and component names remain unprefixed.
 - Use [JSDoc](https://jsdoc.app/about-getting-started) on every method/prop/type intended to be part of the public API — it's the primary documentation surface and supports markdown/code examples.
 - Known workarounds (see CONTRIBUTING.md before touching related config): `stryker-vue-ignorer` patches a Stryker/Vue macro-hoisting issue; `vue-tsc` is used for type-check instead of Vite+'s built-in one due to an oxlint/Vue support gap. Both are meant to be removed once their upstream issues are fixed — don't build further on top of them without checking if they're still needed.
