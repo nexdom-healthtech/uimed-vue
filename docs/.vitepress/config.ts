@@ -118,6 +118,10 @@ export default defineConfig({
               text: "Campos e formulários",
               items: [
                 { text: "Caixas de seleção", link: "/guide/components/checkbox" },
+                {
+                  text: "Campos com preenchimento automático",
+                  link: "/guide/components/autocomplete-field",
+                },
                 { text: "Campos de texto", link: "/guide/components/text-field" },
                 { text: "Formulários", link: "/guide/components/form" },
               ],
@@ -151,6 +155,7 @@ export default defineConfig({
           text: "Componentes",
           collapsed: false,
           items: [
+            { text: "UAutocompleteField", link: "/api/components/autocomplete-field" },
             { text: "UButton", link: "/api/components/button" },
             { text: "UCheckbox", link: "/api/components/checkbox" },
             {
