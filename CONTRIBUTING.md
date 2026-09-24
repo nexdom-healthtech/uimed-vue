@@ -133,6 +133,14 @@ But, that's not everything. Since the best documentation is the one you don't ha
 
 JSDoc handles markdown pretty well, so you can easily provide rich format documentations, like code examples, right inside your comments.
 
+When adding a new component or composable, remember to update every place that lists them:
+
+- Its guide page, at `docs/guide/components/<name>.md` (or `docs/guide/composables/<name>.md`).
+- Its API page, at `docs/api/components/<name>.md` (or `docs/api/composables/<name>.md`).
+- The sidebars (`/guide/` and `/api/`) at `docs/.vitepress/config.ts`.
+- The guide index table, at `docs/guide/index.md`.
+- The API index list, at `docs/api/index.md`.
+
 Tho check how your markdown pages are going, just...
 
 - Run docs page:
