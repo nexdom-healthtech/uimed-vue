@@ -178,11 +178,7 @@ function onUpdateValue(newValue: string) {
 Experimente as combinações de props do componente.
 
 <playground v-model:actions="playgroundActions">
-<u-text-field :label="playgroundActions.label.value" :placeholder="playgroundActions.placeholder.value" :hint="playgroundActions.hint.value" :variant="playgroundVariant" :disabled="playgroundActions.disabled.value" :readonly="playgroundActions.readonly.value" :loading="playgroundActions.loading.value" :clearable="playgroundActions.clearable.value" data-testid="text-field-preview" />
-
-<template #actions>
-<v-select v-model="playgroundVariant" label="Variante" :items="playgroundVariantOptions" density="compact" data-testid="text-field-playground-variant" />
-</template>
+<u-text-field :label="playgroundActions.label.value" :placeholder="playgroundActions.placeholder.value" :hint="playgroundActions.hint.value" :variant="playgroundActions.variant.value" :disabled="playgroundActions.disabled.value" :readonly="playgroundActions.readonly.value" :loading="playgroundActions.loading.value" :clearable="playgroundActions.clearable.value" data-testid="text-field-preview" />
 </playground>
 
 ## Ver também
@@ -192,8 +188,6 @@ Consulte a referência de [API do UTextField](../../api/components/text-field) p
 <script lang="ts" setup>
   import { computed, ref } from "vue"
   import { UTextField } from "../../../dist/components.js"
-  import { VSelect } from "vuetify/components"
-import type { ComponentProps } from "vue-component-type-helpers";
 
   const modelValue = ref("Me altere!");
   const changes = ref(0);
@@ -203,9 +197,6 @@ import type { ComponentProps } from "vue-component-type-helpers";
     modelValue.value = newValue;
     changes.value++;
   }
-
-  type Props = ComponentProps<typeof UTextField>;
-  const playgroundVariantOptions: Array<Props["variant"]> = ["primary", "secondary"];
 
   const playgroundActions = ref({
     label: {
@@ -225,6 +216,13 @@ import type { ComponentProps } from "vue-component-type-helpers";
       label: "Mensagem",
       value: "Hint",
       dataTestid: "text-field-playground-hint"
+    },
+    variant: {
+      type: "combobox",
+      label: "Variante",
+      value: "primary",
+      dataTestid: "text-field-playground-variant",
+      items: ["primary", "secondary"]
     },
     disabled: {
       type: "checkbox",
@@ -251,6 +249,4 @@ import type { ComponentProps } from "vue-component-type-helpers";
       dataTestid: "text-field-playground-clearable"
     },
   });
-
-  const playgroundVariant = ref(playgroundVariantOptions[0]);
 </script>
