@@ -12,5 +12,5 @@ export function vitePluginUimed(): ReturnType<typeof vitePluginVuetify> {
  * Vitest Server plugin for UIMed.
  */
 export function vitestServerPluginUimed(): NonNullable<NonNullable<UserConfig["test"]>["server"]> {
-  return { deps: { inline: ["vuetify"] } };
+  return { deps: { inline: ["vuetify", "@nexdom/uimed-vue"] } };
 }
