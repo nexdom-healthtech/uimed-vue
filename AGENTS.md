@@ -30,7 +30,7 @@ Add the Vite plugin:
 
 ```ts
 // vite.config.ts
-import { vitePluginUimed } from "@nexdom/uimed-vue/plugins.ts";
+import { vitePluginUimed } from "@nexdom/uimed-vue/plugins";
 
 // ...
 
@@ -55,18 +55,18 @@ createApp(App).use(uimed).mount("#app");
 
 ### Usage
 
-Place the `Root` component at the top of `App.vue`, then add other components as needed:
+Place the `UMain` component at the top of `App.vue`, then add other components as needed:
 
 ```vue
 <!-- App.vue -->
 <template>
-  <root>
+  <u-main>
     <!-- ... -->
-  </root>
+  </u-main>
 </template>
 
 <script setup lang="ts">
-import { Root } from "@nexdom/uimed-vue/components";
+import { UMain } from "@nexdom/uimed-vue/components";
 </script>
 ```
 
@@ -102,17 +102,63 @@ vp env setup    # create shims like vpr and vpx
 vp install      # install dependencies
 ```
 
+On Windows, prefer VSCode's "Dev Containers: Clone Repository in Container Volume" over opening a folder cloned on the host:
+
+- A host clone with `core.autocrlf=true` checks files out with CRLF, and `vpr check` then reports formatting issues on every file. `.gitattributes` enforces LF, but clones made before it was added need `git rm -rq --cached . && git reset --hard` to be re-normalized (commit or stash local changes first, since `reset --hard` discards them).
+- A host folder bind-mounted into the container is roughly 10x slower (unit tests alone go from seconds to minutes), which makes Stryker's initial test run time out.
+
 ## Commands
 
-- `vpr check` — lint, formatter, and type-check (requires `build`/`pack` to have run first for the type-check step)
+- `vpr check` — lint, formatter, and type-check (builds the library first, since the type-check reads `dist`)
 - `vp test --coverage` — unit tests with coverage (Vitest, jsdom, 100% coverage threshold enforced)
-- `vpr test:mutations` — mutation tests (Stryker; thresholds: high 100, low 95, break 95)
+- `vpr test:mutations` — mutation tests (Stryker; thresholds: high 100, low 100, break 100). It starts one test runner per CPU core; on machines with limited memory, run `vpx stryker run --concurrency 4` instead
 - `vpr test:e2e` — E2E tests (Playwright, runs against the built docs preview site)
 - `vpr depcruise` — architecture/dependency rules (dependency-cruiser)
 - `vp pack` / `vpr build` — build the library
 - `vpr docs` / `vpr docs:dev` — run docs site (imports the lib from `dist`, not `src` — run `vpr dev` in a second terminal to keep `dist` updated while iterating)
 
 CI (`.github/workflows/ci.yml`) runs, in order: commitlint on PR commits, `vp pack`, `vpr check`, `vpr depcruise`, `vp test --coverage`, `vpr test:mutations`, `vpr test:e2e`. Match this locally before opening a PR.
+
+### Focused runs while iterating
+
+The full suite takes minutes; while working on a single component or composable, scope each step to it (`button` below is an example) and run the full suite only before opening a PR:
+
+```bash
+# Unit tests of one or more folders
+vp test src/components/button
+
+# Same, with coverage limited to the files you changed. Without `--coverage.include`, files that
+# are only imported (e.g. the children of `main.vue`) count as uncovered and fail the 100% threshold
+vp test src/components/button --coverage --coverage.include="src/components/button/**"
+
+# Mutation tests of specific files. List several files in a single comma-separated `--mutate`
+# (repeating the flag keeps only the last one)
+vpx stryker run --mutate "src/components/button/button.vue,src/composables/button/button.ts"
+
+# One E2E spec
+vpr test:e2e e2e/components/button.spec.ts
+```
+
+## Adding a new component
+
+Use an existing component (e.g. `button`) as the reference, and deliver all of the following in the same PR:
+
+1. `src/components/<name>/<name>.vue` (following the pattern in [Code conventions](#code-conventions)), `types.ts` and `__tests__/<name>.test.ts`.
+2. The `U`-prefixed export in `src/components/index.ts`.
+3. A usage guide at `docs/guide/components/<name>.md`, with `<demo>` examples (and a `<playground>` section when the component has configurable props), and an API reference at `docs/api/components/<name>.md` (props, events and slots tables). Both in Portuguese.
+4. Both pages registered in the sidebar at `docs/.vitepress/config.ts`.
+5. `e2e/components/<name>.spec.ts` covering the guide's interactive examples and a "UI consistency" screenshot check (plus accessible snapshots where relevant). Commit the generated files under `__snapshots__`/`__screenshot__`.
+6. The full CI sequence passing locally.
+
+## Adding a new composable
+
+Use an existing composable (e.g. `use-toast`) as the reference, and deliver in the same PR:
+
+1. `src/composables/<group>/<name>.ts` and `__tests__/<name>.test.ts`, plus the types in the group's `types.ts`. If it relies on an internal component (as `useToast` relies on the internal `Toast` rendered by `UMain`), that component follows the component layout but isn't exported.
+2. The export in `src/composables/index.ts`, and its assertion in `src/composables/__tests__/index.test.ts`.
+3. A usage guide at `docs/guide/composables/<name>.md` and an API reference at `docs/api/composables/<name>.md`, both in Portuguese, registered in both sidebars at `docs/.vitepress/config.ts` and listed in `docs/api/index.md`.
+4. `e2e/composables/<name>.spec.ts` covering the guide's examples and a "UI consistency" screenshot check.
+5. The full CI sequence passing locally.
 
 ## Code conventions
 
@@ -139,7 +185,7 @@ CI (`.github/workflows/ci.yml`) runs, in order: commitlint on PR commits, `vp pa
   ```
 
 - Component layout: `src/components/<name>/<name>.vue`, `types.ts` for prop/option types, `__tests__/<name>.test.ts` for unit tests. Composables follow the same shape under `src/composables/<name>/`.
-- Public components/composables/types are re-exported from `src/components/index.ts` and `src/composables/index.ts`.
+- Public components/composables are re-exported from `src/components/index.ts` and `src/composables/index.ts`. Prop types stay internal (`types.ts` is not re-exported); consumers derive them with `ComponentProps` (see [Usage](#usage)).
 - Every publicly exported component must use the `U` prefix on its export identifier (e.g., `UButton`, `UMain`), while internal file names and component names remain unprefixed.
 - Use [JSDoc](https://jsdoc.app/about-getting-started) on every method/prop/type intended to be part of the public API — it's the primary documentation surface and supports markdown/code examples.
 - Known workarounds (see CONTRIBUTING.md before touching related config): `stryker-vue-ignorer` patches a Stryker/Vue macro-hoisting issue; `vue-tsc` is used for type-check instead of Vite+'s built-in one due to an oxlint/Vue support gap. Both are meant to be removed once their upstream issues are fixed — don't build further on top of them without checking if they're still needed.
@@ -148,6 +194,7 @@ CI (`.github/workflows/ci.yml`) runs, in order: commitlint on PR commits, `vp pa
 
 - Unit tests use Vitest + `@vue/test-utils`, with `vueTestUtilsPluginUimed()` from `@/unit-test.ts` to mount a Vuetify instance.
 - Global unit test setup (`src/__tests__/setup.ts`) stubs `visualViewport`, uses fake timers, and silences `console.error/warn/log`.
+- With fake timers in jsdom, Vuetify transitions (e.g. of `VDialog`, `VMenu`) don't finish on their own. Emit the transition events on the Vuetify component (`wrapper.findComponent(VDialog).vm.$emit("afterLeave")`) or advance the timers with `await vi.runAllTimersAsync()`.
 - Coverage threshold is 100%; mutation testing threshold is 100% (break at 100). Don't add code paths without covering tests.
 - E2E tests (Playwright, `e2e/`) run against the built docs preview (`http://localhost:4173/uimed-vue/`). Snapshots/screenshots live under `__snapshots__`/`__screenshot__` next to each spec.
 
