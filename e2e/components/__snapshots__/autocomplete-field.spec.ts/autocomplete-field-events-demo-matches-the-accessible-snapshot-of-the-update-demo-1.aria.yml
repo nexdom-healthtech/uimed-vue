@@ -1,0 +1,5 @@
+- combobox:
+    - text: Brasil
+    - combobox "País"
+    - text: País
+- alert

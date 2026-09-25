@@ -198,7 +198,7 @@ Experimente as combinações de props do componente.
 
 <playground v-model:actions="playgroundActions">
 <u-section
-  :variant="playgroundVariant"
+  :variant="(playgroundActions.variant.value as Props['variant'])"
   :title="playgroundActions.title.value"
   :subtitle="playgroundActions.subtitle.value"
   :full-width="playgroundActions.fullWidth.value"
@@ -209,16 +209,6 @@ Experimente as combinações de props do componente.
 >
   {{ playgroundActions.content.value }}
 </u-section>
-
-<template #actions>
-<v-select
-  v-model="playgroundVariant"
-  label="Variante"
-  :items="playgroundVariantOptions"
-  density="compact"
-  data-testid="content-set-playground-variant"
-/>
-</template>
 </playground>
 
 ## Ver também
@@ -228,7 +218,6 @@ Consulte a referência de [API do USection](../../api/components/sections/sectio
 <script lang="ts" setup>
   import { ref } from "vue"
   import { USection } from "../../../dist/components.js"
-  import { VSelect } from "vuetify/components"
 import type { ComponentProps } from "vue-component-type-helpers";
 
   type Props = ComponentProps<typeof USection>;
@@ -246,8 +235,6 @@ import type { ComponentProps } from "vue-component-type-helpers";
     },
   ]);
 
-  const playgroundVariantOptions: Array<Props["variant"]> = ["primary", "secondary"];
-  
   const playgroundActions = ref({
     content: {
       type: "text",
@@ -266,6 +253,13 @@ import type { ComponentProps } from "vue-component-type-helpers";
       label: "Subtítulo",
       value: "Subtítulo descritivo",
       dataTestid: "content-set-playground-subtitle"
+    },
+    variant: {
+      type: "combobox",
+      label: "Variante",
+      value: "primary",
+      dataTestid: "content-set-playground-variant",
+      items: ["primary", "secondary"]
     },
     fullWidth: {
       type: "checkbox",
@@ -292,8 +286,6 @@ import type { ComponentProps } from "vue-component-type-helpers";
       dataTestid: "content-set-playground-actions"
     },
   });
-
-  const playgroundVariant = ref(playgroundVariantOptions[0]);
 
   const playgroundActionsData = ref<Props["actions"]>([
     {
