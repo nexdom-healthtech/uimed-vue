@@ -18,7 +18,7 @@ describe("plugins", () => {
   describe("vitestServerPluginUimed", () => {
     it("should return vuetify as inline deps", () => {
       const server = vitestServerPluginUimed();
-      expect(server).toEqual({ deps: { inline: ["vuetify"] } });
+      expect(server).toEqual({ deps: { inline: ["vuetify", "@nexdom/uimed-vue"] } });
     });
   });
 });
