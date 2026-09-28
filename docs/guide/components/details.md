@@ -94,31 +94,13 @@ Experimente as combinações de props do componente.
 
 <playground v-model:actions="playgroundActions">
 <u-details
-  :variant="playgroundVariant"
+  :variant="playgroundActions.variant.value"
   :title="playgroundActions.title.value"
-  :loading="playgroundLoading"
+  :loading="playgroundActions.loading.value"
   data-testid="details-preview"
 >
   {{ playgroundActions.content.value }}
 </u-details>
-
-<template #actions>
-<v-select
-  v-model="playgroundVariant"
-  label="Variante"
-  :items="playgroundVariantOptions"
-  density="compact"
-  data-testid="details-playground-variant"
-/>
-
-<v-checkbox
-  v-model="playgroundLoading"
-  label="Carregando"
-  density="compact"
-  hide-details
-  data-testid="details-playground-loading"
-/>
-</template>
 </playground>
 
 ## Ver também
@@ -128,7 +110,6 @@ Consulte a referência de [API do UDetails](../../api/components/details) para a
 <script lang="ts" setup>
   import { ref, type ExtractPublicPropTypes } from "vue"
   import { UDetails } from "../../../dist/components.js"
-  import { VSelect, VCheckbox } from "vuetify/components"
 
   type Props = ExtractPublicPropTypes<InstanceType<typeof UDetails>>
 
@@ -145,8 +126,18 @@ Consulte a referência de [API do UDetails](../../api/components/details) para a
       value: "Teste o componente Details com diferentes combinações de props",
       dataTestid: "details-playground-content"
     },
+    variant: {
+      type: "combobox",
+      label: "Variante",
+      value: playgroundVariantOptions[0],
+      dataTestid: "details-playground-variant",
+      items: playgroundVariantOptions
+    },
+    loading: {
+      type: "checkbox",
+      value: false,
+      label: "Carregando",
+      dataTestid: "details-playground-loading"
+    },
   });
-
-  const playgroundVariant = ref(playgroundVariantOptions[0]);
-  const playgroundLoading = ref(false);
 </script>
