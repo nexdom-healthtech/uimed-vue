@@ -11,7 +11,13 @@
     >
       <slot />
 
-      <v-card-actions v-if="showActions" class="mt-auto">
+      <!--
+        MD3 cards have a 16px padding and 8px between actions; actions are end-aligned for
+        consistency with dialogs. The card already sets the 8px gap, and `SectionContent` provides
+        the spacing above the actions, but no prop sets the paddings or the alignment, hence the
+        classes.
+      -->
+      <v-card-actions v-if="showActions" class="mt-auto justify-end px-4 pt-0 pb-4">
         <Button
           v-for="({ label, onClick, ...action }, index) in props.actions"
           :key="index"
