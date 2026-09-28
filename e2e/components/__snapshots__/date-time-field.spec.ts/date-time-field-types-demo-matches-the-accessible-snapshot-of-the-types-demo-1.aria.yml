@@ -1,0 +1,13 @@
+- textbox "Data": /\d+\/\d+\/\d+/
+- text: Data
+- alert
+- textbox "Horário": /\d+:\d+/
+- text: Horário
+- alert
+- textbox "Data e hora": /\d+\/\d+\/\d+ \d+:\d+/
+- text: Data e hora
+- alert
+- list:
+    - listitem: "/date: \"\\d+-\\d+-\\d+\"/"
+    - listitem: "/time: \"\\d+:\\d+\"/"
+    - listitem: "/datetime: \"\\d+-\\d+-10T08:\\d+\"/"
