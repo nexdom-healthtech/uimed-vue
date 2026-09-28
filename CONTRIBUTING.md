@@ -1,6 +1,9 @@
 # @nexdom/uimed-vue
 
-After clone this project, **open it inside its devContainer** using [VSCode](https://code.visualstudio.com/download).
+After cloning this project, **open it inside its devContainer** using [VSCode](https://code.visualstudio.com/download).
+
+> [!Tip]
+> On Windows, prefer the "Dev Containers: Clone Repository in Container Volume" command over opening a folder cloned on the host. Host folders mounted into the container are much slower (enough to make mutation tests time out), and clones made with `core.autocrlf=true` before `.gitattributes` was added check files out with CRLF, which fails `vpr check`.
 
 Then, follow the next instructions according to your needs.
 
@@ -47,12 +50,10 @@ vp run check
 
 _This script might require `build` first._
 
-- Run the unit tests:
+- Run the unit tests with coverage (the same command CI runs):
 
 ```bash
-vpr test
-# Or
-vp run test
+vp test --coverage
 ```
 
 - Run mutation tests:
@@ -89,7 +90,7 @@ vp --help
 
 #### Components
 
-Since `@nexdom/uimed-vue` is a frameworks, we shall not expose any trace of its internal implementations.
+Since `@nexdom/uimed-vue` is a framework, we shall not expose any trace of its internal implementations.
 
 To do so, **the following code is recommended for every component**, since it restricts a component use to the exposed API only:
 
@@ -122,12 +123,12 @@ Every component exported publicly from `src/components/index.ts` **must be re-ex
 
 ## Documentation
 
-The success of this projects also depends on the quality of its documentation.
+The success of this project also depends on the quality of its documentation.
 
 To help you dealing with that, we prepared a `docs` folder, which will be used to generate documentation pages based on markdown files (thanks to `Vitepress`).
 
 > [!Tip]
-> Unlike the `src`, `docs` it written in English, but aimed for Brazilian users, mostly, so it's content should be written in Portuguese.
+> Unlike `src`, the `docs` content is written in Portuguese, since it's aimed mostly at Brazilian users. File and folder names stay in English.
 
 But, that's not everything. Since the best documentation is the one you don't have to open, we ask you to use [JSDoc](https://jsdoc.app/about-getting-started) on the methods you intend to expose from the API. That can be easily accomplished by just typing `/**` and `enter` at the row before your `method` or `attribute`.
 
@@ -141,7 +142,7 @@ When adding a new component or composable, remember to update every place that l
 - The guide index table, at `docs/guide/index.md`.
 - The API index list, at `docs/api/index.md`.
 
-Tho check how your markdown pages are going, just...
+To check how your markdown pages are going, just...
 
 - Run docs page:
 
@@ -168,7 +169,7 @@ The majority of new features, bug fixes and minor updates (like documentations o
 
 Short-lived branches, as mentioned before, originate from branch `main`, and will, as soon as possible, go back to `main` through a Pull Request. As soon as the PR is merged, the origin branch must be deleted.
 
-The diagram bellow illustrates that workflow:
+The diagram below illustrates that workflow:
 
 ```mermaid
 gitGraph:
@@ -208,11 +209,11 @@ Here, what you'll do is create a branch `beta`, from `main`, if it's not already
 
 As soon as all changes inside beta are actually production ready, which must not linger, merge `beta` into `main` using a PR.
 
-_Just like any other branch, as soon as the PR from `beta` to `main` is merged, the branch `beta` must be deleted (at least until new a `beta` is needed)._
+_Just like any other branch, as soon as the PR from `beta` to `main` is merged, the branch `beta` must be deleted (at least until a new `beta` is needed)._
 
-_Sometimes merging `beta` straight into `main` won't be possible duo some merge conflicts and the protection rule that prevents pushes (including rebases or merge resolving commits) into `main`, `beta` and `alpha`. To solve it, create an intermediary branch, from `beta`, rebase it with `main` and use it to create your PR. Remember to delete both branches, `beta` and the temporary branch, after merge._
+_Sometimes merging `beta` straight into `main` won't be possible due to some merge conflicts and the protection rule that prevents pushes (including rebases or merge resolving commits) into `main`, `beta` and `alpha`. To solve it, create an intermediary branch, from `beta`, rebase it with `main` and use it to create your PR. Remember to delete both branches, `beta` and the temporary branch, after merge._
 
-The `beta` branch flow should looks something like this:
+The `beta` branch flow should look something like this:
 
 ```mermaid
 gitGraph:
@@ -257,9 +258,9 @@ gitGraph:
 
 Sometimes, when you don't even have enough resources to test something, like when you've just created a new project/library from a template, or started to prototype a new feature, you need `alpha`.
 
-Create `alpha` from `main` and work on it just like you would on `beta`. The moment your changes become stable enough for starting test phase, promote tem to `beta` by creating a new branch `beta` from `main`, if it's not already there, and push `alpha` into `beta`using a Pull Request.
+Create `alpha` from `main` and work on it just like you would on `beta`. The moment your changes become stable enough for starting test phase, promote them to `beta` by creating a new branch `beta` from `main`, if it's not already there, and push `alpha` into `beta` using a Pull Request.
 
-For that moment on, everything should comply according to [When to use `beta`?](#when-to-use-beta) specifications.
+From that moment on, everything should comply according to [When to use `beta`?](#when-to-use-beta) specifications.
 
 The whole flow will look like this:
 
@@ -306,7 +307,7 @@ vpr build
 vp run build
 ```
 
-- Build docs:
+- Build docs (`docs:build` is a task defined in `vite.config.ts`, not a `package.json` script, so it runs with `vpr`/`vp run`, which also builds the library first):
 
 ```bash
 vpr docs:build
