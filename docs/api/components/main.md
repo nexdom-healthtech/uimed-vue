@@ -6,7 +6,7 @@ outline: deep
 
 Componente principal do projeto.
 
-Responsável por carregar o menu superior, o menu de navegação lateral, componentes para as composables de [Toasts](../composables/use-toast) e os estilos para os demais componentes.
+Responsável por carregar o menu superior, o menu de navegação lateral, componentes para as composables de [Toasts](../composables/use-toast), [Diálogos](../composables/use-dialog) e [Confirmações](../composables/use-confirm) e os estilos para os demais componentes.
 
 ## Props
 
