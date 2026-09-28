@@ -51,8 +51,7 @@ import { type MainProps } from "@/components/main/types.ts";
 import { VApp, VMain } from "vuetify/components";
 import Container from "@/components/grid/container/container.vue";
 import Toast from "@/components/dialogs/toast.vue";
-// Aliased because `<dialog>` in the template would render the native HTML element instead
-import DialogHost from "@/components/dialogs/dialog.vue";
+import DialogHost from "@/components/dialogs/dialog-host.vue";
 import { computed, ref } from "vue";
 
 const props = defineProps<MainProps>();

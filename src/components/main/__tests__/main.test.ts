@@ -4,7 +4,7 @@ import { mount } from "@vue/test-utils";
 import { vueTestUtilsPluginUimed } from "@/unit-test.ts";
 import { UContainer } from "@/components/index.ts";
 import Toast from "@/components/dialogs/toast.vue";
-import Dialog from "@/components/dialogs/dialog.vue";
+import DialogHost from "@/components/dialogs/dialog-host.vue";
 import AppBar from "@/components/app-bar/app-bar.vue";
 import NavigationMenu from "@/components/navigation-menu/navigation-menu.vue";
 import { nextTick } from "vue";
@@ -32,7 +32,7 @@ describe("Main", () => {
   });
 
   it("should contain dialog component", () => {
-    const dialog = wrapper.findComponent(Dialog);
+    const dialog = wrapper.findComponent(DialogHost);
     expect(dialog.exists()).toBeTruthy();
   });
 
