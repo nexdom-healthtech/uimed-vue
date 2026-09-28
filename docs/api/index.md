@@ -44,6 +44,8 @@ const apis = [
         methods: [
             { text: "useToast", link: "./composables/use-toast" },
             { text: "useRunOrToast", link: "./composables/use-run-or-toast" },
+            { text: "useDialog", link: "./composables/use-dialog" },
+            { text: "useConfirm", link: "./composables/use-confirm" },
         ]
     },
 ];

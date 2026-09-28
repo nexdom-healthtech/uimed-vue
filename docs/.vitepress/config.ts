@@ -142,6 +142,8 @@ export default defineConfig({
               items: [
                 { text: "Toasts", link: "/guide/composables/use-toast" },
                 { text: "Run or toast", link: "/guide/composables/use-run-or-toast" },
+                { text: "Diálogos", link: "/guide/composables/use-dialog" },
+                { text: "Confirmações", link: "/guide/composables/use-confirm" },
               ],
             },
           ],
@@ -189,6 +191,14 @@ export default defineConfig({
             {
               text: "useRunOrToast",
               link: "/api/composables/use-run-or-toast",
+            },
+            {
+              text: "useDialog",
+              link: "/api/composables/use-dialog",
+            },
+            {
+              text: "useConfirm",
+              link: "/api/composables/use-confirm",
             },
           ],
         },

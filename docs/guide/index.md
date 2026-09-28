@@ -41,3 +41,5 @@ As composables a seguir possuem exemplos práticos de utilização dentro desta 
 | -------------------------------------------- | ---------------------------------------------------------------------------------- |
 | [Toasts](./composables/use-toast)            | Composables para apresentar mensagens `toast`.                                     |
 | [RunOrToast](./composables/use-run-or-toast) | Composables para executar métodos e apresentar mensagens `toast` em caso de falha. |
+| [Diálogos](./composables/use-dialog)         | Composables para apresentar diálogos.                                              |
+| [Confirmações](./composables/use-confirm)    | Composables para executar ações após a confirmação do usuário.                     |
