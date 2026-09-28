@@ -10,8 +10,9 @@ dist
 *credentials*
 .env*
 
-# Dependency Cruiser
-dependency*
+# Dependency Cruiser graphs (depcruise:graph* scripts)
+/dependencygraph.svg
+/dependencygraph.no-tests.svg
 
 # Tests
 coverage
