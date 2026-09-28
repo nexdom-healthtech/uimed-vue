@@ -27,3 +27,4 @@ blob-report
 # stryker temp files
 .stryker-tmp
 reports
+.vitest/
