@@ -11,7 +11,7 @@
     >
       <slot />
 
-      <v-card-actions v-if="showActions" class="mt-auto">
+      <v-card-actions v-if="showActions" class="mt-auto justify-end">
         <Button
           v-for="({ label, onClick, ...action }, index) in props.actions"
           :key="index"
