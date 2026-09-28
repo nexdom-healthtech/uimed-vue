@@ -104,12 +104,14 @@ import { USection } from "@nexdom/uimed-vue/components";
 
 ### Ações
 
-A prop `actions` define uma lista de botões exibidos na área de ações (rodapé) do agrupador.
+A prop `actions` define uma lista de botões exibidos na área de ações (rodapé) do agrupador, alinhados à direita, nesta ordem. Coloque a ação principal por último.
+
+Coloque o conteúdo dentro do [`SectionContent`](#componente-sectioncontent) para que ele fique espaçado das bordas do agrupador e dos botões de ação.
 
 <demo>
 <div style="height: 300px;">
   <u-section title="Agrupador com Ações" :actions="demoActions" full-height>
-    Conteúdo com ações disponíveis no rodapé
+    <u-section-content>Conteúdo com ações disponíveis no rodapé</u-section-content>
   </u-section>
 </div>
 </demo>
@@ -118,25 +120,25 @@ A prop `actions` define uma lista de botões exibidos na área de ações (rodap
 <template>
   <div style="height: 300px;">
     <u-section title="Agrupador com Ações" :actions="actions" full-height>
-      Conteúdo com ações disponíveis no rodapé
+      <u-section-content>Conteúdo com ações disponíveis no rodapé</u-section-content>
     </u-section>
   </div>
 </template>
 
 <script lang="ts" setup>
 import { ref } from "vue";
-import { USection } from "@nexdom/uimed-vue/components";
+import { USection, USectionContent } from "@nexdom/uimed-vue/components";
 
 const actions = ref([
-  {
-    label: "Salvar",
-    color: "positive",
-    onClick: () => alert("Salvar clicado"),
-  },
   {
     label: "Cancelar",
     variant: "ghost",
     onClick: () => alert("Cancelar clicado"),
+  },
+  {
+    label: "Salvar",
+    color: "positive",
+    onClick: () => alert("Salvar clicado"),
   },
 ]);
 </script>
@@ -153,7 +155,7 @@ A prop `loading` exibe um skeleton loader no lugar do conteúdo enquanto uma ope
   :actions="[{ label: 'Salvar' }]"
   loading
 >
-  Conteúdo do agrupador com actions
+  <u-section-content>Conteúdo do agrupador com actions</u-section-content>
 </u-section>
 </demo>
 
@@ -161,12 +163,12 @@ A prop `loading` exibe um skeleton loader no lugar do conteúdo enquanto uma ope
 <template>
   <u-section title="Carregando..." loading> Conteúdo do agrupador </u-section>
   <u-section title="Carregando com actions..." :actions="[{ label: 'Salvar' }]" loading>
-    Conteúdo do agrupador com actions
+    <u-section-content>Conteúdo do agrupador com actions</u-section-content>
   </u-section>
 </template>
 
 <script lang="ts" setup>
-import { USection } from "@nexdom/uimed-vue/components";
+import { USection, USectionContent } from "@nexdom/uimed-vue/components";
 </script>
 ```
 
@@ -207,7 +209,7 @@ Experimente as combinações de props do componente.
   :actions="playgroundActions.showActions.value ? playgroundActionsData : undefined"
   data-testid="content-set-preview"
 >
-  {{ playgroundActions.content.value }}
+  <u-section-content>{{ playgroundActions.content.value }}</u-section-content>
 </u-section>
 </playground>
 
@@ -217,21 +219,21 @@ Consulte a referência de [API do USection](../../api/components/sections/sectio
 
 <script lang="ts" setup>
   import { ref } from "vue"
-  import { USection } from "../../../dist/components.js"
+  import { USection, USectionContent } from "../../../dist/components.js"
 import type { ComponentProps } from "vue-component-type-helpers";
 
   type Props = ComponentProps<typeof USection>;
 
   const demoActions = ref<Props["actions"]>([
     {
-      label: "Salvar",
-      color: "positive",
-      onClick: () => alert("Salvar clicado"),
-    },
-    {
       label: "Cancelar",
       variant: "ghost",
       onClick: () => alert("Cancelar clicado"),
+    },
+    {
+      label: "Salvar",
+      color: "positive",
+      onClick: () => alert("Salvar clicado"),
     },
   ]);
 
@@ -289,14 +291,14 @@ import type { ComponentProps } from "vue-component-type-helpers";
 
   const playgroundActionsData = ref<Props["actions"]>([
     {
-      label: "Salvar",
-      color: "positive",
-      onClick: () => alert("Salvar clicado"),
-    },
-    {
       label: "Cancelar",
       variant: "ghost",
       onClick: () => alert("Cancelar clicado"),
+    },
+    {
+      label: "Salvar",
+      color: "positive",
+      onClick: () => alert("Salvar clicado"),
     },
   ]);
 </script>
