@@ -40,7 +40,7 @@ Adicione o plugin ao arquivo de configurações do Vite:
 ```js [vite.config.ts]
 import { defineConfig } from 'vite'
 import vue from "@vitejs/plugin-vue";
-import { vitePluginUimed } from "@nexdom/uimed-vue/plugins.ts"; // [!code ++]
+import { vitePluginUimed } from "@nexdom/uimed-vue/plugins"; // [!code ++]
 
 export default defineConfig({
   plugins: [
