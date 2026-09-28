@@ -188,6 +188,10 @@ Consulte a referência de [API do UTextField](../../api/components/text-field) p
 <script lang="ts" setup>
   import { computed, ref } from "vue"
   import { UTextField } from "../../../dist/components.js"
+  import type { ComponentProps } from "vue-component-type-helpers";
+
+  type Props = ComponentProps<typeof UTextField>;
+  const playgroundVariantOptions: Array<Props["variant"]> = ["primary", "secondary"];
 
   const modelValue = ref("Me altere!");
   const changes = ref(0);
@@ -220,9 +224,9 @@ Consulte a referência de [API do UTextField](../../api/components/text-field) p
     variant: {
       type: "combobox",
       label: "Variante",
-      value: "primary",
+      value: playgroundVariantOptions[0],
       dataTestid: "text-field-playground-variant",
-      items: ["primary", "secondary"]
+      items: playgroundVariantOptions
     },
     disabled: {
       type: "checkbox",
