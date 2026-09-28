@@ -129,6 +129,15 @@ describe("DateTimeField", () => {
       expect(findVTextField(wrapper).props("modelValue")).toBe("24/09/2026");
     });
 
+    it("should use the picked date's local components, padded to two digits", async () => {
+      const wrapper = mountDateTimeField({ type: "date" });
+      await openMenu(wrapper);
+
+      await pickDate(wrapper, new Date(2026, 0, 5, 23, 59));
+
+      expect(emittedValues(wrapper)).toEqual([["2026-01-05"]]);
+    });
+
     it("should select a time, closing only after the minute is picked", async () => {
       const wrapper = mountDateTimeField({ type: "time" });
       await openMenu(wrapper);

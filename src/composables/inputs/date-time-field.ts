@@ -47,17 +47,6 @@ export function joinDateTime(type: DateTimeFieldType, date: string, time: string
 }
 
 /**
- * Converts a date to `YYYY-MM-DD` using its local components, so there's no
- * timezone shift.
- */
-export function toIsoDate(date: Date): string {
-  const month = padTwoDigits(date.getMonth() + 1);
-  const day = padTwoDigits(date.getDate());
-
-  return `${date.getFullYear()}-${month}-${day}`;
-}
-
-/**
  * Formats a value to be displayed in pt-BR, like `24/09/2026`, `14:30` or
  * `24/09/2026 14:30`.
  */
@@ -119,8 +108,4 @@ function minRule(min: string, type: DateTimeFieldType): Rule {
 function maxRule(max: string, type: DateTimeFieldType): Rule {
   const message = `Valor posterior ao máximo permitido (${formatDateTime(max, type)})`;
   return (value) => !value || value <= max || message;
-}
-
-function padTwoDigits(value: number): string {
-  return String(value).padStart(2, "0");
 }

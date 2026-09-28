@@ -4,7 +4,6 @@ import {
   getDatePart,
   getTimePart,
   joinDateTime,
-  toIsoDate,
   useDateTimeFieldPickerBounds,
   useDateTimeFieldRules,
 } from "@/composables/inputs/date-time-field.ts";
@@ -57,14 +56,6 @@ describe("date-time-field", () => {
         expect(joinDateTime(type, date, time)).toBe(expected);
       },
     );
-  });
-
-  describe("toIsoDate", () => {
-    it("should use local date components, padded to two digits", () => {
-      expect(toIsoDate(new Date(2026, 0, 5, 23, 59))).toBe("2026-01-05");
-      expect(toIsoDate(new Date(2026, 8, 24, 0, 0))).toBe("2026-09-24");
-      expect(toIsoDate(new Date(2026, 11, 31, 23, 59))).toBe("2026-12-31");
-    });
   });
 
   describe("formatDateTime", () => {

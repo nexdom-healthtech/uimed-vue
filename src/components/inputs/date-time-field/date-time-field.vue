@@ -74,11 +74,11 @@ import {
   getDatePart,
   getTimePart,
   joinDateTime,
-  toIsoDate,
   useDateTimeFieldPickerBounds,
   useDateTimeFieldRules,
 } from "@/composables/inputs/date-time-field.ts";
 import { useTextFieldVariant } from "@/composables/inputs/text-field.ts";
+import { formatDateTime as formatDate } from "@nexdom/shared/utils";
 import {
   VCard,
   VDatePicker,
@@ -117,7 +117,7 @@ watch(isMenuOpen, () => {
 });
 
 function onDateUpdate(date: unknown) {
-  draft.value.date = toIsoDate(date as Date);
+  draft.value.date = formatDate(date as Date, "YYYY-MM-DD");
   commitDraft();
   closeIfComplete();
 }
