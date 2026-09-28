@@ -6,7 +6,7 @@ outline: deep
 
 O componente destinado a raiz do projeto se chama `Main`.
 
-É responsável por carregar o menu superior, o menu de navegação lateral, o componente utilizado pelos composables de [Toasts](../composables/use-toast) e os estilos necessários para os demais componentes.
+É responsável por carregar o menu superior, o menu de navegação lateral, os componentes utilizados pelos composables de [Toasts](../composables/use-toast), [Diálogos](../composables/use-dialog) e [Confirmações](../composables/use-confirm) e os estilos necessários para os demais componentes.
 
 ## Propriedades
 

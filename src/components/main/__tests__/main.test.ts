@@ -4,6 +4,7 @@ import { mount } from "@vue/test-utils";
 import { vueTestUtilsPluginUimed } from "@/unit-test.ts";
 import { UContainer } from "@/components/index.ts";
 import Toast from "@/components/dialogs/toast.vue";
+import Dialog from "@/components/dialogs/dialog.vue";
 import AppBar from "@/components/app-bar/app-bar.vue";
 import NavigationMenu from "@/components/navigation-menu/navigation-menu.vue";
 import { nextTick } from "vue";
@@ -28,6 +29,11 @@ describe("Main", () => {
   it("should contain toast component", () => {
     const toast = wrapper.findComponent(Toast);
     expect(toast.exists()).toBeTruthy();
+  });
+
+  it("should contain dialog component", () => {
+    const dialog = wrapper.findComponent(Dialog);
+    expect(dialog.exists()).toBeTruthy();
   });
 
   it('should inherit "data-testid" attribute', () => {
