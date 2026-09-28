@@ -166,16 +166,16 @@ type Props = ComponentProps<typeof UButton>;
     variant: {
       type: "combobox",
       label: "Variante",
-      value: "primary",
+      value: playgroundVariantOptions[0],
       dataTestid: "btn-playground-variant",
-      items: ["primary", "secondary", "ghost"]
+      items: playgroundVariantOptions
     },
     color: {
       type: "combobox",
       label: "Cor",
-      value: "primary",
+      value: playgroundColorOptions[0],
       dataTestid: "btn-playground-color",
-      items: ["primary", "secondary", "positive", "informative", "caution", "danger"]
+      items: playgroundColorOptions
     },
     disabled: {
       type: "checkbox",
