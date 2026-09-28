@@ -36,24 +36,24 @@ Estende [`UButtonProps`](../button#props) com as seguintes propriedades adiciona
 ```vue
 <template>
   <u-section title="Confirmação" subtitle="Deseja continuar?" :actions="actions">
-    <p>Esta ação não pode ser desfeita.</p>
+    <u-section-content>Esta ação não pode ser desfeita.</u-section-content>
   </u-section>
 </template>
 
 <script lang="ts" setup>
 import { ref } from "vue";
-import { USection } from "@nexdom/uimed-vue/components";
+import { USection, USectionContent } from "@nexdom/uimed-vue/components";
 
 const actions = ref([
-  {
-    label: "Confirmar",
-    color: "positive",
-    onClick: () => console.log("Confirmado"),
-  },
   {
     label: "Cancelar",
     variant: "ghost",
     onClick: () => console.log("Cancelado"),
+  },
+  {
+    label: "Confirmar",
+    color: "positive",
+    onClick: () => console.log("Confirmado"),
   },
 ]);
 </script>
