@@ -33,6 +33,7 @@ const apis = [
             { text: "Checkbox", link: "./components/checkbox" },
             { text: "Content Area", link: "./components/sections/section" },
             { text: "Details", link: "./components/details" },
+            { text: "Dialog", link: "./components/dialog" },
             { text: "Form", link: "./components/form" },
             { text: "Grid", link: './components/grid/container' },
             { text: "Main", link: './components/main' },
