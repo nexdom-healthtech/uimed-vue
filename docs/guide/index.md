@@ -19,18 +19,19 @@ São recursos que permitem a elaboração e reutilização de interface gráfica
 
 Os componentes a seguir possuem exemplos práticos de utilização dentro desta documentação.
 
-| Recurso                                                                | Descrição                                         |
-| ---------------------------------------------------------------------- | ------------------------------------------------- |
-| [Botões](./components/button)                                          | Componente de botão.                              |
-| [Campos com preenchimento automático](./components/autocomplete-field) | Componente para autocomplete/combobox.            |
-| [Caixas de seleção](./components/checkbox)                             | Componente para caixa de seleção.                 |
-| [Campos de texto](./components/text-field)                             | Componente para campo de texto.                   |
-| [Componente base](./components/main)                                   | Componente raiz.                                  |
-| [Componentes de layout](./components/layout)                           | Componentes para seguir o grid system.            |
-| [Agrupador de Conteúdo](./components/section)                          | Componente para agrupar conteúdo.                 |
-| [Conteúdo Expansível](./components/details)                            | Componente para expandir e recolher conteúdo.     |
-| [Formulários](./components/form)                                       | Componente de formulário.                         |
-| [Tabelas](./components/table)                                          | Componente para apresentação de dados em tabelas. |
+| Recurso                                                                | Descrição                                              |
+| ---------------------------------------------------------------------- | ------------------------------------------------------ |
+| [Botões](./components/button)                                          | Componente de botão.                                   |
+| [Campos com preenchimento automático](./components/autocomplete-field) | Componente para autocomplete/combobox.                 |
+| [Caixas de seleção](./components/checkbox)                             | Componente para caixa de seleção.                      |
+| [Campos de texto](./components/text-field)                             | Componente para campo de texto.                        |
+| [Componente base](./components/main)                                   | Componente raiz.                                       |
+| [Componentes de layout](./components/layout)                           | Componentes para seguir o grid system.                 |
+| [Agrupador de Conteúdo](./components/section)                          | Componente para agrupar conteúdo.                      |
+| [Conteúdo Expansível](./components/details)                            | Componente para expandir e recolher conteúdo.          |
+| [Formulários](./components/form)                                       | Componente de formulário.                              |
+| [Janelas modais](./components/dialog)                                  | Componente para apresentar conteúdo em janelas modais. |
+| [Tabelas](./components/table)                                          | Componente para apresentação de dados em tabelas.      |
 
 ### Composables
 

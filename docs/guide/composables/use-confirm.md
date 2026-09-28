@@ -141,6 +141,7 @@ O botão "voltar" do navegador também fecha o diálogo, sem sair da página, em
 
 - Consulte a referência de [API do useConfirm](../../api/composables/use-confirm) para mais informações.
 - Para apresentar mensagens ou perguntas sem executar uma ação, use a composable [useDialog](./use-dialog).
+- Para apresentar conteúdo próprio, como um formulário, em uma janela modal, use o componente [Dialog](../components/dialog).
 
 <script lang="ts" setup>
   import { ref } from "vue";

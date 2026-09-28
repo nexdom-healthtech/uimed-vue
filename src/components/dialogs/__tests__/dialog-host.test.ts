@@ -1,5 +1,6 @@
 import Button from "@/components/button/button.vue";
-import Dialog from "@/components/dialogs/dialog.vue";
+import DialogHost from "@/components/dialogs/dialog-host.vue";
+import Dialog from "@/components/dialogs/dialog/dialog.vue";
 import { useConfirm, useDialog } from "@/composables/index.ts";
 import { owners, requests } from "@/composables/dialogs/use-dialog.ts";
 import { vueTestUtilsPluginUimed } from "@/unit-test.ts";
@@ -10,7 +11,7 @@ import { VCardActions, VCardItem, VCardText, VCardTitle, VDialog } from "vuetify
 const title = "Excluir paciente";
 const message = "Esta ação não pode ser desfeita.";
 
-describe("Dialog", () => {
+describe("DialogHost", () => {
   const { dialog } = useDialog();
   const wrappers: VueWrapper[] = [];
 
@@ -22,7 +23,7 @@ describe("Dialog", () => {
   });
 
   function mountDialog() {
-    const wrapper = mount(Dialog, {
+    const wrapper = mount(DialogHost, {
       attachTo: document.body,
       global: { plugins: [vueTestUtilsPluginUimed()] },
     });
@@ -36,7 +37,7 @@ describe("Dialog", () => {
 
     expect(vDialog.exists()).toBeTruthy();
     expect(vDialog.props("modelValue")).toBe(false);
-    expect(vDialog.props("maxWidth")).toBe("560");
+    expect(vDialog.props("maxWidth")).toBe(560);
   });
 
   it("should close on the browser's back button", () => {
@@ -281,7 +282,8 @@ describe("Dialog", () => {
     it("should ignore dismissals while there's no dialog on display", async () => {
       const wrapper = mountDialog();
 
-      wrapper.findComponent(VDialog).vm.$emit("update:modelValue", false);
+      // The dialog only emits it while open, so emit it on the component the host listens to
+      wrapper.findComponent(Dialog).vm.$emit("update:modelValue", false);
       await flushPromises();
 
       expect(wrapper.findComponent(VDialog).props("modelValue")).toBe(false);
@@ -308,7 +310,9 @@ describe("Dialog", () => {
       await clickButton(wrapper, 0);
       await afterLeave(wrapper);
       expect(wrapper.findComponent(VDialog).props("modelValue")).toBe(false);
-      expect(wrapper.findComponent(VCardText).exists()).toBeFalsy();
+      // Emitting `afterLeave` doesn't unmount the content as the real transition does, but the
+      // dialog on display is gone
+      expect(wrapper.findComponent(VCardText).text()).toBe("");
       expect(requests.value).toHaveLength(0);
     });
 
