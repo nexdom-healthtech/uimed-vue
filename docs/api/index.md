@@ -35,6 +35,7 @@ const apis = [
             { text: "Data Set", link: "./components/data-sets/data-set" },
             { text: "DateTimeField", link: "./components/date-time-field" },
             { text: "Details", link: "./components/details" },
+            { text: "Dialog", link: "./components/dialog" },
             { text: "Form", link: "./components/form" },
             { text: "Grid", link: './components/grid/container' },
             { text: "Main", link: './components/main' },

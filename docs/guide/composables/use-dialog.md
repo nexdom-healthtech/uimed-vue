@@ -122,6 +122,7 @@ function openQueue() {
 
 - Consulte a referência de [API do useDialog](../../api/composables/use-dialog) para mais informações.
 - Para confirmar uma ação antes de executá-la, use a composable [useConfirm](./use-confirm).
+- Para apresentar conteúdo próprio, como um formulário, em uma janela modal, use o componente [Dialog](../components/dialog).
 
 <script lang="ts" setup>
   import { ref } from "vue";

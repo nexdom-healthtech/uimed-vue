@@ -113,6 +113,7 @@ export default defineConfig({
                 { text: "Componentes de layout", link: "/guide/components/layout" },
                 { text: "Agrupador de Conteúdo", link: "/guide/components/section" },
                 { text: "Conteúdo Expansível", link: "/guide/components/details" },
+                { text: "Janelas modais", link: "/guide/components/dialog" },
               ],
             },
             {
@@ -183,6 +184,7 @@ export default defineConfig({
               ],
             },
             { text: "UDetails", link: "/api/components/details" },
+            { text: "UDialog", link: "/api/components/dialog" },
             { text: "UForm", link: "/api/components/form" },
             {
               text: "UGrid",
