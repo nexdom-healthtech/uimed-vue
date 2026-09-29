@@ -261,7 +261,6 @@ Consulte a referência de [API do UDateTimeField](../../api/components/date-time
 <script lang="ts" setup>
   import { ref } from "vue"
   import { UButton, UDateTimeField, UForm } from "../../../dist/components.js"
-  import { VSelect } from "vuetify/components"
   import type { ComponentProps } from "vue-component-type-helpers"
 
   const dateValue = ref("2026-09-10");
