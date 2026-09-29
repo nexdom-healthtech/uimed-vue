@@ -14,11 +14,15 @@
       </template>
 
       <template #default="{ items: pageItems }">
-        <Row>
-          <Column v-for="(pageItem, index) in pageItems" :key="index" :cols="columnCols">
-            <slot :item="pageItem.raw" :index />
-          </Column>
-        </Row>
+        <div role="list">
+          <Row>
+            <Column v-for="(pageItem, index) in pageItems" :key="index" :cols="columnCols">
+              <div role="listitem" class="h-100">
+                <slot :item="pageItem.raw" :index />
+              </div>
+            </Column>
+          </Row>
+        </div>
       </template>
 
       <template #no-data>
