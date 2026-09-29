@@ -75,10 +75,31 @@ describe("DataSet", () => {
         expect(columns[1].text()).toBe("1-Bruno Lima");
       });
 
+      it("should announce the items as a list, one list item per column", () => {
+        const wrapper = mountDataSet();
+        const list = findList(wrapper);
+        expect(list.exists()).toBeTruthy();
+        expect(list.findComponent(Row).exists()).toBeTruthy();
+
+        const listItems = findListItems(wrapper);
+        expect(listItems).toHaveLength(3);
+        expect(
+          findColumns(wrapper).map((column) => column.findAll('[role="listitem"]').length),
+        ).toEqual([1, 1, 1]);
+        expect(listItems[1].text()).toBe("1-Bruno Lima");
+        expect(listItems[1].find("[data-item]").exists()).toBeTruthy();
+      });
+
+      it("should keep each list item as tall as its column, so cards align", () => {
+        const wrapper = mountDataSet();
+        expect(findListItems(wrapper).every((listItem) => listItem.classes("h-100"))).toBeTruthy();
+      });
+
       it("should not render columns without items", () => {
         const wrapper = mountDataSet({ items: [] });
         expect(findRow(wrapper).exists()).toBeFalsy();
         expect(findColumns(wrapper)).toHaveLength(0);
+        expect(findList(wrapper).exists()).toBeFalsy();
       });
 
       it("should forward items to v-data-iterator", () => {
@@ -535,6 +556,14 @@ function findVDataIterator(wrapper: ReturnType<typeof mountDataSet>) {
 
 function findRow(wrapper: ReturnType<typeof mountDataSet>) {
   return wrapper.findComponent(Row);
+}
+
+function findList(wrapper: ReturnType<typeof mountDataSet>) {
+  return wrapper.find('[role="list"]');
+}
+
+function findListItems(wrapper: ReturnType<typeof mountDataSet>) {
+  return wrapper.findAll('[role="listitem"]');
 }
 
 function findColumns(wrapper: ReturnType<typeof mountDataSet>) {
