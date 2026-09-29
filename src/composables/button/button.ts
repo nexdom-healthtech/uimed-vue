@@ -10,7 +10,7 @@ type VuetifyVariant = NonNullable<VBtnProps["variant"]>;
 const buttonVariantToVuetifyVariant: Record<ButtonVariant, VuetifyVariant> = {
   primary: "elevated",
   secondary: "flat",
-  ghost: "outlined",
+  ghost: "text",
 };
 
 export function useButtonVariant(

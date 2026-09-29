@@ -9,7 +9,7 @@ import { colorToVuetifyColor } from "@/composables/colors/constants.ts";
 const variants: [ButtonVariant, string][] = [
   ["primary", "elevated"],
   ["secondary", "flat"],
-  ["ghost", "outlined"],
+  ["ghost", "text"],
 ];
 const colors = Object.entries(colorToVuetifyColor) as [ColorVariant, VuetifyColor][];
 

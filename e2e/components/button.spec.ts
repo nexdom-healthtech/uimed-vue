@@ -12,7 +12,7 @@ test.describe("button", () => {
       await expect(previewButton).toContainClass("v-btn--variant-elevated");
 
       await selectOption(page, "btn-playground-variant", "ghost");
-      await expect(previewButton).toContainClass("v-btn--variant-outlined");
+      await expect(previewButton).toContainClass("v-btn--variant-text");
     });
 
     test("updates label text when playground-label changes", async ({ page }) => {
