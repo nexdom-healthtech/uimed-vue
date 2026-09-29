@@ -47,6 +47,7 @@ const apis = [
             { text: "useRunOrToast", link: "./composables/use-run-or-toast" },
             { text: "useDialog", link: "./composables/use-dialog" },
             { text: "useConfirm", link: "./composables/use-confirm" },
+            { text: "useUnsavedChanges", link: "./composables/use-unsaved-changes" },
         ]
     },
 ];
