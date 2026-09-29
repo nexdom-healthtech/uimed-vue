@@ -6,12 +6,12 @@ const light: ThemeDefinition = {
   colors: {
     background: "#FCFCFD",
     surface: "#C0C9C0",
-    primary: "#2A6A47",
-    secondary: "#546524",
-    success: "#17B26A",
-    warning: "#F47920",
+    primary: "#00995D",
+    secondary: "#FCFCFD",
+    success: "#A9EFC5",
+    warning: "#FFE596",
     error: "#D92D20",
-    info: "#A4D8DE",
+    info: "#9ACBE5",
   },
   variables: {
     "border-color": "#FCFCFD",
@@ -29,23 +29,7 @@ describe("index", () => {
 
       expect(createVuetify).toHaveBeenCalledOnce();
       expect(createVuetify).toHaveBeenCalledWith({
-        theme: {
-          defaultTheme: "system",
-          themes: {
-            light,
-            dark: {
-              dark: true,
-              colors: {
-                ...light.colors,
-                background: "053321",
-              },
-              variables: {
-                ...light.variables,
-                "border-color": "#344054",
-              },
-            },
-          },
-        },
+        theme: { defaultTheme: "light", themes: { light } },
       });
     });
   });
