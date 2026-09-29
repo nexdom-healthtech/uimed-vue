@@ -7,8 +7,8 @@ export type DialogSize = "small" | "medium" | "large";
  */
 export type DialogProps = {
   /**
-   * Plain text displayed as the dialog's title. HTML isn't interpreted.
-   * Also used as the dialog's accessible name.
+   * Plain text displayed as the dialog's title, in a single line. HTML isn't interpreted.
+   * Also used as the dialog's accessible name. Without it, the content is the accessible name.
    */
   title?: string;
 
@@ -25,13 +25,6 @@ export type DialogProps = {
    * @default "medium"
    */
   size?: DialogSize;
-
-  /**
-   * Prevents closing with `Esc`, a click outside or the browser's back button.
-   * Only `v-model` closes it.
-   * @default false
-   */
-  persistent?: boolean;
 
   /**
    * Component id to use on automated tests.
@@ -56,16 +49,6 @@ export interface DialogButtonAction extends ButtonProps {
 }
 
 /**
- * Events emitted by the {@link Dialog} component, besides `update:modelValue`.
- */
-export type DialogEmits =
-  /**
-   * Emitted once the dialog finishes its leave transition. Its content is unmounted right after.
-   * @returns void
-   */
-  (e: "afterLeave") => void;
-
-/**
  * Options the internal `DialogHost` provides to its {@link Dialog}. Not part of the public API.
  */
 export interface DialogHostContext {
@@ -74,4 +57,15 @@ export interface DialogHostContext {
    * `dialog` when it's `undefined`.
    */
   role: () => "dialog" | "alertdialog" | undefined;
+
+  /**
+   * Prevents closing the dialog with `Esc`, a click outside or the browser's back button while it
+   * returns `true`, e.g. while a confirmed action runs.
+   */
+  persistent: () => boolean;
+
+  /**
+   * Called at the end of every leave transition of the dialog, whatever closed it.
+   */
+  afterLeave: () => void;
 }

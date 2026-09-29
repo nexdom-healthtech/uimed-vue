@@ -8,8 +8,8 @@ import type {
   DialogSize,
 } from "@/components/dialogs/dialog/types.ts";
 import { vueTestUtilsPluginUimed } from "@/unit-test.ts";
-import { flushPromises, mount, type VueWrapper } from "@vue/test-utils";
-import { h, nextTick, type VNode } from "vue";
+import { mount, type VueWrapper } from "@vue/test-utils";
+import { h, nextTick, ref, type VNode } from "vue";
 import { VCard, VCardActions, VCardItem, VCardText, VCardTitle, VDialog } from "vuetify/components";
 
 const title = "Editar paciente";
@@ -23,7 +23,10 @@ const sizes: [DialogSize, number][] = [
 ];
 
 interface MountOptions {
-  props?: DialogProps & { modelValue?: boolean };
+  props?: DialogProps & {
+    modelValue?: boolean;
+    "onUpdate:modelValue"?: (modelValue: boolean) => void;
+  };
   slot?: () => VNode | VNode[] | string;
   host?: DialogHostContext;
   stubTransitions?: boolean;
@@ -48,7 +51,10 @@ describe("Dialog", () => {
         modelValue: true,
         dataTestid: testId,
         ...props,
-        "onUpdate:modelValue": (modelValue: boolean) => wrapper.setProps({ modelValue }),
+        "onUpdate:modelValue": (modelValue: boolean) => {
+          props["onUpdate:modelValue"]?.(modelValue);
+          void wrapper.setProps({ modelValue });
+        },
       },
       slots: { default: slot },
       attrs: { class: "random-class", style: "color: red" },
@@ -104,13 +110,24 @@ describe("Dialog", () => {
     expect(wrapper.findComponent(VCard).classes()).not.toContain("random-class");
   });
 
-  it("should emit afterLeave once the leave transition ends", () => {
-    const wrapper = mountDialog();
+  it("should render the title, content and actions as parts of the card", () => {
+    const wrapper = mountDialog({ props: { title, actions: [{ label: "Fechar" }] } });
 
-    expect(wrapper.emitted("afterLeave")).toBeUndefined();
-    findVDialog(wrapper).vm.$emit("afterLeave");
+    // Only the content scrolls when it's a direct child of the card
+    const card = wrapper.findComponent(VCard);
+    expect(card.props("title")).toBe(title);
+    [VCardItem, VCardText, VCardActions].forEach((part) =>
+      expect(wrapper.findComponent(part).element.parentElement).toBe(card.element),
+    );
+    expect(wrapper.findComponent(VCardText).text()).toBe(content);
+    expect(wrapper.findComponent(VCardActions).findComponent(Button).text()).toBe("Fechar");
+  });
 
-    expect(wrapper.emitted("afterLeave")).toEqual([[]]);
+  it("should not add spacing classes to the card's parts", () => {
+    const wrapper = mountDialog({ props: { title, actions: [{ label: "Fechar" }] } });
+
+    const parts = [VCardItem, VCardText, VCardActions].map((part) => wrapper.findComponent(part));
+    parts.forEach((part) => expect(part.classes().join(" ")).not.toMatch(/\b[pm][atrblxy]?-/));
   });
 
   describe("title", () => {
@@ -122,8 +139,8 @@ describe("Dialog", () => {
       expect(document.querySelector("b")).toBeNull();
     });
 
-    it("should not display a title area without a title", () => {
-      const wrapper = mountDialog();
+    it.each([undefined, ""])("should not display a title area when the title is %o", (title) => {
+      const wrapper = mountDialog({ props: { title } });
 
       expect(wrapper.findComponent(VCardItem).exists()).toBeFalsy();
       expect(wrapper.findComponent(VCardTitle).exists()).toBeFalsy();
@@ -141,29 +158,6 @@ describe("Dialog", () => {
       const wrapper = mountDialog();
 
       expect(findVDialog(wrapper).props("maxWidth")).toBe(560);
-    });
-  });
-
-  describe("spacing", () => {
-    it("should pad the title and not the content's top when there's a title", () => {
-      const wrapper = mountDialog({ props: { title } });
-
-      expect(wrapper.findComponent(VCardItem).classes()).toContain("pt-6");
-      expect(wrapper.findComponent(VCardText).classes()).not.toContain("pt-6");
-    });
-
-    it("should pad the content's top when there's no title", () => {
-      const wrapper = mountDialog();
-
-      expect(wrapper.findComponent(VCardText).classes()).toContain("pt-6");
-    });
-
-    it("should pad the actions", () => {
-      const wrapper = mountDialog({ props: { actions: [{ label: "Fechar" }] } });
-
-      expect(wrapper.findComponent(VCardActions).classes()).toEqual(
-        expect.arrayContaining(["px-6", "pt-0", "pb-6"]),
-      );
     });
   });
 
@@ -237,13 +231,21 @@ describe("Dialog", () => {
   });
 
   describe("dismissal", () => {
-    it("should close when dismissed", async () => {
+    it("should close at once, but update the model only once the dialog leaves", async () => {
       const wrapper = mountDialog();
 
       findVDialog(wrapper).vm.$emit("update:modelValue", false);
       await nextTick();
 
+      expect(findVDialog(wrapper).props("modelValue")).toBe(false);
+      expect(wrapper.emitted("update:modelValue")).toBeUndefined();
+      expect(wrapper.props("modelValue")).toBe(true);
+
+      leave(wrapper);
+      await nextTick();
+
       expect(wrapper.emitted("update:modelValue")).toEqual([[false]]);
+      expect(wrapper.props("modelValue")).toBe(false);
       expect(findVDialog(wrapper).props("modelValue")).toBe(false);
     });
 
@@ -252,6 +254,8 @@ describe("Dialog", () => {
 
       pressEscape();
       await nextTick();
+      expect(findVDialog(wrapper).props("modelValue")).toBe(false);
+      leave(wrapper);
 
       expect(wrapper.emitted("update:modelValue")).toEqual([[false]]);
     });
@@ -263,21 +267,113 @@ describe("Dialog", () => {
       expect(findVDialog(wrapper).props("closeOnBack")).toBe(true);
     });
 
-    it("should be dismissible by default", () => {
-      const wrapper = mountDialog();
+    it("should always be dismissible out of a dialog host, even while an action loads", async () => {
+      const wrapper = mountDialog({ props: { actions: [{ label: "Salvar", loading: true }] } });
 
-      expect(findVDialog(wrapper).props("persistent")).toBe(false);
-    });
-
-    it("should not close on Esc when persistent", async () => {
-      const wrapper = mountDialog({ props: { persistent: true } });
-
+      expect(findVDialog(wrapper).props("persistent")).toBeFalsy();
       pressEscape();
       await nextTick();
 
-      expect(findVDialog(wrapper).props("persistent")).toBe(true);
+      expect(findVDialog(wrapper).props("modelValue")).toBe(false);
+    });
+
+    it("should not emit anything when the model closes it", async () => {
+      const wrapper = mountDialog();
+
+      await wrapper.setProps({ modelValue: false });
+      expect(findVDialog(wrapper).props("modelValue")).toBe(false);
+      leave(wrapper);
+      await nextTick();
+
       expect(wrapper.emitted("update:modelValue")).toBeUndefined();
+    });
+
+    it("should open again when the model opens it while it leaves", async () => {
+      const wrapper = mountDialog();
+
+      await wrapper.setProps({ modelValue: false });
+      await wrapper.setProps({ modelValue: true });
+
       expect(findVDialog(wrapper).props("modelValue")).toBe(true);
+      expect(wrapper.emitted("update:modelValue")).toBeUndefined();
+    });
+
+    it("should not emit anything when the model closes it while it leaves", async () => {
+      const wrapper = mountDialog();
+
+      findVDialog(wrapper).vm.$emit("update:modelValue", false);
+      await wrapper.setProps({ modelValue: false });
+      leave(wrapper);
+      await nextTick();
+
+      expect(wrapper.emitted("update:modelValue")).toBeUndefined();
+      expect(findVDialog(wrapper).props("modelValue")).toBe(false);
+    });
+
+    it("should not emit anything when it's unmounted while it leaves", async () => {
+      const wrapper = mountDialog();
+
+      findVDialog(wrapper).vm.$emit("update:modelValue", false);
+      await nextTick();
+      wrapper.unmount();
+      wrappers.splice(wrappers.indexOf(wrapper), 1);
+
+      expect(wrapper.emitted("update:modelValue")).toBeUndefined();
+    });
+
+    it("should open when the model opens it after it left", async () => {
+      const wrapper = mountDialog();
+
+      findVDialog(wrapper).vm.$emit("update:modelValue", false);
+      leave(wrapper);
+      await nextTick();
+      await wrapper.setProps({ modelValue: true });
+
+      expect(findVDialog(wrapper).props("modelValue")).toBe(true);
+    });
+  });
+
+  describe("dialog host", () => {
+    it("should block dismissals while the host requires it", async () => {
+      const persistent = ref(true);
+      const wrapper = mountDialog({ host: createHost({ persistent: () => persistent.value }) });
+
+      expect(findVDialog(wrapper).props("persistent")).toBe(true);
+      pressEscape();
+      await nextTick();
+      expect(findVDialog(wrapper).props("modelValue")).toBe(true);
+
+      persistent.value = false;
+      await nextTick();
+      expect(findVDialog(wrapper).props("persistent")).toBe(false);
+    });
+
+    it("should notify the host once it leaves, whatever closed it", async () => {
+      const host = createHost();
+      const wrapper = mountDialog({ host });
+
+      await wrapper.setProps({ modelValue: false });
+      expect(host.afterLeave).not.toHaveBeenCalled();
+      leave(wrapper);
+      expect(host.afterLeave).toHaveBeenCalledTimes(1);
+
+      await wrapper.setProps({ modelValue: true });
+      findVDialog(wrapper).vm.$emit("update:modelValue", false);
+      leave(wrapper);
+      expect(host.afterLeave).toHaveBeenCalledTimes(2);
+    });
+
+    it("should update the model before notifying the host", () => {
+      const calls: string[] = [];
+      const wrapper = mountDialog({
+        props: { "onUpdate:modelValue": () => calls.push("update:modelValue") },
+        host: createHost({ afterLeave: () => calls.push("afterLeave") }),
+      });
+
+      findVDialog(wrapper).vm.$emit("update:modelValue", false);
+      leave(wrapper);
+
+      expect(calls).toEqual(["update:modelValue", "afterLeave"]);
     });
   });
 
@@ -288,278 +384,56 @@ describe("Dialog", () => {
       expect(findOverlay()?.getAttribute("role")).toBe("dialog");
     });
 
-    it("should be labelled by its title and not described", () => {
-      const wrapper = mountDialog({ props: { title } });
+    it("should be named by its title and not described", () => {
+      mountDialog({ props: { title } });
 
-      const titleId = wrapper.findComponent(VCardTitle).attributes("id");
-      const contentId = wrapper.findComponent(VCardText).attributes("id");
-      expect(titleId).toBeTruthy();
-      expect(contentId).toBeTruthy();
-      expect(titleId).not.toBe(contentId);
-      expect(findOverlay()?.getAttribute("aria-labelledby")).toBe(titleId);
+      expect(findOverlay()?.getAttribute("aria-label")).toBe(title);
+      expect(findOverlay()?.hasAttribute("aria-labelledby")).toBe(false);
       expect(findOverlay()?.hasAttribute("aria-describedby")).toBe(false);
     });
 
-    it("should be labelled by its content when it has no title", () => {
-      const wrapper = mountDialog();
+    it.each([undefined, ""])("should be labelled by its content when the title is %o", (title) => {
+      mountDialog({ props: { title } });
 
-      const contentId = wrapper.findComponent(VCardText).attributes("id");
+      const contentId = findContent()?.id;
       expect(contentId).toBeTruthy();
+      expect(findContent()?.textContent).toBe(content);
       expect(findOverlay()?.getAttribute("aria-labelledby")).toBe(contentId);
+      expect(findOverlay()?.hasAttribute("aria-label")).toBe(false);
     });
 
     it("should use the role given by the dialog host and be described by its content", () => {
-      const wrapper = mountDialog({ props: { title }, host: { role: () => "alertdialog" } });
+      mountDialog({ props: { title }, host: createHost({ role: () => "alertdialog" }) });
 
-      const contentId = wrapper.findComponent(VCardText).attributes("id");
       expect(findOverlay()?.getAttribute("role")).toBe("alertdialog");
-      expect(findOverlay()?.getAttribute("aria-describedby")).toBe(contentId);
+      expect(findOverlay()?.getAttribute("aria-describedby")).toBe(findContent()?.id);
     });
 
     it('should fall back to the "dialog" role when the dialog host has none', () => {
-      mountDialog({ host: { role: () => undefined } });
+      mountDialog({ host: createHost() });
 
       expect(findOverlay()?.getAttribute("role")).toBe("dialog");
     });
   });
 
-  describe("focus", () => {
-    it("should focus the first focusable element of the content once the dialog enters", () => {
-      const wrapper = mountDialog({
-        props: { actions: [{ label: "Salvar" }] },
-        slot: () => [
-          h("p", content),
-          h("button", { disabled: true }, "Desabilitado"),
-          h("input", { type: "hidden" }),
-          h("span", { tabindex: -1 }, "Fora da ordem"),
-          h("input", { "data-test": "field" }),
-        ],
-      });
-
-      enter(wrapper);
-
-      expect(document.activeElement).toBe(document.querySelector("[data-test=field]"));
+  // The focus rules are covered by `useDialogFocus`'s own tests
+  it("should move the focus into the content once it enters and back as soon as the user closes it", async () => {
+    const origin = focusNewElement(document.createElement("button"));
+    const wrapper = mountDialog({
+      props: { modelValue: false, actions: [{ label: "Salvar" }] },
+      slot: () => [h("p", content), h("input", { "data-test": "field" })],
+      stubTransitions: false,
     });
 
-    it.each([
-      ["link", () => h("a", { href: "#" }, "Link")],
-      ["select", () => h("select")],
-      ["textarea", () => h("textarea")],
-      ["tabindex", () => h("span", { tabindex: 0 }, "Focável")],
-    ])("should focus a %s in the content", (_, element) => {
-      const wrapper = mountDialog({
-        props: { actions: [{ label: "Salvar" }] },
-        slot: () => [h("select", { disabled: true }), h("textarea", { disabled: true }), element()],
-      });
+    await wrapper.setProps({ modelValue: true });
+    enter(wrapper);
+    expect(document.activeElement).toBe(document.querySelector("[data-test=field]"));
 
-      enter(wrapper);
+    findVDialog(wrapper).vm.$emit("update:modelValue", false);
+    await nextTick();
 
-      expect(document.activeElement).toBe(
-        wrapper.findComponent(VCardText).element.lastElementChild,
-      );
-    });
-
-    it("should focus the first action when the content has no focusable element", () => {
-      const wrapper = mountDialog({
-        props: { actions: [{ label: "Cancelar" }, { label: "Salvar" }] },
-      });
-
-      enter(wrapper);
-
-      expect(document.activeElement).toBe(findButtons(wrapper)[0]?.element);
-    });
-
-    it("should not focus elements outside the dialog", () => {
-      const outside = document.createElement("button");
-      document.body.append(outside);
-      const wrapper = mountDialog();
-
-      expect(() => enter(wrapper)).not.toThrow();
-      expect(document.activeElement).not.toBe(outside);
-    });
-
-    it("should return the focus to the element focused before it opened", async () => {
-      const origin = focusNewElement(document.createElement("button"));
-      const wrapper = mountDialog({
-        props: { modelValue: false, actions: [{ label: "Salvar" }] },
-      });
-
-      await wrapper.setProps({ modelValue: true });
-      enter(wrapper);
-      expect(document.activeElement).not.toBe(origin);
-
-      await wrapper.setProps({ modelValue: false });
-
-      expect(document.activeElement).toBe(origin);
-    });
-
-    it("should return the focus when it was open from the start", async () => {
-      const origin = focusNewElement(document.createElement("button"));
-      const wrapper = mountDialog({ props: { actions: [{ label: "Salvar" }] } });
-
-      enter(wrapper);
-      expect(document.activeElement).not.toBe(origin);
-
-      findVDialog(wrapper).vm.$emit("update:modelValue", false);
-      await flushPromises();
-
-      expect(document.activeElement).toBe(origin);
-    });
-
-    it("should return the focus to SVG elements, such as icons", async () => {
-      const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
-      svg.setAttribute("tabindex", "0");
-      const origin = focusNewElement(svg);
-      const wrapper = mountDialog({
-        props: { modelValue: false, actions: [{ label: "Salvar" }] },
-      });
-
-      await wrapper.setProps({ modelValue: true });
-      enter(wrapper);
-      expect(document.activeElement).not.toBe(origin);
-
-      await wrapper.setProps({ modelValue: false });
-
-      expect(document.activeElement).toBe(origin);
-    });
-
-    it("should close without restoring the focus when nothing was focused before it opened", async () => {
-      const wrapper = mountDialog({ props: { modelValue: false } });
-      const activeElement = vi.spyOn(document, "activeElement", "get").mockReturnValue(null);
-
-      await wrapper.setProps({ modelValue: true });
-      activeElement.mockRestore();
-
-      // Throwing here would fail the test
-      await wrapper.setProps({ modelValue: false });
-      expect(findVDialog(wrapper).props("modelValue")).toBe(false);
-    });
-
-    it("should return the focus when it was lost to the page's body", async () => {
-      const origin = focusNewElement(document.createElement("button"));
-      const wrapper = await openDialog();
-
-      (document.activeElement as HTMLElement).blur();
-      expect(document.activeElement).toBe(document.body);
-      await wrapper.setProps({ modelValue: false });
-
-      expect(document.activeElement).toBe(origin);
-    });
-
-    it("should return the focus when there's no focused element", async () => {
-      const origin = focusNewElement(document.createElement("button"));
-      const focus = vi.spyOn(origin, "focus");
-      const wrapper = await openDialog();
-
-      const activeElement = vi.spyOn(document, "activeElement", "get").mockReturnValue(null);
-      await wrapper.setProps({ modelValue: false });
-      activeElement.mockRestore();
-
-      expect(focus).toHaveBeenCalledTimes(1);
-    });
-
-    it("should return the focus from the card's container", async () => {
-      const origin = focusNewElement(document.createElement("button"));
-      const wrapper = await openDialog();
-
-      // Gets the focus when the dialog has no focusable element or when its text is clicked
-      focusCardContainer(wrapper);
-      await wrapper.setProps({ modelValue: false });
-
-      expect(document.activeElement).toBe(origin);
-    });
-
-    describe("with a dialog opened from another", () => {
-      async function openNested() {
-        const origin = focusNewElement(document.createElement("button"));
-        const outer = await openDialog();
-        const inner = await openDialog();
-        return { origin, outer, inner };
-      }
-
-      it("should keep the focus on the inner dialog when the outer one closes", async () => {
-        const { inner, outer } = await openNested();
-
-        await outer.setProps({ modelValue: false });
-
-        expect(document.activeElement).toBe(findButtons(inner)[0]?.element);
-      });
-
-      it("should keep the focus on the inner dialog's container when the outer one closes", async () => {
-        const { inner, outer } = await openNested();
-        const container = focusCardContainer(inner);
-
-        await outer.setProps({ modelValue: false });
-
-        expect(document.activeElement).toBe(container);
-      });
-
-      it("should return the focus to the outer dialog's origin when it closed first", async () => {
-        const { origin, outer, inner } = await openNested();
-
-        await outer.setProps({ modelValue: false });
-        await inner.setProps({ modelValue: false });
-
-        expect(document.activeElement).toBe(origin);
-      });
-
-      it("should return the focus to the outer dialog's origin when both close together", async () => {
-        const { origin, outer, inner } = await openNested();
-
-        void outer.setProps({ modelValue: false });
-        void inner.setProps({ modelValue: false });
-        await flushPromises();
-
-        expect(document.activeElement).toBe(origin);
-      });
-
-      it("should return the focus through the outer dialog when the inner one closes first", async () => {
-        const { origin, outer, inner } = await openNested();
-
-        await inner.setProps({ modelValue: false });
-        expect(document.activeElement).toBe(findButtons(outer)[0]?.element);
-        await outer.setProps({ modelValue: false });
-
-        expect(document.activeElement).toBe(origin);
-      });
-
-      it("should return the focus to the outer dialog when it opened again", async () => {
-        const { outer, inner } = await openNested();
-
-        await outer.setProps({ modelValue: false });
-        await outer.setProps({ modelValue: true });
-        await inner.setProps({ modelValue: false });
-
-        expect(document.activeElement).toBe(findButtons(outer)[0]?.element);
-      });
-
-      it("should return the focus through every closed dialog", async () => {
-        const { origin, outer, inner } = await openNested();
-        const innermost = await openDialog();
-
-        await outer.setProps({ modelValue: false });
-        await inner.setProps({ modelValue: false });
-        await innermost.setProps({ modelValue: false });
-
-        expect(document.activeElement).toBe(origin);
-      });
-    });
-
-    /**
-     * Opens a dialog with one action and moves the focus into it, as when it enters. Its leave
-     * transition never ends, as the transitions of dialogs opened from others while they close.
-     */
-    async function openDialog() {
-      const wrapper = mountDialog({
-        props: { modelValue: false, actions: [{ label: "Salvar" }] },
-        stubTransitions: false,
-      });
-
-      await wrapper.setProps({ modelValue: true });
-      enter(wrapper);
-      expect(document.activeElement).toBe(findButtons(wrapper)[0]?.element);
-      return wrapper;
-    }
+    expect(wrapper.emitted("update:modelValue")).toBeUndefined();
+    expect(document.activeElement).toBe(origin);
   });
 });
 function findVDialog(wrapper: VueWrapper) {
@@ -574,8 +448,20 @@ function findOverlay() {
   return document.querySelector(".v-overlay");
 }
 
+function findContent() {
+  return document.querySelector(".v-card-text > div");
+}
+
 function enter(wrapper: VueWrapper) {
   findVDialog(wrapper).vm.$emit("afterEnter");
+}
+
+function leave(wrapper: VueWrapper) {
+  findVDialog(wrapper).vm.$emit("afterLeave");
+}
+
+function createHost(context: Partial<DialogHostContext> = {}) {
+  return { role: () => undefined, persistent: () => false, afterLeave: vi.fn(), ...context };
 }
 
 function focusNewElement<T extends HTMLElement | SVGElement>(element: T) {
@@ -587,11 +473,4 @@ function focusNewElement<T extends HTMLElement | SVGElement>(element: T) {
 
 function pressEscape() {
   window.dispatchEvent(new KeyboardEvent("keydown", { key: "Escape" }));
-}
-
-function focusCardContainer(wrapper: VueWrapper) {
-  const container = wrapper.findComponent(VCard).element.parentElement as HTMLElement;
-  container.focus();
-  expect(document.activeElement).toBe(container);
-  return container;
 }
