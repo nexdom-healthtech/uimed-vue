@@ -1,0 +1,48 @@
+- text: Ana Souza São Paulo - SP
+- table:
+    - rowgroup:
+        - row "Plano Ouro":
+            - rowheader "Plano"
+            - cell "Ouro"
+        - row /Idade \d+ anos/:
+            - rowheader "Idade"
+            - cell /\d+ anos/
+        - row /Carteirinha \d+ \d+ \d+/:
+            - rowheader "Carteirinha"
+            - cell /\d+ \d+ \d+/
+- text: Bruno Lima Belo Horizonte - MG
+- table:
+    - rowgroup:
+        - row "Plano Prata":
+            - rowheader "Plano"
+            - cell "Prata"
+        - row /Idade \d+ anos/:
+            - rowheader "Idade"
+            - cell /\d+ anos/
+        - row /Carteirinha \d+ \d+ \d+/:
+            - rowheader "Carteirinha"
+            - cell /\d+ \d+ \d+/
+- text: Carla Dias Curitiba - PR
+- table:
+    - rowgroup:
+        - row "Plano Bronze":
+            - rowheader "Plano"
+            - cell "Bronze"
+        - row /Idade \d+ anos/:
+            - rowheader "Idade"
+            - cell /\d+ anos/
+        - row /Carteirinha \d+ \d+ \d+/:
+            - rowheader "Carteirinha"
+            - cell /\d+ \d+ \d+/
+- text: Daniel Rocha Recife - PE
+- table:
+    - rowgroup:
+        - row "Plano Ouro":
+            - rowheader "Plano"
+            - cell "Ouro"
+        - row /Idade \d+ anos/:
+            - rowheader "Idade"
+            - cell /\d+ anos/
+        - row /Carteirinha \d+ \d+ \d+/:
+            - rowheader "Carteirinha"
+            - cell /\d+ \d+ \d+/

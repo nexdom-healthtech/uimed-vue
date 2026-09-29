@@ -1,4 +1,7 @@
-- text: /Ana Souza Cardiologia Consulta em \d+\/\d+\/\d+ Bruno Lima Dermatologia Consulta em \d+\/\d+\/\d+ Carla Dias Pediatria Consulta em \d+\/\d+\/\d+ Daniel Rocha Ortopedia Consulta em \d+\/\d+\/\d+ Eduarda Alves Cardiologia Consulta em \d+\/\d+\/\d+ Felipe Costa Neurologia Consulta em \d+\/\d+\/\d+/
+- text: Pesquisar
+- textbox "Pesquisar"
+- alert
+- text: Ana Souza Plano Ouro Bruno Lima Plano Prata Carla Dias Plano Bronze
 - navigation "Pagination Navigation":
     - list:
         - listitem:
