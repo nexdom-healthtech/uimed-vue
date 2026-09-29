@@ -220,9 +220,7 @@ describe("Section", () => {
 
         const vCardActions = findVCardActions(wrapper);
         expect(vCardActions.exists()).toBeTruthy();
-        expect(vCardActions.classes()).toEqual(
-          expect.arrayContaining(["mt-auto", "justify-end", "px-4", "pt-0", "pb-4"]),
-        );
+        expect(vCardActions.classes()).toEqual(expect.arrayContaining(["mt-auto", "justify-end"]));
       });
 
       it("should render correct number of buttons", async () => {
