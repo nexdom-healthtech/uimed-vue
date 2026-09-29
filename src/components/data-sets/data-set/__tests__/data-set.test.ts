@@ -75,24 +75,31 @@ describe("DataSet", () => {
         expect(columns[1].text()).toBe("1-Bruno Lima");
       });
 
-      it("should announce the items as a list, one list item per column", () => {
+      it("should render the items as a list, one list item per column", () => {
         const wrapper = mountDataSet();
         const list = findList(wrapper);
         expect(list.exists()).toBeTruthy();
-        expect(list.findComponent(Row).exists()).toBeTruthy();
+        expect(findRow(wrapper).props("list")).toBe(true);
+        expect(findRow(wrapper).element).toBe(list.element);
 
         const listItems = findListItems(wrapper);
         expect(listItems).toHaveLength(3);
-        expect(
-          findColumns(wrapper).map((column) => column.findAll('[role="listitem"]').length),
-        ).toEqual([1, 1, 1]);
+        expect(findColumns(wrapper).map((column) => column.props("listItem"))).toEqual([
+          true,
+          true,
+          true,
+        ]);
+        expect(findColumns(wrapper).map((column) => column.element)).toEqual(
+          listItems.map((listItem) => listItem.element),
+        );
         expect(listItems[1].text()).toBe("1-Bruno Lima");
         expect(listItems[1].find("[data-item]").exists()).toBeTruthy();
       });
 
-      it("should keep each list item as tall as its column, so cards align", () => {
+      it("should not rely on ARIA roles for the list semantics", () => {
         const wrapper = mountDataSet();
-        expect(findListItems(wrapper).every((listItem) => listItem.classes("h-100"))).toBeTruthy();
+        expect(wrapper.find('[role="list"]').exists()).toBeFalsy();
+        expect(wrapper.find('[role="listitem"]').exists()).toBeFalsy();
       });
 
       it("should not render columns without items", () => {
@@ -559,11 +566,11 @@ function findRow(wrapper: ReturnType<typeof mountDataSet>) {
 }
 
 function findList(wrapper: ReturnType<typeof mountDataSet>) {
-  return wrapper.find('[role="list"]');
+  return wrapper.find("ul.v-row");
 }
 
 function findListItems(wrapper: ReturnType<typeof mountDataSet>) {
-  return wrapper.findAll('[role="listitem"]');
+  return findList(wrapper).findAll(":scope > li");
 }
 
 function findColumns(wrapper: ReturnType<typeof mountDataSet>) {
