@@ -150,6 +150,15 @@ export default defineConfig({
                 { text: "Confirmações", link: "/guide/composables/use-confirm" },
               ],
             },
+            {
+              text: "Navegação",
+              items: [
+                {
+                  text: "Alterações não salvas",
+                  link: "/guide/composables/use-unsaved-changes",
+                },
+              ],
+            },
           ],
         },
       ],
@@ -204,6 +213,10 @@ export default defineConfig({
             {
               text: "useConfirm",
               link: "/api/composables/use-confirm",
+            },
+            {
+              text: "useUnsavedChanges",
+              link: "/api/composables/use-unsaved-changes",
             },
           ],
         },

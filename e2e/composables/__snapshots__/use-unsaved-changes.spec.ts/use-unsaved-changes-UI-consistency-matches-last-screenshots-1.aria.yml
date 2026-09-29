@@ -1,0 +1,8 @@
+- text: Cadastro do paciente
+- textbox "Nome": Joana Souza
+- text: Nome
+- alert
+- paragraph: "Alterações não salvas: sim"
+- button "Ir para a lista"
+- button "Salvar"
+- button "Salvar e ir para a lista"
