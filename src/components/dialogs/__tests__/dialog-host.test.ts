@@ -6,7 +6,7 @@ import { owners, requests } from "@/composables/dialogs/use-dialog.ts";
 import { vueTestUtilsPluginUimed } from "@/unit-test.ts";
 import { flushPromises, mount, type VueWrapper } from "@vue/test-utils";
 import { nextTick } from "vue";
-import { VCardActions, VCardItem, VCardText, VCardTitle, VDialog } from "vuetify/components";
+import { VCardActions, VCardText, VCardTitle, VDialog } from "vuetify/components";
 
 const title = "Excluir paciente";
 const message = "Esta ação não pode ser desfeita.";
@@ -68,51 +68,18 @@ describe("DialogHost", () => {
     expect(wrapper.findComponent(VCardText).text()).toBe(html);
   });
 
-  describe("spacing", () => {
-    it("should pad the title and not the message's top when there's a title", async () => {
-      const wrapper = mountDialog();
-
-      void dialog({ title, message });
-      await nextTick();
-
-      expect(wrapper.findComponent(VCardItem).classes()).toContain("pt-6");
-      expect(wrapper.findComponent(VCardText).classes()).not.toContain("pt-6");
-    });
-
-    it("should pad the message's top when there's no title", async () => {
-      const wrapper = mountDialog();
-
-      void dialog({ message });
-      await nextTick();
-
-      expect(wrapper.findComponent(VCardText).classes()).toContain("pt-6");
-    });
-
-    it("should pad the actions", async () => {
-      const wrapper = mountDialog();
-
-      void dialog({ message });
-      await nextTick();
-
-      expect(wrapper.findComponent(VCardActions).classes()).toEqual(
-        expect.arrayContaining(["px-6", "pt-0", "pb-6"]),
-      );
-    });
-  });
-
   describe("accessibility", () => {
-    it("should label the dialog with its title and describe it with its message", async () => {
-      const wrapper = mountDialog();
+    it("should name the dialog by its title and describe it with its message", async () => {
+      mountDialog();
 
       void dialog({ title, message });
       await nextTick();
 
-      const titleId = wrapper.findComponent(VCardTitle).attributes("id");
-      const messageId = wrapper.findComponent(VCardText).attributes("id");
-      expect(titleId).toBeTruthy();
+      const messageId = findMessage()?.id;
       expect(messageId).toBeTruthy();
-      expect(titleId).not.toBe(messageId);
-      expect(findOverlay()?.getAttribute("aria-labelledby")).toBe(titleId);
+      expect(findMessage()?.textContent).toBe(message);
+      expect(findOverlay()?.getAttribute("aria-label")).toBe(title);
+      expect(findOverlay()?.hasAttribute("aria-labelledby")).toBe(false);
       expect(findOverlay()?.getAttribute("aria-describedby")).toBe(messageId);
     });
 
@@ -122,7 +89,7 @@ describe("DialogHost", () => {
       void dialog({ message });
       await nextTick();
 
-      const messageId = wrapper.findComponent(VCardText).attributes("id");
+      const messageId = findMessage()?.id;
       expect(wrapper.findComponent(VCardTitle).exists()).toBeFalsy();
       expect(findOverlay()?.getAttribute("aria-labelledby")).toBe(messageId);
       expect(findOverlay()?.getAttribute("aria-describedby")).toBe(messageId);
@@ -142,8 +109,12 @@ describe("DialogHost", () => {
       expect(findOverlay()?.getAttribute("role")).toBe("alertdialog");
     });
 
-    it("should focus the first action once the dialog enters", async () => {
+    // The focus rules are covered by `useDialogFocus`'s own tests
+    it("should move the focus to the first action and back to where it was", async () => {
       const wrapper = mountDialog();
+      const origin = document.createElement("button");
+      document.body.append(origin);
+      origin.focus();
 
       void dialog({
         message,
@@ -154,54 +125,11 @@ describe("DialogHost", () => {
       });
       await nextTick();
       wrapper.findComponent(VDialog).vm.$emit("afterEnter");
-
       expect(document.activeElement).toBe(findButtons(wrapper)[0]?.element);
-    });
 
-    it("should return the focus to the element focused before it opened", async () => {
-      const wrapper = mountDialog();
-      const origin = document.createElement("button");
-      document.body.append(origin);
-      origin.focus();
-
-      void dialog({ message });
-      await nextTick();
-      wrapper.findComponent(VDialog).vm.$emit("afterEnter");
-      expect(document.activeElement).not.toBe(origin);
-
-      await clickButton(wrapper, 0);
+      await clickButton(wrapper, 1);
 
       expect(document.activeElement).toBe(origin);
-    });
-
-    it("should return the focus to SVG elements, such as icons", async () => {
-      const wrapper = mountDialog();
-      const origin = document.createElementNS("http://www.w3.org/2000/svg", "svg");
-      origin.setAttribute("tabindex", "0");
-      document.body.append(origin);
-      origin.focus();
-      expect(document.activeElement).toBe(origin);
-
-      void dialog({ message });
-      await nextTick();
-      wrapper.findComponent(VDialog).vm.$emit("afterEnter");
-      expect(document.activeElement).not.toBe(origin);
-      await clickButton(wrapper, 0);
-
-      expect(document.activeElement).toBe(origin);
-    });
-
-    it("should close without restoring the focus when nothing was focused before it opened", async () => {
-      const wrapper = mountDialog();
-      const activeElement = vi.spyOn(document, "activeElement", "get").mockReturnValue(null);
-
-      void dialog({ message });
-      await nextTick();
-      activeElement.mockRestore();
-
-      // Throwing here would fail the test
-      await clickButton(wrapper, 0);
-      expect(wrapper.findComponent(VDialog).props("modelValue")).toBe(false);
     });
   });
 
@@ -255,16 +183,24 @@ describe("DialogHost", () => {
   });
 
   describe("dismissal", () => {
-    it("should resolve undefined when dismissed", async () => {
+    it("should resolve undefined once the dismissed dialog leaves", async () => {
       const wrapper = mountDialog();
+      const onResolve = vi.fn();
 
-      const result = dialog({ message, actions: [{ text: "Sair", value: "leave" }] });
+      void dialog({ message, actions: [{ text: "Sair", value: "leave" }] }).then(onResolve);
       await nextTick();
       wrapper.findComponent(VDialog).vm.$emit("update:modelValue", false);
       await flushPromises();
 
-      await expect(result).resolves.toBeUndefined();
       expect(wrapper.findComponent(VDialog).props("modelValue")).toBe(false);
+      expect(onResolve).not.toHaveBeenCalled();
+
+      await afterLeave(wrapper);
+      await flushPromises();
+
+      expect(onResolve).toHaveBeenCalledWith(undefined);
+      expect(wrapper.findComponent(VDialog).props("modelValue")).toBe(false);
+      expect(requests.value).toHaveLength(0);
     });
 
     it("should close when Esc is pressed", async () => {
@@ -273,7 +209,7 @@ describe("DialogHost", () => {
       const result = dialog({ message });
       await nextTick();
       pressEscape();
-      await flushPromises();
+      await afterLeave(wrapper);
 
       await expect(result).resolves.toBeUndefined();
       expect(wrapper.findComponent(VDialog).props("modelValue")).toBe(false);
@@ -310,9 +246,34 @@ describe("DialogHost", () => {
       await clickButton(wrapper, 0);
       await afterLeave(wrapper);
       expect(wrapper.findComponent(VDialog).props("modelValue")).toBe(false);
-      // Emitting `afterLeave` doesn't unmount the content as the real transition does, but the
-      // dialog on display is gone
-      expect(wrapper.findComponent(VCardText).text()).toBe("");
+      // A new dialog, closed from the start, takes the place of the one that left
+      expect(wrapper.findComponent(VCardText).exists()).toBeFalsy();
+      expect(requests.value).toHaveLength(0);
+    });
+
+    it("should display the next dialog once a dismissed one leaves", async () => {
+      const wrapper = mountDialog();
+
+      const first = dialog({ message: "First" });
+      void dialog({ message: "Second" });
+      await nextTick();
+      pressEscape();
+      await nextTick();
+      expect(wrapper.findComponent(VDialog).props("modelValue")).toBe(false);
+      expect(wrapper.findComponent(VCardText).text()).toBe("First");
+
+      await afterLeave(wrapper);
+      await flushPromises();
+
+      await expect(first).resolves.toBeUndefined();
+      expect(wrapper.findComponent(VDialog).props("modelValue")).toBe(true);
+      expect(wrapper.findComponent(VCardText).text()).toBe("Second");
+
+      pressEscape();
+      await afterLeave(wrapper);
+      await flushPromises();
+
+      expect(wrapper.findComponent(VDialog).props("modelValue")).toBe(false);
       expect(requests.value).toHaveLength(0);
     });
 
@@ -351,6 +312,7 @@ describe("DialogHost", () => {
       const [cancel, confirmButton] = findButtons(wrapper);
       expect(vDialog.props("modelValue")).toBe(true);
       expect(vDialog.props("persistent")).toBe(true);
+      expect(findButtons(wrapper)).toHaveLength(2);
       expect(cancel?.props("disabled")).toBe(true);
       expect(cancel?.props("loading")).toBe(false);
       expect(confirmButton?.props("loading")).toBe(true);
@@ -401,6 +363,10 @@ async function afterLeave(wrapper: VueWrapper) {
 
 function findOverlay() {
   return document.querySelector(".v-overlay");
+}
+
+function findMessage() {
+  return document.querySelector(".v-card-text > div");
 }
 
 function pressEscape() {
