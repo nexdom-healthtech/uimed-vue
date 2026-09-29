@@ -74,6 +74,26 @@ test.describe("use-confirm", () => {
       await expect(page.getByTestId("confirm-result")).toHaveText("Resultado: false");
     });
 
+    test("opens again once closed by Esc", async ({ page }) => {
+      const opener = page.getByTestId("btn-confirm");
+      await opener.click();
+
+      const dialog = getDialog(page);
+      await expect(dialog.getByRole("button", { name: "Cancelar" })).toBeFocused();
+      await page.keyboard.press("Escape");
+      await expect(dialog).toBeHidden();
+      await expect(opener).toBeFocused();
+
+      await page.getByTestId("btn-destructive").click();
+
+      await expect(dialog).toHaveAccessibleName("Excluir paciente");
+      await expect(dialog.getByRole("button", { name: "Manter" })).toBeFocused();
+      await dialog.getByRole("button", { name: "Excluir" }).click();
+      await page.clock.fastForward(actionDuration);
+      await expect(dialog).toBeHidden();
+      await expect(page.getByTestId("confirm-result")).toHaveText("Resultado: Paciente excluído");
+    });
+
     test("resolves false when closed by a click outside it", async ({ page }) => {
       await page.getByTestId("btn-confirm").click();
 
