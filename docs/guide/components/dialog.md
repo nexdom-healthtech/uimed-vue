@@ -10,7 +10,7 @@ A janela abre e fecha pelo `v-model`. Para apresentar apenas uma mensagem ou ped
 
 ## Uso
 
-A prop `title` define o título da janela, em texto simples, e o conteúdo vai no slot padrão. A prop `actions` define os botões exibidos no rodapé, alinhados à direita, nesta ordem. Coloque a ação principal por último.
+A prop `title` define o título da janela, em texto simples e em uma única linha (títulos longos são cortados com reticências), e o conteúdo vai no slot padrão. A prop `actions` define os botões exibidos no rodapé, alinhados à direita, nesta ordem. Coloque a ação principal por último.
 
 Clicar em uma ação **não fecha** a janela: feche-a no `onClick`, alterando o `v-model` para `false`.
 
@@ -44,9 +44,40 @@ const actions: DialogAction[] = [{ label: "Fechar", onClick: () => (open.value =
 
 ### Fechando a janela
 
-Além das ações, o usuário pode fechar a janela pela tecla `Esc` ou clicando fora dela. Nesses casos, o `v-model` passa a ser `false`.
+Além das ações, o usuário sempre pode fechar a janela pela tecla `Esc` ou clicando fora dela, inclusive enquanto uma ação apresenta um indicador de carregamento.
 
 O botão "voltar" do navegador também fecha a janela, sem sair da página, em aplicações que usam o [Vue Router](https://router.vuejs.org/). A exceção é quando o "voltar" leva a uma página aberta com `router.replace`, como a página pela qual o usuário entrou na aplicação: nesse caso, a navegação acontece e a janela continua aberta.
+
+Quando o usuário fecha a janela por um desses meios, ela começa a sumir na hora, mas o `v-model` só passa a ser `false` ao fim da animação de fechamento. Por isso:
+
+- atribuir `true` ao `v-model` durante essa animação não tem efeito, porque ele ainda é `true`: a janela termina de fechar e o `v-model` passa a ser `false` em seguida;
+- se o `@update:model-value` recusar a atualização, mantendo o valor `true`, a janela continua fechada com o `v-model` em `true`;
+- se a janela for removida da página antes do fim da animação (por um `v-if`, por exemplo), o `v-model` continua `true`.
+
+<demo col>
+<u-button data-testid="btn-closing" @click="closingOpen = true">Abrir janela</u-button>
+<p data-testid="closing-state">v-model: {{ closingOpen }}</p>
+<u-dialog v-model="closingOpen" title="Fechando a janela" data-testid="dialog-closing">
+Feche esta janela pela tecla <code>Esc</code> ou clicando fora dela.
+</u-dialog>
+</demo>
+
+```vue
+<template>
+  <u-button @click="open = true">Abrir janela</u-button>
+  <p>v-model: {{ open }}</p>
+  <u-dialog v-model="open" title="Fechando a janela">
+    Feche esta janela pela tecla <code>Esc</code> ou clicando fora dela.
+  </u-dialog>
+</template>
+
+<script lang="ts" setup>
+import { ref } from "vue";
+import { UButton, UDialog } from "@nexdom/uimed-vue/components";
+
+const open = ref(false);
+</script>
+```
 
 ### Foco
 
@@ -60,18 +91,18 @@ O título é o nome acessível da janela, anunciado por leitores de tela ao abri
 
 Para enviar um formulário pelas ações, use uma ação do tipo `submit` com a prop `form` apontando para o `id` do [formulário](./form). O evento `submit` do formulário só é disparado quando não há pendências de validação.
 
-Enquanto os dados são salvos, a ação principal pode apresentar um indicador de carregamento (`loading`) e as demais podem ficar desabilitadas (`disabled`). Use a prop `persistent` para impedir que a janela seja fechada nesse meio tempo.
+Enquanto os dados são salvos, a ação principal pode apresentar um indicador de carregamento (`loading`) e as demais podem ficar desabilitadas (`disabled`). O usuário ainda pode fechar a janela nesse meio tempo, pela tecla `Esc`, por um clique fora dela ou pelo botão "voltar", sem interromper o salvamento.
+
+O exemplo copia o nome para o rascunho ao abrir a janela, e não ao fechá-la: ao cancelar, a ação passa o `v-model` para `false` enquanto a janela ainda está sumindo, e trocar o texto nesse momento seria visível.
 
 <demo col>
-<u-button data-testid="btn-form" @click="formOpen = true">Editar paciente</u-button>
+<u-button data-testid="btn-form" @click="openForm">Editar paciente</u-button>
 <p data-testid="form-result">Nome: {{ patientName }}</p>
 <u-dialog
   v-model="formOpen"
   title="Editar paciente"
   :actions="formActions"
-  :persistent="isSaving"
   data-testid="dialog-form"
-  @after-leave="draftName = patientName"
 >
 <u-form :id="formId" @submit="save">
 <u-text-field v-model="draftName" label="Nome" required data-testid="field-name" />
@@ -81,15 +112,9 @@ Enquanto os dados são salvos, a ação principal pode apresentar um indicador d
 
 ```vue
 <template>
-  <u-button @click="open = true">Editar paciente</u-button>
+  <u-button @click="openForm">Editar paciente</u-button>
   <p>Nome: {{ name }}</p>
-  <u-dialog
-    v-model="open"
-    title="Editar paciente"
-    :actions
-    :persistent="isSaving"
-    @after-leave="draft = name"
-  >
+  <u-dialog v-model="open" title="Editar paciente" :actions>
     <u-form :id="formId" @submit="save">
       <u-text-field v-model="draft" label="Nome" required />
     </u-form>
@@ -107,7 +132,7 @@ const formId = useId();
 const open = ref(false);
 const isSaving = ref(false);
 const name = ref("Maria da Silva");
-const draft = ref(name.value);
+const draft = ref("");
 
 const actions = computed<DialogAction[]>(() => [
   {
@@ -118,6 +143,11 @@ const actions = computed<DialogAction[]>(() => [
   },
   { label: "Salvar", type: "submit", form: formId, loading: isSaving.value },
 ]);
+
+function openForm() {
+  draft.value = name.value;
+  open.value = true;
+}
 
 function savePatient(): Promise<void> {
   return new Promise((resolve) => setTimeout(resolve, 1500));
@@ -130,44 +160,6 @@ async function save() {
   isSaving.value = false;
   open.value = false;
 }
-</script>
-```
-
-### Janela persistente
-
-Com a prop `persistent`, a janela não fecha pela tecla `Esc`, por um clique fora dela ou pelo botão "voltar" do navegador. Ela só fecha quando o `v-model` passa a ser `false`, por exemplo, por uma das ações.
-
-<demo>
-<u-button data-testid="btn-persistent" @click="persistentOpen = true">Aceitar termos</u-button>
-<u-dialog
-  v-model="persistentOpen"
-  title="Termos de uso"
-  :actions="persistentActions"
-  persistent
-  data-testid="dialog-persistent"
->
-Para continuar, é preciso aceitar os termos de uso.
-</u-dialog>
-</demo>
-
-```vue
-<template>
-  <u-button @click="open = true">Aceitar termos</u-button>
-  <u-dialog v-model="open" title="Termos de uso" :actions persistent>
-    Para continuar, é preciso aceitar os termos de uso.
-  </u-dialog>
-</template>
-
-<script lang="ts" setup>
-import { ref } from "vue";
-import type { ComponentProps } from "vue-component-type-helpers";
-import { UButton, UDialog } from "@nexdom/uimed-vue/components";
-
-type DialogAction = NonNullable<ComponentProps<typeof UDialog>["actions"]>[number];
-
-const open = ref(false);
-
-const actions: DialogAction[] = [{ label: "Aceitar", onClick: () => (open.value = false) }];
 </script>
 ```
 
@@ -331,38 +323,21 @@ async function remove() {
 </script>
 ```
 
-## Eventos
-
-### Fim do fechamento
-
-O evento `afterLeave` é disparado quando a animação de fechamento termina; em seguida, o conteúdo da janela é removido da página. Use-o, por exemplo, para descartar alterações não salvas, como no exemplo de [formulários](#formularios), que restaura o nome digitado ao cancelar.
-
 ## Playground
 
-Experimente as combinações de props do componente. Sem ações, uma janela persistente só fecharia pelo `v-model`; por isso, aqui, ela só fica persistente enquanto houver ações.
+Experimente as combinações de props do componente.
 
 <playground v-model:actions="playgroundActions">
 <u-button data-testid="dialog-playground-open" @click="playgroundOpen = true">Abrir janela</u-button>
 <u-dialog
   v-model="playgroundOpen"
   :title="playgroundActions.title.value"
-  :size="playgroundSize"
-  :persistent="playgroundActions.persistent.value && playgroundActions.showActions.value"
+  :size="playgroundActions.size.value as DialogSize"
   :actions="playgroundActions.showActions.value ? playgroundDialogActions : undefined"
   data-testid="dialog-playground"
 >
 {{ playgroundActions.content.value }}
 </u-dialog>
-
-<template #actions>
-<v-select
-  v-model="playgroundSize"
-  label="Tamanho"
-  :items="playgroundSizeOptions"
-  density="compact"
-  data-testid="dialog-playground-size"
-/>
-</template>
 </playground>
 
 ## Ver também
@@ -384,20 +359,20 @@ Experimente as combinações de props do componente. Sem ações, uma janela per
     UTextField,
   } from "../../../dist/components.js";
   import { useConfirm } from "../../../dist/composables.js";
-  import { VSelect } from "vuetify/components";
 
   type Props = ComponentProps<typeof UDialog>;
   type DialogSize = NonNullable<Props["size"]>;
   type DialogAction = NonNullable<Props["actions"]>[number];
 
   const basicOpen = ref(false);
+  const closingOpen = ref(false);
   const basicActions: DialogAction[] = [{ label: "Fechar", onClick: () => (basicOpen.value = false) }];
 
   const formId = useId();
   const formOpen = ref(false);
   const isSaving = ref(false);
   const patientName = ref("Maria da Silva");
-  const draftName = ref(patientName.value);
+  const draftName = ref("");
   const formActions = computed<DialogAction[]>(() => [
     {
       label: "Cancelar",
@@ -407,6 +382,11 @@ Experimente as combinações de props do componente. Sem ações, uma janela per
     },
     { label: "Salvar", type: "submit", form: formId, loading: isSaving.value },
   ]);
+
+  function openForm() {
+    draftName.value = patientName.value;
+    formOpen.value = true;
+  }
 
   function savePatient(): Promise<void> {
     return new Promise((resolve) => setTimeout(resolve, 1500));
@@ -419,11 +399,6 @@ Experimente as combinações de props do componente. Sem ações, uma janela per
     isSaving.value = false;
     formOpen.value = false;
   }
-
-  const persistentOpen = ref(false);
-  const persistentActions: DialogAction[] = [
-    { label: "Aceitar", onClick: () => (persistentOpen.value = false) },
-  ];
 
   const sizeOpen = ref(false);
   const size = ref<DialogSize>("medium");
@@ -466,8 +441,6 @@ Experimente as combinações de props do componente. Sem ações, uma janela per
   }
 
   const playgroundOpen = ref(false);
-  const playgroundSizeOptions: DialogSize[] = ["small", "medium", "large"];
-  const playgroundSize = ref<DialogSize>("medium");
   const playgroundDialogActions: DialogAction[] = [
     { label: "Cancelar", variant: "ghost", onClick: () => (playgroundOpen.value = false) },
     { label: "Confirmar", onClick: () => (playgroundOpen.value = false) },
@@ -486,11 +459,12 @@ Experimente as combinações de props do componente. Sem ações, uma janela per
       value: "Teste o componente Dialog com diferentes combinações de props",
       dataTestid: "dialog-playground-content",
     },
-    persistent: {
-      type: "checkbox",
-      value: false,
-      label: "Persistente",
-      dataTestid: "dialog-playground-persistent",
+    size: {
+      type: "combobox",
+      label: "Tamanho",
+      value: "medium",
+      dataTestid: "dialog-playground-size",
+      items: ["small", "medium", "large"],
     },
     showActions: {
       type: "checkbox",
