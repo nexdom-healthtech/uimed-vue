@@ -64,6 +64,7 @@ export default defineConfig({
   },
   plugins: [vue()],
   test: {
+    pool: "vmThreads",
     globals: true,
     clearMocks: true,
     environment: "jsdom",
