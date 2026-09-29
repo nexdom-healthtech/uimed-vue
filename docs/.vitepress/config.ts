@@ -133,7 +133,10 @@ export default defineConfig({
             },
             {
               text: "Dados",
-              items: [{ text: "Tabela", link: "/guide/components/table" }],
+              items: [
+                { text: "Listagem", link: "/guide/components/data-set" },
+                { text: "Tabela", link: "/guide/components/table" },
+              ],
             },
           ],
         },
@@ -167,6 +170,18 @@ export default defineConfig({
               items: [
                 { text: "USection", link: "/api/components/sections/section" },
                 { text: "USectionContent", link: "/api/components/sections/section-content" },
+              ],
+            },
+            {
+              text: "Data Set",
+              collapsed: false,
+              items: [
+                { text: "UDataSet", link: "/api/components/data-sets/data-set" },
+                { text: "UDataSetItem", link: "/api/components/data-sets/data-set-item" },
+                {
+                  text: "UDataSetItemTitle",
+                  link: "/api/components/data-sets/data-set-item-title",
+                },
               ],
             },
             { text: "UDetails", link: "/api/components/details" },
