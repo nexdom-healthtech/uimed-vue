@@ -1,4 +1,4 @@
-import { test, expect, type Page } from "@playwright/test";
+import { test, expect, type Locator, type Page } from "@playwright/test";
 import { gotoPage, selectOption } from "@e2e/utils.ts";
 
 test.describe("data-set", () => {
@@ -7,21 +7,59 @@ test.describe("data-set", () => {
   });
 
   test.describe("demos", () => {
-    test("renders each item through the default slot", async ({ page }) => {
+    test("renders each item as a card through the default slot", async ({ page }) => {
       const dataSet = page.getByTestId("demo-data-set-items");
-      const items = dataSet.getByRole("listitem");
+      const card = page.getByTestId("demo-data-set-items-2");
 
-      await expect(items).toHaveCount(3);
-      await expect(items.nth(0)).toHaveText(/Ana Souza\s*Plano Ouro/);
-      await expect(page.getByTestId("demo-data-set-items-2")).toContainText("Bruno Lima");
+      await expect(dataSet.getByTestId(/^demo-data-set-items-\d$/)).toHaveCount(3);
+      await expect(card).toContainText("Bruno Lima");
+      await expect(card).toContainText("Plano Prata");
       await expect(dataSet.getByRole("navigation")).toHaveCount(0);
+    });
+
+    test("shows fewer than 3 cards per row when they wouldn't be 240px wide", async ({ page }) => {
+      const dataSet = page.getByTestId("demo-data-set-items");
+      const cards = dataSet.getByTestId(/^demo-data-set-items-\d$/);
+
+      await expect(cards).toHaveCount(3);
+      expect((await dataSet.boundingBox())?.width).toBeLessThan(3 * 240);
+      expect(await countCardsInFirstRow(cards)).toBe(2);
+      await expectCardsAtLeast240pxWide(cards);
+    });
+
+    test("shows the given number of cards per row", async ({ page }) => {
+      const cards = page.getByTestId("demo-data-set-columns-item");
+
+      await expect(cards).toHaveCount(4);
+      expect(await countCardsInFirstRow(cards)).toBe(2);
+      await expectCardsAtLeast240pxWide(cards);
+    });
+
+    test("stacks the cards on extra small screens", async ({ page }) => {
+      await page.setViewportSize({ width: 400, height: 800 });
+      const cards = page.getByTestId("demo-data-set-items").getByTestId(/^demo-data-set-items-\d$/);
+
+      await expect(cards).toHaveCount(3);
+      expect(await countCardsInFirstRow(cards)).toBe(1);
+    });
+
+    test("lines up the cards of the same row", async ({ page }) => {
+      const cards = page.getByTestId("demo-data-set-item-card");
+
+      await expect(cards).toHaveCount(2);
+      const [first, second] = await Promise.all([
+        cards.nth(0).boundingBox(),
+        cards.nth(1).boundingBox(),
+      ]);
+      expect(first?.y).toBe(second?.y);
+      expect(first?.height).toBe(second?.height);
     });
 
     test("splits the items into pages", async ({ page }) => {
       const dataSet = page.getByTestId("demo-data-set-pagination");
       const pagination = dataSet.getByRole("navigation");
 
-      await expect(dataSet.getByRole("list").first().getByRole("listitem")).toHaveCount(5);
+      await expect(page.getByTestId("demo-data-set-pagination-item")).toHaveCount(6);
       await expect(pagination.getByRole("button", { name: /page \d/i })).toHaveCount(3);
       await expect(page.getByTestId("demo-data-set-pagination-page")).toHaveText("Página atual: 1");
     });
@@ -31,7 +69,7 @@ test.describe("data-set", () => {
 
       await dataSet.getByRole("button", { name: "Next page" }).click();
 
-      await expect(dataSet.getByText("Felipe Costa")).toBeVisible();
+      await expect(dataSet.getByText("Gabriela Reis")).toBeVisible();
       await expect(dataSet.getByText("Ana Souza")).toHaveCount(0);
       await expect(page.getByTestId("demo-data-set-pagination-page")).toHaveText("Página atual: 2");
     });
@@ -41,9 +79,9 @@ test.describe("data-set", () => {
 
       await dataSet.getByRole("button", { name: "Go to page 3" }).click();
 
-      const items = dataSet.getByRole("list").first().getByRole("listitem");
-      await expect(items).toHaveCount(2);
-      await expect(items.nth(1)).toContainText("Lucas Barros");
+      const cards = page.getByTestId("demo-data-set-pagination-item");
+      await expect(cards).toHaveCount(3);
+      await expect(cards.nth(2)).toContainText("Olívia Cardoso");
       await expect(page.getByTestId("demo-data-set-pagination-page")).toHaveText("Página atual: 3");
     });
 
@@ -52,9 +90,9 @@ test.describe("data-set", () => {
 
       await dataSet.getByRole("textbox", { name: "Pesquisar" }).fill("CAR");
 
-      const items = dataSet.getByRole("list").first().getByRole("listitem");
-      await expect(items).toHaveCount(1);
-      await expect(items.first()).toContainText("Carla Dias");
+      const cards = page.getByTestId("demo-data-set-search-item");
+      await expect(cards).toHaveCount(1);
+      await expect(cards.first()).toContainText("Carla Dias");
       await expect(dataSet.getByRole("navigation")).toHaveCount(0);
       await expect(page.getByTestId("demo-data-set-search-text")).toHaveText("Pesquisa: CAR");
     });
@@ -64,7 +102,7 @@ test.describe("data-set", () => {
 
       await dataSet.getByRole("textbox", { name: "Pesquisar" }).fill("Ouro");
 
-      await expect(dataSet.getByRole("listitem")).toHaveCount(0);
+      await expect(page.getByTestId("demo-data-set-search-item")).toHaveCount(0);
       await expect(dataSet.getByText("Nenhum registro encontrado.")).toBeVisible();
     });
 
@@ -79,12 +117,25 @@ test.describe("data-set", () => {
       await expect(page.locator(".vp-doc .v-skeleton-loader__bone").first()).toBeVisible();
     });
 
-    test("renders the title from the item title slot", async ({ page }) => {
-      const items = page.getByTestId("demo-data-set-item").getByRole("listitem");
+    test("renders the title and the subtitle of each card", async ({ page }) => {
+      const cards = page.getByTestId("demo-data-set-item-card");
 
-      await expect(items).toHaveCount(2);
-      await expect(items.nth(0)).toContainText("1. Ana Souza");
-      await expect(items.nth(1)).toContainText("2. Bruno Lima");
+      await expect(cards).toHaveCount(2);
+      await expect(cards.nth(0)).toHaveText(/1\. Ana Souza\s*São Paulo - SP/);
+      await expect(cards.nth(1)).toHaveText(/2\. Bruno Lima\s*Belo Horizonte - MG/);
+    });
+
+    test("renders the fields of each card in a vertical table", async ({ page }) => {
+      const table = page.getByTestId("demo-data-set-fields-table-2");
+
+      await expect(page.getByTestId("demo-data-set-fields").getByRole("table")).toHaveCount(4);
+      await expect(page.getByTestId("demo-data-set-fields-item-2")).toContainText("Bruno Lima");
+      await expect(table.getByRole("rowheader")).toHaveText(["Plano", "Idade", "Carteirinha"]);
+      await expect(table.getByRole("cell")).toHaveText(["Prata", "52 anos", "0001 9876 5432"]);
+    });
+
+    test("matches the accessible snapshot of the fields demo", async ({ page }) => {
+      await expect(page.getByTestId("demo-data-set-fields")).toMatchAriaSnapshot();
     });
 
     test("matches the accessible snapshot of the pagination demo", async ({ page }) => {
@@ -125,13 +176,25 @@ test.describe("data-set", () => {
       await expect(preview.getByText(text)).toBeVisible();
     });
 
+    test("keeps the cards at least 240px wide in the narrow preview", async ({ page }) => {
+      const cards = getPreviewCards(page);
+      await expect(cards).toHaveCount(3);
+      expect((await getPreview(page).boundingBox())?.width).toBeLessThan(2 * 240);
+      expect(await countCardsInFirstRow(cards)).toBe(1);
+
+      await selectOption(page, "data-set-playground-columns", "4");
+      await expect(page.getByTestId("data-set-playground-columns")).toContainText("4");
+      expect(await countCardsInFirstRow(cards)).toBe(1);
+      await expectCardsAtLeast240pxWide(cards);
+    });
+
     test("updates the items per page when playground-items-per-page changes", async ({ page }) => {
       const preview = getPreview(page);
-      const items = preview.getByRole("list").first().getByRole("listitem");
-      await expect(items).toHaveCount(3);
+      const cards = getPreviewCards(page);
+      await expect(cards).toHaveCount(3);
 
       await selectOption(page, "data-set-playground-items-per-page", "5");
-      await expect(items).toHaveCount(5);
+      await expect(cards).toHaveCount(5);
       await expect(preview.getByRole("button", { name: /page \d/i })).toHaveCount(2);
     });
 
@@ -152,16 +215,17 @@ test.describe("data-set", () => {
       await expect(preview.getByRole("navigation")).toBeVisible();
 
       await selectOption(page, "data-set-playground-items-per-page", "10");
-      await expect(preview.getByRole("list").first().getByRole("listitem")).toHaveCount(8);
+      await expect(getPreviewCards(page)).toHaveCount(8);
       await expect(preview.getByRole("navigation")).toHaveCount(0);
     });
 
-    test("matches the accessible snapshot of the preview items in their default state", async ({
+    test("matches the accessible snapshot of the preview in its default state", async ({
       page,
     }) => {
       const preview = getPreview(page);
       await expect(preview.getByRole("textbox", { name: "Pesquisar" })).toBeVisible();
-      await expect(preview.getByRole("list").first()).toMatchAriaSnapshot();
+      await expect(getPreviewCards(page)).toHaveCount(3);
+      await expect(preview).toMatchAriaSnapshot();
     });
   });
 
@@ -174,4 +238,27 @@ test.describe("data-set", () => {
 
 function getPreview(page: Page) {
   return page.getByTestId("data-set-preview");
+}
+
+function getPreviewCards(page: Page) {
+  return page.getByTestId("data-set-preview-item");
+}
+
+/**
+ * Counts how many cards share the row of the first one, by their position on
+ * the screen.
+ */
+async function countCardsInFirstRow(cards: Locator): Promise<number> {
+  const boxes = await Promise.all((await cards.all()).map((card) => card.boundingBox()));
+  const firstRowTop = boxes[0]?.y;
+  return boxes.filter((box) => box?.y === firstRowTop).length;
+}
+
+/**
+ * Checks that none of the cards got narrower than the minimum card width.
+ */
+async function expectCardsAtLeast240pxWide(cards: Locator) {
+  for (const card of await cards.all()) {
+    expect((await card.boundingBox())?.width).toBeGreaterThanOrEqual(240);
+  }
 }
