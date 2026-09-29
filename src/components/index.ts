@@ -14,4 +14,3 @@ export { default as UTable } from "@/components/table/table.vue";
 export { default as UDetails } from "@/components/details/details.vue";
 export { default as UDataSet } from "@/components/data-sets/data-set/data-set.vue";
 export { default as UDataSetItem } from "@/components/data-sets/data-set-item/data-set-item.vue";
-export { default as UDataSetItemTitle } from "@/components/data-sets/data-set-item-title/data-set-item-title.vue";
