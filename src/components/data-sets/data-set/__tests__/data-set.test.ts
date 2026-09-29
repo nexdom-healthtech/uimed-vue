@@ -1,13 +1,9 @@
-import {
-  VDataIterator,
-  VEmptyState,
-  VList,
-  VPagination,
-  VSkeletonLoader,
-} from "vuetify/components";
+import { VDataIterator, VEmptyState, VPagination, VSkeletonLoader } from "vuetify/components";
 import { mount } from "@vue/test-utils";
 import { h, toRaw } from "vue";
 import DataSet from "@/components/data-sets/data-set/data-set.vue";
+import Column from "@/components/grid/column/column.vue";
+import Row from "@/components/grid/row/row.vue";
 import TextField from "@/components/inputs/text-field/text-field.vue";
 import { vueTestUtilsPluginUimed } from "@/unit-test.ts";
 
@@ -33,7 +29,7 @@ describe("DataSet", () => {
   it("should contain primary component", () => {
     const wrapper = mountDataSet();
     expect(findVDataIterator(wrapper).exists()).toBeTruthy();
-    expect(findVList(wrapper).exists()).toBeTruthy();
+    expect(findRow(wrapper).exists()).toBeTruthy();
   });
 
   it("should not inherit unexpected attributes", () => {
@@ -70,9 +66,19 @@ describe("DataSet", () => {
         expect(toRaw(received[2])).toBe(patients[2]);
       });
 
-      it("should render items inside the v-list", () => {
+      it("should render each item inside its own column of the row", () => {
         const wrapper = mountDataSet();
-        expect(findVList(wrapper).findAll("[data-item]")).toHaveLength(3);
+        const columns = findColumns(wrapper);
+        expect(findRow(wrapper).findAllComponents(Column)).toHaveLength(3);
+        expect(columns).toHaveLength(3);
+        expect(columns.map((column) => column.findAll("[data-item]").length)).toEqual([1, 1, 1]);
+        expect(columns[1].text()).toBe("1-Bruno Lima");
+      });
+
+      it("should not render columns without items", () => {
+        const wrapper = mountDataSet({ items: [] });
+        expect(findRow(wrapper).exists()).toBeFalsy();
+        expect(findColumns(wrapper)).toHaveLength(0);
       });
 
       it("should forward items to v-data-iterator", () => {
@@ -95,6 +101,118 @@ describe("DataSet", () => {
       it("should not show the empty state when there are items", () => {
         const wrapper = mountDataSet();
         expect(findVEmptyState(wrapper).exists()).toBeFalsy();
+      });
+    });
+
+    describe("columns", () => {
+      it("should show 3 items per row by default", () => {
+        const wrapper = mountDataSet();
+        for (const column of findColumns(wrapper)) {
+          expect(column.props("cols")).toBe("4");
+        }
+      });
+
+      it.each([
+        [1, "12"],
+        [2, "6"],
+        [3, "4"],
+        [4, "3"],
+        [6, "2"],
+      ] as const)("should fit %i items per row with columns of size %s", async (columns, cols) => {
+        const wrapper = mountDataSet();
+        await wrapper.setProps({ columns });
+        for (const column of findColumns(wrapper)) {
+          expect(column.props("cols")).toBe(cols);
+        }
+      });
+
+      describe("fitting the data set's width", () => {
+        const originalResizeObserver = globalThis.ResizeObserver;
+
+        afterEach(() => {
+          globalThis.ResizeObserver = originalResizeObserver;
+        });
+
+        it("should observe the width of the data set", async () => {
+          const wrapper = mountObservedDataSet();
+          await wrapper.vm.$nextTick();
+
+          expect(MockResizeObserver.instances).toHaveLength(1);
+          expect(MockResizeObserver.instances[0].observe).toHaveBeenCalledWith(
+            findVDataIterator(wrapper).element,
+          );
+        });
+
+        it("should keep the given columns until the width is measured", async () => {
+          const wrapper = mountObservedDataSet({ columns: 4 });
+          await wrapper.vm.$nextTick();
+          expect(findColumns(wrapper)[0].props("cols")).toBe("3");
+        });
+
+        it.each([
+          [4, 420, "12"],
+          [4, 800, "4"],
+          [4, 1100, "3"],
+          [6, 1100, "3"],
+          [3, 1440, "4"],
+        ] as const)(
+          "should reduce %i columns to fit %ipx with columns of size %s",
+          async (columns, width, cols) => {
+            const wrapper = mountObservedDataSet({ columns });
+            await wrapper.vm.$nextTick();
+
+            MockResizeObserver.instances[0].resize(width);
+            await wrapper.vm.$nextTick();
+
+            for (const column of findColumns(wrapper)) {
+              expect(column.props("cols")).toBe(cols);
+            }
+          },
+        );
+
+        it("should follow width changes", async () => {
+          const wrapper = mountObservedDataSet({ columns: 4 });
+          await wrapper.vm.$nextTick();
+
+          MockResizeObserver.instances[0].resize(420);
+          await wrapper.vm.$nextTick();
+          expect(findColumns(wrapper)[0].props("cols")).toBe("12");
+
+          MockResizeObserver.instances[0].resize(1100);
+          await wrapper.vm.$nextTick();
+          expect(findColumns(wrapper)[0].props("cols")).toBe("3");
+        });
+
+        it("should stop observing while loading and observe again afterwards", async () => {
+          const wrapper = mountObservedDataSet();
+          await wrapper.vm.$nextTick();
+
+          await wrapper.setProps({ loading: true });
+          await wrapper.vm.$nextTick();
+          expect(MockResizeObserver.instances[0].disconnect).toHaveBeenCalledOnce();
+
+          await wrapper.setProps({ loading: false });
+          await wrapper.vm.$nextTick();
+          expect(MockResizeObserver.instances).toHaveLength(2);
+          expect(MockResizeObserver.instances[1].observe).toHaveBeenCalledWith(
+            findVDataIterator(wrapper).element,
+          );
+        });
+
+        it("should stop observing when unmounted", async () => {
+          const wrapper = mountObservedDataSet();
+          await wrapper.vm.$nextTick();
+
+          wrapper.unmount();
+          expect(MockResizeObserver.instances[0].disconnect).toHaveBeenCalledOnce();
+        });
+      });
+
+      it("should keep the full width on extra small screens", () => {
+        const wrapper = mountDataSet({ columns: 4 });
+        const column = findColumns(wrapper)[0];
+        expect(column.classes()).toContain("v-col--cols-12");
+        expect(column.classes()).toContain("v-col--cols-sm-3");
       });
     });
 
@@ -209,7 +327,7 @@ describe("DataSet", () => {
         expect(textField.props("label")).toBe("Pesquisar");
       });
 
-      it("should render the search field above the list", () => {
+      it("should render the search field above the grid", () => {
         const wrapper = mountDataSet({ searchable: true });
         const iteratorElement = findVDataIterator(wrapper).element;
         expect(iteratorElement.firstElementChild).toBe(findTextField(wrapper).element);
@@ -339,9 +457,9 @@ describe("DataSet", () => {
         expect(findVSkeletonLoader(wrapper).props("loading")).toBeFalsy();
       });
 
-      it('should use "list-item-two-line@3" skeleton type', () => {
+      it('should use "card" skeleton type', () => {
         const wrapper = mountDataSet();
-        expect(findVSkeletonLoader(wrapper).props("type")).toBe("list-item-two-line@3");
+        expect(findVSkeletonLoader(wrapper).props("type")).toBe("card");
       });
 
       it("should make the skeleton occupy the full width", () => {
@@ -354,6 +472,7 @@ describe("DataSet", () => {
         await wrapper.setProps({ loading: true });
         expect(findVDataIterator(wrapper).exists()).toBeFalsy();
         expect(findTextField(wrapper).exists()).toBeFalsy();
+        expect(findRow(wrapper).exists()).toBeFalsy();
         expect(findRenderedItems(wrapper)).toHaveLength(0);
       });
     });
@@ -414,8 +533,12 @@ function findVDataIterator(wrapper: ReturnType<typeof mountDataSet>) {
   return wrapper.findComponent(VDataIterator);
 }
 
-function findVList(wrapper: ReturnType<typeof mountDataSet>) {
-  return wrapper.findComponent(VList);
+function findRow(wrapper: ReturnType<typeof mountDataSet>) {
+  return wrapper.findComponent(Row);
+}
+
+function findColumns(wrapper: ReturnType<typeof mountDataSet>) {
+  return wrapper.findAllComponents(Column);
 }
 
 function findVPagination(wrapper: ReturnType<typeof mountDataSet>) {
@@ -436,4 +559,43 @@ function findTextField(wrapper: ReturnType<typeof mountDataSet>) {
 
 function findRenderedItems(wrapper: ReturnType<typeof mountDataSet>) {
   return wrapper.findAll("[data-item]");
+}
+
+class MockResizeObserver {
+  static instances: MockResizeObserver[] = [];
+
+  readonly observe = vi.fn();
+  readonly unobserve = vi.fn();
+  readonly disconnect = vi.fn();
+
+  constructor(private readonly callback: ResizeObserverCallback) {
+    MockResizeObserver.instances.push(this);
+  }
+
+  resize(width: number) {
+    const entry = { contentRect: { width } } as ResizeObserverEntry;
+    this.callback([entry], this as unknown as ResizeObserver);
+  }
+}
+
+/**
+ * Mounts the data set with a `ResizeObserver` whose entries are fired by the
+ * test. It replaces the polyfill installed by `vueTestUtilsPluginUimed()`.
+ */
+function mountObservedDataSet(props: Record<string, unknown> = {}) {
+  const plugin = vueTestUtilsPluginUimed();
+  MockResizeObserver.instances = [];
+  globalThis.ResizeObserver = MockResizeObserver as unknown as typeof ResizeObserver;
+  const slots: Record<string, unknown> = { default: renderItem };
+
+  return mount(DataSet, {
+    props: {
+      items: patients,
+      ...props,
+    },
+    slots,
+    global: {
+      plugins: [plugin],
+    },
+  });
 }
