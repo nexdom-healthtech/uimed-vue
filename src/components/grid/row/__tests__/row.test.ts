@@ -27,10 +27,37 @@ describe("Row", () => {
     expect(wrapper.attributes("class")).not.toBeUndefined();
     expect(wrapper.attributes("class")).not.toContain(classValue);
   });
+
+  describe("props", () => {
+    describe("list", () => {
+      it("should render a div without list classes by default", () => {
+        const row = mountRow();
+        expect(row.findComponent(VRow).props("tag")).toBe("div");
+        expect(row.element.tagName).toBe("DIV");
+        expect(row.classes()).toEqual(["v-row", "v-row--density-default"]);
+      });
+
+      it("should render a list without its default spacing when true", () => {
+        const row = mountRow({ list: true });
+        expect(row.findComponent(VRow).props("tag")).toBe("ul");
+        expect(row.element.tagName).toBe("UL");
+        expect(row.classes()).toEqual(expect.arrayContaining(["v-row", "pa-0", "ma-0"]));
+      });
+
+      it("should go back to a div when false", async () => {
+        const row = mountRow({ list: true });
+        await row.setProps({ list: false });
+        expect(row.element.tagName).toBe("DIV");
+        expect(row.classes()).not.toContain("pa-0");
+        expect(row.classes()).not.toContain("ma-0");
+      });
+    });
+  });
 });
 
-function mountRow() {
+function mountRow(props: Record<string, unknown> = {}) {
   return mount(Row, {
+    props,
     attrs: {
       "data-testid": testId,
       style: styleValue,
