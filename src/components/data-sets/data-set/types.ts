@@ -1,4 +1,9 @@
 /**
+ * Number of records shown side by side on each row of a {@link DataSet}.
+ */
+export type DataSetColumns = 1 | 2 | 3 | 4 | 6;
+
+/**
  * Props exposed by the {@link DataSet} component.
  */
 export type DataSetProps<T extends object> = {
@@ -8,6 +13,19 @@ export type DataSetProps<T extends object> = {
    * @default []
    */
   items?: T[];
+
+  /**
+   * Maximum number of records shown side by side on each row of the grid.
+   * One of `1`, `2`, `3`, `4` or `6`.
+   *
+   * It's reduced to the largest of these values that keeps each record's card
+   * at least 240px wide within the data set's own width, so narrow
+   * containers, like dialogs or side panels, show fewer records per row, down
+   * to a single one. On extra small screens, each record always takes the
+   * full width.
+   * @default 3
+   */
+  columns?: DataSetColumns;
 
   /**
    * Maximum number of records shown per page. Page controls are only shown
@@ -53,7 +71,8 @@ export type DataSetProps<T extends object> = {
  */
 export type DataSetSlots<T extends object> = {
   /**
-   * Renders each record of the current page, usually with `UDataSetItem`.
+   * Renders each record of the current page in its own grid column, usually
+   * with `UDataSetItem`.
    * @param props.item The original record, from `items`.
    * @param props.index Position of the record inside the current page.
    */

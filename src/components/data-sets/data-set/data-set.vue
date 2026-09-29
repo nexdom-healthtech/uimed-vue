@@ -1,6 +1,7 @@
 <template>
-  <v-skeleton-loader :loading="props.loading" type="list-item-two-line@3" width="100%">
+  <v-skeleton-loader :loading="props.loading" type="card" width="100%">
     <v-data-iterator
+      ref="iterator"
       v-model:page="page"
       :items="props.items"
       :items-per-page="props.itemsPerPage"
@@ -13,11 +14,11 @@
       </template>
 
       <template #default="{ items: pageItems }">
-        <v-list>
-          <template v-for="(pageItem, index) in pageItems" :key="index">
+        <Row>
+          <Column v-for="(pageItem, index) in pageItems" :key="index" :cols="columnCols">
             <slot :item="pageItem.raw" :index />
-          </template>
-        </v-list>
+          </Column>
+        </Row>
       </template>
 
       <template #no-data>
@@ -38,18 +39,16 @@
 
 <script lang="ts">
 /**
- * Data set component to list records, with client-side pagination and an
- * optional search field. Each record of the current page is rendered by the
- * default slot, usually with `UDataSetItem` and `UDataSetItemTitle`.
+ * Data set component to list records as a responsive grid of cards, with
+ * client-side pagination and an optional search field. Each record of the
+ * current page is rendered by the default slot, usually with `UDataSetItem`.
  *
  * @example
  * ```vue
  * <template>
- *   <u-data-set :items="patients" searchable>
+ *   <u-data-set :items="patients" :columns="4" searchable>
  *     <template #default="{ item }">
- *       <u-data-set-item>
- *         <u-data-set-item-title :title="item.name" />
- *       </u-data-set-item>
+ *       <u-data-set-item :title="item.name" :subtitle="item.plan" />
  *     </template>
  *   </u-data-set>
  * </template>
@@ -63,22 +62,23 @@ export default {
 </script>
 
 <script setup lang="ts" generic="T extends object">
-import {
-  VDataIterator,
-  VEmptyState,
-  VList,
-  VPagination,
-  VSkeletonLoader,
-} from "vuetify/components";
+import { useTemplateRef, type ComponentPublicInstance } from "vue";
+import { VDataIterator, VEmptyState, VPagination, VSkeletonLoader } from "vuetify/components";
+import Column from "@/components/grid/column/column.vue";
+import Row from "@/components/grid/row/row.vue";
 import TextField from "@/components/inputs/text-field/text-field.vue";
 import type { DataSetProps, DataSetSlots } from "@/components/data-sets/data-set/types.ts";
 import {
   getDataSetTotalVisible,
+  useDataSetColumnCols,
   useDataSetFilterKeys,
+  useDataSetFittingColumns,
   useDataSetSearchPageReset,
+  useDataSetWidth,
 } from "@/composables/data-set/data-set.ts";
 
 const props = withDefaults(defineProps<DataSetProps<T>>(), {
+  columns: 3,
   itemsPerPage: 10,
   noDataText: "Nenhum registro encontrado.",
 });
@@ -87,6 +87,10 @@ const slots = defineSlots<DataSetSlots<T>>();
 const page = defineModel<number>("page", { default: 1 });
 const search = defineModel<string>("search", { default: "" });
 
+const iterator = useTemplateRef<ComponentPublicInstance>("iterator");
+const width = useDataSetWidth(() => iterator.value?.$el);
+const fittingColumns = useDataSetFittingColumns(() => props.columns, width);
+const columnCols = useDataSetColumnCols(fittingColumns);
 const filterKeys = useDataSetFilterKeys(() => props.searchKeys);
 useDataSetSearchPageReset(search, page);
 </script>
