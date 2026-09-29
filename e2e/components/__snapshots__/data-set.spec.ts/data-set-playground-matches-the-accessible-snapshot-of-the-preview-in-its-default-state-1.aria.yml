@@ -1,7 +1,10 @@
 - text: Pesquisar
 - textbox "Pesquisar"
 - alert
-- text: Ana Souza Plano Ouro Bruno Lima Plano Prata Carla Dias Plano Bronze
+- list:
+    - listitem: Ana Souza Plano Ouro
+    - listitem: Bruno Lima Plano Prata
+    - listitem: Carla Dias Plano Bronze
 - navigation "Pagination Navigation":
     - list:
         - listitem:

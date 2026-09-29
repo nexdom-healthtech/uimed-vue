@@ -17,6 +17,15 @@ test.describe("data-set", () => {
       await expect(dataSet.getByRole("navigation")).toHaveCount(0);
     });
 
+    test("announces the records as a list to assistive technologies", async ({ page }) => {
+      const dataSet = page.getByTestId("demo-data-set-items");
+      const listItems = dataSet.getByRole("list").getByRole("listitem");
+
+      await expect(dataSet.getByRole("list")).toHaveCount(1);
+      await expect(listItems).toHaveCount(3);
+      await expect(listItems.nth(1)).toContainText("Bruno Lima");
+    });
+
     test("shows fewer than 3 cards per row when they wouldn't be 240px wide", async ({ page }) => {
       const dataSet = page.getByTestId("demo-data-set-items");
       const cards = dataSet.getByTestId(/^demo-data-set-items-\d$/);
