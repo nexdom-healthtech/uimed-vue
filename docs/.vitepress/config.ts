@@ -178,10 +178,6 @@ export default defineConfig({
               items: [
                 { text: "UDataSet", link: "/api/components/data-sets/data-set" },
                 { text: "UDataSetItem", link: "/api/components/data-sets/data-set-item" },
-                {
-                  text: "UDataSetItemTitle",
-                  link: "/api/components/data-sets/data-set-item-title",
-                },
               ],
             },
             { text: "UDetails", link: "/api/components/details" },
