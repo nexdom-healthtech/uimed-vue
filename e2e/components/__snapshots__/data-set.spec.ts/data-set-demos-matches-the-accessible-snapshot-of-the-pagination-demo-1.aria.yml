@@ -1,0 +1,18 @@
+- list:
+    - listitem: /Ana Souza Cardiologia em \d+\/\d+\/\d+/
+    - listitem: /Bruno Lima Dermatologia em \d+\/\d+\/\d+/
+    - listitem: /Carla Dias Pediatria em \d+\/\d+\/\d+/
+    - listitem: /Daniel Rocha Ortopedia em \d+\/\d+\/\d+/
+    - listitem: /Eduarda Alves Cardiologia em \d+\/\d+\/\d+/
+- navigation "Pagination Navigation":
+    - list:
+        - listitem:
+            - button "Previous page" [disabled]
+        - listitem:
+            - button "Page 1, Current page"
+        - listitem:
+            - button "Go to page 2"
+        - listitem:
+            - button "Go to page 3"
+        - listitem:
+            - button "Next page"
