@@ -1,12 +1,19 @@
-import { VList, VListItem } from "vuetify/components";
+import { VCard } from "vuetify/components";
 import { mount } from "@vue/test-utils";
-import { h } from "vue";
 import DataSetItem from "@/components/data-sets/data-set-item/data-set-item.vue";
+import Section from "@/components/sections/section/section.vue";
+import SectionContent from "@/components/sections/section-content/section-content.vue";
+import type { SectionVariant } from "@/components/sections/section/types.ts";
 import { vueTestUtilsPluginUimed } from "@/unit-test.ts";
 
 const testId = "data-set-item-test-id";
 const styleValue = "random-style";
 const classValue = "random-class";
+
+const variants: [SectionVariant, string][] = [
+  ["primary", "elevated"],
+  ["secondary", "outlined"],
+];
 
 describe("DataSetItem", () => {
   it("should exist", () => {
@@ -16,52 +23,102 @@ describe("DataSetItem", () => {
 
   it("should contain primary component", () => {
     const wrapper = mountDataSetItem();
-    expect(findVListItem(wrapper).exists()).toBeTruthy();
+    expect(findSection(wrapper).exists()).toBeTruthy();
   });
 
   it("should not inherit unexpected attributes", () => {
     const wrapper = mountDataSetItem();
     expect(wrapper.attributes("style")).toBeUndefined();
-    expect(wrapper.attributes("class")).not.toContain(classValue);
+    expect(wrapper.attributes("class")).toBeUndefined();
+  });
+
+  it("should fill the height of its column", () => {
+    const wrapper = mountDataSetItem();
+    expect(findSection(wrapper).props("fullHeight")).toBe(true);
+    expect(findVCard(wrapper).props("height")).toBe("100%");
   });
 
   describe("props", () => {
-    describe("dataTestid", () => {
-      it("should forward to the v-list-item", () => {
+    describe("title", () => {
+      it("should forward to the section", () => {
+        const wrapper = mountDataSetItem({ title: "Ana Souza" });
+        expect(findSection(wrapper).props("title")).toBe("Ana Souza");
+        expect(findVCard(wrapper).text()).toContain("Ana Souza");
+      });
+
+      it("should be undefined by default", () => {
         const wrapper = mountDataSetItem();
-        expect(findVListItem(wrapper).attributes("data-testid")).toBe(testId);
+        expect(findSection(wrapper).props("title")).toBeUndefined();
+      });
+    });
+
+    describe("subtitle", () => {
+      it("should forward to the section", () => {
+        const wrapper = mountDataSetItem({ subtitle: "Beneficiária desde 2020" });
+        expect(findSection(wrapper).props("subtitle")).toBe("Beneficiária desde 2020");
+        expect(findVCard(wrapper).text()).toContain("Beneficiária desde 2020");
+      });
+
+      it("should be undefined by default", () => {
+        const wrapper = mountDataSetItem();
+        expect(findSection(wrapper).props("subtitle")).toBeUndefined();
+      });
+    });
+
+    describe("variant", () => {
+      it.each(variants)(
+        'should forward `variant="%s"` to the section, styled as `%s`',
+        (variant, vuetifyVariant) => {
+          const wrapper = mountDataSetItem({ variant });
+          expect(findSection(wrapper).props("variant")).toBe(variant);
+          expect(findVCard(wrapper).props("variant")).toBe(vuetifyVariant);
+        },
+      );
+
+      it("should use the section's default variant when not set", () => {
+        const wrapper = mountDataSetItem();
+        expect(findSection(wrapper).props("variant")).toBeUndefined();
+        expect(findVCard(wrapper).props("variant")).toBe("elevated");
+      });
+    });
+
+    describe("dataTestid", () => {
+      it("should forward to the section", () => {
+        const wrapper = mountDataSetItem();
+        expect(findSection(wrapper).props("dataTestid")).toBe(testId);
+        expect(findVCard(wrapper).attributes("data-testid")).toBe(testId);
       });
 
       it("should not set data-testid when undefined", () => {
         const wrapper = mountDataSetItem({ dataTestid: undefined });
-        expect(findVListItem(wrapper).attributes("data-testid")).toBeUndefined();
+        expect(findVCard(wrapper).attributes("data-testid")).toBeUndefined();
       });
     });
   });
 
   describe("slots", () => {
     describe("default", () => {
-      it("should forward the default slot content to the v-list-item", () => {
+      it("should forward the default slot content to the section content", () => {
         const wrapper = mountDataSetItem();
-        expect(findVListItem(wrapper).text()).toBe("Test Content");
+        const sectionContent = findSectionContent(wrapper);
+        expect(sectionContent.exists()).toBeTruthy();
+        expect(sectionContent.text()).toBe("Test Content");
+        expect(findSection(wrapper).findComponent(SectionContent).exists()).toBeTruthy();
       });
-    });
-  });
 
-  describe("behavior", () => {
-    it("should be announced as a list item inside a list", () => {
-      const wrapper = mount(VList, {
-        slots: { default: () => h(DataSetItem, null, () => "Test Content") },
-        global: {
-          plugins: [vueTestUtilsPluginUimed()],
-        },
+      it("should not render the section content without the default slot", () => {
+        const wrapper = mountDataSetItem({ title: "Ana Souza" }, {});
+        expect(findSectionContent(wrapper).exists()).toBeFalsy();
+        expect(findVCard(wrapper).text()).toBe("Ana Souza");
       });
-      expect(wrapper.findComponent(VListItem).attributes("role")).toBe("listitem");
     });
   });
 });
 
-function mountDataSetItem(props: Record<string, unknown> = {}) {
+function mountDataSetItem(
+  props: Record<string, unknown> = {},
+  slots: Record<string, string> = { default: "Test Content" },
+) {
   return mount(DataSetItem, {
     props: {
       dataTestid: testId,
@@ -71,15 +128,21 @@ function mountDataSetItem(props: Record<string, unknown> = {}) {
       style: styleValue,
       class: classValue,
     },
-    slots: {
-      default: "Test Content",
-    },
+    slots,
     global: {
       plugins: [vueTestUtilsPluginUimed()],
     },
   });
 }
 
-function findVListItem(wrapper: ReturnType<typeof mountDataSetItem>) {
-  return wrapper.findComponent(VListItem);
+function findSection(wrapper: ReturnType<typeof mountDataSetItem>) {
+  return wrapper.findComponent(Section);
+}
+
+function findSectionContent(wrapper: ReturnType<typeof mountDataSetItem>) {
+  return wrapper.findComponent(SectionContent);
+}
+
+function findVCard(wrapper: ReturnType<typeof mountDataSetItem>) {
+  return wrapper.findComponent(VCard);
 }
