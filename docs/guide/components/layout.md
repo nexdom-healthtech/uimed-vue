@@ -152,10 +152,54 @@ import { UContainer, UMain, URow, UColumn } from "@nexdom/uimed-vue/components";
 </script>
 ```
 
+## Linhas e colunas como lista
+
+Quando as colunas de uma linha apresentam itens de uma mesma lista, como os cartões de uma listagem de pacientes, utilize a prop `list` na `Row` e a prop `listItem` em cada uma das suas `Column`s.
+
+Assim, a linha passa a ser uma lista e as colunas, os seus itens, e as tecnologias assistivas, como leitores de tela, anunciam a quantidade de itens e a posição de cada um deles. A aparência da grade não muda: a lista não recebe recuo nem marcadores.
+
+<demo>
+<u-main>
+  <u-container>
+    <u-row list data-testid="demo-layout-list">
+      <u-column v-for="especialidade in especialidades" :key="especialidade" cols="4" list-item>
+        <div style="background: lightgreen;">
+          <p>{{ especialidade }}</p>
+        </div>
+      </u-column>
+    </u-row>
+  </u-container>
+</u-main>
+</demo>
+
+```vue
+<template>
+  <u-main>
+    <u-container>
+      <u-row list>
+        <u-column v-for="especialidade in especialidades" :key="especialidade" cols="4" list-item>
+          <div style="background: lightgreen;">
+            <p>{{ especialidade }}</p>
+          </div>
+        </u-column>
+      </u-row>
+    </u-container>
+  </u-main>
+</template>
+
+<script lang="ts" setup>
+import { UContainer, UMain, URow, UColumn } from "@nexdom/uimed-vue/components";
+
+const especialidades = ["Cardiologia", "Dermatologia", "Pediatria"];
+</script>
+```
+
 ## Ver também
 
 Consulte a referência de [API do UContainer](../../api/components/grid/container), [da URow](../../api/components/grid/row) e [da UColumn](../../api/components/grid/column) para a lista completa de props, slots e eventos.
 
 <script lang="ts" setup>
   import { UContainer, UMain, URow, UColumn } from "../../../dist/components.js"
+
+  const especialidades = ["Cardiologia", "Dermatologia", "Pediatria"];
 </script>

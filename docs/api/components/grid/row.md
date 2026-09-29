@@ -6,9 +6,10 @@ Deve ser colocado exclusivamente dentro de [componentes de container](./containe
 
 ## Props
 
-| Prop         | Tipo     | Padrão | Descrição                                                     |
-| ------------ | -------- | ------ | ------------------------------------------------------------- |
-| `dataTestid` | `string` |        | Aplica atributo `data-testid` para testes sobre o componente. |
+| Prop         | Tipo      | Padrão  | Descrição                                                                                                                                                                                                                                            |
+| ------------ | --------- | ------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `list`       | `boolean` | `false` | Apresenta a linha como uma lista, sem recuo nem marcadores, para que tecnologias assistivas anunciem as suas colunas como itens. Utilize-a quando as colunas forem itens de uma mesma lista, junto da prop `listItem` em cada [`UColumn`](./column). |
+| `dataTestid` | `string`  |         | Aplica atributo `data-testid` para testes sobre o componente.                                                                                                                                                                                        |
 
 ## Slots
 

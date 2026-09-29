@@ -6,10 +6,11 @@ Deve ser colocado exclusivamente dentro de [componentes de linha](./row).
 
 ## Props
 
-| Prop         | Tipo                                                                                                                    | Padrão | Descrição                                                                                                                                        |
-| ------------ | ----------------------------------------------------------------------------------------------------------------------- | ------ | ------------------------------------------------------------------------------------------------------------------------------------------------ |
-| `cols`       | `"auto"` \| `"1"` \| `"2"` \| `"3"` \| `"4"` \| `"5"` \| `"6"` \| `"7"` \| `"8"` \| `"9"` \| `"10"` \| `"11"` \| `"12"` | `"12"` | Número de colunas para esticar o componente, sendo `1` o tamanho mínimo, `12` o tamanho máximo e `auto` a única opção que não tentará esticá-lo. |
-| `dataTestid` | `string`                                                                                                                |        | Aplica atributo `data-testid` para testes sobre o componente.                                                                                    |
+| Prop         | Tipo                                                                                                                    | Padrão  | Descrição                                                                                                                                        |
+| ------------ | ----------------------------------------------------------------------------------------------------------------------- | ------- | ------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `cols`       | `"auto"` \| `"1"` \| `"2"` \| `"3"` \| `"4"` \| `"5"` \| `"6"` \| `"7"` \| `"8"` \| `"9"` \| `"10"` \| `"11"` \| `"12"` | `"12"`  | Número de colunas para esticar o componente, sendo `1` o tamanho mínimo, `12` o tamanho máximo e `auto` a única opção que não tentará esticá-lo. |
+| `listItem`   | `boolean`                                                                                                               | `false` | Apresenta a coluna como um item de lista, sem marcador. Utilize-a em cada coluna de uma [`URow`](./row) com a prop `list`.                       |
+| `dataTestid` | `string`                                                                                                                |         | Aplica atributo `data-testid` para testes sobre o componente.                                                                                    |
 
 ## Slots
 
