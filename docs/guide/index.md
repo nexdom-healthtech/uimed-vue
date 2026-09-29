@@ -42,9 +42,10 @@ São funções que possibilitam a reutilização de recursos entre diversos comp
 
 As composables a seguir possuem exemplos práticos de utilização dentro desta documentação.
 
-| Recurso                                      | Descrição                                                                          |
-| -------------------------------------------- | ---------------------------------------------------------------------------------- |
-| [Toasts](./composables/use-toast)            | Composables para apresentar mensagens `toast`.                                     |
-| [RunOrToast](./composables/use-run-or-toast) | Composables para executar métodos e apresentar mensagens `toast` em caso de falha. |
-| [Diálogos](./composables/use-dialog)         | Composables para apresentar diálogos.                                              |
-| [Confirmações](./composables/use-confirm)    | Composables para executar ações após a confirmação do usuário.                     |
+| Recurso                                                    | Descrição                                                                          |
+| ---------------------------------------------------------- | ---------------------------------------------------------------------------------- |
+| [Toasts](./composables/use-toast)                          | Composables para apresentar mensagens `toast`.                                     |
+| [RunOrToast](./composables/use-run-or-toast)               | Composables para executar métodos e apresentar mensagens `toast` em caso de falha. |
+| [Diálogos](./composables/use-dialog)                       | Composables para apresentar diálogos.                                              |
+| [Confirmações](./composables/use-confirm)                  | Composables para executar ações após a confirmação do usuário.                     |
+| [Alterações não salvas](./composables/use-unsaved-changes) | Composables para evitar a perda de alterações não salvas ao sair da página.        |

@@ -11,5 +11,6 @@ describe("composables", () => {
     expect(composables.useRunOrToast).not.toBeUndefined();
     expect(composables.useDialog).not.toBeUndefined();
     expect(composables.useConfirm).not.toBeUndefined();
+    expect(composables.useUnsavedChanges).not.toBeUndefined();
   });
 });

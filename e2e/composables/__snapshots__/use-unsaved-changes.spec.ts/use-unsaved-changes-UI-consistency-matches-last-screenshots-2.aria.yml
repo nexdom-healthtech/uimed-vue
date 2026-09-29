@@ -1,0 +1,4 @@
+- alertdialog "Alterações não salvas":
+    - text: Alterações não salvas Existem alterações que ainda não foram salvas. Deseja sair sem salvar?
+    - button "Continuar editando"
+    - button "Sair sem salvar"
