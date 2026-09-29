@@ -1,5 +1,5 @@
 <template>
-  <v-col cols="12" :sm="props.cols" :data-testid="props.dataTestid">
+  <v-col cols="12" :sm="props.cols" :tag :class="listItemClasses" :data-testid="props.dataTestid">
     <slot />
   </v-col>
 </template>
@@ -29,10 +29,14 @@ export default {
 </script>
 
 <script setup lang="ts">
+import { computed } from "vue";
 import { type ColumnProps } from "@/components/grid/column/types.ts";
 import { VCol } from "vuetify/components";
 
 const props = withDefaults(defineProps<ColumnProps>(), {
   cols: "12",
 });
+
+const tag = computed(() => (props.listItem ? "li" : undefined));
+const listItemClasses = computed(() => (props.listItem ? "d-block" : undefined));
 </script>
