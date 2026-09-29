@@ -1,5 +1,5 @@
 <template>
-  <v-row :data-testid="props.dataTestid">
+  <v-row :tag :class="listClasses" :data-testid="props.dataTestid">
     <slot />
   </v-row>
 </template>
@@ -27,8 +27,12 @@ export default {
 </script>
 
 <script setup lang="ts">
+import { computed } from "vue";
 import { type RowProps } from "@/components/grid/row/types.ts";
 import { VRow } from "vuetify/components";
 
 const props = defineProps<RowProps>();
+
+const tag = computed(() => (props.list ? "ul" : undefined));
+const listClasses = computed(() => (props.list ? "pa-0 ma-0" : undefined));
 </script>

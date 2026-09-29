@@ -12,6 +12,14 @@ export type ColumnProps = {
   cols?: Cols;
 
   /**
+   * Renders the column as an item of a list (`<li>`), without its bullet.
+   * Use it on every column of a `URow` with `list`, whose records are,
+   * semantically, the items of a list.
+   * @default false
+   */
+  listItem?: boolean;
+
+  /**
    * Component id to use on automated tests.
    */
   dataTestid?: string;
