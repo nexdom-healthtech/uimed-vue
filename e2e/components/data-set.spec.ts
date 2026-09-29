@@ -26,6 +26,34 @@ test.describe("data-set", () => {
       await expect(listItems.nth(1)).toContainText("Bruno Lima");
     });
 
+    test("uses a native list without bullets for the records", async ({ page }) => {
+      const dataSet = page.getByTestId("demo-data-set-items");
+      const list = dataSet.locator("ul");
+      const listItems = list.locator(":scope > li");
+
+      await expect(list).toHaveCount(1);
+      await expect(listItems).toHaveCount(3);
+      await expect(dataSet.locator('[role="list"], [role="listitem"]')).toHaveCount(0);
+      await expect(list).toHaveCSS("padding-left", "0px");
+      await expect(list).toHaveCSS("margin-top", "0px");
+      for (const listItem of await listItems.all()) {
+        await expect(listItem).toHaveCSS("display", "block");
+      }
+    });
+
+    test("stretches each card to the height of its list item", async ({ page }) => {
+      const listItems = page.getByTestId("demo-data-set-fields").locator("ul > li");
+      await expect(listItems).toHaveCount(4);
+
+      for (const listItem of await listItems.all()) {
+        const [itemBox, cardBox] = await Promise.all([
+          listItem.boundingBox(),
+          listItem.getByTestId(/^demo-data-set-fields-item-\d$/).boundingBox(),
+        ]);
+        expect(cardBox?.height).toBe(itemBox?.height);
+      }
+    });
+
     test("shows fewer than 3 cards per row when they wouldn't be 240px wide", async ({ page }) => {
       const dataSet = page.getByTestId("demo-data-set-items");
       const cards = dataSet.getByTestId(/^demo-data-set-items-\d$/);
