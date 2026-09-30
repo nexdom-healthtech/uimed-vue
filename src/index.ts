@@ -16,8 +16,8 @@ export function createUimed(): Plugin {
         light: {
           dark: false,
           colors: {
-            background: "#FCFCFD",
-            surface: "#C0C9C0",
+            background: "#EAEDF0",
+            surface: "#FCFCFD",
             primary: "#00995D",
             secondary: "#FCFCFD",
             success: "#A9EFC5",
@@ -26,7 +26,7 @@ export function createUimed(): Plugin {
             info: "#9ACBE5",
           },
           variables: {
-            "border-color": "#FCFCFD",
+            "border-color": "#D0D5DD",
           },
         },
       },
