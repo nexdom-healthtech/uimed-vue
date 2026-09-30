@@ -20,10 +20,10 @@ Inclui suporte para ações sobre esses conteúdos, como botões para salvar, et
 
 Estende [`UButtonProps`](../button#props) com as seguintes propriedades adicionais:
 
-| Prop      | Tipo              | Descrição                                 |
-| --------- | ----------------- | ----------------------------------------- |
-| `label`   | `string`          | Texto exibido no botão de ação.           |
-| `onClick` | `(event) => void` | Chamado quando o botão de ação é clicado. |
+| Prop      | Tipo              | Descrição                                                                                             |
+| --------- | ----------------- | ----------------------------------------------------------------------------------------------------- |
+| `label`   | `string`          | Texto exibido no botão de ação.                                                                       |
+| `onClick` | `(event) => void` | Chamado quando o botão de ação é clicado. Não é chamado enquanto a ação está `disabled` ou `loading`. |
 
 ## Slots
 

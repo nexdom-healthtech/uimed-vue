@@ -83,19 +83,34 @@ import { UButton } from "@nexdom/uimed-vue/components";
 
 #### Carregamento
 
-A prop `loading` exibe um indicador de carregamento e desabilita a interação com o botão enquanto ativa.
+A prop `loading` exibe um indicador de carregamento e bloqueia o botão enquanto ativa: cliques, ativação pelo teclado e o envio do formulário do botão (inclusive ao pressionar `Enter` em um dos campos do formulário) são ignorados, e o evento `click` não é disparado. Veja também o [envio com carregamento](./form#envio-com-carregamento) de formulários.
 
-<demo>
-<u-button loading>Carregando</u-button>
+Clique no botão abaixo para simular uma ação de 1,5 segundo. Novos cliques são ignorados enquanto ela é executada.
+
+<demo data-testid="demo-loading" items-center>
+<u-button :loading="isSaving" data-testid="btn-demo-loading" @click="onSave">Salvar</u-button>
+<span data-testid="btn-demo-loading-count">{{ saves }} salvamento(s)</span>
 </demo>
 
 ```vue
 <template>
-  <u-button loading>Carregando</u-button>
+  <u-button :loading="isSaving" @click="onSave">Salvar</u-button>
+  <span>{{ saves }} salvamento(s)</span>
 </template>
 
 <script lang="ts" setup>
+import { ref } from "vue";
 import { UButton } from "@nexdom/uimed-vue/components";
+
+const saves = ref(0);
+const isSaving = ref(false);
+
+async function onSave() {
+  saves.value++;
+  isSaving.value = true;
+  await new Promise((resolve) => setTimeout(resolve, 1500));
+  isSaving.value = false;
+}
 </script>
 ```
 
@@ -103,7 +118,7 @@ import { UButton } from "@nexdom/uimed-vue/components";
 
 ### Clique
 
-O evento `click` é emitido ao clicar no botão, repassando o `MouseEvent` nativo. Ele não é disparado quando o botão está `disabled`.
+O evento `click` é emitido ao clicar no botão, repassando o `MouseEvent` nativo. Ele não é disparado quando o botão está `disabled` ou `loading`.
 
 <demo data-testid="demo-click-event" items-center>
 <u-button data-testid="btn-demo-click" @click="onClick">Me clique</u-button>
@@ -150,6 +165,16 @@ import type { ComponentProps } from "vue-component-type-helpers";
 
   function onClick() {
     clicks.value++
+  }
+
+  const saves = ref(0);
+  const isSaving = ref(false);
+
+  async function onSave() {
+    saves.value++;
+    isSaving.value = true;
+    await new Promise((resolve) => setTimeout(resolve, 1500));
+    isSaving.value = false;
   }
 
 type Props = ComponentProps<typeof UButton>;

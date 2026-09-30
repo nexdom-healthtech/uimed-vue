@@ -11,9 +11,9 @@ Componente para utilização de formulários.
 
 ## Eventos
 
-| Evento   | Retorno                                                                       | Descrição                                                                                                                                                                                       |
-| -------- | ----------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `submit` | [`SubmitEvent`](https://developer.mozilla.org/en-US/docs/Web/API/SubmitEvent) | Disparado quando o formulário é submetido sem pendências de validação. O evento nativo já vem com o [`defaultPrevented`](https://developer.mozilla.org/en-US/docs/Web/API/Event/preventDefault) |
+| Evento   | Retorno                                                                       | Descrição                                                                                                                                                                                                                                                                                                                                    |
+| -------- | ----------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `submit` | [`SubmitEvent`](https://developer.mozilla.org/en-US/docs/Web/API/SubmitEvent) | Disparado quando o formulário é submetido sem pendências de validação. O evento nativo já vem com o [`defaultPrevented`](https://developer.mozilla.org/en-US/docs/Web/API/Event/preventDefault). Não é disparado enquanto um dos botões de envio do formulário, inclusive os de fora dele relacionados pela prop `form`, está com `loading`. |
 
 ## Slots
 
