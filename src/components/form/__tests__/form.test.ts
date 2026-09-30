@@ -2,7 +2,9 @@ import { VForm } from "vuetify/components";
 import { h, type VNode } from "vue";
 import Form from "@/components/form/form.vue";
 import TextField from "@/components/inputs/text-field/text-field.vue";
-import { flushPromises, mount } from "@vue/test-utils";
+import Button from "@/components/button/button.vue";
+import { flushPromises, mount, type VueWrapper } from "@vue/test-utils";
+import type { ComponentProps } from "vue-component-type-helpers";
 import { vueTestUtilsPluginUimed } from "@/unit-test.ts";
 
 const testId = "form-test-component";
@@ -70,11 +72,117 @@ describe("Form", () => {
         expect(textField.props("required")).toBe(true);
         expect(onSubmit).not.toHaveBeenCalled();
       });
+
+      describe("with loading buttons", () => {
+        afterEach(() => {
+          attachedWrappers.splice(0).forEach((wrapper) => wrapper.unmount());
+          document.body.innerHTML = "";
+        });
+
+        it("shouldn't call the `onSubmit` handler while a submit button inside it is loading", async () => {
+          const onSubmit = vi.fn();
+          const wrapper = mountForm(
+            { default: () => [h(TextField), h(Button, { type: "submit", loading: true })] },
+            { onSubmit },
+          );
+
+          await submit(wrapper);
+
+          expect(onSubmit).not.toHaveBeenCalled();
+        });
+
+        it("shouldn't call the `onSubmit` handler while a submit button linked by `form` is loading", async () => {
+          const onSubmit = vi.fn();
+          const wrapper = mountWithOutsideButtons([{ type: "submit", loading: true }], onSubmit);
+
+          await submit(wrapper);
+
+          expect(onSubmit).not.toHaveBeenCalled();
+        });
+
+        it("shouldn't call the `onSubmit` handler when another submit button is clicked while one is loading", async () => {
+          const onSubmit = vi.fn();
+          const wrapper = mountWithOutsideButtons(
+            [{ type: "submit", loading: true }, { type: "submit" }],
+            onSubmit,
+          );
+
+          wrapper.findAll("button")[1]?.element.click();
+          await flushPromises();
+
+          expect(onSubmit).not.toHaveBeenCalled();
+        });
+
+        it("should call the `onSubmit` handler when the loading button isn't a submit button", async () => {
+          const onSubmit = vi.fn();
+          const wrapper = mountWithOutsideButtons(
+            [{ type: "button", loading: true }, { type: "submit" }],
+            onSubmit,
+          );
+
+          wrapper.findAll("button")[1]?.element.click();
+          await flushPromises();
+
+          expect(onSubmit).toHaveBeenCalledOnce();
+        });
+
+        it("should call the `onSubmit` handler when another submit button is disabled but not loading", async () => {
+          const onSubmit = vi.fn();
+          const wrapper = mountWithOutsideButtons(
+            [{ type: "submit", disabled: true }, { type: "submit" }],
+            onSubmit,
+          );
+
+          wrapper.findAll("button")[1]?.element.click();
+          await flushPromises();
+
+          expect(onSubmit).toHaveBeenCalledOnce();
+        });
+
+        it("should call the `onSubmit` handler when no submit button is loading", async () => {
+          const onSubmit = vi.fn();
+          const wrapper = mountForm(
+            { default: () => [h(TextField), h(Button, { type: "submit" })] },
+            { onSubmit },
+          );
+
+          await submit(wrapper);
+
+          expect(onSubmit).toHaveBeenCalledOnce();
+        });
+      });
     });
   });
 });
 
-function mountForm(slots: Record<string, () => VNode> = {}, attrs: Record<string, unknown> = {}) {
+const formId = "form-id";
+const attachedWrappers: VueWrapper[] = [];
+
+/** Mounts a form along with buttons outside it, linked to it by `form`. */
+function mountWithOutsideButtons(
+  buttons: Array<ComponentProps<typeof Button>>,
+  onSubmit: (event: SubmitEvent) => void,
+) {
+  const wrapper = mount(
+    () => [
+      h(Form, { id: formId, onSubmit }, () => h(TextField)),
+      ...buttons.map((props) => h(Button, { ...props, form: formId })),
+    ],
+    { attachTo: document.body, global: { plugins: [vueTestUtilsPluginUimed()] } },
+  );
+  attachedWrappers.push(wrapper);
+  return wrapper;
+}
+
+async function submit(wrapper: VueWrapper) {
+  await wrapper.find("form").trigger("submit");
+  await flushPromises();
+}
+
+function mountForm(
+  slots: Record<string, () => VNode | VNode[]> = {},
+  attrs: Record<string, unknown> = {},
+) {
   return mount(Form, {
     attrs: {
       "data-testid": testId,
