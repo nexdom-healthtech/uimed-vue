@@ -2,6 +2,7 @@
   <v-btn
     :disabled="props.disabled"
     :loading="props.loading"
+    :aria-disabled="ariaDisabled"
     :data-testid="props.dataTestid"
     :variant
     :color
@@ -34,6 +35,7 @@ export default {
 </script>
 
 <script setup lang="ts">
+import { computed } from "vue";
 import { VBtn } from "vuetify/components";
 import type { ButtonProps, ButtonEmits } from "@/components/button/types.ts";
 import { useButtonForm, useButtonType, useButtonVariant } from "@/composables/button/button.ts";
@@ -46,8 +48,13 @@ const variant = useButtonVariant(() => props.variant);
 const color = useVuetifyColor(() => props.color);
 const type = useButtonType(() => props.type);
 const form = useButtonForm(() => props.form);
+// Only set while loading, which `Form` relies on to ignore submits
+const ariaDisabled = computed(() => props.loading || undefined);
 
 function onClick(event: MouseEvent) {
-  emit("click", event);
+  // Canceling the click keeps the browser from submitting the button's form, including through
+  // the click it fires on the form's submit button when `Enter` is pressed in one of its fields
+  if (props.loading) event.preventDefault();
+  else emit("click", event);
 }
 </script>

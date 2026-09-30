@@ -1,5 +1,5 @@
 import { VBtn } from "vuetify/components";
-import { mount } from "@vue/test-utils";
+import { mount, type VueWrapper } from "@vue/test-utils";
 import Button from "@/components/button/button.vue";
 import type { ButtonVariant } from "@/components/button/types.ts";
 import { vueTestUtilsPluginUimed } from "@/unit-test.ts";
@@ -124,6 +124,59 @@ describe("Button", () => {
         expect(vBtn.props("loading")).toBe(false);
       });
     });
+
+    describe("loading", () => {
+      it("should mark the button as `aria-disabled` only while loading", async () => {
+        const wrapper = mountButton();
+        expect(wrapper.attributes("aria-disabled")).toBeUndefined();
+
+        await wrapper.setProps({ loading: true });
+        expect(wrapper.attributes("aria-disabled")).toBe("true");
+        expect(wrapper.attributes("disabled")).toBeUndefined();
+
+        await wrapper.setProps({ loading: false });
+        expect(wrapper.attributes("aria-disabled")).toBeUndefined();
+      });
+
+      it.each(["submit", "button"] as const)(
+        'should cancel the clicks of a `type="%s"` button while loading',
+        async (type) => {
+          const wrapper = mountButton();
+          await wrapper.setProps({ type, loading: true });
+
+          expect(clickNatively(wrapper)).toBe(false);
+
+          await wrapper.setProps({ loading: false });
+          expect(clickNatively(wrapper)).toBe(true);
+        },
+      );
+
+      it("should not submit its form while loading", async () => {
+        const form = createForm();
+        const wrapper = mountButton({}, {}, form);
+        await wrapper.setProps({ type: "submit", loading: true });
+
+        wrapper.element.click();
+        expect(form.onsubmit).not.toHaveBeenCalled();
+
+        await wrapper.setProps({ loading: false });
+        wrapper.element.click();
+        expect(form.onsubmit).toHaveBeenCalledOnce();
+      });
+
+      it("should not submit the form it's linked to by `form` while loading", async () => {
+        const form = createForm();
+        const wrapper = mountButton({}, {}, document.body);
+        await wrapper.setProps({ type: "submit", form: form.id, loading: true });
+
+        wrapper.element.click();
+        expect(form.onsubmit).not.toHaveBeenCalled();
+
+        await wrapper.setProps({ loading: false });
+        wrapper.element.click();
+        expect(form.onsubmit).toHaveBeenCalledOnce();
+      });
+    });
   });
 
   describe("slots", () => {
@@ -160,12 +213,45 @@ describe("Button", () => {
 
         expect(onClick).not.toHaveBeenCalled();
       });
+
+      it("should not call the `onClick` handler when the button is loading", async () => {
+        const onClick = vi.fn();
+        const wrapper = mountButton({}, { onClick });
+
+        await wrapper.setProps({ loading: true });
+        await wrapper.trigger("click");
+
+        expect(onClick).not.toHaveBeenCalled();
+        expect(wrapper.emitted("click")).toBeUndefined();
+      });
+
+      it("should emit the native, not canceled, event when the button isn't loading", async () => {
+        const wrapper = mountButton();
+
+        expect(clickNatively(wrapper)).toBe(true);
+
+        const [[event]] = wrapper.emitted<[MouseEvent]>("click") ?? [];
+        expect(event).toBeInstanceOf(MouseEvent);
+        expect(event?.defaultPrevented).toBe(false);
+      });
     });
   });
 });
 
-function mountButton(slots: Record<string, string> = {}, attrs: Record<string, unknown> = {}) {
-  return mount(Button, {
+const attachedWrappers: VueWrapper[] = [];
+
+afterEach(() => {
+  attachedWrappers.splice(0).forEach((wrapper) => wrapper.unmount());
+  document.body.innerHTML = "";
+});
+
+function mountButton(
+  slots: Record<string, string> = {},
+  attrs: Record<string, unknown> = {},
+  attachTo?: HTMLElement,
+) {
+  const wrapper = mount(Button, {
+    attachTo,
     attrs: {
       "data-testid": testId,
       style: styleValue,
@@ -177,8 +263,24 @@ function mountButton(slots: Record<string, string> = {}, attrs: Record<string, u
       plugins: [vueTestUtilsPluginUimed()],
     },
   });
+  if (attachTo) attachedWrappers.push(wrapper);
+  return wrapper;
 }
 
 function findVBtn(wrapper: ReturnType<typeof mountButton>) {
   return wrapper.findComponent(VBtn);
+}
+
+/** Dispatches a cancelable click on the button, returning whether it wasn't canceled. */
+function clickNatively(wrapper: ReturnType<typeof mountButton>) {
+  return wrapper.element.dispatchEvent(new MouseEvent("click", { cancelable: true }));
+}
+
+/** Creates a form in the document, with a spy that prevents its submissions. */
+function createForm() {
+  const form = document.createElement("form");
+  form.id = "form-id";
+  form.onsubmit = vi.fn((event: SubmitEvent) => event.preventDefault());
+  document.body.append(form);
+  return form;
 }

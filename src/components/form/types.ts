@@ -18,7 +18,8 @@ export type FormProps = {
  */
 export type FormEmits =
   /**
-   * Emitted when the form is submitted.
+   * Emitted when the form is submitted. Not emitted while one of the form's submit buttons,
+   * including the ones outside it linked by `form`, is `loading`.
    * @param {SubmitEvent} event - The native `SubmitEvent` object associated with the form, **already default prevented**.
    * @returns void
    */
