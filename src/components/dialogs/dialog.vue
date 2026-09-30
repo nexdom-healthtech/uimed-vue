@@ -101,8 +101,6 @@ function showNext() {
 }
 
 async function select(current: DialogRequest, action?: DialogRequestAction) {
-  if (isRunning.value) return;
-
   requests.value.shift();
   selected.value = action;
   await current.select(action?.value);
