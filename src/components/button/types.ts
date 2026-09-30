@@ -34,7 +34,9 @@ export type ButtonProps = {
   disabled?: boolean;
 
   /**
-   * Displays a loading indicator on the button, disabling interaction.
+   * Displays a loading indicator on the button and blocks it while active: clicks, keyboard
+   * activation and the submission of its form (including the implicit submission triggered by
+   * pressing `Enter` in one of the form's fields) are ignored, and `click` isn't emitted.
    * @default false
    */
   loading?: boolean;
@@ -55,7 +57,7 @@ export type ButtonProps = {
  */
 export type ButtonEmits =
   /**
-   * Emitted when the button is clicked.
+   * Emitted when the button is clicked. Not emitted while the button is `disabled` or `loading`.
    * @param {MouseEvent} event - The native `MouseEvent` object associated with the click.
    * @returns void
    */
