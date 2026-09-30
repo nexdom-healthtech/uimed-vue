@@ -27,6 +27,10 @@ describe("NavigationMenu", () => {
     expect(vNavigationDrawer.props("absolute")).toBeTruthy();
   });
 
+  it("should use the primary color", () => {
+    expect(findVNavigationDrawer(wrapper).props("color")).toBe("primary");
+  });
+
   it('should inherit "data-testid" attribute', () => {
     expect(wrapper.attributes("data-testid")).toBe(testId);
   });
@@ -315,7 +319,7 @@ function mountNavigationMenu() {
     global: {
       stubs: {
         VNavigationDrawer: {
-          props: { modelValue: String, temporary: Boolean, absolute: Boolean },
+          props: { modelValue: String, color: String, temporary: Boolean, absolute: Boolean },
           emits: ["update:modelValue"],
           template: `
             <div v-bind="{ 'data-testid': $attrs['data-testid'] }">

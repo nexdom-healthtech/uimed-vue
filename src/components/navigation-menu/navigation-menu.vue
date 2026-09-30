@@ -1,5 +1,11 @@
 <template>
-  <v-navigation-drawer v-model="open" :data-testid="props.dataTestid" absolute temporary>
+  <v-navigation-drawer
+    v-model="open"
+    color="primary"
+    :data-testid="props.dataTestid"
+    absolute
+    temporary
+  >
     <template #prepend>
       <div class="px-4 pt-2">
         <text-field v-model="search" type="search" label="Buscar" :data-testid="searchDataTestid" />
