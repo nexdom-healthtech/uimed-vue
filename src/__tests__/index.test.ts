@@ -4,8 +4,8 @@ import { createVuetify, type ThemeDefinition } from "vuetify";
 const light: ThemeDefinition = {
   dark: false,
   colors: {
-    background: "#FCFCFD",
-    surface: "#C0C9C0",
+    background: "#EAEDF0",
+    surface: "#FCFCFD",
     primary: "#00995D",
     secondary: "#FCFCFD",
     success: "#A9EFC5",
@@ -14,7 +14,7 @@ const light: ThemeDefinition = {
     info: "#9ACBE5",
   },
   variables: {
-    "border-color": "#FCFCFD",
+    "border-color": "#D0D5DD",
   },
 };
 
