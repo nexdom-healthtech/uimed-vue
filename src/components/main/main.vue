@@ -11,6 +11,7 @@
       v-if="props.navigationMenu"
       v-bind="props.navigationMenu"
       v-model="navigationMenuOpen"
+      :loading="props.loading"
     />
 
     <v-main>
@@ -57,7 +58,12 @@ import { computed, ref } from "vue";
 const props = defineProps<MainProps>();
 const appBarProps = computed(() =>
   props.appBar
-    ? { ...props.appBar, logo: props.logo, navigation: props.navigationMenu !== undefined }
+    ? {
+        ...props.appBar,
+        logo: props.logo,
+        navigation: props.navigationMenu !== undefined,
+        loading: props.loading,
+      }
     : undefined,
 );
 

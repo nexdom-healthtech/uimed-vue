@@ -1,4 +1,4 @@
-import { VNavigationDrawer, VListItem, VListGroup } from "vuetify/components";
+import { VNavigationDrawer, VListItem, VListGroup, VSkeletonLoader } from "vuetify/components";
 import NavigationMenu from "@/components/navigation-menu/navigation-menu.vue";
 import TextField from "@/components/inputs/text-field/text-field.vue";
 import { mount } from "@vue/test-utils";
@@ -202,6 +202,58 @@ describe("NavigationMenu", () => {
       });
     });
 
+    describe("loading", () => {
+      it("should render the items instead of the skeleton loader by default", async () => {
+        await wrapper.setProps({ items });
+
+        const vSkeletonLoader = findVSkeletonLoader(wrapper);
+        expect(vSkeletonLoader.props("loading")).toBe(false);
+        expect(vSkeletonLoader.find(".v-skeleton-loader").exists()).toBeFalsy();
+        expect(findVListItems(wrapper)).toHaveLength(items.length);
+      });
+
+      it("should show list item skeletons in place of the items while loading", async () => {
+        await wrapper.setProps({ items, loading: true });
+
+        const vSkeletonLoader = findVSkeletonLoader(wrapper);
+        expect(vSkeletonLoader.props("loading")).toBe(true);
+        expect(vSkeletonLoader.props("type")).toBe("list-item@6");
+        expect(vSkeletonLoader.findAll(".v-skeleton-loader__list-item")).toHaveLength(6);
+        expect(findVListItems(wrapper)).toHaveLength(0);
+      });
+
+      it("should disable the search field only while loading", async () => {
+        expect(findTextField(wrapper).props("disabled")).toBe(false);
+
+        await wrapper.setProps({ loading: true });
+        expect(findTextField(wrapper).props("disabled")).toBe(true);
+      });
+
+      it("should keep the search and show the filtered items when loading ends", async () => {
+        await wrapper.setProps({ items });
+        await findTextField(wrapper).setValue(thirdItem.description);
+
+        await wrapper.setProps({ loading: true });
+        expect(findTextField(wrapper).props("modelValue")).toBe(thirdItem.description);
+
+        await wrapper.setProps({ loading: false });
+
+        const vListItems = findVListItems(wrapper);
+        expect(vListItems).toHaveLength(1);
+        expect(vListItems[0].props("title")).toBe(thirdItem.description);
+      });
+
+      it("should mark the navigation drawer as busy only while loading", async () => {
+        expect(wrapper.attributes("aria-busy")).toBeUndefined();
+
+        await wrapper.setProps({ loading: true });
+        expect(wrapper.attributes("aria-busy")).toBe("true");
+
+        await wrapper.setProps({ loading: false });
+        expect(wrapper.attributes("aria-busy")).toBeUndefined();
+      });
+    });
+
     describe("search", () => {
       it("should render the search field", () => {
         const textField = findTextField(wrapper);
@@ -344,6 +396,10 @@ function findTextField(wrapper: ReturnType<typeof mountNavigationMenu>) {
 
 function findVListItems(wrapper: ReturnType<typeof mountNavigationMenu>) {
   return wrapper.findAllComponents(VListItem);
+}
+
+function findVSkeletonLoader(wrapper: ReturnType<typeof mountNavigationMenu>) {
+  return wrapper.findComponent(VSkeletonLoader);
 }
 
 function findVListGroups(wrapper: ReturnType<typeof mountNavigationMenu>) {

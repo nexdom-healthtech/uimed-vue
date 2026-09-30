@@ -199,6 +199,62 @@ const navigationMenu: NonNullable<MainProps["navigationMenu"]> = {
 </script>
 ```
 
+### Carregamento
+
+A prop `loading` exibe skeletons no lugar das ações do menu superior (ajuda, notificações e usuário) e dos itens do menu de navegação, enquanto os dados do usuário e as opções de menu são carregados.
+
+O botão do menu de navegação, a logo e o título continuam visíveis. O menu de navegação continua abrindo normalmente, com a busca desabilitada, e ao final do carregamento os itens aparecem já filtrados pelo texto buscado. Se o menu de notificações estiver aberto quando o carregamento começar, ele é fechado.
+
+O conteúdo da página não é afetado: nele, utilize a prop `loading` dos próprios componentes, como o [Section](./section).
+
+<demo contained data-testid="demo-root-loading">
+<u-main :appBar="loadingAppBar" :navigationMenu="loadingNavigationMenu" loading data-testid="root-demo-loading">
+  <h2>O conteúdo da página vai aqui...</h2>
+</u-main>
+</demo>
+
+```vue
+<template>
+  <u-main :appBar :navigationMenu :loading>
+    <h2>O conteúdo da página vai aqui...</h2>
+  </u-main>
+</template>
+
+<script lang="ts" setup>
+import { ref } from "vue";
+import type { ComponentProps } from "vue-component-type-helpers";
+import { UMain } from "@nexdom/uimed-vue/components";
+
+type MainProps = ComponentProps<typeof UMain>;
+
+// Altere para `false` quando os dados do usuário e do menu forem carregados
+const loading = ref(true);
+
+const appBar: NonNullable<MainProps["appBar"]> = {
+  title: "Menu superior",
+  help: "https://www.google.com",
+  notifications: [],
+  user: {
+    title: "Rafael Perini",
+    subtitle: "UIMed-Vue Co-Creator",
+  },
+};
+
+const navigationMenu: NonNullable<MainProps["navigationMenu"]> = {
+  items: [
+    {
+      description: "Início",
+      route: "/",
+    },
+    {
+      description: "Configurações",
+      action: () => window.alert("Abrindo configurações..."),
+    },
+  ],
+};
+</script>
+```
+
 ## Eventos
 
 ### Notificações
@@ -246,7 +302,7 @@ Experimente as combinações de props do componente.
 
 <playground v-model:actions="playgroundActions">
 <demo contained>
-<u-main :app-bar="playgroundAppBar" :navigationMenu="playgroundActions.showNavigationMenu.value ? playgroundNavigationMenu : undefined" data-testid="root-preview">
+<u-main :app-bar="playgroundAppBar" :navigationMenu="playgroundActions.showNavigationMenu.value ? playgroundNavigationMenu : undefined" :loading="playgroundActions.loading.value" data-testid="root-preview">
   <h2>O conteúdo da página vai aqui...</h2>
 </u-main>
 </demo>
@@ -414,6 +470,12 @@ Consulte a referência de [API do UMain](../../api/components/main) para a lista
       label: "Exibir menu de navegação",
       dataTestid: "root-playground-show-navigation-menu"
     },
+    loading: {
+      type: "checkbox",
+      value: false,
+      label: "Carregando",
+      dataTestid: "root-playground-loading"
+    },
   });
 
   const playgroundNotifications = ref<NonNullable<NonNullable<MainProps["appBar"]>["notifications"]>>([]);
@@ -461,4 +523,29 @@ Consulte a referência de [API do UMain](../../api/components/main) para a lista
     title: "Menu superior",
     dataTestid: "demo-root-navigation-toggle-app-bar",
   });
+
+  const loadingAppBar: NonNullable<MainProps["appBar"]> = {
+    title: "Menu superior",
+    help: "https://www.google.com",
+    dataTestid: "demo-root-loading-app-bar",
+    notifications: [],
+    user: {
+      title: "Rafael Perini",
+      subtitle: "UIMed-Vue Co-Creator",
+    },
+  };
+
+  const loadingNavigationMenu: NonNullable<MainProps["navigationMenu"]> = {
+    dataTestid: "demo-root-loading-navigation-menu",
+    items: [
+      {
+        description: "Início",
+        route: "/",
+      },
+      {
+        description: "Configurações",
+        action: () => window.alert("Abrindo configurações..."),
+      },
+    ],
+  };
 </script>

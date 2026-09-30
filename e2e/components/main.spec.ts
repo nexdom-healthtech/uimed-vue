@@ -112,7 +112,105 @@ test.describe("main", () => {
     });
   });
 
+  test.describe("loading demo", () => {
+    test("shows a skeleton in place of the app bar actions", async ({ page }) => {
+      const appBar = getLoadingAppBar(page);
+
+      await expect(appBar).toHaveAttribute("aria-busy", "true");
+      await expect(appBar.locator(".v-skeleton-loader")).toBeVisible();
+      await expect(page.getByTestId("demo-root-loading-app-bar-help")).not.toBeAttached();
+      await expect(page.getByTestId("demo-root-loading-app-bar-notifications")).not.toBeAttached();
+      await expect(page.getByTestId("demo-root-loading-app-bar-user")).not.toBeAttached();
+      await expect(getLoadingNavigationButton(page)).toBeVisible();
+      await expect(appBar).toContainText("Menu superior");
+    });
+
+    test("opens the navigation menu with skeleton items and a disabled search", async ({
+      page,
+    }) => {
+      await getLoadingNavigationButton(page).click();
+
+      const navigationMenu = getLoadingNavigationMenu(page);
+      await expect(navigationMenu).toContainClass("v-navigation-drawer--active");
+      await expect(navigationMenu).toHaveAttribute("aria-busy", "true");
+      await expect(navigationMenu.locator(".v-skeleton-loader")).toBeVisible();
+      await expect(navigationMenu.getByText("Início")).not.toBeAttached();
+      await expect(
+        page.getByTestId("demo-root-loading-navigation-menu-search").locator("input"),
+      ).toBeDisabled();
+    });
+
+    test("matches the accessible snapshot of the loading demo", async ({ page }) => {
+      await getLoadingNavigationButton(page).click();
+      await expect(getLoadingNavigationMenu(page)).toContainClass("v-navigation-drawer--active");
+
+      await expect(getLoadingDemo(page)).toMatchAriaSnapshot();
+    });
+  });
+
   test.describe("playground", () => {
+    test("shows and hides the skeletons when playground-loading is toggled", async ({ page }) => {
+      const appBar = getPlaygroundAppBar(page);
+      const navigationMenu = getPlaygroundNavigationMenu(page);
+      const notificationsButton = getPlaygroundNotificationsButton(page);
+
+      await page.getByTestId("root-playground-app-bar-navigation").click();
+      await expect(navigationMenu.getByText("Início")).toBeVisible();
+
+      await getPlaygroundLoadingToggleButton(page).click();
+
+      await expect(appBar).toHaveAttribute("aria-busy", "true");
+      await expect(appBar.locator(".v-skeleton-loader")).toBeVisible();
+      await expect(notificationsButton).not.toBeAttached();
+      await expect(navigationMenu).toHaveAttribute("aria-busy", "true");
+      await expect(navigationMenu.getByText("Início")).not.toBeAttached();
+      await expect(getPlaygroundNavigationMenuSearch(page)).toBeDisabled();
+
+      await getPlaygroundLoadingToggleButton(page).click();
+
+      await expect(appBar).not.toHaveAttribute("aria-busy");
+      await expect(appBar.locator(".v-skeleton-loader")).not.toBeAttached();
+      await expect(notificationsButton).toBeVisible();
+      await expect(navigationMenu).not.toHaveAttribute("aria-busy");
+      await expect(getPlaygroundNavigationMenuSearch(page)).toBeEnabled();
+    });
+
+    test("keeps the search and filters the items when loading ends", async ({ page }) => {
+      const navigationMenu = getPlaygroundNavigationMenu(page);
+
+      await page.getByTestId("root-playground-app-bar-navigation").click();
+      await getPlaygroundNavigationMenuSearch(page).fill("Início");
+
+      await getPlaygroundLoadingToggleButton(page).click();
+      await expect(navigationMenu.getByText("Início")).not.toBeAttached();
+      await expect(getPlaygroundNavigationMenuSearch(page)).toHaveValue("Início");
+
+      await getPlaygroundLoadingToggleButton(page).click();
+      await expect(navigationMenu.getByText("Início")).toBeVisible();
+      await expect(navigationMenu.getByText("Documentação")).not.toBeAttached();
+    });
+
+    test("closes the notifications menu when loading starts", async ({ page }) => {
+      const notificationsButton = getPlaygroundNotificationsButton(page);
+      const notificationsMenu = getPlaygroundNotificationsMenu(page);
+
+      await notificationsButton.click();
+      await expect(notificationsMenu).toBeVisible();
+
+      const loadingToggleButton = getPlaygroundLoadingToggleButton(page);
+      await loadingToggleButton.focus();
+      await expect(notificationsMenu).toBeVisible();
+
+      await loadingToggleButton.press("Space");
+      await expect(notificationsButton).not.toBeAttached();
+      await expect(notificationsMenu).not.toBeAttached();
+
+      await loadingToggleButton.press("Space");
+      await expect(notificationsButton).toBeVisible();
+      await expect(notificationsButton).toHaveAttribute("aria-expanded", "false");
+      await expect(notificationsMenu).not.toBeVisible();
+    });
+
     test("updates title when playground-title changes", async ({ page }) => {
       const text = "Novo título";
       await page.getByTestId("root-playground-title").locator("input").fill(text);
@@ -288,8 +386,41 @@ test.describe("main", () => {
       await navToggleButton.click();
       await expect(page).toHaveScreenshot({ fullPage: true });
     });
+
+    // The loading demo with its drawer closed is already in the screenshots above
+    test("matches last screenshot of the loading demo with its navigation menu open", async ({
+      page,
+    }) => {
+      await getLoadingNavigationButton(page).click();
+      await expect(getLoadingNavigationMenu(page)).toContainClass("v-navigation-drawer--active");
+      await expect(page).toHaveScreenshot({ fullPage: true });
+    });
   });
 });
+
+function getLoadingDemo(page: Page) {
+  return page.getByTestId("demo-root-loading");
+}
+
+function getLoadingAppBar(page: Page) {
+  return page.getByTestId("demo-root-loading-app-bar");
+}
+
+function getLoadingNavigationButton(page: Page) {
+  return page.getByTestId("demo-root-loading-app-bar-navigation");
+}
+
+function getLoadingNavigationMenu(page: Page) {
+  return page.getByTestId("demo-root-loading-navigation-menu");
+}
+
+function getPlaygroundLoadingToggleButton(page: Page) {
+  return page.getByTestId("root-playground-loading").locator("input");
+}
+
+function getPlaygroundNavigationMenuSearch(page: Page) {
+  return page.getByTestId("root-playground-navigation-menu-search").locator("input");
+}
 
 function getAppBar(page: Page) {
   return page.getByTestId("demo-root-app-bar");
