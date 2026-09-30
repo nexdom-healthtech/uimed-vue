@@ -1,0 +1,5 @@
+- button "Salvar" [disabled]:
+    - text: ""
+    - progressbar:
+        - img
+- text: 1 salvamento(s)
