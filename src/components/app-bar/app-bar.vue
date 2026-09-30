@@ -1,5 +1,5 @@
 <template>
-  <v-app-bar :data-testid="props.dataTestid">
+  <v-app-bar :data-testid="props.dataTestid" :aria-busy="props.loading || undefined">
     <v-app-bar-nav-icon
       v-if="navigation"
       :data-testid="navigationBtnDataTestid"
@@ -18,89 +18,95 @@
     <v-app-bar-title v-if="props.title">{{ props.title }}</v-app-bar-title>
 
     <template #append>
-      <v-btn
-        v-if="showHelp"
-        v-bind="routeProps"
-        :data-testid="helpBtnDataTestid"
-        icon="mdi-help-circle-outline"
-      />
-      <v-menu v-if="showNotifications" v-model="notificationsOpen" :close-on-content-click="false">
-        <template #activator="{ props }">
-          <v-btn v-bind="props" :data-testid="notificationsBtnDataTestid" icon>
-            <v-badge :model-value="hasUnreadNotifications" :content="unreadCount" color="error">
-              <v-icon icon="mdi-bell-outline" />
-            </v-badge>
-          </v-btn>
-        </template>
-
-        <v-card :data-testid="notificationsMenuDataTestid">
-          <v-list v-if="props.notifications?.length">
-            <v-list-subheader>Notificações</v-list-subheader>
-
-            <template v-for="(notification, index) in props.notifications" :key="index">
-              <v-list-item
-                :active="!notification.read"
-                :title="notification.title"
-                :subtitle="notification.subtitle"
-                active-class="text-primary"
-              >
-                <template v-if="notification.when" #append>
-                  <v-list-item-action end>
-                    <small class="opacity-60">
-                      {{ notification.when }}
-                    </small>
-                  </v-list-item-action>
-                </template>
-              </v-list-item>
-            </template>
-          </v-list>
-          <v-card-text v-else>Nenhuma notificação</v-card-text>
-        </v-card>
-      </v-menu>
-      <v-menu v-if="showUser" :close-on-content-click="false">
-        <template #activator="{ props }">
-          <v-btn v-bind="props" :data-testid="userBtnDataTestid" icon>
-            <v-avatar v-bind="userAvatarProps" color="primary" />
-          </v-btn>
-        </template>
-
-        <v-card :title="user?.title" :subtitle="user?.subtitle" :data-testid="userMenuDataTestid">
-          <template #prepend>
-            <v-avatar v-bind="userAvatarProps" color="primary" />
+      <v-skeleton-loader :loading="props.loading" type="avatar">
+        <v-btn
+          v-if="showHelp"
+          v-bind="routeProps"
+          :data-testid="helpBtnDataTestid"
+          icon="mdi-help-circle-outline"
+        />
+        <v-menu
+          v-if="showNotifications"
+          v-model="notificationsOpen"
+          :close-on-content-click="false"
+        >
+          <template #activator="{ props }">
+            <v-btn v-bind="props" :data-testid="notificationsBtnDataTestid" icon>
+              <v-badge :model-value="hasUnreadNotifications" :content="unreadCount" color="error">
+                <v-icon icon="mdi-bell-outline" />
+              </v-badge>
+            </v-btn>
           </template>
 
-          <v-divider />
+          <v-card :data-testid="notificationsMenuDataTestid">
+            <v-list v-if="props.notifications?.length">
+              <v-list-subheader>Notificações</v-list-subheader>
 
-          <v-list nav>
-            <template v-for="(option, index) in props.user?.options" :key="index">
-              <v-divider v-if="index > 0" class="mt-1" />
-
-              <template v-if="isParentOption(option)">
-                <v-list-group>
-                  <template #activator="{ props }">
-                    <v-list-item v-bind="props" :title="option.description" />
+              <template v-for="(notification, index) in props.notifications" :key="index">
+                <v-list-item
+                  :active="!notification.read"
+                  :title="notification.title"
+                  :subtitle="notification.subtitle"
+                  active-class="text-primary"
+                >
+                  <template v-if="notification.when" #append>
+                    <v-list-item-action end>
+                      <small class="opacity-60">
+                        {{ notification.when }}
+                      </small>
+                    </v-list-item-action>
                   </template>
-
-                  <v-list-item
-                    v-for="(childOption, index) in option.items"
-                    :key="index"
-                    v-bind="routeToProps(childOption.route)"
-                    :title="childOption.description"
-                    @click="childOption.action"
-                  />
-                </v-list-group>
+                </v-list-item>
               </template>
+            </v-list>
+            <v-card-text v-else>Nenhuma notificação</v-card-text>
+          </v-card>
+        </v-menu>
+        <v-menu v-if="showUser" :close-on-content-click="false">
+          <template #activator="{ props }">
+            <v-btn v-bind="props" :data-testid="userBtnDataTestid" icon>
+              <v-avatar v-bind="userAvatarProps" color="primary" />
+            </v-btn>
+          </template>
 
-              <v-list-item
-                v-else
-                :title="option.description"
-                v-bind="routeToProps(option.route)"
-                @click="option.action"
-              />
+          <v-card :title="user?.title" :subtitle="user?.subtitle" :data-testid="userMenuDataTestid">
+            <template #prepend>
+              <v-avatar v-bind="userAvatarProps" color="primary" />
             </template>
-          </v-list>
-        </v-card>
-      </v-menu>
+
+            <v-divider />
+
+            <v-list nav>
+              <template v-for="(option, index) in props.user?.options" :key="index">
+                <v-divider v-if="index > 0" class="mt-1" />
+
+                <template v-if="isParentOption(option)">
+                  <v-list-group>
+                    <template #activator="{ props }">
+                      <v-list-item v-bind="props" :title="option.description" />
+                    </template>
+
+                    <v-list-item
+                      v-for="(childOption, index) in option.items"
+                      :key="index"
+                      v-bind="routeToProps(childOption.route)"
+                      :title="childOption.description"
+                      @click="childOption.action"
+                    />
+                  </v-list-group>
+                </template>
+
+                <v-list-item
+                  v-else
+                  :title="option.description"
+                  v-bind="routeToProps(option.route)"
+                  @click="option.action"
+                />
+              </template>
+            </v-list>
+          </v-card>
+        </v-menu>
+      </v-skeleton-loader>
     </template>
   </v-app-bar>
 </template>
@@ -118,7 +124,7 @@ import {
   type ParentOptionOrOption,
 } from "@/components/app-bar/types.ts";
 import useRouteProps, { routeToProps } from "@/composables/navigation/use-route-props.ts";
-import { computed } from "vue";
+import { computed, watch } from "vue";
 import {
   VAppBar,
   VAppBarTitle,
@@ -137,11 +143,13 @@ import {
   VListGroup,
   VListSubheader,
   VListItemAction,
+  VSkeletonLoader,
 } from "vuetify/components";
 
 type Props = AppBarProps & {
   navigation?: boolean;
   logo?: string;
+  loading?: boolean;
 };
 
 const props = defineProps<Props>();
@@ -163,6 +171,14 @@ const unreadCount = computed(
   () => props.notifications!.filter((notification) => !notification.read).length,
 );
 const hasUnreadNotifications = computed(() => unreadCount.value > 0);
+
+// The notifications menu unmounts while loading; closing it keeps it from reopening afterwards
+watch(
+  () => props.loading,
+  (loading) => {
+    if (loading) notificationsOpen.value = false;
+  },
+);
 
 const showUser = computed(() => !!props.user);
 const userAvatarProps = computed(() =>

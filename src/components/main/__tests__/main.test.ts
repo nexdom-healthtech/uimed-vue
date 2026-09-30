@@ -158,6 +158,25 @@ describe("Main", () => {
         expect(appBar.props("navigationOpen")).toBe(false);
       });
     });
+
+    describe("loading", () => {
+      const appBar = { title: "AI Chat" };
+      const navigationMenu = { items: [{ description: "Home", route: "/" }] };
+
+      it("should not be loading by default", async () => {
+        await wrapper.setProps({ appBar, navigationMenu });
+
+        expect(findAppBar(wrapper).props("loading")).toBe(false);
+        expect(findNavigationMenu(wrapper).props("loading")).toBe(false);
+      });
+
+      it("should forward loading to the app bar and the navigation menu", async () => {
+        await wrapper.setProps({ appBar, navigationMenu, loading: true });
+
+        expect(findAppBar(wrapper).props("loading")).toBe(true);
+        expect(findNavigationMenu(wrapper).props("loading")).toBe(true);
+      });
+    });
   });
 });
 

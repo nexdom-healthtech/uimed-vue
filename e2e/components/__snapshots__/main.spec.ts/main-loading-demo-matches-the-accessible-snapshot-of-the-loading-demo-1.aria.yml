@@ -1,0 +1,11 @@
+- button
+- text: Menu superior
+- alert
+- navigation:
+    - text: Buscar
+    - textbox "Buscar" [disabled]
+    - alert
+    - separator
+    - alert
+- main:
+    - heading "O conteúdo da página vai aqui..." [level=2]

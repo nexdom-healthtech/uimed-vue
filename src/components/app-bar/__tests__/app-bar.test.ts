@@ -11,6 +11,7 @@ import {
   VListGroup,
   VListItem,
   VMenu,
+  VSkeletonLoader,
 } from "vuetify/components";
 import AppBar from "@/components/app-bar/app-bar.vue";
 import { mount } from "@vue/test-utils";
@@ -325,6 +326,77 @@ describe("AppBar", () => {
       });
     });
 
+    describe("loading", () => {
+      const loadedProps = {
+        title: "AI Chat",
+        logo: "/logo.svg",
+        navigation: true,
+        help: "/help",
+        notifications: [],
+        user: { title: "Beetlejuice" },
+      };
+
+      it("should not show the skeleton loader by default", async () => {
+        await wrapper.setProps(loadedProps);
+
+        const vSkeletonLoader = findVSkeletonLoader(wrapper);
+        expect(vSkeletonLoader.props("loading")).toBe(false);
+        expect(vSkeletonLoader.find(".v-skeleton-loader").exists()).toBeFalsy();
+        expect(findActionBtns(wrapper)).toHaveLength(3);
+      });
+
+      it("should show an avatar skeleton loader while loading", async () => {
+        await wrapper.setProps({ ...loadedProps, loading: true });
+
+        const vSkeletonLoader = findVSkeletonLoader(wrapper);
+        expect(vSkeletonLoader.props("loading")).toBe(true);
+        expect(vSkeletonLoader.props("type")).toBe("avatar");
+        expect(vSkeletonLoader.find(".v-skeleton-loader__avatar").exists()).toBeTruthy();
+      });
+
+      it("should hide the help, notifications and user buttons while loading", async () => {
+        await wrapper.setProps({ ...loadedProps, loading: true });
+
+        expect(findActionBtns(wrapper)).toHaveLength(0);
+        expect(findVMenu(wrapper).exists()).toBeFalsy();
+      });
+
+      it("should keep the navigation icon, logo and title while loading", async () => {
+        await wrapper.setProps({ ...loadedProps, loading: true });
+
+        expect(findVAppBarNavIcon(wrapper).exists()).toBeTruthy();
+        expect(findVImg(wrapper).exists()).toBeTruthy();
+        expect(findVAppBarTitle(wrapper).text()).toBe(loadedProps.title);
+      });
+
+      it("should mark the app bar as busy only while loading", async () => {
+        expect(wrapper.attributes("aria-busy")).toBeUndefined();
+
+        await wrapper.setProps({ loading: true });
+        expect(wrapper.attributes("aria-busy")).toBe("true");
+
+        await wrapper.setProps({ loading: false });
+        expect(wrapper.attributes("aria-busy")).toBeUndefined();
+      });
+
+      it("should close the notifications menu when loading starts", async () => {
+        await wrapper.setProps({ ...loadedProps, notificationsOpen: true });
+
+        await wrapper.setProps({ loading: true });
+
+        expect(wrapper.emitted("update:notificationsOpen")).toEqual([[false]]);
+      });
+
+      it("should not touch the notifications menu when loading ends", async () => {
+        await wrapper.setProps({ ...loadedProps, loading: true });
+        await wrapper.setProps({ notificationsOpen: true });
+
+        await wrapper.setProps({ loading: false });
+
+        expect(wrapper.emitted("update:notificationsOpen")).toBeUndefined();
+      });
+    });
+
     describe("user", () => {
       const user = { title: "Beetlejuice", subtitle: "beetle3x@gmail.com" };
 
@@ -508,6 +580,16 @@ function findVAppBarNavIcon(wrapper: ReturnType<typeof mountAppBar>) {
 
 function findVBtn(wrapper: ReturnType<typeof mountAppBar>) {
   return wrapper.findComponent(VBtn);
+}
+
+function findActionBtns(wrapper: ReturnType<typeof mountAppBar>) {
+  return wrapper
+    .findAllComponents(VBtn)
+    .filter((vBtn) => !vBtn.attributes("data-testid")?.endsWith("-navigation"));
+}
+
+function findVSkeletonLoader(wrapper: ReturnType<typeof mountAppBar>) {
+  return wrapper.findComponent(VSkeletonLoader);
 }
 
 function findVMenu(wrapper: ReturnType<typeof mountAppBar>) {

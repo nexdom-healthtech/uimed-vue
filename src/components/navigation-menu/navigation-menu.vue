@@ -3,43 +3,52 @@
     v-model="open"
     color="primary"
     :data-testid="props.dataTestid"
+    :aria-busy="props.loading || undefined"
     absolute
     temporary
   >
     <template #prepend>
       <div class="px-4 pt-2">
-        <text-field v-model="search" type="search" label="Buscar" :data-testid="searchDataTestid" />
+        <text-field
+          v-model="search"
+          type="search"
+          label="Buscar"
+          :data-testid="searchDataTestid"
+          :disabled="props.loading"
+        />
       </div>
     </template>
 
     <v-divider />
 
-    <v-list nav>
-      <template v-for="(item, index) in filteredItems" :key="index">
-        <template v-if="isParentItem(item)">
-          <v-list-group>
-            <template #activator="{ props: activatorProps }">
-              <v-list-item v-bind="activatorProps" :title="item.description" />
-            </template>
+    <v-skeleton-loader :loading="props.loading" type="list-item@6">
+      <v-list nav>
+        <template v-for="(item, index) in filteredItems" :key="index">
+          <template v-if="isParentItem(item)">
+            <v-list-group>
+              <template #activator="{ props: activatorProps }">
+                <v-list-item v-bind="activatorProps" :title="item.description" />
+              </template>
 
-            <v-list-item
-              v-for="(childItem, childIndex) in item.items"
-              :key="childIndex"
-              v-bind="routeToProps(childItem.route)"
-              :title="childItem.description"
-              @click="childItem.action"
-            />
-          </v-list-group>
+              <v-list-item
+                v-for="(childItem, childIndex) in item.items"
+                :key="childIndex"
+                v-bind="routeToProps(childItem.route)"
+                :title="childItem.description"
+                @click="childItem.action"
+              />
+            </v-list-group>
+          </template>
+
+          <v-list-item
+            v-else
+            :title="item.description"
+            v-bind="routeToProps(item.route)"
+            @click="item.action"
+          />
         </template>
-
-        <v-list-item
-          v-else
-          :title="item.description"
-          v-bind="routeToProps(item.route)"
-          @click="item.action"
-        />
-      </template>
-    </v-list>
+      </v-list>
+    </v-skeleton-loader>
   </v-navigation-drawer>
 </template>
 
@@ -61,10 +70,21 @@ import {
 } from "@/components/navigation-menu/types.ts";
 import { routeToProps } from "@/composables/navigation/use-route-props.ts";
 import TextField from "@/components/inputs/text-field/text-field.vue";
-import { VNavigationDrawer, VList, VListItem, VListGroup, VDivider } from "vuetify/components";
+import {
+  VNavigationDrawer,
+  VList,
+  VListItem,
+  VListGroup,
+  VDivider,
+  VSkeletonLoader,
+} from "vuetify/components";
 import { computed, ref } from "vue";
 
-const props = defineProps<NavigationMenuProps>();
+type Props = NavigationMenuProps & {
+  loading?: boolean;
+};
+
+const props = defineProps<Props>();
 const open = defineModel<boolean>({ default: false });
 const search = ref("");
 

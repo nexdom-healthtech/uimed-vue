@@ -24,4 +24,12 @@ export type MainProps = {
    * Navigation menu properties.
    */
   navigationMenu?: NavigationMenuProps;
+
+  /**
+   * Shows skeleton loaders in place of the user-related parts of the app bar
+   * and of the navigation menu items while their data is being loaded.
+   * The main content (default slot) isn't affected.
+   * @default false
+   */
+  loading?: boolean;
 };
