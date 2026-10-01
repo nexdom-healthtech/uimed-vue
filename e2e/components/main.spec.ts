@@ -8,6 +8,17 @@ test.describe("main", () => {
   });
 
   test.describe("props demo", () => {
+    test.describe("logo", () => {
+      test("renders the logo as a decorative image", async ({ page }) => {
+        const demo = getLogoDemo(page);
+        const logo = demo.locator("img");
+
+        await expect(logo).toBeVisible();
+        await expect(logo).toHaveAttribute("alt", "");
+        await expect(demo.getByRole("img")).toHaveCount(0);
+      });
+    });
+
     test.describe("app-bar", () => {
       test("matches the accessible snapshot of the app bar demo", async ({ page }) => {
         const demo = getAppBar(page);
@@ -420,6 +431,10 @@ function getPlaygroundLoadingToggleButton(page: Page) {
 
 function getPlaygroundNavigationMenuSearch(page: Page) {
   return page.getByTestId("root-playground-navigation-menu-search").locator("input");
+}
+
+function getLogoDemo(page: Page) {
+  return page.getByTestId("demo-root-logo");
 }
 
 function getAppBar(page: Page) {

@@ -320,6 +320,7 @@ describe("AppBar", () => {
         expect(vImg.exists()).toBeTruthy();
         expect(vImg.props("cover")).toBeTruthy();
         expect(vImg.props("src")).toBe(logo);
+        expect(vImg.props("alt")).toBe("");
         expect(vImg.props("height")).toBe("100%");
         expect(vImg.props("width")).toBe("fit-content");
         expect(vImg.props("class")).toContain("py-2 ml-5 mr-n3");
