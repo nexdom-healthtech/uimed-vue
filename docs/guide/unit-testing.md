@@ -40,6 +40,8 @@ describe("HelloWorld", () => {
 });
 ```
 
+O plugin de testes usa o mesmo idioma do `createUimed()`, então os testes veem os mesmos textos em português da aplicação, como os anúncios para leitores de tela e os rótulos da paginação.
+
 ## Testando código que usa diálogos
 
 Os diálogos das composables [`useDialog`](./composables/use-dialog) e [`useConfirm`](./composables/use-confirm) são exibidos pelo [Componente base](./components/main). Em um teste que monta apenas o seu componente, sem o `UMain`, nenhum diálogo é exibido e a `Promise` de `dialog` ou `confirm` não é resolvida.

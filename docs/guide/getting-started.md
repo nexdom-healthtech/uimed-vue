@@ -66,6 +66,8 @@ createApp(App)
   .mount("#app");
 ```
 
+Os textos que os componentes geram por conta própria, como os anúncios para leitores de tela (por exemplo, `Carregando...`) e os rótulos da paginação, ficam em português.
+
 ## Tipagem de props
 
 A biblioteca não exporta tipos de props diretamente. A forma recomendada é utilizar `ComponentProps` do pacote `vue-component-type-helpers`, instalado como dependência de pares (_peer dependency_) da biblioteca.

@@ -156,6 +156,15 @@ describe("TextField", () => {
         expect(wrapper.emitted("update:modelValue")).toHaveLength(1);
         expect(wrapper.emitted("update:modelValue")?.[0]).toEqual([""]);
       });
+
+      it("should label the clear icon in pt-BR for screen readers", async () => {
+        const wrapper = mountTextField();
+        await wrapper.setProps({ clearable: true, label: "Nome", modelValue: "Maria" });
+
+        expect(wrapper.find(".v-field__clearable .v-icon").attributes("aria-label")).toBe(
+          "Limpar Nome",
+        );
+      });
     });
 
     describe("disabled, loading, clearable and readonly", () => {

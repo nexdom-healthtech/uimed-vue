@@ -1,5 +1,6 @@
 import { createUimed } from "@/index.ts";
 import { createVuetify, type ThemeDefinition } from "vuetify";
+import { pt } from "vuetify/locale";
 
 const light: ThemeDefinition = {
   dark: false,
@@ -30,6 +31,7 @@ describe("index", () => {
 
       expect(createVuetify).toHaveBeenCalledOnce();
       expect(createVuetify).toHaveBeenCalledWith({
+        locale: { locale: "pt-BR", messages: { "pt-BR": pt } },
         theme: { defaultTheme: "light", themes: { light } },
       });
     });
