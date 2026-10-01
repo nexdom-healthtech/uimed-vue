@@ -1,4 +1,4 @@
-import { test, expect, type Page } from "@playwright/test";
+import { test, expect, type Locator, type Page } from "@playwright/test";
 import { gotoPage, selectOption } from "@e2e/utils.ts";
 
 test.describe("section", () => {
@@ -76,6 +76,28 @@ test.describe("section", () => {
       expect(cancelDialog.message()).toBe("Cancelar clicado");
     });
 
+    test("centers the preview card when playground-textAlign changes to center", async ({
+      page,
+    }) => {
+      const previewCard = getPreviewCard(page);
+      await expect(previewCard).toHaveCSS("text-align", "start");
+      await expect(previewCard.locator(".v-card-actions")).toHaveCSS("justify-content", "flex-end");
+
+      await selectOption(page, "content-set-playground-textAlign", "center");
+      await expect(previewCard).toHaveCSS("text-align", "center");
+      await expect(previewCard.locator(".v-card-actions")).toHaveCSS("justify-content", "center");
+      await expectCentered(previewCard);
+    });
+
+    test("aligns the preview card to the end when playground-textAlign changes to end", async ({
+      page,
+    }) => {
+      const previewCard = getPreviewCard(page);
+      await selectOption(page, "content-set-playground-textAlign", "end");
+      await expect(previewCard).toHaveCSS("text-align", "end");
+      await expect(previewCard.locator(".v-card-actions")).toHaveCSS("justify-content", "flex-end");
+    });
+
     test("shows a skeleton loader when playground-loading is toggled", async ({ page }) => {
       const previewCard = getPreviewCard(page);
       const previewArea = page.locator(".playground-preview");
@@ -120,6 +142,51 @@ test.describe("section", () => {
     });
   });
 
+  test.describe("alignment demos", () => {
+    test("aligns the text to the start and keeps the actions at the end by default", async ({
+      page,
+    }) => {
+      const card = page.getByTestId("section-align-start");
+      await expect(card).toHaveCSS("text-align", "start");
+      await expectAlignedTo(card, "start");
+    });
+
+    test("centers the title, subtitle, content and actions", async ({ page }) => {
+      const card = page.getByTestId("section-align-center");
+      await expect(card).toHaveCSS("text-align", "center");
+      await expect(card.locator(".v-card-actions")).toHaveCSS("justify-content", "center");
+      await expectCentered(card);
+
+      const dialogPromise = page.waitForEvent("dialog");
+      await card.getByRole("button", { name: "Voltar para o Início" }).click();
+      expect((await dialogPromise).message()).toBe("Voltar para o Início clicado");
+    });
+
+    test("aligns the title, subtitle, content and actions to the end", async ({ page }) => {
+      const card = page.getByTestId("section-align-end");
+      await expect(card).toHaveCSS("text-align", "end");
+      await expect(card.locator(".v-card-actions")).toHaveCSS("justify-content", "flex-end");
+      await expectAlignedTo(card, "end");
+    });
+
+    test("keeps a nested section aligned to the start inside a centered one", async ({ page }) => {
+      const outer = page.getByTestId("section-align-outer");
+      const inner = page.getByTestId("section-align-inner");
+      await expect(outer).toHaveCSS("text-align", "center");
+      await expect(inner).toHaveCSS("text-align", "start");
+
+      const outerTitle = await getTextGaps(outer, outer.locator(".v-card-title").first());
+      expect(Math.abs(outerTitle.start - outerTitle.end)).toBeLessThanOrEqual(2);
+
+      const innerTitle = await getTextGaps(inner, inner.locator(".v-card-title"));
+      const innerContent = await getTextGaps(inner, inner.locator(".v-card-text"));
+      expect(innerTitle.start).toBeLessThan(innerTitle.end);
+      expect(innerContent.start).toBeLessThan(innerContent.end);
+      expect(innerTitle.start).toBeLessThanOrEqual(24);
+      expect(innerContent.start).toBeLessThanOrEqual(24);
+    });
+  });
+
   test.describe("UI consistency", () => {
     test("matches last screenshot", async ({ page }) => {
       await expect(page).toHaveScreenshot({ fullPage: true });
@@ -129,4 +196,72 @@ test.describe("section", () => {
 
 function getPreviewCard(page: Page) {
   return page.getByTestId("content-set-preview");
+}
+
+type Gaps = { start: number; end: number };
+
+async function getBox(locator: Locator) {
+  const box = await locator.boundingBox();
+  if (!box) throw new Error("Element is not visible");
+  return box;
+}
+
+/** Gaps between the card's edges and the rendered text of `element`. */
+async function getTextGaps(card: Locator, element: Locator): Promise<Gaps> {
+  const cardBox = await getBox(card);
+  const textBox = await element.evaluate((node) => {
+    const range = document.createRange();
+    range.selectNodeContents(node);
+    const { left, right } = range.getBoundingClientRect();
+    return { left, right };
+  });
+  return {
+    start: textBox.left - cardBox.x,
+    end: cardBox.x + cardBox.width - textBox.right,
+  };
+}
+
+/** Gaps between the card's edges and its group of action buttons. */
+async function getActionsGaps(card: Locator): Promise<Gaps> {
+  const cardBox = await getBox(card);
+  const buttons = card.locator(".v-card-actions .v-btn");
+  const first = await getBox(buttons.first());
+  const last = await getBox(buttons.last());
+  return {
+    start: first.x - cardBox.x,
+    end: cardBox.x + cardBox.width - (last.x + last.width),
+  };
+}
+
+function getAlignedParts(card: Locator) {
+  return [
+    card.locator(".v-card-title"),
+    card.locator(".v-card-subtitle"),
+    card.locator(".v-card-text").first(),
+  ];
+}
+
+async function expectCentered(card: Locator) {
+  for (const part of getAlignedParts(card)) {
+    const gaps = await getTextGaps(card, part);
+    expect(Math.abs(gaps.start - gaps.end)).toBeLessThanOrEqual(2);
+  }
+  const actions = await getActionsGaps(card);
+  expect(Math.abs(actions.start - actions.end)).toBeLessThanOrEqual(2);
+}
+
+/**
+ * Expects the text next to `side` and, since the actions stay at the end in
+ * both cases, the actions next to the end.
+ */
+async function expectAlignedTo(card: Locator, side: "start" | "end") {
+  const other = side === "start" ? "end" : "start";
+  for (const part of getAlignedParts(card)) {
+    const gaps = await getTextGaps(card, part);
+    expect(gaps[side]).toBeLessThan(gaps[other]);
+    expect(gaps[side]).toBeLessThanOrEqual(24);
+  }
+  const actions = await getActionsGaps(card);
+  expect(actions.end).toBeLessThan(actions.start);
+  expect(actions.end).toBeLessThanOrEqual(24);
 }

@@ -52,6 +52,107 @@ import { USection } from "@nexdom/uimed-vue/components";
 </script>
 ```
 
+### Alinhamento
+
+A prop `textAlign` define o alinhamento horizontal do título, do subtítulo, do conteúdo e das ações do agrupador. O padrão é `start`.
+
+- `start`: alinha o texto ao início, mantendo as ações no fim;
+- `center`: centraliza o texto e as ações;
+- `end`: alinha o texto e as ações ao fim.
+
+Os valores `start` e `end` seguem a direção do texto, então se invertem em idiomas escritos da direita para a esquerda.
+
+<demo col>
+<u-section text-align="start" title="Início" subtitle="Alinhamento padrão" :actions="demoActions" data-testid="section-align-start">
+  <u-section-content>Conteúdo alinhado ao início, com as ações no fim</u-section-content>
+</u-section>
+<u-section text-align="center" title="Página não encontrada" subtitle="Erro 404" :actions="demoNotFoundActions" data-testid="section-align-center">
+  <u-section-content>O endereço que você tentou abrir não existe ou foi removido.</u-section-content>
+</u-section>
+<u-section text-align="end" title="Fim" subtitle="Alinhado ao fim" :actions="demoActions" data-testid="section-align-end">
+  <u-section-content>Conteúdo alinhado ao fim, assim como as ações</u-section-content>
+</u-section>
+</demo>
+
+```vue
+<template>
+  <u-section text-align="start" title="Início" subtitle="Alinhamento padrão" :actions="actions">
+    <u-section-content>Conteúdo alinhado ao início, com as ações no fim</u-section-content>
+  </u-section>
+  <u-section
+    text-align="center"
+    title="Página não encontrada"
+    subtitle="Erro 404"
+    :actions="notFoundActions"
+  >
+    <u-section-content>
+      O endereço que você tentou abrir não existe ou foi removido.
+    </u-section-content>
+  </u-section>
+  <u-section text-align="end" title="Fim" subtitle="Alinhado ao fim" :actions="actions">
+    <u-section-content>Conteúdo alinhado ao fim, assim como as ações</u-section-content>
+  </u-section>
+</template>
+
+<script lang="ts" setup>
+import { ref } from "vue";
+import { USection, USectionContent } from "@nexdom/uimed-vue/components";
+
+const actions = ref([
+  {
+    label: "Cancelar",
+    variant: "ghost",
+    onClick: () => alert("Cancelar clicado"),
+  },
+  {
+    label: "Salvar",
+    color: "positive",
+    onClick: () => alert("Salvar clicado"),
+  },
+]);
+
+const notFoundActions = ref([
+  {
+    label: "Voltar para o Início",
+    variant: "ghost",
+    onClick: () => alert("Voltar para o Início clicado"),
+  },
+]);
+</script>
+```
+
+O alinhamento vale para todo o conteúdo do agrupador, inclusive para os textos e componentes dentro dele, exceto os que definem o próprio alinhamento. Por isso, os valores `center` e `end` são pensados para conteúdos curtos, como estados vazios e mensagens.
+
+Um agrupador dentro de outro mantém o próprio alinhamento, que também é `start` por padrão:
+
+<demo>
+<u-section text-align="center" title="Agrupador centralizado" full-width data-testid="section-align-outer">
+  <u-section-content>
+    <p>Conteúdo centralizado</p>
+    <u-section variant="secondary" title="Agrupador interno" full-width data-testid="section-align-inner">
+      <u-section-content>Conteúdo alinhado ao início</u-section-content>
+    </u-section>
+  </u-section-content>
+</u-section>
+</demo>
+
+```vue
+<template>
+  <u-section text-align="center" title="Agrupador centralizado" full-width>
+    <u-section-content>
+      <p>Conteúdo centralizado</p>
+      <u-section variant="secondary" title="Agrupador interno" full-width>
+        <u-section-content>Conteúdo alinhado ao início</u-section-content>
+      </u-section>
+    </u-section-content>
+  </u-section>
+</template>
+
+<script lang="ts" setup>
+import { USection, USectionContent } from "@nexdom/uimed-vue/components";
+</script>
+```
+
 ### Dimensões
 
 #### Largura Total
@@ -106,7 +207,7 @@ import { USection } from "@nexdom/uimed-vue/components";
 
 ### Ações
 
-A prop `actions` define uma lista de botões exibidos na área de ações (rodapé) do agrupador, alinhados à direita, nesta ordem. Coloque a ação principal por último.
+A prop `actions` define uma lista de botões exibidos na área de ações (rodapé) do agrupador, alinhados ao fim (veja [Alinhamento](#alinhamento)), nesta ordem. Coloque a ação principal por último.
 
 Coloque o conteúdo dentro do [`SectionContent`](#componente-sectioncontent) para que ele fique espaçado das bordas do agrupador e dos botões de ação.
 
@@ -205,6 +306,7 @@ Experimente as combinações de props do componente.
   :variant="(playgroundActions.variant.value as Props['variant'])"
   :title="playgroundActions.title.value"
   :subtitle="playgroundActions.subtitle.value"
+  :text-align="(playgroundActions.textAlign.value as Props['textAlign'])"
   :full-width="playgroundActions.fullWidth.value"
   :full-height="playgroundActions.fullHeight.value"
   :loading="playgroundActions.loading.value"
@@ -239,6 +341,14 @@ import type { ComponentProps } from "vue-component-type-helpers";
     },
   ]);
 
+  const demoNotFoundActions = ref<Props["actions"]>([
+    {
+      label: "Voltar para o Início",
+      variant: "ghost",
+      onClick: () => alert("Voltar para o Início clicado"),
+    },
+  ]);
+
   const playgroundActions = ref({
     content: {
       type: "text",
@@ -264,6 +374,13 @@ import type { ComponentProps } from "vue-component-type-helpers";
       value: "primary",
       dataTestid: "content-set-playground-variant",
       items: ["primary", "secondary"]
+    },
+    textAlign: {
+      type: "combobox",
+      label: "Alinhamento",
+      value: "start",
+      dataTestid: "content-set-playground-textAlign",
+      items: ["start", "center", "end"]
     },
     fullWidth: {
       type: "checkbox",
