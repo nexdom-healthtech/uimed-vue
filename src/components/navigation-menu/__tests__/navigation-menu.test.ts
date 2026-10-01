@@ -218,6 +218,8 @@ describe("NavigationMenu", () => {
         const vSkeletonLoader = findVSkeletonLoader(wrapper);
         expect(vSkeletonLoader.props("loading")).toBe(true);
         expect(vSkeletonLoader.props("type")).toBe("list-item@6");
+        // Matches the menu's primary background, so the skeleton doesn't draw a light box over it
+        expect(vSkeletonLoader.props("color")).toBe("primary");
         expect(vSkeletonLoader.findAll(".v-skeleton-loader__list-item")).toHaveLength(6);
         expect(findVListItems(wrapper)).toHaveLength(0);
       });
