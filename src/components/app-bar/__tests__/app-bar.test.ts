@@ -17,7 +17,6 @@ import { mount } from "@vue/test-utils";
 import { vueTestUtilsPluginUimed } from "@/unit-test.ts";
 import useRouteProps, { isExternalRoute } from "@/composables/navigation/use-route-props.ts";
 import type { AppBarUserProps, Option, ParentOption } from "@/components/app-bar/types.ts";
-import { formatDateTime, navigatePeriod } from "@nexdom/shared/utils";
 
 const testId = "app-bar-test-component";
 const styleValue = "random-style";
@@ -207,7 +206,7 @@ describe("AppBar", () => {
           });
         });
 
-        it("should not present notification date/time when none is provided", async () => {
+        it("should not present the notification `when` if none is provided", async () => {
           await wrapper.setProps({ notifications });
 
           const vBtn = findVBtn(wrapper);
@@ -217,33 +216,33 @@ describe("AppBar", () => {
           const vCardNotifications = findVCardNotifications(vCard);
 
           vCardNotifications.forEach((vCardNotification) => {
-            expect(findNotificationDate(vCardNotification).exists()).toBeFalsy();
+            expect(findNotificationWhen(vCardNotification).exists()).toBeFalsy();
           });
         });
 
-        it("should handle notification date/time presentation", async () => {
-          const date = new Date();
-          const dates = [
-            { provide: date, expect: formatDateTime(date, "HH:mm") },
-            { provide: navigatePeriod(date, { days: -1 }), expect: "Ontem" },
-            {
-              provide: navigatePeriod(date, { days: -2 }),
-              expect: formatDateTime(navigatePeriod(date, { days: -2 }), "DD/MM/YYYY"),
-            },
-            {
-              provide: navigatePeriod(date, { months: -1 }),
-              expect: formatDateTime(navigatePeriod(date, { months: -1 }), "DD/MM/YYYY"),
-            },
-            {
-              provide: navigatePeriod(date, { years: -1 }),
-              expect: formatDateTime(navigatePeriod(date, { years: -1 }), "DD/MM/YYYY"),
-            },
-          ];
-          expect(dates).toHaveLength(notifications.length);
+        it("should not present the notification `when` if it is empty", async () => {
+          await wrapper.setProps({
+            notifications: notifications.map((notification) => ({ ...notification, when: "" })),
+          });
+
+          const vBtn = findVBtn(wrapper);
+          await vBtn.trigger("click");
+
+          const vCard = findVCard(wrapper);
+          const vCardNotifications = findVCardNotifications(vCard);
+
+          vCardNotifications.forEach((vCardNotification) => {
+            expect(findNotificationWhen(vCardNotification).exists()).toBeFalsy();
+          });
+        });
+
+        it("should present the notification `when` as provided", async () => {
+          const whens = ["10:30", "Ontem", "28/09/2026", "Há 5 minutos", "01/01/2025"];
+          expect(whens).toHaveLength(notifications.length);
 
           const updateNotifications = notifications.map((notification, index) => ({
             ...notification,
-            date: dates[index].provide,
+            when: whens[index],
           }));
           await wrapper.setProps({ notifications: updateNotifications });
 
@@ -255,8 +254,7 @@ describe("AppBar", () => {
           expect(vCardNotifications).toHaveLength(notifications.length);
 
           vCardNotifications.forEach((vCardNotification, index) => {
-            expect(vCardNotification.exists()).toBeTruthy();
-            expect(findNotificationDate(vCardNotification).text()).toBe(dates[index].expect);
+            expect(findNotificationWhen(vCardNotification).text()).toBe(whens[index]);
           });
         });
 
@@ -532,7 +530,7 @@ function findVCardNotifications(vCard: ReturnType<typeof findVCard>) {
   return vCard.findAllComponents(VListItem);
 }
 
-function findNotificationDate(
+function findNotificationWhen(
   vCardNotification: ReturnType<typeof findVCardNotifications>[number],
 ) {
   return vCardNotification.find(".opacity-60");
