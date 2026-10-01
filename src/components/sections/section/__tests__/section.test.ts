@@ -161,6 +161,12 @@ describe("Section", () => {
         expect(findVSkeletonLoader(wrapper).props("loading")).toBe(true);
       });
 
+      it("should announce the loading in pt-BR to screen readers", async () => {
+        const wrapper = mountSection();
+        await wrapper.setProps({ loading: true });
+        expect(findVSkeletonLoader(wrapper).attributes("aria-label")).toBe("Carregando...");
+      });
+
       it("should be falsy by default", () => {
         const wrapper = mountSection();
         expect(findVSkeletonLoader(wrapper).props("loading")).toBeFalsy();

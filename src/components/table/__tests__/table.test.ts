@@ -309,6 +309,12 @@ describe("Table", () => {
         expect(findVSkeletonLoader(wrapper).props("loading")).toBe(true);
       });
 
+      it("should announce the loading in pt-BR to screen readers", async () => {
+        const wrapper = mountTable();
+        await wrapper.setProps({ loading: true });
+        expect(findVSkeletonLoader(wrapper).attributes("aria-label")).toBe("Carregando...");
+      });
+
       it("should be falsy by default", () => {
         const wrapper = mountTable();
         expect(findVSkeletonLoader(wrapper).props("loading")).toBeFalsy();

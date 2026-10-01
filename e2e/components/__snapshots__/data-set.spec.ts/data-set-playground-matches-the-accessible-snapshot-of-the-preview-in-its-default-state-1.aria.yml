@@ -5,15 +5,15 @@
     - listitem: Ana Souza Plano Ouro
     - listitem: Bruno Lima Plano Prata
     - listitem: Carla Dias Plano Bronze
-- navigation "Pagination Navigation":
+- navigation "Navegação de paginação":
     - list:
         - listitem:
-            - button "Previous page" [disabled]
+            - button "Página anterior" [disabled]
         - listitem:
-            - button "Page 1, Current page"
+            - button "Página atual, página 1"
         - listitem:
-            - button "Go to page 2"
+            - button "Ir à página 2"
         - listitem:
-            - button "Go to page 3"
+            - button "Ir à página 3"
         - listitem:
-            - button "Next page"
+            - button "Próxima página"

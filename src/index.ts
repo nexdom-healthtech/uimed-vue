@@ -4,6 +4,7 @@ import "vuetify/styles";
 import "./styles/fonts/fonts.css";
 import { createVuetify } from "vuetify";
 import { type Plugin } from "vue";
+import { localeOptions } from "@/composables/locale/constants.ts";
 
 /**
  * Create an UIMed-Vue instance to be installed after [createApp](https://vuejs.org/guide/essentials/application.html#the-application-instance).
@@ -11,6 +12,7 @@ import { type Plugin } from "vue";
  */
 export function createUimed(): Plugin {
   return createVuetify({
+    locale: localeOptions,
     theme: {
       defaultTheme: "light",
       themes: {
