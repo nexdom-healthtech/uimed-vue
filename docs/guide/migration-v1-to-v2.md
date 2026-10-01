@@ -62,10 +62,54 @@ import { UMain, UButton, URow, UColumn, UTextField } from "@nexdom/uimed-vue/com
 </template>
 ```
 
+### Notificações do menu superior
+
+A propriedade `date` das notificações do menu superior (`appBar.notifications`) foi substituída por `when`, um texto livre apresentado exatamente como informado. Assim, a aplicação passa a decidir como indicar quando a notificação foi gerada (exemplo: `"10:30"`, `"Ontem"` ou `"Há 5 minutos"`).
+
+**Antes (v1):**
+
+```ts
+const appBar = {
+  title: "Minha aplicação",
+  notifications: [{ title: "Nova versão", date: new Date() }],
+};
+```
+
+**Depois (v2):**
+
+```ts
+const appBar = {
+  title: "Minha aplicação",
+  notifications: [{ title: "Nova versão", when: "10:30" }],
+};
+```
+
+Para manter a formatação apresentada na v1 (horário para notificações de hoje, "Ontem" para as de ontem e a data completa para as demais), utilize as funções de [`@nexdom/shared`](https://nexdom-healthtech.github.io/shared/):
+
+```ts
+import { formatDateTime, toPeriodInterval } from "@nexdom/shared/utils";
+
+function formatNotificationWhen(date: Date) {
+  const interval = toPeriodInterval(date);
+  const wasThisMonth = interval.months === 0 && interval.years === 0;
+
+  if (wasThisMonth && interval.days === 0) return formatDateTime(date, "HH:mm");
+  if (wasThisMonth && interval.days === 1) return "Ontem";
+
+  return formatDateTime(date, "DD/MM/YYYY");
+}
+
+const appBar = {
+  title: "Minha aplicação",
+  notifications: [{ title: "Nova versão", when: formatNotificationWhen(new Date()) }],
+};
+```
+
 ## Dicas de Migração
 
 1. Procure por todas as importações antigas e substitua pelos novos nomes com o prefixo `U`
 2. Atualize todos os templates para usar as novas tags em kebab-case (ex: `<u-button>` em vez de `<btn>`)
 3. Os tipos de props não são mais exportados pela biblioteca. Utilize `ComponentProps`, de [`vue-component-type-helpers`](https://www.npmjs.com/package/vue-component-type-helpers), para obtê-los a partir do componente (veja [Tipagem de props](./getting-started#tipagem-de-props))
+4. Substitua a propriedade `date` das notificações do menu superior por `when`, informando o texto já formatado (veja [Notificações do menu superior](#notificacoes-do-menu-superior))
 
 Para mais informações sobre cada componente, consulte a [Documentação da API](../api/).

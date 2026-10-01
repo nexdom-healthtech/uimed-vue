@@ -68,8 +68,6 @@ import { UMain } from "@nexdom/uimed-vue/components";
 
 type MainProps = ComponentProps<typeof UMain>;
 
-const today = new Date();
-
 const appBar = reactive<NonNullable<MainProps["appBar"]>>({
   title: "Menu superior",
   help: "https://www.google.com",
@@ -77,25 +75,25 @@ const appBar = reactive<NonNullable<MainProps["appBar"]>>({
     {
       title: "v1.1",
       subtitle: "Nova versão disponível para instalação.",
-      date: new Date(today),
+      when: "10:30",
       read: false,
     },
     {
       title: "v1",
       subtitle: "Nova versão disponível para testes.",
-      date: new Date(today.setDate(today.getDate() - 1)),
+      when: "Ontem",
       read: false,
     },
     {
       title: "vBeta",
       subtitle: "Nova versão disponível para testes.",
-      date: new Date(today.setDate(today.getDate() - 2)),
+      when: "29/09/2026",
       read: true,
     },
     {
       title: "vAlpha",
       subtitle: "Nova versão disponível para testes.",
-      date: new Date(today.setDate(today.getDate() - 3)),
+      when: "28/09/2026",
       read: true,
     },
   ],
@@ -265,7 +263,6 @@ Consulte a referência de [API do UMain](../../api/components/main) para a lista
 
   type MainProps = ComponentProps<typeof UMain>
 
-  const today = new Date();
   const logo = "/uimed-vue/favicon.svg";
 
   const notificationsOpenCount = ref(0);
@@ -315,25 +312,25 @@ Consulte a referência de [API do UMain](../../api/components/main) para a lista
       {
         title: "v1.1",
         subtitle: "Nova versão disponível para instalação.",
-        date: new Date(today),
+        when: "10:30",
         read: false,
       },
       {
         title: "v1",
         subtitle: "Nova versão disponível para testes.",
-        date: new Date(today.setDate(today.getDate() - 1)),
+        when: "Ontem",
         read: false,
       },
       {
         title: "vBeta",
         subtitle: "Nova versão disponível para testes.",
-        date: new Date(today.setDate(today.getDate() - 2)),
+        when: "29/09/2026",
         read: true,
       },
       {
         title: "vAlpha",
         subtitle: "Nova versão disponível para testes.",
-        date: new Date(today.setDate(today.getDate() - 3)),
+        when: "28/09/2026",
         read: true,
       },
     ],
@@ -422,7 +419,7 @@ Consulte a referência de [API do UMain](../../api/components/main) para a lista
   const playgroundNotifications = ref<NonNullable<NonNullable<MainProps["appBar"]>["notifications"]>>([]);
 
   function addPlaygroundNotification() {
-    playgroundNotifications.value.push({ title: "Lorem ipsum...", read: false, date: new Date() })
+    playgroundNotifications.value.push({ title: "Lorem ipsum...", read: false, when: "Agora" })
   }
 
   function removePlaygroundNotification() {
