@@ -21,7 +21,7 @@
 
     <v-divider />
 
-    <v-skeleton-loader :loading="props.loading" type="list-item@6">
+    <v-skeleton-loader :loading="props.loading" type="list-item@6" color="primary">
       <v-list nav>
         <template v-for="(item, index) in filteredItems" :key="index">
           <template v-if="isParentItem(item)">
