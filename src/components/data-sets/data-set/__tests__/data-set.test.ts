@@ -75,6 +75,10 @@ describe("DataSet", () => {
         expect(columns[1].text()).toBe("1-Bruno Lima");
       });
 
+      it("should stretch the columns so the items of the same line share its height", () => {
+        expect(findRow(mountDataSet()).props("align")).toBe("stretch");
+      });
+
       it("should render the items as a list, one list item per column", () => {
         const wrapper = mountDataSet();
         const list = findList(wrapper);

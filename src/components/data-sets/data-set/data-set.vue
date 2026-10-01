@@ -14,7 +14,8 @@
       </template>
 
       <template #default="{ items: pageItems }">
-        <Row list>
+        <!-- Stretched, so the items of the same line (e.g. full-height cards) share its height -->
+        <Row list align="stretch">
           <Column v-for="(pageItem, index) in pageItems" :key="index" :cols="columnCols" list-item>
             <slot :item="pageItem.raw" :index />
           </Column>

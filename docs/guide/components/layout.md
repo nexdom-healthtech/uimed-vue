@@ -194,12 +194,219 @@ const especialidades = ["Cardiologia", "Dermatologia", "Pediatria"];
 </script>
 ```
 
+## Alinhamento vertical das colunas
+
+A prop `align` da `Row` define como as suas colunas se alinham verticalmente em relação à coluna mais alta da mesma linha:
+
+| Valor       | Alinhamento                                               |
+| ----------- | --------------------------------------------------------- |
+| `"start"`   | no topo (padrão).                                         |
+| `"center"`  | ao centro.                                                |
+| `"end"`     | na base.                                                  |
+| `"stretch"` | estica todas as colunas até a altura da coluna mais alta. |
+
+Com `stretch`, é a coluna que cresce até a altura da mais alta: o seu conteúdo só a preenche visualmente quando também ocupa a altura toda, como as caixas do exemplo abaixo ou um [`USection`](./section) com `fullHeight`. Por isso, utilize `stretch` para manter colunas lado a lado com a mesma altura, como cartões.
+
+::: info
+As colunas só ficam lado a lado em telas a partir de 600px de largura. Em telas menores, cada coluna ocupa uma linha inteira e o alinhamento não tem efeito visível.
+:::
+
+<demo>
+<u-main>
+  <u-container>
+    <u-row align="start" data-testid="demo-layout-align-start">
+      <u-column cols="4">
+        <div style="background: lightgreen; height: 100%;">
+          <code>align="start"</code>
+        </div>
+      </u-column>
+      <u-column cols="4">
+        <div style="background: lightgreen; height: 100%;">
+          Coluna mais alta<br />com<br />quatro<br />linhas
+        </div>
+      </u-column>
+      <u-column cols="4">
+        <div style="background: lightgreen; height: 100%;">
+          Coluna com<br />duas linhas
+        </div>
+      </u-column>
+    </u-row>
+    <u-row align="center" data-testid="demo-layout-align-center">
+      <u-column cols="4">
+        <div style="background: lightgreen; height: 100%;">
+          <code>align="center"</code>
+        </div>
+      </u-column>
+      <u-column cols="4">
+        <div style="background: lightgreen; height: 100%;">
+          Coluna mais alta<br />com<br />quatro<br />linhas
+        </div>
+      </u-column>
+      <u-column cols="4">
+        <div style="background: lightgreen; height: 100%;">
+          Coluna com<br />duas linhas
+        </div>
+      </u-column>
+    </u-row>
+    <u-row align="end" data-testid="demo-layout-align-end">
+      <u-column cols="4">
+        <div style="background: lightgreen; height: 100%;">
+          <code>align="end"</code>
+        </div>
+      </u-column>
+      <u-column cols="4">
+        <div style="background: lightgreen; height: 100%;">
+          Coluna mais alta<br />com<br />quatro<br />linhas
+        </div>
+      </u-column>
+      <u-column cols="4">
+        <div style="background: lightgreen; height: 100%;">
+          Coluna com<br />duas linhas
+        </div>
+      </u-column>
+    </u-row>
+    <u-row align="stretch" data-testid="demo-layout-align-stretch">
+      <u-column cols="4">
+        <div style="background: lightgreen; height: 100%;">
+          <code>align="stretch"</code>
+        </div>
+      </u-column>
+      <u-column cols="4">
+        <div style="background: lightgreen; height: 100%;">
+          Coluna mais alta<br />com<br />quatro<br />linhas
+        </div>
+      </u-column>
+      <u-column cols="4">
+        <div style="background: lightgreen; height: 100%;">
+          Coluna com<br />duas linhas
+        </div>
+      </u-column>
+    </u-row>
+  </u-container>
+</u-main>
+</demo>
+
+```vue
+<template>
+  <u-main>
+    <u-container>
+      <u-row align="start">
+        <u-column cols="4">
+          <div style="background: lightgreen; height: 100%;">
+            <code>align="start"</code>
+          </div>
+        </u-column>
+        <u-column cols="4">
+          <div style="background: lightgreen; height: 100%;">
+            Coluna mais alta<br />com<br />quatro<br />linhas
+          </div>
+        </u-column>
+        <u-column cols="4">
+          <div style="background: lightgreen; height: 100%;">Coluna com<br />duas linhas</div>
+        </u-column>
+      </u-row>
+      <u-row align="center">
+        <u-column cols="4">
+          <div style="background: lightgreen; height: 100%;">
+            <code>align="center"</code>
+          </div>
+        </u-column>
+        <u-column cols="4">
+          <div style="background: lightgreen; height: 100%;">
+            Coluna mais alta<br />com<br />quatro<br />linhas
+          </div>
+        </u-column>
+        <u-column cols="4">
+          <div style="background: lightgreen; height: 100%;">Coluna com<br />duas linhas</div>
+        </u-column>
+      </u-row>
+      <u-row align="end">
+        <u-column cols="4">
+          <div style="background: lightgreen; height: 100%;">
+            <code>align="end"</code>
+          </div>
+        </u-column>
+        <u-column cols="4">
+          <div style="background: lightgreen; height: 100%;">
+            Coluna mais alta<br />com<br />quatro<br />linhas
+          </div>
+        </u-column>
+        <u-column cols="4">
+          <div style="background: lightgreen; height: 100%;">Coluna com<br />duas linhas</div>
+        </u-column>
+      </u-row>
+      <u-row align="stretch">
+        <u-column cols="4">
+          <div style="background: lightgreen; height: 100%;">
+            <code>align="stretch"</code>
+          </div>
+        </u-column>
+        <u-column cols="4">
+          <div style="background: lightgreen; height: 100%;">
+            Coluna mais alta<br />com<br />quatro<br />linhas
+          </div>
+        </u-column>
+        <u-column cols="4">
+          <div style="background: lightgreen; height: 100%;">Coluna com<br />duas linhas</div>
+        </u-column>
+      </u-row>
+    </u-container>
+  </u-main>
+</template>
+
+<script lang="ts" setup>
+import { UContainer, UMain, URow, UColumn } from "@nexdom/uimed-vue/components";
+</script>
+```
+
+### Playground
+
+Experimente os valores da prop `align`.
+
+<playground v-model:actions="playgroundActions">
+<u-container>
+  <u-row :align="playgroundActions.align.value" data-testid="layout-preview">
+    <u-column cols="4">
+      <div style="background: lightgreen; height: 100%;">
+        Coluna 1
+      </div>
+    </u-column>
+    <u-column cols="4">
+      <div style="background: lightgreen; height: 100%;">
+        Coluna 2<br />mais<br />alta
+      </div>
+    </u-column>
+    <u-column cols="4">
+      <div style="background: lightgreen; height: 100%;">
+        Coluna 3<br />média
+      </div>
+    </u-column>
+  </u-row>
+</u-container>
+</playground>
+
 ## Ver também
 
 Consulte a referência de [API do UContainer](../../api/components/grid/container), [da URow](../../api/components/grid/row) e [da UColumn](../../api/components/grid/column) para a lista completa de props, slots e eventos.
 
 <script lang="ts" setup>
+  import { ref } from "vue"
+  import type { ComponentProps } from "vue-component-type-helpers"
   import { UContainer, UMain, URow, UColumn } from "../../../dist/components.js"
 
+  type RowProps = ComponentProps<typeof URow>
+
   const especialidades = ["Cardiologia", "Dermatologia", "Pediatria"];
+
+  const playgroundAlignOptions: Array<NonNullable<RowProps["align"]>> = ["start", "center", "end", "stretch"];
+
+  const playgroundActions = ref({
+    align: {
+      type: "combobox",
+      label: "Alinhamento",
+      value: playgroundAlignOptions[0],
+      dataTestid: "layout-playground-align",
+      items: playgroundAlignOptions
+    },
+  });
 </script>
