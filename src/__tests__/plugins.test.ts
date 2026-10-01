@@ -1,5 +1,4 @@
 import { vitePluginUimed, vitestServerPluginUimed } from "@/plugins.ts";
-import { resolve } from "node:path";
 import vitePluginVuetify from "vite-plugin-vuetify";
 
 vi.mock("vite-plugin-vuetify", () => ({ default: vi.fn() }));
@@ -12,10 +11,7 @@ describe("plugins", () => {
       vitePluginUimed();
 
       expect(vitePluginVuetify).toHaveBeenCalledOnce();
-      expect(vitePluginVuetify).toHaveBeenCalledWith({
-        autoImport: false,
-        styles: { configFile: resolve(__dirname, "../styles/settings.scss") },
-      });
+      expect(vitePluginVuetify).toHaveBeenCalledWith({ autoImport: false });
     });
   });
 

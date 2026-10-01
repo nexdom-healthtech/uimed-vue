@@ -1,6 +1,7 @@
 import "@mdi/font/css/materialdesignicons.css";
 
 import "vuetify/styles";
+import "./styles/fonts/fonts.css";
 import { createVuetify } from "vuetify";
 import { type Plugin } from "vue";
 
@@ -27,6 +28,7 @@ export function createUimed(): Plugin {
           },
           variables: {
             "border-color": "#D0D5DD",
+            "font-body": '"Unimed Slab", sans-serif',
           },
         },
       },
