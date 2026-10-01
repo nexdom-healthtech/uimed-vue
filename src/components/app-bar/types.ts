@@ -50,9 +50,10 @@ interface AppBarNotification {
   read?: boolean;
 
   /**
-   * Date the notification was generated.
+   * Free text telling when the notification was generated, shown as is (e.g.
+   * `"10:30"`, `"Ontem"` or `"28/09/2026"`). Hidden when omitted or empty.
    */
-  date?: Date;
+  when?: string;
 }
 
 export interface AppBarUserProps {
