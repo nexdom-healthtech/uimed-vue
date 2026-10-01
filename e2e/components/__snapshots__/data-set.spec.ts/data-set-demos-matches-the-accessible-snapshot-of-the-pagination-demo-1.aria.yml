@@ -5,15 +5,15 @@
     - listitem: /Daniel Rocha Ortopedia Consulta em \d+\/\d+\/\d+/
     - listitem: /Eduarda Alves Cardiologia Consulta em \d+\/\d+\/\d+/
     - listitem: /Felipe Costa Neurologia Consulta em \d+\/\d+\/\d+/
-- navigation "Pagination Navigation":
+- navigation "Navegação de paginação":
     - list:
         - listitem:
-            - button "Previous page" [disabled]
+            - button "Página anterior" [disabled]
         - listitem:
-            - button "Page 1, Current page"
+            - button "Página atual, página 1"
         - listitem:
-            - button "Go to page 2"
+            - button "Ir à página 2"
         - listitem:
-            - button "Go to page 3"
+            - button "Ir à página 3"
         - listitem:
-            - button "Next page"
+            - button "Próxima página"

@@ -72,6 +72,7 @@ test.describe("details", () => {
 
       await expect(preview).toBeHidden();
       await expect(previewArea.locator(".v-skeleton-loader__bone").first()).toBeVisible();
+      await expect(previewArea.getByRole("alert", { name: "Carregando..." })).toBeVisible();
     });
 
     test("updates title text when playground-title changes", async ({ page }) => {

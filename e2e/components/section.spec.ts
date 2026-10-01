@@ -87,6 +87,7 @@ test.describe("section", () => {
 
       await expect(previewCard).toBeHidden();
       await expect(previewArea.locator(".v-skeleton-loader__bone").first()).toBeVisible();
+      await expect(previewArea.getByRole("alert", { name: "Carregando..." })).toBeVisible();
     });
 
     test("hides actions when playground-action is toggled", async ({ page }) => {
