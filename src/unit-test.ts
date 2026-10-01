@@ -1,7 +1,7 @@
 import { createVuetify } from "vuetify";
 import * as components from "vuetify/components";
 import * as directives from "vuetify/directives";
-import { localeOptions } from "@/composables/locale/constants.ts";
+import { localeOptions } from "@/consts/locale.ts";
 
 const vuetify = createVuetify({ components, directives, locale: localeOptions });
 

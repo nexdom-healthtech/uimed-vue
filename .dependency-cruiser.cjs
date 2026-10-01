@@ -120,10 +120,10 @@ module.exports = {
     },
     {
       name: "components-and-composables",
-      comment: `The root folders from this project must be components or composables only.`,
+      comment: `The root folders from this project must be components, composables or consts only.`,
       severity: "error",
       from: {
-        pathNot: ["src/(__tests__|index|plugins|unit-test|components|composables)"],
+        pathNot: ["src/(__tests__|index|plugins|unit-test|components|composables|consts)"],
       },
       to: {},
     },
