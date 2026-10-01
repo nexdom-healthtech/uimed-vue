@@ -118,7 +118,7 @@ import {
   type ParentOptionOrOption,
 } from "@/components/app-bar/types.ts";
 import useRouteProps, { routeToProps } from "@/composables/navigation/use-route-props.ts";
-import { formatDateTime, toPeriodInterval } from "@nexdom/shared/utils";
+import { currentDateTime, formatDateTime, navigatePeriod } from "@nexdom/shared/utils";
 import { computed } from "vue";
 import {
   VAppBar,
@@ -174,26 +174,15 @@ function isParentOption(option: ParentOptionOrOption): option is ParentOption {
   return "items" in option;
 }
 
+// Compares calendar days, not elapsed time, so a notification from 23:00 is
+// "Ontem" at 08:00 of the next day
 function formatNotificationDate(date: Date) {
-  const interval = toPeriodInterval(date);
+  const day = formatDateTime(date, "DD/MM/YYYY");
 
-  if (wasThisMonth(interval)) {
-    if (wasToday(interval)) return formatDateTime(date, "HH:mm");
-    else if (wasYesterday(interval)) return "Ontem";
-  }
+  if (day === currentDateTime("DD/MM/YYYY")) return formatDateTime(date, "HH:mm");
+  if (day === formatDateTime(navigatePeriod(new Date(), { days: -1 }), "DD/MM/YYYY"))
+    return "Ontem";
 
-  return formatDateTime(date, "DD/MM/YYYY");
-}
-
-function wasThisMonth(interval: ReturnType<typeof toPeriodInterval>) {
-  return interval.months === 0 && interval.years === 0;
-}
-
-function wasToday(interval: ReturnType<typeof toPeriodInterval>) {
-  return interval.days === 0;
-}
-
-function wasYesterday(interval: ReturnType<typeof toPeriodInterval>) {
-  return interval.days === 1;
+  return day;
 }
 </script>
