@@ -10,13 +10,13 @@ Responsável por carregar o menu superior, o menu de navegação lateral, compon
 
 ## Props
 
-| Prop             | Tipo                                | Padrão  | Descrição                                                                                                                                                  |
-| ---------------- | ----------------------------------- | ------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `dataTestid`     | `string`                            |         | Aplica atributo `data-testid` para testes sobre o componente.                                                                                              |
-| `logo`           | `string`                            |         | URL utilizada para carregar a logo que será apresentada.                                                                                                   |
-| `appBar`         | [`AppBar`](#appbar)                 |         | Conjunto de propriedades para aplicar à barra superior.                                                                                                    |
-| `navigationMenu` | [`NavigationMenu`](#navigationmenu) |         | Conjunto de propriedades para aplicar ao menu lateral de navegação.                                                                                        |
-| `loading`        | `boolean`                           | `false` | Exibe skeletons no lugar das ações do menu superior e dos itens do menu de navegação enquanto os dados são carregados. O conteúdo da página não é afetado. |
+| Prop             | Tipo                                | Padrão  | Descrição                                                                                                                                                   |
+| ---------------- | ----------------------------------- | ------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `dataTestid`     | `string`                            |         | Aplica atributo `data-testid` para testes sobre o componente.                                                                                               |
+| `logo`           | `string`                            |         | URL utilizada para carregar a logo que será apresentada. A logo é decorativa (`alt=""`): o título do menu superior (`appBar.title`) identifica a aplicação. |
+| `appBar`         | [`AppBar`](#appbar)                 |         | Conjunto de propriedades para aplicar à barra superior.                                                                                                     |
+| `navigationMenu` | [`NavigationMenu`](#navigationmenu) |         | Conjunto de propriedades para aplicar ao menu lateral de navegação.                                                                                         |
+| `loading`        | `boolean`                           | `false` | Exibe skeletons no lugar das ações do menu superior e dos itens do menu de navegação enquanto os dados são carregados. O conteúdo da página não é afetado.  |
 
 ### `AppBar`
 

@@ -14,7 +14,9 @@ O componente destinado a raiz do projeto se chama `Main`.
 
 A `logo` nos permite provisionar a URL que será utilizada pelo `Main` para orquestrar a apresentação de uma imagem de logo na aplicação.
 
-<demo contained>
+A logo é decorativa e não é anunciada por leitores de tela, que identificam a aplicação pelo título do menu superior (`title` da prop `app-bar`); por isso, informe o título junto com a `logo`.
+
+<demo contained data-testid="demo-root-logo">
 <u-main :appBar="{ title: appBar.title }" :logo>
   <h2>O conteúdo da página vai aqui...</h2>
 </u-main>

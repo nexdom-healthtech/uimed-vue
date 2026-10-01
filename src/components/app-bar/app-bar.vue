@@ -9,6 +9,7 @@
     <v-img
       v-if="logo"
       :src="props.logo"
+      alt=""
       height="100%"
       width="fit-content"
       class="py-2 ml-5 mr-n3"

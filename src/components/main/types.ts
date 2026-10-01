@@ -12,6 +12,9 @@ export type MainProps = {
 
   /**
    * URL to logo image.
+   *
+   * The logo is decorative (`alt=""`): screen readers identify the app by
+   * the app bar title (`appBar.title`).
    */
   logo?: string;
 
