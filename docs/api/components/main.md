@@ -54,12 +54,12 @@ Responsável por carregar o menu superior, o menu de navegação lateral, compon
 
 #### `Notification`
 
-| Prop       | Tipo      | Padrão | Descrição                                                                                        |
-| ---------- | --------- | ------ | ------------------------------------------------------------------------------------------------ |
-| `title`    | `string`  |        | Texto principal descrevendo a notificação.                                                       |
-| `subtitle` | `string`  |        | Texto complementar com detalhes adicionais.                                                      |
-| `read`     | `boolean` |        | Indica se a notificação já foi lida. **Notificações não lidas são destacadas com um indicador.** |
-| `date`     | `Date`    |        | Data em que a notificação foi gerada.                                                            |
+| Prop       | Tipo      | Padrão | Descrição                                                                                                                                                     |
+| ---------- | --------- | ------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `title`    | `string`  |        | Texto principal descrevendo a notificação.                                                                                                                    |
+| `subtitle` | `string`  |        | Texto complementar com detalhes adicionais.                                                                                                                   |
+| `read`     | `boolean` |        | Indica se a notificação já foi lida. **Notificações não lidas são destacadas com um indicador.**                                                              |
+| `when`     | `string`  |        | Texto livre indicando quando a notificação foi gerada, apresentado sem formatação (exemplo: `"10:30"`, `"Ontem"`). **Será ocultado quando omitido ou vazio.** |
 
 ### `NavigationMenu`
 
