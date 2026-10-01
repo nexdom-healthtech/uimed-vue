@@ -2,6 +2,8 @@ import type { ButtonProps } from "@/components/button/types.ts";
 
 export type SectionVariant = "primary" | "secondary";
 
+export type SectionTextAlign = "start" | "center" | "end";
+
 /**
  * Props exposed by the {@link Section} component.
  */
@@ -22,6 +24,21 @@ export type SectionProps = {
    * Subtitle displayed below the title.
    */
   subtitle?: string;
+
+  /**
+   * Horizontal alignment of the section's title, subtitle, content and actions.
+   * Available options are:
+   * - `"start"`: aligns the text to the start (left in left-to-right languages)
+   *   and keeps the actions at the end;
+   * - `"center"`: centers the text and the actions;
+   * - `"end"`: aligns the text and the actions to the end.
+   *
+   * Uses `start`/`end` instead of `left`/`right`, so it follows the text
+   * direction in right-to-left languages. Nested components inherit the
+   * alignment, unless they define their own.
+   * @default "start"
+   */
+  textAlign?: SectionTextAlign;
 
   /**
    * List of actions displayed at the bottom of the section, inside

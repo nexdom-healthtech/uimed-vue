@@ -1,13 +1,23 @@
 import { VCard, VCardActions, VSkeletonLoader } from "vuetify/components";
 import { mount } from "@vue/test-utils";
 import Section from "@/components/sections/section/section.vue";
-import type { SectionProps, SectionVariant } from "@/components/sections/section/types.ts";
+import type {
+  SectionProps,
+  SectionTextAlign,
+  SectionVariant,
+} from "@/components/sections/section/types.ts";
 import { vueTestUtilsPluginUimed } from "@/unit-test.ts";
 import Button from "@/components/button/button.vue";
 
 const variants: [SectionVariant, string][] = [
   ["primary", "elevated"],
   ["secondary", "outlined"],
+];
+
+const textAligns: [SectionTextAlign, string, string][] = [
+  ["start", "text-start", "justify-end"],
+  ["center", "text-center", "justify-center"],
+  ["end", "text-end", "justify-end"],
 ];
 
 const testId = "section-test-id";
@@ -103,6 +113,55 @@ describe("Section", () => {
         const wrapper = mountSection();
         const vCard = findVCard(wrapper);
         expect(vCard.props("subtitle")).toBeUndefined();
+      });
+    });
+
+    describe("textAlign", () => {
+      const actions = [{ label: "Action 1", onClick: vi.fn() }];
+
+      it.each(textAligns)(
+        'should apply `textAlign="%s"` as the %s class on the card and %s on the actions',
+        async (textAlign, textClass, actionsClass) => {
+          const wrapper = mountSection();
+          await wrapper.setProps({ textAlign, actions });
+
+          expect(findVCard(wrapper).classes()).toEqual(
+            expect.arrayContaining(["d-flex", "flex-column", textClass]),
+          );
+          expect(findVCardActions(wrapper).classes()).toEqual(
+            expect.arrayContaining(["mt-auto", actionsClass]),
+          );
+        },
+      );
+
+      it("should align to the start, with the actions at the end, by default", async () => {
+        const wrapper = mountSection();
+        await wrapper.setProps({ actions });
+
+        expect(findVCard(wrapper).classes()).toContain("text-start");
+        expect(findVCardActions(wrapper).classes()).toContain("justify-end");
+        expect(findVCardActions(wrapper).classes()).not.toContain("justify-center");
+      });
+
+      it("should update the classes when the prop changes", async () => {
+        const wrapper = mountSection();
+        await wrapper.setProps({ textAlign: "center", actions });
+        expect(findVCard(wrapper).classes()).toContain("text-center");
+        expect(findVCardActions(wrapper).classes()).toContain("justify-center");
+
+        await wrapper.setProps({ textAlign: "end" });
+        expect(findVCard(wrapper).classes()).toContain("text-end");
+        expect(findVCard(wrapper).classes()).not.toContain("text-center");
+        expect(findVCardActions(wrapper).classes()).toContain("justify-end");
+        expect(findVCardActions(wrapper).classes()).not.toContain("justify-center");
+      });
+
+      it("should align the text without rendering the actions area when there are no actions", async () => {
+        const wrapper = mountSection();
+        await wrapper.setProps({ textAlign: "center" });
+
+        expect(findVCard(wrapper).classes()).toContain("text-center");
+        expect(findVCardActions(wrapper).exists()).toBeFalsy();
       });
     });
 
