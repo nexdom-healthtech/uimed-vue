@@ -41,6 +41,7 @@ export default defineConfig({
       composables: "src/composables/index.ts",
     },
     copy: "src/styles",
+    deps: { neverBundle: [/\.css$/] },
     platform: "neutral",
     plugins: [vue()],
     dts: {
