@@ -2,8 +2,8 @@
 - text: Menu superior
 - alert
 - navigation:
-    - text: Buscar
-    - textbox "Buscar" [disabled]
+    - textbox "Buscar" [disabled]:
+        - /placeholder: Buscar (Ctrl+K)
     - alert
     - separator
     - alert

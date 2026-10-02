@@ -1,6 +1,6 @@
 - navigation:
-    - text: Buscar
-    - textbox "Buscar"
+    - textbox "Buscar":
+        - /placeholder: Buscar (Ctrl+K)
     - alert
     - separator
     - list:

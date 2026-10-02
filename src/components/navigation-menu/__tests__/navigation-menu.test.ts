@@ -1,7 +1,8 @@
 import { VNavigationDrawer, VListItem, VListGroup, VSkeletonLoader } from "vuetify/components";
 import NavigationMenu from "@/components/navigation-menu/navigation-menu.vue";
 import TextField from "@/components/inputs/text-field/text-field.vue";
-import { mount } from "@vue/test-utils";
+import { owners } from "@/composables/navigation/use-navigation-search-shortcut.ts";
+import { flushPromises, mount } from "@vue/test-utils";
 import { vueTestUtilsPluginUimed } from "@/unit-test.ts";
 import type {
   NavigationMenuItem,
@@ -190,7 +191,7 @@ describe("NavigationMenu", () => {
               VNavigationDrawer: {
                 props: ["modelValue"],
                 emits: ["update:modelValue"],
-                template: `<div v-bind="$props"><slot /></div>`,
+                template: `<div v-bind="$props"><slot name="prepend" /><slot /></div>`,
               },
             },
             plugins: [vueTestUtilsPluginUimed()],
@@ -265,6 +266,13 @@ describe("NavigationMenu", () => {
       it("should render the search field with correct data-testid", () => {
         const textField = findTextField(wrapper);
         expect(textField.props("dataTestid")).toBe(`${testId}-search`);
+      });
+
+      it("should show the shortcut in the placeholder instead of a label", () => {
+        const textField = findTextField(wrapper);
+        expect(textField.props("placeholder")).toBe("Buscar (Ctrl+K)");
+        expect(textField.props("label")).toBeUndefined();
+        expect(textField.find("input").attributes("aria-label")).toBe("Buscar");
       });
 
       it("should filter plain items by description", async () => {
@@ -361,10 +369,56 @@ describe("NavigationMenu", () => {
       });
     });
   });
+
+  describe("shortcut", () => {
+    let attached: ReturnType<typeof mountNavigationMenu>;
+
+    beforeEach(() => {
+      // Menus mounted by previous tests would answer the shortcut first
+      owners.value = [];
+      attached = mountAttached();
+    });
+
+    afterEach(() => attached.unmount());
+
+    function mountAttached() {
+      return mountNavigationMenu({ attachTo: document.body });
+    }
+
+    async function pressShortcut() {
+      window.dispatchEvent(new KeyboardEvent("keydown", { key: "k", ctrlKey: true }));
+      await flushPromises();
+    }
+
+    it("should open the menu and focus the search with Ctrl+K", async () => {
+      await pressShortcut();
+
+      expect(attached.emitted("update:modelValue")?.[0]).toEqual([true]);
+      expect(document.activeElement).toBe(findTextField(attached).find("input").element);
+    });
+
+    it("should open the menu without focusing the search while loading", async () => {
+      await attached.setProps({ loading: true });
+
+      await pressShortcut();
+
+      expect(attached.emitted("update:modelValue")?.[0]).toEqual([true]);
+      expect(document.activeElement).toBe(document.body);
+    });
+
+    it("should close the menu with Escape", async () => {
+      await attached.setProps({ modelValue: true });
+
+      await findTextField(attached).find("input").trigger("keydown", { key: "Escape" });
+
+      expect(attached.emitted("update:modelValue")?.[0]).toEqual([false]);
+    });
+  });
 });
 
-function mountNavigationMenu() {
+function mountNavigationMenu(options: { attachTo?: HTMLElement } = {}) {
   return mount(NavigationMenu, {
+    ...options,
     attrs: {
       "data-testid": testId,
       style: styleValue,
@@ -375,10 +429,13 @@ function mountNavigationMenu() {
         VNavigationDrawer: {
           props: { modelValue: String, color: String, temporary: Boolean, absolute: Boolean },
           emits: ["update:modelValue"],
+          // The inner element stands for the drawer's own, which holds the focus while it's open
           template: `
             <div v-bind="{ 'data-testid': $attrs['data-testid'] }">
-              <slot name="prepend" />
-              <slot />
+              <div class="v-navigation-drawer">
+                <slot name="prepend" />
+                <slot />
+              </div>
             </div>
           `,
         },

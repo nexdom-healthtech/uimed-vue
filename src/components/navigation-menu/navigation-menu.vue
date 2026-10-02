@@ -6,13 +6,15 @@
     :aria-busy="props.loading || undefined"
     absolute
     temporary
+    @keydown.esc="close"
   >
     <template #prepend>
       <div class="px-4 pt-2">
         <text-field
+          ref="searchField"
           v-model="search"
           type="search"
-          label="Buscar"
+          :placeholder="`Buscar (${shortcutLabel})`"
           :data-testid="searchDataTestid"
           :disabled="props.loading"
         />
@@ -78,7 +80,8 @@ import {
   VDivider,
   VSkeletonLoader,
 } from "vuetify/components";
-import { computed, ref } from "vue";
+import { useNavigationSearchShortcut } from "@/composables/navigation/use-navigation-search-shortcut.ts";
+import { computed, ref, useTemplateRef, type ComponentPublicInstance } from "vue";
 
 type Props = NavigationMenuProps & {
   loading?: boolean;
@@ -87,6 +90,10 @@ type Props = NavigationMenuProps & {
 const props = defineProps<Props>();
 const open = defineModel<boolean>({ default: false });
 const search = ref("");
+const { label: shortcutLabel, close } = useNavigationSearchShortcut({
+  open,
+  field: useTemplateRef<ComponentPublicInstance>("searchField"),
+});
 
 const filteredItems = computed(() => filterItems());
 const searchDataTestid = computed(() => `${props.dataTestid}-search`);
