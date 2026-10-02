@@ -92,7 +92,7 @@ async function openWithActions() {
 
 ### Fechando o diálogo
 
-Além dos botões, o usuário pode fechar o diálogo pela tecla `Esc` ou clicando fora dele. Nesses casos, o diálogo resolve `undefined`.
+Além dos botões, o usuário pode fechar o diálogo pela tecla `Esc` ou clicando fora dele. Nesses casos, o diálogo resolve `undefined` ao fim da animação de fechamento.
 
 O botão "voltar" do navegador também fecha o diálogo, sem sair da página, em aplicações que usam o [Vue Router](https://router.vuejs.org/). A exceção é quando o "voltar" leva a uma página aberta com `router.replace`, como a página pela qual o usuário entrou na aplicação: nesse caso, a navegação acontece e o diálogo continua aberto.
 
@@ -122,6 +122,7 @@ function openQueue() {
 
 - Consulte a referência de [API do useDialog](../../api/composables/use-dialog) para mais informações.
 - Para confirmar uma ação antes de executá-la, use a composable [useConfirm](./use-confirm).
+- Para apresentar conteúdo próprio, como um formulário, em uma janela modal, use o componente [Dialog](../components/dialog).
 
 <script lang="ts" setup>
   import { ref } from "vue";

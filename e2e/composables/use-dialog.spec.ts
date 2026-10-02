@@ -114,6 +114,36 @@ test.describe("use-dialog", () => {
     });
   });
 
+  test.describe("queue after dismissal", () => {
+    for (const [way, close] of [
+      ["Esc", (page: Page) => page.keyboard.press("Escape")],
+      ["a click outside it", (page: Page) => page.mouse.click(5, 5)],
+    ] as const) {
+      test(`displays the next dialog once the first one is closed by ${way}`, async ({ page }) => {
+        const opener = page.getByTestId("btn-queue");
+        await opener.click();
+
+        const dialog = getDialog(page);
+        const closeButton = dialog.getByRole("button", { name: "Fechar" });
+        await expect(dialog).toHaveAccessibleName("Primeiro diálogo");
+        await expect(closeButton).toBeFocused();
+
+        await close(page);
+        await expect(dialog).toHaveAccessibleName("Segundo diálogo");
+        await expect(dialog).toHaveCount(1);
+        await expect(closeButton).toBeFocused();
+
+        await close(page);
+        await expect(dialog).toBeHidden();
+        await expect(opener).toBeFocused();
+
+        await opener.click();
+        await expect(dialog).toHaveAccessibleName("Primeiro diálogo");
+        await expect(closeButton).toBeFocused();
+      });
+    }
+  });
+
   test.describe("UI consistency", () => {
     test("matches last screenshots", async ({ page }) => {
       const dialog = getDialog(page);
