@@ -1,12 +1,13 @@
 import { VApp, VMain } from "vuetify/components";
 import Main from "@/components/main/main.vue";
-import { mount } from "@vue/test-utils";
+import { flushPromises, mount } from "@vue/test-utils";
 import { vueTestUtilsPluginUimed } from "@/unit-test.ts";
 import { UContainer } from "@/components/index.ts";
 import Toast from "@/components/dialogs/toast.vue";
 import DialogHost from "@/components/dialogs/dialog-host.vue";
 import AppBar from "@/components/app-bar/app-bar.vue";
 import NavigationMenu from "@/components/navigation-menu/navigation-menu.vue";
+import { owners } from "@/composables/navigation/use-navigation-search-shortcut.ts";
 import { nextTick } from "vue";
 
 const testId = "main-test-component";
@@ -156,6 +157,18 @@ describe("Main", () => {
         await nextTick();
 
         expect(appBar.props("navigationOpen")).toBe(false);
+      });
+
+      it("should open the navigation menu and sync the app bar with Ctrl+K", async () => {
+        // Menus mounted by previous tests would answer the shortcut first
+        owners.value = [];
+        await wrapper.setProps({ appBar: { title: "AI Chat" }, navigationMenu: { items } });
+
+        window.dispatchEvent(new KeyboardEvent("keydown", { key: "k", ctrlKey: true }));
+        await flushPromises();
+
+        expect(findNavigationMenu(wrapper).props("modelValue")).toBe(true);
+        expect(findAppBar(wrapper).props("navigationOpen")).toBe(true);
       });
     });
 

@@ -1,8 +1,8 @@
 - button "Menu de navegação"
 - text: Menu superior
 - navigation:
-    - text: Buscar
-    - textbox "Buscar"
+    - textbox "Buscar":
+        - /placeholder: Buscar (Ctrl+K)
     - alert
     - separator
     - list:

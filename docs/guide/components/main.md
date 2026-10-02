@@ -151,6 +151,12 @@ Para ocultar o menu de navegação, basta omitir essa prop.
 
 O menu também conta com um campo de busca que filtra itens e grupos em tempo real, no formato _case-insensitive_.
 
+O atalho `Ctrl + K` (`⌘ + K` no macOS), indicado no próprio campo de busca, abre o menu e coloca o foco na busca, com o texto já digitado selecionado. Com o menu aberto, o atalho apenas leva o foco de volta à busca. Ele funciona mesmo com o foco em um campo de formulário, mas é ignorado com o foco dentro de diálogos, confirmações, menus suspensos e editores de texto rico, ou no botão de um menu suspenso aberto.
+
+A tecla `Esc` fecha o menu enquanto o foco está nele ou, se ele foi aberto pelo atalho, mesmo com o foco fora dele (como durante o carregamento, em que a busca desabilitada não recebe o foco). Se o menu foi aberto pelo atalho, o foco volta ao elemento que o tinha antes.
+
+Quando a página tem mais de um `UMain` com menu de navegação, apenas o primeiro responde ao atalho. Por isso, nesta página, `Ctrl + K` abre o menu da demonstração abaixo em vez da busca da documentação, que continua disponível pela tecla `/`.
+
 <demo contained data-testid="demo-root-navigation-toggle">
 <u-main :appBar="demoNavigationToggleAppBar" :navigationMenu="navigationMenu" data-testid="root-demo-navigation-toggle">
   <h2>O conteúdo da página vai aqui...</h2>
