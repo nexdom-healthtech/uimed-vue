@@ -1,5 +1,5 @@
 import { gotoPage } from "@e2e/utils.ts";
-import { test, expect, type Page } from "@playwright/test";
+import { test, expect, type Locator, type Page } from "@playwright/test";
 
 test.describe("main", () => {
   test.beforeEach(async ({ page }) => {
@@ -120,6 +120,139 @@ test.describe("main", () => {
 
         await expect(inicioItem).toBeVisible();
       });
+    });
+  });
+
+  // `ControlOrMeta` is Control on the Linux runners and ⌘ on macOS, as the shortcut itself
+  test.describe("navigation-menu shortcut", () => {
+    const shortcut = "ControlOrMeta+k";
+
+    test("shows the shortcut in the search placeholder and keeps its name", async ({ page }) => {
+      const userAgent = await page.evaluate(() => navigator.userAgent);
+      const keys = userAgent.includes("Macintosh") ? "⌘K" : "Ctrl+K";
+      const search = getNavigationMenuSearch(page);
+
+      await expect(search).toHaveAttribute("placeholder", `Buscar (${keys})`);
+      await expect(search).toHaveAccessibleName("Buscar");
+      // Exact, so the test fails if the placeholder (with the shortcut) names the field again
+      await expect(
+        getNavigationMenu(page).getByRole("textbox", {
+          name: "Buscar",
+          exact: true,
+          includeHidden: true,
+        }),
+      ).toHaveCount(1);
+      await expect(getNavigationToggleButton(page)).toHaveAttribute(
+        "aria-keyshortcuts",
+        userAgent.includes("Macintosh") ? "Meta+K" : "Control+K",
+      );
+    });
+
+    test("opens only the first navigation menu and focuses its search", async ({ page }) => {
+      await page.keyboard.press(shortcut);
+
+      await expect(getNavigationToggleDrawer(page)).toContainClass("v-navigation-drawer--active");
+      await expect(getNavigationMenuSearch(page)).toBeFocused();
+      await expect(getLoadingNavigationMenu(page)).not.toContainClass(
+        "v-navigation-drawer--active",
+      );
+      await expect(getPlaygroundNavigationMenu(page)).not.toContainClass(
+        "v-navigation-drawer--active",
+      );
+      // The docs search, which also answers Ctrl+K, stays closed
+      await expect(getDocsSearch(page)).not.toBeAttached();
+    });
+
+    test("selects the search text when the shortcut is pressed again", async ({ page }) => {
+      const search = getNavigationMenuSearch(page);
+      await page.keyboard.press(shortcut);
+      await search.fill("Início");
+      await search.press("End");
+
+      await page.keyboard.press(shortcut);
+
+      await expect(getNavigationToggleDrawer(page)).toContainClass("v-navigation-drawer--active");
+      await expect(search).toBeFocused();
+      await expect(search).toHaveValue("Início");
+      expect(await getSelection(search)).toEqual([0, "Início".length]);
+      await expect(getNavigationMenu(page).getByText("Início")).toBeVisible();
+      await expect(getNavigationMenu(page).getByText("Configurações")).not.toBeAttached();
+    });
+
+    test("focuses the search while typing in another field", async ({ page }) => {
+      const title = page.getByTestId("root-playground-title").locator("input");
+      await title.fill("Novo título");
+
+      await title.press(shortcut);
+
+      await expect(getNavigationToggleDrawer(page)).toContainClass("v-navigation-drawer--active");
+      await expect(getNavigationMenuSearch(page)).toBeFocused();
+      await expect(title).toHaveValue("Novo título");
+      await expect(getDocsSearch(page)).not.toBeAttached();
+    });
+
+    test("leaves the shortcut to the page inside a menu", async ({ page }) => {
+      await getUserButton(page).click();
+      const link = getUserMenu(page).getByRole("link", { name: "GitHub NEXDOM" });
+      await link.focus();
+
+      await link.press(shortcut);
+
+      await expect(getNavigationToggleDrawer(page)).not.toContainClass(
+        "v-navigation-drawer--active",
+      );
+      await expect(getDocsSearch(page)).toBeVisible();
+    });
+
+    test("leaves the shortcut to the page while a menu opened by a click is open", async ({
+      page,
+    }) => {
+      const userButton = getUserButton(page);
+      await userButton.click();
+      await expect(getUserMenu(page)).toBeVisible();
+      // A click leaves the focus on the menu's button, outside the menu itself
+      await expect(userButton).toBeFocused();
+
+      await page.keyboard.press(shortcut);
+
+      await expect(getNavigationToggleDrawer(page)).not.toContainClass(
+        "v-navigation-drawer--active",
+      );
+      await expect(getDocsSearch(page)).toBeVisible();
+    });
+
+    test("closes the navigation menu with Escape and gives the focus back", async ({ page }) => {
+      const title = page.getByTestId("root-playground-title").locator("input");
+      await title.focus();
+      await title.press(shortcut);
+      await expect(getNavigationMenuSearch(page)).toBeFocused();
+
+      await page.keyboard.press("Escape");
+
+      await expect(getNavigationToggleDrawer(page)).not.toContainClass(
+        "v-navigation-drawer--active",
+      );
+      await expect(title).toBeFocused();
+    });
+
+    test("closes the navigation menu opened by its button with Escape", async ({ page }) => {
+      await getNavigationToggleButton(page).click();
+      await getNavigationMenu(page).getByRole("link", { name: "Início" }).focus();
+
+      await page.keyboard.press("Escape");
+
+      await expect(getNavigationToggleDrawer(page)).not.toContainClass(
+        "v-navigation-drawer--active",
+      );
+    });
+
+    test("keeps the docs search on the slash key", async ({ page }) => {
+      await page.keyboard.press("/");
+
+      await expect(getDocsSearch(page)).toBeVisible();
+      await expect(getNavigationToggleDrawer(page)).not.toContainClass(
+        "v-navigation-drawer--active",
+      );
     });
   });
 
@@ -408,6 +541,17 @@ test.describe("main", () => {
     });
   });
 });
+
+function getDocsSearch(page: Page) {
+  return page.locator(".VPLocalSearchBox");
+}
+
+function getSelection(input: Locator) {
+  return input.evaluate((element: HTMLInputElement) => [
+    element.selectionStart,
+    element.selectionEnd,
+  ]);
+}
 
 function getLoadingDemo(page: Page) {
   return page.getByTestId("demo-root-loading");

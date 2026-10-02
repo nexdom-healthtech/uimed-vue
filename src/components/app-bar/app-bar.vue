@@ -3,6 +3,7 @@
     <v-app-bar-nav-icon
       v-if="navigation"
       :data-testid="navigationBtnDataTestid"
+      :aria-keyshortcuts="navigationKeyshortcuts"
       @click="navigationOpen = !navigationOpen"
     />
 
@@ -125,6 +126,7 @@ import {
   type ParentOptionOrOption,
 } from "@/components/app-bar/types.ts";
 import useRouteProps, { routeToProps } from "@/composables/navigation/use-route-props.ts";
+import { useNavigationShortcutKeys } from "@/composables/navigation/use-navigation-search-shortcut.ts";
 import { computed, watch } from "vue";
 import {
   VAppBar,
@@ -156,6 +158,8 @@ type Props = AppBarProps & {
 const props = defineProps<Props>();
 const notificationsOpen = defineModel<boolean>("notificationsOpen", { default: false });
 const navigationOpen = defineModel<boolean>("navigationOpen");
+// Ctrl+K (⌘K on macOS) also opens the navigation menu, handled by the menu itself
+const { ariaKeyshortcuts: navigationKeyshortcuts } = useNavigationShortcutKeys();
 
 const helpBtnDataTestid = computed(() => `${props.dataTestid}-help`);
 const notificationsBtnDataTestid = computed(() => `${props.dataTestid}-notifications`);

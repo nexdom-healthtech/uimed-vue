@@ -64,6 +64,8 @@ Responsável por carregar o menu superior, o menu de navegação lateral, compon
 
 ### `NavigationMenu`
 
+O menu conta com um campo de busca, focado pelo atalho `Ctrl + K` (`⌘ + K` no macOS), que também abre o menu. A tecla `Esc` fecha o menu enquanto o foco está nele.
+
 | Prop         | Tipo                                             | Padrão | Descrição                                                                                                                 |
 | ------------ | ------------------------------------------------ | ------ | ------------------------------------------------------------------------------------------------------------------------- |
 | `dataTestid` | `string`                                         |        | Aplica atributo `data-testid` para testes sobre o componente.                                                             |
