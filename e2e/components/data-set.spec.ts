@@ -97,14 +97,14 @@ test.describe("data-set", () => {
       const pagination = dataSet.getByRole("navigation");
 
       await expect(page.getByTestId("demo-data-set-pagination-item")).toHaveCount(6);
-      await expect(pagination.getByRole("button", { name: /page \d/i })).toHaveCount(3);
+      await expect(pagination.getByRole("button", { name: /página \d/i })).toHaveCount(3);
       await expect(page.getByTestId("demo-data-set-pagination-page")).toHaveText("Página atual: 1");
     });
 
     test("goes to the next page", async ({ page }) => {
       const dataSet = page.getByTestId("demo-data-set-pagination");
 
-      await dataSet.getByRole("button", { name: "Next page" }).click();
+      await dataSet.getByRole("button", { name: "Próxima página" }).click();
 
       await expect(dataSet.getByText("Gabriela Reis")).toBeVisible();
       await expect(dataSet.getByText("Ana Souza")).toHaveCount(0);
@@ -114,7 +114,7 @@ test.describe("data-set", () => {
     test("goes to the last page", async ({ page }) => {
       const dataSet = page.getByTestId("demo-data-set-pagination");
 
-      await dataSet.getByRole("button", { name: "Go to page 3" }).click();
+      await dataSet.getByRole("button", { name: "Ir à página 3" }).click();
 
       const cards = page.getByTestId("demo-data-set-pagination-item");
       await expect(cards).toHaveCount(3);
@@ -200,6 +200,7 @@ test.describe("data-set", () => {
 
       await expect(preview).toBeHidden();
       await expect(previewArea.locator(".v-skeleton-loader__bone").first()).toBeVisible();
+      await expect(previewArea.getByRole("alert", { name: "Carregando..." })).toBeVisible();
     });
 
     test("updates the empty message when playground-no-data-text changes", async ({ page }) => {
@@ -232,17 +233,17 @@ test.describe("data-set", () => {
 
       await selectOption(page, "data-set-playground-items-per-page", "5");
       await expect(cards).toHaveCount(5);
-      await expect(preview.getByRole("button", { name: /page \d/i })).toHaveCount(2);
+      await expect(preview.getByRole("button", { name: /página \d/i })).toHaveCount(2);
     });
 
     test("shows every page button in the narrow preview", async ({ page }) => {
       const pagination = getPreview(page).getByRole("navigation");
-      const pageButtons = pagination.getByRole("button", { name: /page \d/i });
+      const pageButtons = pagination.getByRole("button", { name: /página \d/i });
 
       await expect(pageButtons).toHaveCount(3);
       await expect(pagination).not.toContainText("...");
 
-      await pagination.getByRole("button", { name: "Go to page 2" }).click();
+      await pagination.getByRole("button", { name: "Ir à página 2" }).click();
       await expect(pageButtons).toHaveCount(3);
       await expect(pagination).not.toContainText("...");
     });

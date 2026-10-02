@@ -304,6 +304,19 @@ describe("DataSet", () => {
         expect(findVPagination(wrapper).props("modelValue")).toBe(2);
       });
 
+      it("should label the pagination in pt-BR for screen readers", () => {
+        const wrapper = mountDataSet({ items: createPatients(5), itemsPerPage: 2 });
+        const vPagination = findVPagination(wrapper);
+
+        expect(vPagination.attributes("aria-label")).toBe("Navegação de paginação");
+        expect(vPagination.find(".v-pagination__prev button").attributes("aria-label")).toBe(
+          "Página anterior",
+        );
+        expect(vPagination.find(".v-pagination__next button").attributes("aria-label")).toBe(
+          "Próxima página",
+        );
+      });
+
       it("should move to the last available page when items shrink", async () => {
         const wrapper = mountDataSet({ items: createPatients(5), itemsPerPage: 2, page: 3 });
         await wrapper.setProps({ items: createPatients(3) });
@@ -478,6 +491,12 @@ describe("DataSet", () => {
         const wrapper = mountDataSet();
         await wrapper.setProps({ loading: true });
         expect(findVSkeletonLoader(wrapper).props("loading")).toBe(true);
+      });
+
+      it("should announce the loading in pt-BR to screen readers", async () => {
+        const wrapper = mountDataSet();
+        await wrapper.setProps({ loading: true });
+        expect(findVSkeletonLoader(wrapper).attributes("aria-label")).toBe("Carregando...");
       });
 
       it("should be falsy by default", () => {

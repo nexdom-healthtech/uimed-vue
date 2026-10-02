@@ -16,5 +16,12 @@ describe("unit-test", () => {
 
       expect(global.ResizeObserver).not.toBeUndefined();
     });
+
+    it("should use pt-BR texts", () => {
+      const plugin = vueTestUtilsPluginUimed();
+
+      expect(plugin.locale.current.value).toBe("pt-BR");
+      expect(plugin.locale.t("$vuetify.loading")).toBe("Carregando...");
+    });
   });
 });
