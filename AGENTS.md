@@ -166,6 +166,7 @@ Use an existing composable (e.g. `use-toast`) as the reference, and deliver in t
   - `docs` must not mention Vuetify
   - A new component/composable must be listed in its guide page (`docs/guide/…`), its API page (`docs/api/…`), both sidebars in `docs/.vitepress/config.ts`, the guide index table (`docs/guide/index.md`) and the API index list (`docs/api/index.md`).
 - Never write CSS or `<style>` blocks, and expose styling to consumers only through props. Inside the library's own components, a Vuetify utility class is acceptable when no Vuetify prop covers the need (e.g. `text-wrap` on a card title), with a comment saying why.
+  - The only exception is a global override of a Vuetify style the library itself needs (e.g. a line height too tight for Unimed Slab): it goes in `src/styles/overrides.css`, inside `@layer vuetify-overrides`, with a comment saying why. Components still never have `<style>` blocks.
 - Path aliases: `@/*` → `src/*`, `@e2e/*` → `e2e/*`.
 - Every public component follows this pattern to block access to internals and give it an editor-hover description:
 
