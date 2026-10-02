@@ -288,6 +288,13 @@ describe("AppBar", () => {
         expect(vAppBarNavIcon.attributes("data-testid")).toBe(`${testId}-navigation`);
       });
 
+      it("should announce the shortcut that also opens the navigation menu", async () => {
+        await wrapper.setProps({ navigation });
+
+        const vAppBarNavIcon = findVAppBarNavIcon(wrapper);
+        expect(vAppBarNavIcon.attributes("aria-keyshortcuts")).toBe("Control+K");
+      });
+
       it("should emit update:navigationOpen with inverted value when icon is clicked", async () => {
         await wrapper.setProps({ navigationOpen: true, navigation });
 
