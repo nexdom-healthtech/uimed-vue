@@ -123,6 +123,7 @@ export default defineConfig({
                   text: "Campos com preenchimento automático",
                   link: "/guide/components/autocomplete-field",
                 },
+                { text: "Campos de data e hora", link: "/guide/components/date-time-field" },
                 { text: "Campos de texto", link: "/guide/components/text-field" },
                 { text: "Formulários", link: "/guide/components/form" },
               ],
@@ -164,6 +165,7 @@ export default defineConfig({
             { text: "UAutocompleteField", link: "/api/components/autocomplete-field" },
             { text: "UButton", link: "/api/components/button" },
             { text: "UCheckbox", link: "/api/components/checkbox" },
+            { text: "UDateTimeField", link: "/api/components/date-time-field" },
             {
               text: "Content Area",
               collapsed: false,

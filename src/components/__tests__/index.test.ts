@@ -10,6 +10,7 @@ describe("components", () => {
     expect(components.UMain).not.toBeUndefined();
     expect(components.UButton).not.toBeUndefined();
     expect(components.UTextField).not.toBeUndefined();
+    expect(components.UDateTimeField).not.toBeUndefined();
     expect(components.UContainer).not.toBeUndefined();
     expect(components.URow).not.toBeUndefined();
     expect(components.UColumn).not.toBeUndefined();
