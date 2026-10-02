@@ -2,6 +2,7 @@ import "@mdi/font/css/materialdesignicons.css";
 
 import "vuetify/styles";
 import "./styles/fonts/fonts.css";
+import "./styles/overrides.css";
 import { createVuetify } from "vuetify";
 import { type Plugin } from "vue";
 

@@ -1,0 +1,17 @@
+/*
+ * Unimed Slab has tall vertical metrics (ascent 1em, descent 0.26em), so its descenders (g, p, ç)
+ * and accented capitals only fit inside an element that clips its overflow when the line height
+ * covers them. Vuetify's list item subtitle (14px over 1rem) is tighter than that, so it uses the
+ * font's own line height (`normal`), as agreed with the design team. The layer makes it beat the
+ * component styles regardless of their specificity (the layer order is declared by
+ * `vuetify/styles`, imported before this file), while utility classes still win.
+ *
+ * Known limitations: nav item titles (13px over 1rem) still clip a fraction of a pixel of their
+ * descenders, since `normal` rounds to the same 16px there; and nav item subtitles (12px, not
+ * used by the library) go from 16px to 15px.
+ */
+@layer vuetify-overrides {
+  .v-list-item-subtitle {
+    line-height: normal;
+  }
+}
