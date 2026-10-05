@@ -1,5 +1,5 @@
 import { test, expect, type Locator, type Page } from "@playwright/test";
-import { gotoPage, selectOption } from "@e2e/utils.ts";
+import { expectLoadingAnnouncement, gotoPage, selectOption } from "@e2e/utils.ts";
 
 test.describe("data-set", () => {
   test.beforeEach(async ({ page }) => {
@@ -152,6 +152,7 @@ test.describe("data-set", () => {
     test("renders the loading skeleton in the loading demo", async ({ page }) => {
       await expect(page.getByTestId("demo-data-set-loading")).toHaveCount(0);
       await expect(page.locator(".vp-doc .v-skeleton-loader__bone").first()).toBeVisible();
+      await expectLoadingAnnouncement(page.locator(".vp-doc .v-skeleton-loader"), 1);
     });
 
     test("renders the title and the subtitle of each card", async ({ page }) => {
