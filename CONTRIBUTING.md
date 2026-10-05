@@ -151,6 +151,9 @@ A new prop that does the same as one of these takes its name and type (e.g. `Ali
 - [oxlint: better vue support](https://github.com/oxc-project/oxc/issues/15761)
   - This issue led us to use `vue-tsc` for `typeCheck`, disabling `vite`'s `typeCheck` config.
   - When the mentioned issue get solved, we should remove `vue-tsc` and enable Vite+ `typeCheck` again.
+- Vuetify's skeleton loader sets its loading announcement as camelCase `ariaLabel`/`ariaLive`. On the client they're set as DOM properties, which the browser reflects as the hyphenated attributes, but the server renderer writes them as the invalid `arialabel`/`arialive` attributes, and hydration doesn't fix them
+  - To fix it, our components use the internal `SkeletonLoader` (`src/components/skeleton-loader/`), which unsets those keys and passes the hyphenated `aria-label`/`aria-live` instead.
+  - When Vuetify sets the hyphenated attributes itself, we should remove `SkeletonLoader` and use Vuetify's skeleton loader again. A failing `SkeletonLoader` unit test after a Vuetify update is the sign: unsetting the camelCase keys would then remove the attributes on the client.
 
 ## Documentation
 

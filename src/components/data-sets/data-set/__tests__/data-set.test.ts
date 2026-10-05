@@ -1,5 +1,5 @@
 import { VDataIterator, VEmptyState, VPagination, VSkeletonLoader } from "vuetify/components";
-import { mount } from "@vue/test-utils";
+import { mount, renderToString } from "@vue/test-utils";
 import { h, toRaw } from "vue";
 import DataSet from "@/components/data-sets/data-set/data-set.vue";
 import Column from "@/components/grid/column/column.vue";
@@ -503,6 +503,14 @@ describe("DataSet", () => {
         expect(findVSkeletonLoader(wrapper).attributes("aria-label")).toBe("Carregando...");
       });
 
+      it("should announce the loading with valid ARIA attributes when rendered on the server", async () => {
+        const html = await renderDataSet({ loading: true });
+        expect(html).toContain('aria-label="Carregando..."');
+        expect(html).toContain('aria-live="polite"');
+        expect(html).not.toContain("arialabel");
+        expect(html).not.toContain("arialive");
+      });
+
       it("should be falsy by default", () => {
         const wrapper = mountDataSet();
         expect(findVSkeletonLoader(wrapper).props("loading")).toBeFalsy();
@@ -513,9 +521,10 @@ describe("DataSet", () => {
         expect(findVSkeletonLoader(wrapper).props("type")).toBe("card");
       });
 
-      it("should make the skeleton occupy the full width", () => {
+      it("should make the skeleton occupy the full width", async () => {
         const wrapper = mountDataSet();
-        expect(findVSkeletonLoader(wrapper).props("width")).toBe("100%");
+        await wrapper.setProps({ loading: true });
+        expect(findVSkeletonLoader(wrapper).classes()).toContain("w-100");
       });
 
       it("should hide the data set while loading", async () => {
@@ -572,6 +581,21 @@ function mountDataSet(
     attrs: {
       style: styleValue,
       class: classValue,
+    },
+    slots,
+    global: {
+      plugins: [vueTestUtilsPluginUimed()],
+    },
+  });
+}
+
+function renderDataSet(props: Record<string, unknown>) {
+  const slots: Record<string, unknown> = { default: renderItem };
+
+  return renderToString(DataSet, {
+    props: {
+      items: patients,
+      ...props,
     },
     slots,
     global: {

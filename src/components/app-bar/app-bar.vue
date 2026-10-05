@@ -24,7 +24,7 @@
     </v-app-bar-title>
 
     <template #append>
-      <v-skeleton-loader :loading="props.loading" type="avatar">
+      <skeleton-loader :loading="props.loading" type="avatar">
         <v-btn
           v-if="showHelp"
           v-bind="routeProps"
@@ -128,7 +128,7 @@
             </v-list>
           </v-card>
         </v-menu>
-      </v-skeleton-loader>
+      </skeleton-loader>
     </template>
   </v-app-bar>
 </template>
@@ -166,8 +166,8 @@ import {
   VListGroup,
   VListSubheader,
   VListItemAction,
-  VSkeletonLoader,
 } from "vuetify/components";
+import SkeletonLoader from "@/components/skeleton-loader/skeleton-loader.vue";
 
 type Props = AppBarProps & {
   navigation?: boolean;

@@ -1,5 +1,5 @@
 <template>
-  <v-skeleton-loader :loading="props.loading" type="card" width="100%">
+  <skeleton-loader :loading="props.loading" type="card" full-width>
     <v-data-iterator
       ref="iterator"
       v-model:page="page"
@@ -35,7 +35,7 @@
         />
       </template>
     </v-data-iterator>
-  </v-skeleton-loader>
+  </skeleton-loader>
 </template>
 
 <script lang="ts">
@@ -64,10 +64,11 @@ export default {
 
 <script setup lang="ts" generic="T extends object">
 import { useTemplateRef, type ComponentPublicInstance } from "vue";
-import { VDataIterator, VEmptyState, VPagination, VSkeletonLoader } from "vuetify/components";
+import { VDataIterator, VEmptyState, VPagination } from "vuetify/components";
 import Column from "@/components/grid/column/column.vue";
 import Row from "@/components/grid/row/row.vue";
 import TextField from "@/components/inputs/text-field/text-field.vue";
+import SkeletonLoader from "@/components/skeleton-loader/skeleton-loader.vue";
 import type { DataSetProps, DataSetSlots } from "@/components/data-sets/data-set/types.ts";
 import {
   getDataSetTotalVisible,
