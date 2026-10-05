@@ -105,11 +105,54 @@ const appBar = {
 };
 ```
 
+### Alinhamento vertical das colunas
+
+Na v1, as colunas de uma `Row` eram esticadas até a altura da coluna mais alta da linha. Na v2, a prop `align` da `URow` controla esse alinhamento e o padrão passou a ser `"start"`: cada coluna mantém a altura do próprio conteúdo e fica alinhada ao topo. Para manter o comportamento da v1, como em cartões lado a lado que devem ter a mesma altura, utilize `align="stretch"` (veja [Alinhamento vertical das colunas](./components/layout#alinhamento-vertical-das-colunas)).
+
+**Antes (v1):**
+
+```vue
+<template>
+  <row>
+    <column cols="6">
+      <content-set title="Consultas" full-height>
+        <!-- conteúdo curto -->
+      </content-set>
+    </column>
+    <column cols="6">
+      <content-set title="Exames" full-height>
+        <!-- conteúdo mais longo -->
+      </content-set>
+    </column>
+  </row>
+</template>
+```
+
+**Depois (v2):**
+
+```vue
+<template>
+  <u-row align="stretch">
+    <u-column cols="6">
+      <u-section title="Consultas" full-height>
+        <!-- conteúdo curto -->
+      </u-section>
+    </u-column>
+    <u-column cols="6">
+      <u-section title="Exames" full-height>
+        <!-- conteúdo mais longo -->
+      </u-section>
+    </u-column>
+  </u-row>
+</template>
+```
+
 ## Dicas de Migração
 
 1. Procure por todas as importações antigas e substitua pelos novos nomes com o prefixo `U`
 2. Atualize todos os templates para usar as novas tags em kebab-case (ex: `<u-button>` em vez de `<btn>`)
 3. Os tipos de props não são mais exportados pela biblioteca. Utilize `ComponentProps`, de [`vue-component-type-helpers`](https://www.npmjs.com/package/vue-component-type-helpers), para obtê-los a partir do componente (veja [Tipagem de props](./getting-started#tipagem-de-props))
 4. Substitua a propriedade `date` das notificações do menu superior por `when`, informando o texto já formatado (veja [Notificações do menu superior](#notificacoes-do-menu-superior))
+5. Adicione `align="stretch"` às `URow` cujas colunas precisam ter a mesma altura (veja [Alinhamento vertical das colunas](#alinhamento-vertical-das-colunas))
 
 Para mais informações sobre cada componente, consulte a [Documentação da API](../api/).
