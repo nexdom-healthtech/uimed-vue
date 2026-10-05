@@ -86,7 +86,7 @@ export function useNavigationSearchShortcut(
   onMounted(() => {
     owners.value.push(owner);
     // Captured before any other listener, so the docs can keep their own search from opening too
-    window.addEventListener("keydown", onKeydown, { capture: true });
+    globalThis.addEventListener("keydown", onKeydown, { capture: true });
     // Without a label the placeholder would name the field, shortcut included. Set through the DOM
     // because `TextField` doesn't forward attributes, and an `aria-label` prop would widen its API
     findInput().setAttribute("aria-label", SEARCH_NAME);
@@ -94,7 +94,7 @@ export function useNavigationSearchShortcut(
 
   onUnmounted(() => {
     owners.value = owners.value.filter((item) => item !== owner);
-    window.removeEventListener("keydown", onKeydown, { capture: true });
+    globalThis.removeEventListener("keydown", onKeydown, { capture: true });
   });
 
   watch(open, (isOpen) => {
