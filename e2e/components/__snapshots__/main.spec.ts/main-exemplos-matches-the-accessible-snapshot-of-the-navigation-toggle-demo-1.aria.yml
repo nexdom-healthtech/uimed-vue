@@ -1,4 +1,4 @@
-- button
+- button "Menu de navegação"
 - text: Menu superior
 - navigation:
     - text: Buscar
