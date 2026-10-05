@@ -52,6 +52,19 @@ test.describe("main", () => {
 
           await expect(badge).not.toBeVisible();
         });
+
+        test("drops the unread count from its name after the menu is closed", async ({ page }) => {
+          const notificationsButton = getNotificationsButton(page);
+          await expect(notificationsButton).toHaveAccessibleName("Notificações (2 não lidas)");
+
+          await notificationsButton.click();
+          await expect(notificationsButton).toHaveAttribute("aria-expanded", "true");
+          await page.keyboard.press("Escape");
+
+          await expect(notificationsButton).toHaveAttribute("aria-expanded", "false");
+          await expect(notificationsButton).toHaveAccessibleName("Notificações");
+          await expect(getAppBar(page).getByRole("status")).toHaveCount(0);
+        });
       });
 
       test.describe("user", () => {
@@ -222,6 +235,29 @@ test.describe("main", () => {
       await expect(notificationsMenu).not.toBeVisible();
     });
 
+    test("names the notifications button with the unread count", async ({ page }) => {
+      const appBar = getPlaygroundAppBar(page);
+      const notificationsButton = getPlaygroundNotificationsButton(page);
+
+      await expect(notificationsButton).toHaveAccessibleName("Notificações");
+      await expect(appBar.getByRole("status")).toHaveCount(0);
+
+      await page.getByTestId("root-playground-add-notification").click();
+      await expect(notificationsButton).toHaveAccessibleName("Notificações (1 não lida)");
+      await expect(appBar.getByRole("status", { name: "1 não lida", exact: true })).toHaveText("1");
+
+      await page.getByTestId("root-playground-add-notification").click();
+      await expect(notificationsButton).toHaveAccessibleName("Notificações (2 não lidas)");
+      await expect(appBar.getByRole("status", { name: "2 não lidas", exact: true })).toHaveText(
+        "2",
+      );
+
+      await page.getByTestId("root-playground-remove-notification").click();
+      await page.getByTestId("root-playground-remove-notification").click();
+      await expect(notificationsButton).toHaveAccessibleName("Notificações");
+      await expect(appBar.getByRole("status")).toHaveCount(0);
+    });
+
     test("updates title when playground-title changes", async ({ page }) => {
       const text = "Novo título";
       await page.getByTestId("root-playground-title").locator("input").fill(text);
@@ -371,6 +407,24 @@ test.describe("main", () => {
 
       await button.click();
       await expect(drawer).not.toContainClass("v-navigation-drawer--active");
+    });
+
+    test("names the nav icon and toggles its aria-expanded with the drawer", async ({ page }) => {
+      const button = getNavigationToggleDemo(page).getByRole("button", {
+        name: "Menu de navegação",
+        exact: true,
+      });
+      const drawer = getNavigationToggleDrawer(page);
+
+      await expect(button).toHaveAttribute("aria-expanded", "false");
+
+      await button.click();
+      await expect(drawer).toContainClass("v-navigation-drawer--active");
+      await expect(button).toHaveAttribute("aria-expanded", "true");
+
+      await button.click();
+      await expect(drawer).not.toContainClass("v-navigation-drawer--active");
+      await expect(button).toHaveAttribute("aria-expanded", "false");
     });
   });
 

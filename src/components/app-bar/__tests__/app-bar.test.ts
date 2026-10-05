@@ -76,6 +76,12 @@ describe("AppBar", () => {
         expect(vBtn.attributes("data-testid")).toBe(`${testId}-help`);
       });
 
+      it("should name the help button for screen readers", async () => {
+        await wrapper.setProps({ help });
+
+        expect(findVBtn(wrapper).attributes("aria-label")).toBe("Ajuda");
+      });
+
       it("should use route props composable and propagate it's result", async () => {
         expect(useRouteProps).toHaveBeenCalledOnce();
 
@@ -115,6 +121,52 @@ describe("AppBar", () => {
 
         const vBtn = findVBtn(wrapper);
         expect(vBtn.exists()).toBeTruthy();
+      });
+
+      describe("accessible name", () => {
+        it.each([
+          {
+            case: "no notifications",
+            unread: 0,
+            read: 0,
+            name: "Notificações",
+            label: "0 não lidas",
+          },
+          {
+            case: "only read ones",
+            unread: 0,
+            read: 2,
+            name: "Notificações",
+            label: "0 não lidas",
+          },
+          {
+            case: "one unread",
+            unread: 1,
+            read: 2,
+            name: "Notificações (1 não lida)",
+            label: "1 não lida",
+          },
+          {
+            case: "several unread",
+            unread: 2,
+            read: 1,
+            name: "Notificações (2 não lidas)",
+            label: "2 não lidas",
+          },
+        ])(
+          "should name the button and the badge with $case",
+          async ({ unread, read, name, label }) => {
+            await wrapper.setProps({
+              notifications: [
+                ...Array.from({ length: unread }, () => ({ title: "Unread", read: false })),
+                ...Array.from({ length: read }, () => ({ title: "Read", read: true })),
+              ],
+            });
+
+            expect(findVBtn(wrapper).attributes("aria-label")).toBe(name);
+            expect(findVBadge(wrapper).props("label")).toBe(label);
+          },
+        );
       });
 
       it("should open notifications menu when button is clicked", async () => {
@@ -288,6 +340,20 @@ describe("AppBar", () => {
         expect(vAppBarNavIcon.attributes("data-testid")).toBe(`${testId}-navigation`);
       });
 
+      it("should name the nav icon for screen readers", async () => {
+        await wrapper.setProps({ navigation });
+
+        expect(findVAppBarNavIcon(wrapper).attributes("aria-label")).toBe("Menu de navegação");
+      });
+
+      it("should expose whether the navigation menu is expanded", async () => {
+        await wrapper.setProps({ navigation, navigationOpen: false });
+        expect(findVAppBarNavIcon(wrapper).attributes("aria-expanded")).toBe("false");
+
+        await wrapper.setProps({ navigationOpen: true });
+        expect(findVAppBarNavIcon(wrapper).attributes("aria-expanded")).toBe("true");
+      });
+
       it("should emit update:navigationOpen with inverted value when icon is clicked", async () => {
         await wrapper.setProps({ navigationOpen: true, navigation });
 
@@ -411,6 +477,7 @@ describe("AppBar", () => {
         expect(vBtn.exists()).toBeTruthy();
         expect(vBtn.props("icon")).toBeTruthy();
         expect(vBtn.attributes("data-testid")).toBe(`${testId}-user`);
+        expect(vBtn.attributes("aria-label")).toBe("Menu do usuário");
 
         const vAvatar = findVAvatar(wrapper);
         expect(vAvatar.exists()).toBeTruthy();

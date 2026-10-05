@@ -3,6 +3,8 @@
     <v-app-bar-nav-icon
       v-if="navigation"
       :data-testid="navigationBtnDataTestid"
+      :aria-expanded="navigationOpen"
+      aria-label="Menu de navegação"
       @click="navigationOpen = !navigationOpen"
     />
 
@@ -24,6 +26,7 @@
           v-if="showHelp"
           v-bind="routeProps"
           :data-testid="helpBtnDataTestid"
+          aria-label="Ajuda"
           icon="mdi-help-circle-outline"
         />
         <v-menu
@@ -32,8 +35,18 @@
           :close-on-content-click="false"
         >
           <template #activator="{ props }">
-            <v-btn v-bind="props" :data-testid="notificationsBtnDataTestid" icon>
-              <v-badge :model-value="hasUnreadNotifications" :content="unreadCount" color="error">
+            <v-btn
+              v-bind="props"
+              :data-testid="notificationsBtnDataTestid"
+              :aria-label="notificationsLabel"
+              icon
+            >
+              <v-badge
+                :model-value="hasUnreadNotifications"
+                :content="unreadCount"
+                :label="unreadLabel"
+                color="error"
+              >
                 <v-icon icon="mdi-bell-outline" />
               </v-badge>
             </v-btn>
@@ -65,7 +78,12 @@
         </v-menu>
         <v-menu v-if="showUser" :close-on-content-click="false">
           <template #activator="{ props }">
-            <v-btn v-bind="props" :data-testid="userBtnDataTestid" icon>
+            <v-btn
+              v-bind="props"
+              :data-testid="userBtnDataTestid"
+              aria-label="Menu do usuário"
+              icon
+            >
               <v-avatar v-bind="userAvatarProps" color="primary" />
             </v-btn>
           </template>
@@ -172,6 +190,12 @@ const unreadCount = computed(
   () => props.notifications!.filter((notification) => !notification.read).length,
 );
 const hasUnreadNotifications = computed(() => unreadCount.value > 0);
+const unreadLabel = computed(() =>
+  unreadCount.value === 1 ? "1 não lida" : `${unreadCount.value} não lidas`,
+);
+const notificationsLabel = computed(() =>
+  hasUnreadNotifications.value ? `Notificações (${unreadLabel.value})` : "Notificações",
+);
 
 // The notifications menu unmounts while loading; closing it keeps it from reopening afterwards
 watch(

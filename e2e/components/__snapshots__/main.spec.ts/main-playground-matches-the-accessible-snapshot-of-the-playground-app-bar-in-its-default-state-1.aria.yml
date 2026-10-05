@@ -1,5 +1,5 @@
-- button
+- button "Menu de navegação"
 - text: Menu do playground
-- link:
+- link "Ajuda":
     - /url: https://www.google.com
-- button
+- button "Notificações"
