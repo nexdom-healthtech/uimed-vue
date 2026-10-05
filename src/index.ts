@@ -30,7 +30,6 @@ export function createUimed(): Plugin {
           },
           variables: {
             "border-color": "#D0D5DD",
-            "font-body": '"Unimed Slab", sans-serif',
           },
         },
       },

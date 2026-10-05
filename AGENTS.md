@@ -22,11 +22,11 @@ pnpm add @nexdom/uimed-vue
 yarn add @nexdom/uimed-vue
 ```
 
-Peer dependencies (`@fontsource/roboto`, `@mdi/font`, `@nexdom/shared`, `resize-observer-polyfill`, `vite-plugin-vuetify`, `vite-plus`, `vue`, `vue-router`, `vuetify`) must be installed alongside it — most package managers install these automatically, but confirm versions match what's declared in `package.json`'s `peerDependencies`.
+Peer dependencies (`@mdi/font`, `@nexdom/shared`, `resize-observer-polyfill`, `sass-embedded`, `vite-plus`, `vue`, `vue-component-type-helpers`, `vue-router`, `vuetify`) must be installed alongside it — most package managers install these automatically, but confirm versions match what's declared in `package.json`'s `peerDependencies`.
 
 ### Setup
 
-Add the Vite plugin:
+Add the Vite plugin, which compiles the components' styles with the library's font and Sass settings (without it, components lose the Unimed Slab font):
 
 ```ts
 // vite.config.ts
@@ -166,6 +166,7 @@ Use an existing composable (e.g. `use-toast`) as the reference, and deliver in t
   - `docs` must not mention Vuetify
   - A new component/composable must be listed in its guide page (`docs/guide/…`), its API page (`docs/api/…`), both sidebars in `docs/.vitepress/config.ts`, the guide index table (`docs/guide/index.md`) and the API index list (`docs/api/index.md`).
 - Never write CSS or `<style>` blocks, and expose styling to consumers only through props.
+- Adjustments that Vuetify exposes as Sass variables (e.g. a font family or a line height) go in `src/styles/settings.scss`, which `vitePluginUimed()` compiles into Vuetify's stylesheets in the apps. That file only configures variables: still no CSS rules.
 - Don't add spacing to Vuetify components: no padding or margin utility classes (`pa-*`, `pt-6`, `px-4`, `ma-2`, ...) and no spacing props overriding the defaults. Vuetify already applies Material Design 3 spacing, and overriding it breaks what it handles on its own, such as button paddings and the scrollbar of scrollable content. If the default spacing looks wrong, stop and ask instead of adjusting it.
 - Prefer a Vuetify component's own props to building its parts by hand (e.g. `title`/`text` on `v-card` instead of `v-card-item` > `v-card-title` > `v-card-text`). A non-spacing utility class is acceptable only when no prop covers the need (e.g. `text-wrap` on a card title), with a comment saying why.
 - Keep components thin: a component wires props, slots and events to Vuetify. Logic beyond that (focus management, queues, DOM lookups, comparisons) goes into an internal composable with its own unit tests.
