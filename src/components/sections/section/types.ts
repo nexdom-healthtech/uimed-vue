@@ -84,7 +84,8 @@ export interface SectionAction extends ButtonProps {
   label: string;
 
   /**
-   * Called when the action button is clicked.
+   * Called when the action button is clicked. Not called while the action is `disabled` or
+   * `loading`.
    */
   onClick?: (event: MouseEvent) => void;
 }

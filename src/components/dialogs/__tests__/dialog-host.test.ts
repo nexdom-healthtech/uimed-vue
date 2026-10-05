@@ -317,6 +317,8 @@ describe("DialogHost", () => {
       expect(cancel?.props("loading")).toBe(false);
       expect(confirmButton?.props("loading")).toBe(true);
       expect(confirmButton?.props("disabled")).toBe(false);
+      // Disabled through `loading`, so the clicks below are ignored
+      expect(confirmButton?.attributes("disabled")).toBeDefined();
 
       pressEscape();
       await clickButton(wrapper, 1);

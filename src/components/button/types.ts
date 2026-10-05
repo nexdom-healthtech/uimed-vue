@@ -34,8 +34,11 @@ export type ButtonProps = {
   disabled?: boolean;
 
   /**
-   * Displays a loading indicator on the button, disabling interaction.
-   * The button keeps its text as accessible name and is marked as busy, and
+   * Displays a loading indicator on the button and disables it while active, as `disabled` does:
+   * it can't be clicked or focused, `click` isn't emitted and its form isn't submitted, including
+   * by pressing `Enter` in one of the form's fields when it's the form's first submit button. It
+   * looks disabled, with the indicator, and loses focus if focused when loading starts, as any
+   * disabled button does. The button keeps its text as accessible name and is marked as busy, and
    * assistive technologies ignore the indicator.
    * @default false
    */
@@ -64,7 +67,7 @@ export type ButtonProps = {
  */
 export type ButtonEmits =
   /**
-   * Emitted when the button is clicked.
+   * Emitted when the button is clicked. Not emitted while the button is `disabled` or `loading`.
    * @param {MouseEvent} event - The native `MouseEvent` object associated with the click.
    * @returns void
    */

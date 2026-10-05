@@ -1,8 +1,11 @@
 import { test, expect, type Locator, type Page } from "@playwright/test";
 import { gotoPage, selectOption } from "@e2e/utils.ts";
 
+const actionDuration = 1500;
+
 test.describe("button", () => {
   test.beforeEach(async ({ page }) => {
+    await page.clock.install({ time: new Date() });
     await gotoPage(page, "guide/components/button");
   });
 
@@ -88,6 +91,48 @@ test.describe("button", () => {
     });
   });
 
+  test.describe("loading demo", () => {
+    test("disables the button and ignores new activations while loading", async ({ page }) => {
+      const counterText = page.getByTestId("btn-demo-loading-count");
+      const loadingButton = page.getByTestId("btn-demo-loading");
+      const loader = loadingButton.locator(".v-btn__loader");
+
+      await expect(counterText).toHaveText("0 salvamento(s)");
+
+      await pauseClock(page);
+      await loadingButton.focus();
+      await page.keyboard.press("Enter");
+
+      await expect(loader).toBeAttached();
+      await expect(loadingButton).toBeDisabled();
+      await expect(loadingButton).not.toBeFocused();
+      await expect(counterText).toHaveText("1 salvamento(s)");
+
+      // The keyboard, unlike the mouse, still activates a focused button that only shows the
+      // loading indicator, so these would count as new saves if the button kept its focus
+      await page.keyboard.press("Enter");
+      await page.keyboard.press("Space");
+      await expect(counterText).toHaveText("1 salvamento(s)");
+
+      await page.clock.fastForward(actionDuration);
+
+      await expect(loader).not.toBeAttached();
+      await expect(loadingButton).toBeEnabled();
+
+      await loadingButton.focus();
+      await page.keyboard.press("Enter");
+      await expect(counterText).toHaveText("2 salvamento(s)");
+    });
+
+    test("matches the accessible snapshot of the loading demo while loading", async ({ page }) => {
+      await pauseClock(page);
+      await page.getByTestId("btn-demo-loading").click();
+
+      const demo = page.getByTestId("demo-loading");
+      await expect(demo).toMatchAriaSnapshot();
+    });
+  });
+
   test.describe("UI consistency", () => {
     test("matches last screenshot", async ({ page }) => {
       await expect(page).toHaveScreenshot({ fullPage: true });
@@ -108,4 +153,9 @@ function getWidthRatio(button: Locator) {
       parent.clientWidth - parseFloat(style.paddingLeft) - parseFloat(style.paddingRight);
     return element.getBoundingClientRect().width / available;
   });
+}
+
+/** Keeps the demo actions running until the test fast-forwards the clock. */
+async function pauseClock(page: Page) {
+  await page.clock.pauseAt(new Date(Date.now() + 1000));
 }
