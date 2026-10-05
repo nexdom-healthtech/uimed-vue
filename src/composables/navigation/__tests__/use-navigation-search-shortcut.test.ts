@@ -307,8 +307,8 @@ describe("useNavigationSearchShortcut", () => {
     });
 
     it("should not leave listeners on window when unmounted", () => {
-      const addEventListener = vi.spyOn(window, "addEventListener");
-      const removeEventListener = vi.spyOn(window, "removeEventListener");
+      const addEventListener = vi.spyOn(globalThis, "addEventListener");
+      const removeEventListener = vi.spyOn(globalThis, "removeEventListener");
 
       mountMenu().unmount();
 
