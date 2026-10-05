@@ -1,5 +1,5 @@
 import { gotoPage } from "@e2e/utils.ts";
-import { test, expect, type Page } from "@playwright/test";
+import { test, expect, type Locator, type Page } from "@playwright/test";
 
 test.describe("main", () => {
   test.beforeEach(async ({ page }) => {
@@ -64,6 +64,18 @@ test.describe("main", () => {
           await expect(notificationsButton).toHaveAttribute("aria-expanded", "false");
           await expect(notificationsButton).toHaveAccessibleName("Notificações");
           await expect(getAppBar(page).getByRole("status")).toHaveCount(0);
+        });
+
+        test("doesn't clip the text of the notification subtitles", async ({ page }) => {
+          const notificationsButton = getNotificationsButton(page);
+          await notificationsButton.click();
+
+          const subtitles = getNotificationsMenu(page).locator(".v-list-item-subtitle");
+          await expect(subtitles).toHaveCount(4);
+
+          for (const subtitle of await subtitles.all()) {
+            await expectTextNotClipped(subtitle);
+          }
         });
       });
 
@@ -489,6 +501,28 @@ function getPlaygroundNavigationMenuSearch(page: Page) {
 
 function getLogoDemo(page: Page) {
   return page.getByTestId("demo-root-logo");
+}
+
+/**
+ * Asserts the text of an element that clips its overflow fits inside the element's box. The text's
+ * box, measured with a `Range`, spans the font's ascent and descent, which in Unimed Slab cover its
+ * descenders (g, p, ç) and accented capitals, so it only fits when the line height is tall enough.
+ */
+async function expectTextNotClipped(element: Locator) {
+  const { box, text } = await element.evaluate((element) => {
+    const range = document.createRange();
+    range.selectNodeContents(element);
+    const box = element.getBoundingClientRect();
+    const text = range.getBoundingClientRect();
+
+    return {
+      box: { top: box.top, bottom: box.bottom },
+      text: { top: text.top, bottom: text.bottom },
+    };
+  });
+
+  expect(text.top).toBeGreaterThanOrEqual(box.top);
+  expect(text.bottom).toBeLessThanOrEqual(box.bottom);
 }
 
 function getAppBar(page: Page) {
