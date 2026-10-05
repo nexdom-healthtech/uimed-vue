@@ -17,10 +17,10 @@ O título e as ações ficam fixos enquanto o conteúdo rola.
 
 Estende [`UButtonProps`](./button#props) com as seguintes propriedades adicionais:
 
-| Prop      | Tipo              | Descrição                                                                                   |
-| --------- | ----------------- | ------------------------------------------------------------------------------------------- |
-| `label`   | `string`          | Texto exibido no botão de ação.                                                             |
-| `onClick` | `(event) => void` | Chamado quando o botão de ação é clicado. A janela continua aberta: feche-a pelo `v-model`. |
+| Prop      | Tipo              | Descrição                                                                                                                                               |
+| --------- | ----------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `label`   | `string`          | Texto exibido no botão de ação.                                                                                                                         |
+| `onClick` | `(event) => void` | Chamado quando o botão de ação é clicado. Não é chamado enquanto a ação está `disabled` ou `loading`. A janela continua aberta: feche-a pelo `v-model`. |
 
 ## Eventos
 

@@ -43,7 +43,8 @@ export interface DialogButtonAction extends ButtonProps {
   label: string;
 
   /**
-   * Called when the action button is clicked. The dialog stays open.
+   * Called when the action button is clicked. Not called while the action is `disabled` or
+   * `loading`. The dialog stays open.
    */
   onClick?: (event: MouseEvent) => void;
 }

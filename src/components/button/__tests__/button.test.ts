@@ -1,5 +1,5 @@
 import { VBtn, VProgressCircular } from "vuetify/components";
-import { mount } from "@vue/test-utils";
+import { mount, type VueWrapper } from "@vue/test-utils";
 import Button from "@/components/button/button.vue";
 import type { ButtonVariant } from "@/components/button/types.ts";
 import { vueTestUtilsPluginUimed } from "@/unit-test.ts";
@@ -151,6 +151,58 @@ describe("Button", () => {
         expect(findVBtn(wrapper).attributes("aria-busy")).toBe("true");
       });
     });
+
+    describe("loading", () => {
+      it.each([
+        [false, false, false],
+        [true, false, true],
+        [false, true, true],
+        [true, true, true],
+      ])(
+        "should disable the underlying component when `disabled` is %s and `loading` is %s",
+        async (disabled, loading, expected) => {
+          const wrapper = mountButton();
+          await wrapper.setProps({ disabled, loading });
+
+          expect(findVBtn(wrapper).props("disabled")).toBe(expected);
+          expect(wrapper.attributes("disabled")).toBe(expected ? "" : undefined);
+        },
+      );
+
+      it("should keep displaying the loading indicator while disabled by loading", async () => {
+        const wrapper = mountButton();
+        await wrapper.setProps({ loading: true });
+
+        expect(findVBtn(wrapper).props("loading")).toBe(true);
+        expect(wrapper.find(".v-btn__loader").exists()).toBe(true);
+      });
+
+      it("should not submit its form while loading", async () => {
+        const form = createForm();
+        const wrapper = mountButton({}, {}, form);
+        await wrapper.setProps({ type: "submit", loading: true });
+
+        wrapper.element.click();
+        expect(form.onsubmit).not.toHaveBeenCalled();
+
+        await wrapper.setProps({ loading: false });
+        wrapper.element.click();
+        expect(form.onsubmit).toHaveBeenCalledOnce();
+      });
+
+      it("should not submit the form it's linked to by `form` while loading", async () => {
+        const form = createForm();
+        const wrapper = mountButton({}, {}, document.body);
+        await wrapper.setProps({ type: "submit", form: form.id, loading: true });
+
+        wrapper.element.click();
+        expect(form.onsubmit).not.toHaveBeenCalled();
+
+        await wrapper.setProps({ loading: false });
+        wrapper.element.click();
+        expect(form.onsubmit).toHaveBeenCalledOnce();
+      });
+    });
   });
 
   describe("slots", () => {
@@ -187,12 +239,35 @@ describe("Button", () => {
 
         expect(onClick).not.toHaveBeenCalled();
       });
+
+      it("should not call the `onClick` handler when the button is loading", async () => {
+        const onClick = vi.fn();
+        const wrapper = mountButton({}, { onClick });
+
+        await wrapper.setProps({ loading: true });
+        wrapper.element.click();
+
+        expect(onClick).not.toHaveBeenCalled();
+        expect(wrapper.emitted("click")).toBeUndefined();
+      });
     });
   });
 });
 
-function mountButton(slots: Record<string, string> = {}, attrs: Record<string, unknown> = {}) {
-  return mount(Button, {
+const attachedWrappers: VueWrapper[] = [];
+
+afterEach(() => {
+  attachedWrappers.splice(0).forEach((wrapper) => wrapper.unmount());
+  document.body.innerHTML = "";
+});
+
+function mountButton(
+  slots: Record<string, string> = {},
+  attrs: Record<string, unknown> = {},
+  attachTo?: HTMLElement,
+) {
+  const wrapper = mount(Button, {
+    attachTo,
     attrs: {
       "data-testid": testId,
       style: styleValue,
@@ -204,8 +279,19 @@ function mountButton(slots: Record<string, string> = {}, attrs: Record<string, u
       plugins: [vueTestUtilsPluginUimed()],
     },
   });
+  if (attachTo) attachedWrappers.push(wrapper);
+  return wrapper;
 }
 
 function findVBtn(wrapper: ReturnType<typeof mountButton>) {
   return wrapper.findComponent(VBtn);
+}
+
+/** Creates a form in the document, with a spy that prevents its submissions. */
+function createForm() {
+  const form = document.createElement("form");
+  form.id = "form-id";
+  form.onsubmit = vi.fn((event: SubmitEvent) => event.preventDefault());
+  document.body.append(form);
+  return form;
 }

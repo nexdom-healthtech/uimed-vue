@@ -1,6 +1,6 @@
 <template>
   <v-btn
-    :disabled="props.disabled"
+    :disabled="isDisabled"
     :loading="props.loading"
     :data-testid="props.dataTestid"
     :variant
@@ -38,6 +38,7 @@ export default {
 </script>
 
 <script setup lang="ts">
+import { computed } from "vue";
 import { VBtn, VProgressCircular } from "vuetify/components";
 import type { ButtonProps, ButtonEmits } from "@/components/button/types.ts";
 import { useButtonForm, useButtonType, useButtonVariant } from "@/composables/button/button.ts";
@@ -52,6 +53,9 @@ const color = useVuetifyColor(() => props.color);
 const type = useButtonType(() => props.type);
 const form = useButtonForm(() => props.form);
 const widthClass = useFullWidth(() => props.fullWidth);
+// Disabling the button while loading keeps it from being clicked and from submitting its form,
+// including through the implicit submission of pressing `Enter` in one of the form's fields
+const isDisabled = computed(() => props.disabled || props.loading);
 
 function onClick(event: MouseEvent) {
   emit("click", event);
