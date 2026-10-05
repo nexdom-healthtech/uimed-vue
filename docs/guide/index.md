@@ -31,6 +31,7 @@ Os componentes a seguir possuem exemplos práticos de utilização dentro desta 
 | [Agrupador de Conteúdo](./components/section)                          | Componente para agrupar conteúdo.                      |
 | [Conteúdo Expansível](./components/details)                            | Componente para expandir e recolher conteúdo.          |
 | [Formulários](./components/form)                                       | Componente de formulário.                              |
+| [Imagens](./components/img)                                            | Componente para apresentação de imagens.               |
 | [Janelas modais](./components/dialog)                                  | Componente para apresentar conteúdo em janelas modais. |
 | [Listagens](./components/data-set)                                     | Componente para listagem de dados.                     |
 | [Tabelas](./components/table)                                          | Componente para apresentação de dados em tabelas.      |

@@ -114,6 +114,7 @@ export default defineConfig({
                 { text: "Agrupador de Conteúdo", link: "/guide/components/section" },
                 { text: "Conteúdo Expansível", link: "/guide/components/details" },
                 { text: "Janelas modais", link: "/guide/components/dialog" },
+                { text: "Imagens", link: "/guide/components/img" },
               ],
             },
             {
@@ -195,6 +196,7 @@ export default defineConfig({
                 { text: "UColumn", link: "/api/components/grid/column" },
               ],
             },
+            { text: "UImg", link: "/api/components/img" },
             { text: "UMain", link: "/api/components/main" },
             { text: "UTable", link: "/api/components/table" },
             { text: "UTextField", link: "/api/components/text-field" },
