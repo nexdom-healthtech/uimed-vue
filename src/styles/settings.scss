@@ -1,3 +1,6 @@
 @use "vuetify/settings" with (
-  $body-font-family: var(--v-font-body, "Unimed Slab", sans-serif)
+  $body-font-family: var(--v-font-body, "Unimed Slab", sans-serif),
+  // Unimed Slab's ascent and descent take 1.26em, more than the subtitles' default 1rem line
+  // height, which clipped its descenders and accented capitals
+  $list-item-subtitle-line-height: normal
 );

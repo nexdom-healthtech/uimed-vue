@@ -77,6 +77,12 @@ describe("plugins", () => {
       expect(initAsyncCompiler).toHaveBeenCalledOnce();
     });
 
+    it("should compile Vuetify's list item subtitles with the font's own line height", async () => {
+      const css = await load(plugin, `${vuetify}/lib/components/VList/VListItem.css`);
+
+      expect(css).toMatch(/\.v-list-item-subtitle \{[^}]*line-height: normal;/);
+    });
+
     it("should look for the Sass sources of Vuetify stylesheets with Windows separators", async () => {
       const windowsVuetify = String.raw`C:\app\node_modules\vuetify`;
 
