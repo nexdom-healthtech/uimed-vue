@@ -1,4 +1,4 @@
-import { gotoPage } from "@e2e/utils.ts";
+import { expectLoadingAnnouncement, gotoPage } from "@e2e/utils.ts";
 import { test, expect, type Locator, type Page } from "@playwright/test";
 
 test.describe("main", () => {
@@ -292,6 +292,7 @@ test.describe("main", () => {
 
       await expect(appBar).toHaveAttribute("aria-busy", "true");
       await expect(appBar.locator(".v-skeleton-loader")).toBeVisible();
+      await expectLoadingAnnouncement(appBar.locator(".v-skeleton-loader"), 1);
       await expect(page.getByTestId("demo-root-loading-app-bar-help")).not.toBeAttached();
       await expect(page.getByTestId("demo-root-loading-app-bar-notifications")).not.toBeAttached();
       await expect(page.getByTestId("demo-root-loading-app-bar-user")).not.toBeAttached();
@@ -308,6 +309,7 @@ test.describe("main", () => {
       await expect(navigationMenu).toContainClass("v-navigation-drawer--active");
       await expect(navigationMenu).toHaveAttribute("aria-busy", "true");
       await expect(navigationMenu.locator(".v-skeleton-loader")).toBeVisible();
+      await expectLoadingAnnouncement(navigationMenu.locator(".v-skeleton-loader"), 1);
       await expect(navigationMenu.getByText("Início")).not.toBeAttached();
       await expect(
         page.getByTestId("demo-root-loading-navigation-menu-search").locator("input"),

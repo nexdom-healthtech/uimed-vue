@@ -1,5 +1,5 @@
 import { VCard, VCardActions, VSkeletonLoader } from "vuetify/components";
-import { mount } from "@vue/test-utils";
+import { mount, renderToString } from "@vue/test-utils";
 import Section from "@/components/sections/section/section.vue";
 import type {
   SectionProps,
@@ -197,6 +197,14 @@ describe("Section", () => {
         expect(findVSkeletonLoader(wrapper).attributes("aria-label")).toBe("Carregando...");
       });
 
+      it("should announce the loading with valid ARIA attributes when rendered on the server", async () => {
+        const html = await renderSection({ loading: true });
+        expect(html).toContain('aria-label="Carregando..."');
+        expect(html).toContain('aria-live="polite"');
+        expect(html).not.toContain("arialabel");
+        expect(html).not.toContain("arialive");
+      });
+
       it("should be falsy by default", () => {
         const wrapper = mountSection();
         expect(findVSkeletonLoader(wrapper).props("loading")).toBeFalsy();
@@ -382,6 +390,15 @@ function mountSection(slots: Record<string, string> = {}, attrs: Record<string, 
       ...attrs,
     },
     slots,
+    global: {
+      plugins: [vueTestUtilsPluginUimed()],
+    },
+  });
+}
+
+function renderSection(props: Partial<SectionProps>) {
+  return renderToString(Section, {
+    props,
     global: {
       plugins: [vueTestUtilsPluginUimed()],
     },

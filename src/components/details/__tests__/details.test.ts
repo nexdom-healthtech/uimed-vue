@@ -5,9 +5,9 @@ import {
   VExpansionPanelTitle,
   VSkeletonLoader,
 } from "vuetify/components";
-import { mount } from "@vue/test-utils";
+import { mount, renderToString } from "@vue/test-utils";
 import Details from "@/components/details/details.vue";
-import type { DetailsVariant } from "@/components/details/types.ts";
+import type { DetailsProps, DetailsVariant } from "@/components/details/types.ts";
 import { vueTestUtilsPluginUimed } from "@/unit-test.ts";
 
 const variants: [DetailsVariant, boolean][] = [
@@ -92,6 +92,14 @@ describe("Details", () => {
         expect(findVSkeletonLoader(wrapper).attributes("aria-label")).toBe("Carregando...");
       });
 
+      it("should announce the loading with valid ARIA attributes when rendered on the server", async () => {
+        const html = await renderDetails({ loading: true });
+        expect(html).toContain('aria-label="Carregando..."');
+        expect(html).toContain('aria-live="polite"');
+        expect(html).not.toContain("arialabel");
+        expect(html).not.toContain("arialive");
+      });
+
       it("should be falsy by default", () => {
         const wrapper = mountDetails();
         expect(findVSkeletonLoader(wrapper).props("loading")).toBeFalsy();
@@ -102,9 +110,10 @@ describe("Details", () => {
         expect(findVSkeletonLoader(wrapper).props("type")).toBe("heading");
       });
 
-      it("should make the skeleton occupy the full width", () => {
+      it("should make the skeleton occupy the full width", async () => {
         const wrapper = mountDetails();
-        expect(findVSkeletonLoader(wrapper).props("width")).toBe("100%");
+        await wrapper.setProps({ loading: true });
+        expect(findVSkeletonLoader(wrapper).classes()).toContain("w-100");
       });
 
       it("should hide the details while loading", async () => {
@@ -161,6 +170,18 @@ function mountDetails(slots: Record<string, string> = {}, attrs: Record<string, 
     slots: {
       default: "Test Content",
       ...slots,
+    },
+    global: {
+      plugins: [vueTestUtilsPluginUimed()],
+    },
+  });
+}
+
+function renderDetails(props: Partial<DetailsProps>) {
+  return renderToString(Details, {
+    props,
+    slots: {
+      default: "Test Content",
     },
     global: {
       plugins: [vueTestUtilsPluginUimed()],

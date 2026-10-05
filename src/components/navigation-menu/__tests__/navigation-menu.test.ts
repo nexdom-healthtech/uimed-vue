@@ -2,7 +2,7 @@ import { VNavigationDrawer, VListItem, VListGroup, VSkeletonLoader } from "vueti
 import NavigationMenu from "@/components/navigation-menu/navigation-menu.vue";
 import TextField from "@/components/inputs/text-field/text-field.vue";
 import { owners } from "@/composables/navigation/use-navigation-search-shortcut.ts";
-import { flushPromises, mount } from "@vue/test-utils";
+import { flushPromises, mount, renderToString } from "@vue/test-utils";
 import { vueTestUtilsPluginUimed } from "@/unit-test.ts";
 import type {
   NavigationMenuItem,
@@ -225,6 +225,14 @@ describe("NavigationMenu", () => {
         expect(findVListItems(wrapper)).toHaveLength(0);
       });
 
+      it("should announce the loading with valid ARIA attributes when rendered on the server", async () => {
+        const html = await renderNavigationMenu({ items, loading: true });
+        expect(html).toContain('aria-label="Carregando..."');
+        expect(html).toContain('aria-live="polite"');
+        expect(html).not.toContain("arialabel");
+        expect(html).not.toContain("arialive");
+      });
+
       it("should disable the search field only while loading", async () => {
         expect(findTextField(wrapper).props("disabled")).toBe(false);
 
@@ -424,25 +432,36 @@ function mountNavigationMenu(options: { attachTo?: HTMLElement } = {}) {
       style: styleValue,
       class: classValue,
     },
-    global: {
-      stubs: {
-        VNavigationDrawer: {
-          props: { modelValue: String, color: String, temporary: Boolean, absolute: Boolean },
-          emits: ["update:modelValue"],
-          // The inner element stands for the drawer's own, which holds the focus while it's open
-          template: `
-            <div v-bind="{ 'data-testid': $attrs['data-testid'] }">
-              <div class="v-navigation-drawer">
-                <slot name="prepend" />
-                <slot />
-              </div>
-            </div>
-          `,
-        },
-      },
-      plugins: [vueTestUtilsPluginUimed()],
-    },
+    global: getGlobalMountingOptions(),
   });
+}
+
+function renderNavigationMenu(props: Record<string, unknown>) {
+  return renderToString(NavigationMenu, {
+    props,
+    global: getGlobalMountingOptions(),
+  });
+}
+
+function getGlobalMountingOptions() {
+  return {
+    stubs: {
+      VNavigationDrawer: {
+        props: { modelValue: String, color: String, temporary: Boolean, absolute: Boolean },
+        emits: ["update:modelValue"],
+        // The inner element stands for the drawer's own, which holds the focus while it's open
+        template: `
+          <div v-bind="{ 'data-testid': $attrs['data-testid'] }">
+            <div class="v-navigation-drawer">
+              <slot name="prepend" />
+              <slot />
+            </div>
+          </div>
+        `,
+      },
+    },
+    plugins: [vueTestUtilsPluginUimed()],
+  };
 }
 
 function findVNavigationDrawer(wrapper: ReturnType<typeof mountNavigationMenu>) {

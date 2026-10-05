@@ -1,5 +1,5 @@
 import { test, expect, type Page } from "@playwright/test";
-import { gotoPage, selectOption } from "@e2e/utils.ts";
+import { expectLoadingAnnouncement, gotoPage, selectOption } from "@e2e/utils.ts";
 
 test.describe("details", () => {
   test.beforeEach(async ({ page }) => {
@@ -47,6 +47,7 @@ test.describe("details", () => {
     test("renders the loading skeleton in the loading demo", async ({ page }) => {
       const bones = page.locator(".vp-doc .v-skeleton-loader__bone");
       await expect(bones.first()).toBeVisible();
+      await expectLoadingAnnouncement(page.locator(".vp-doc .v-skeleton-loader"), 1);
     });
   });
 
