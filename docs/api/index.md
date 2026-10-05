@@ -38,6 +38,7 @@ const apis = [
             { text: "Dialog", link: "./components/dialog" },
             { text: "Form", link: "./components/form" },
             { text: "Grid", link: './components/grid/container' },
+            { text: "Img", link: "./components/img" },
             { text: "Main", link: './components/main' },
             { text: "Table", link: "./components/table" },
             { text: "TextField", link: "./components/text-field" }
