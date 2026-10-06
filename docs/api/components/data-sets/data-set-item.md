@@ -5,12 +5,13 @@ Ocupa toda a altura da sua coluna, de forma que os cartões de uma mesma linha f
 
 ## Props
 
-| Prop         | Tipo                       | Padrão      | Descrição                                                                   |
-| ------------ | -------------------------- | ----------- | --------------------------------------------------------------------------- |
-| `title`      | `string`                   |             | Título do registro, exibido no topo do cartão.                              |
-| `subtitle`   | `string`                   |             | Breve descrição do registro, exibida abaixo do título.                      |
-| `variant`    | `"primary" \| "secondary"` | `"primary"` | Aplica uma variação de estilo distinta ao cartão, assim como no `USection`. |
-| `dataTestid` | `string`                   |             | Id do componente para uso em testes automatizados.                          |
+| Prop         | Tipo                                     | Padrão      | Descrição                                                                   |
+| ------------ | ---------------------------------------- | ----------- | --------------------------------------------------------------------------- |
+| `title`      | `string`                                 |             | Título do registro, exibido no topo do cartão.                              |
+| `subtitle`   | `string`                                 |             | Breve descrição do registro, exibida abaixo do título.                      |
+| `variant`    | `"primary" \| "secondary"`               | `"primary"` | Aplica uma variação de estilo distinta ao cartão, assim como no `USection`. |
+| `actions`    | [`action[]`](../sections/section#action) |             | Lista de ações do registro, exibidas no rodapé do cartão.                   |
+| `dataTestid` | `string`                                 |             | Id do componente para uso em testes automatizados.                          |
 
 ## Slots
 
@@ -24,7 +25,11 @@ Ocupa toda a altura da sua coluna, de forma que os cartões de uma mesma linha f
 <template>
   <u-data-set :items="pacientes" :columns="2">
     <template #default="{ item }">
-      <u-data-set-item :title="item.nome" :subtitle="item.cidade">
+      <u-data-set-item
+        :title="item.nome"
+        :subtitle="item.cidade"
+        :actions="[{ label: 'Editar', variant: 'secondary', onClick: () => editar(item) }]"
+      >
         <u-table
           :headers="['Plano', 'Idade', 'Carteirinha']"
           :items="[[item.plano, item.idade, item.carteirinha]]"
@@ -48,5 +53,9 @@ const pacientes = [
     carteirinha: "0001 2345 6789",
   },
 ];
+
+function editar(paciente: (typeof pacientes)[number]) {
+  // ...
+}
 </script>
 ```

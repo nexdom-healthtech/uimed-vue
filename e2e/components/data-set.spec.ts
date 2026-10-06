@@ -171,6 +171,64 @@ test.describe("data-set", () => {
       await expect(table.getByRole("cell")).toHaveText(["Prata", "52 anos", "0001 9876 5432"]);
     });
 
+    test("renders the actions of each record in its card", async ({ page }) => {
+      const listItems = page.getByTestId("demo-data-set-actions").getByRole("listitem");
+
+      await expect(listItems).toHaveCount(2);
+      for (const listItem of await listItems.all()) {
+        await expect(listItem.getByRole("button")).toHaveText(["Editar", "Excluir"]);
+      }
+      await expect(page.getByTestId("demo-data-set-actions-last")).toHaveText(
+        "Última ação: nenhuma",
+      );
+    });
+
+    test("calls the clicked action with its own record", async ({ page }) => {
+      const lastAction = page.getByTestId("demo-data-set-actions-last");
+      const firstCard = page.getByTestId("demo-data-set-actions-item-1");
+      const secondCard = page.getByTestId("demo-data-set-actions-item-2");
+
+      await secondCard.getByRole("button", { name: "Editar" }).click();
+      await expect(lastAction).toHaveText("Última ação: Editar Bruno Lima");
+
+      await firstCard.getByRole("button", { name: "Excluir" }).click();
+      await expect(lastAction).toHaveText("Última ação: Excluir Ana Souza");
+
+      await firstCard.getByRole("button", { name: "Editar" }).click();
+      await expect(lastAction).toHaveText("Última ação: Editar Ana Souza");
+    });
+
+    test("lines up the actions at the bottom of the cards of the same row", async ({ page }) => {
+      const cards = [
+        page.getByTestId("demo-data-set-actions-item-1"),
+        page.getByTestId("demo-data-set-actions-item-2"),
+      ];
+      const [firstTable, secondTable] = await Promise.all(
+        cards.map((card) => card.getByRole("table").boundingBox()),
+      );
+      expect(firstTable?.height).toBeGreaterThan(secondTable?.height ?? Infinity);
+
+      const [firstCard, secondCard, firstButton, secondButton] = await Promise.all([
+        ...cards.map((card) => card.boundingBox()),
+        ...cards.map((card) => card.getByRole("button", { name: "Excluir" }).boundingBox()),
+      ]);
+      expect(firstCard?.y).toBe(secondCard?.y);
+      expect(firstButton?.y).toBe(secondButton?.y);
+      for (const [card, button] of [
+        [firstCard, firstButton],
+        [secondCard, secondButton],
+      ]) {
+        const cardBottom = (card?.y ?? 0) + (card?.height ?? 0);
+        const buttonBottom = (button?.y ?? 0) + (button?.height ?? 0);
+        expect(cardBottom - buttonBottom).toBeGreaterThan(0);
+        expect(cardBottom - buttonBottom).toBeLessThanOrEqual(16);
+      }
+    });
+
+    test("matches the accessible snapshot of the actions demo", async ({ page }) => {
+      await expect(page.getByTestId("demo-data-set-actions")).toMatchAriaSnapshot();
+    });
+
     test("matches the accessible snapshot of the fields demo", async ({ page }) => {
       await expect(page.getByTestId("demo-data-set-fields")).toMatchAriaSnapshot();
     });

@@ -3,6 +3,7 @@
     :title="props.title"
     :subtitle="props.subtitle"
     :variant="props.variant"
+    :actions="props.actions"
     :data-testid="props.dataTestid"
     full-height
   >
@@ -23,7 +24,11 @@
  * <template>
  *   <u-data-set :items="patients">
  *     <template #default="{ item }">
- *       <u-data-set-item :title="item.name" subtitle="Beneficiário">
+ *       <u-data-set-item
+ *         :title="item.name"
+ *         subtitle="Beneficiário"
+ *         :actions="[{ label: 'Editar', variant: 'secondary', onClick: () => edit(item) }]"
+ *       >
  *         <u-table :headers="['Plano', 'Idade']" :items="[[item.plan, item.age]]" vertical />
  *       </u-data-set-item>
  *     </template>

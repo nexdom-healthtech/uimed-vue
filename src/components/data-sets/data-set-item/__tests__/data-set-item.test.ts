@@ -1,5 +1,6 @@
-import { VCard } from "vuetify/components";
+import { VCard, VCardActions } from "vuetify/components";
 import { mount } from "@vue/test-utils";
+import Button from "@/components/button/button.vue";
 import DataSetItem from "@/components/data-sets/data-set-item/data-set-item.vue";
 import Section from "@/components/sections/section/section.vue";
 import SectionContent from "@/components/sections/section-content/section-content.vue";
@@ -82,6 +83,51 @@ describe("DataSetItem", () => {
       });
     });
 
+    describe("actions", () => {
+      it("should forward to the section, rendering a button per action in order", () => {
+        const actions = [
+          { label: "Editar", variant: "secondary", onClick: vi.fn() },
+          { label: "Excluir", color: "danger", variant: "secondary", onClick: vi.fn() },
+        ];
+        const wrapper = mountDataSetItem({ actions });
+
+        expect(findSection(wrapper).props("actions")).toEqual(actions);
+        const buttons = findVCardActions(wrapper).findAllComponents(Button);
+        expect(buttons.map((button) => button.text())).toEqual(["Editar", "Excluir"]);
+        expect(buttons[0]?.props("variant")).toBe("secondary");
+        expect(buttons[1]?.props("color")).toBe("danger");
+      });
+
+      it("should call only the clicked action's onClick", async () => {
+        const edit = vi.fn();
+        const remove = vi.fn();
+        const wrapper = mountDataSetItem({
+          actions: [
+            { label: "Editar", onClick: edit },
+            { label: "Excluir", onClick: remove },
+          ],
+        });
+
+        await findVCardActions(wrapper).findAll("button")[1]?.trigger("click");
+
+        expect(remove).toHaveBeenCalledOnce();
+        expect(remove).toHaveBeenCalledWith(expect.any(MouseEvent));
+        expect(edit).not.toHaveBeenCalled();
+      });
+
+      it("should not render the actions area when undefined", () => {
+        const wrapper = mountDataSetItem();
+        expect(findSection(wrapper).props("actions")).toBeUndefined();
+        expect(findVCardActions(wrapper).exists()).toBeFalsy();
+      });
+
+      it("should not render the actions area when empty", () => {
+        const wrapper = mountDataSetItem({ actions: [] });
+        expect(findSection(wrapper).props("actions")).toEqual([]);
+        expect(findVCardActions(wrapper).exists()).toBeFalsy();
+      });
+    });
+
     describe("dataTestid", () => {
       it("should forward to the section", () => {
         const wrapper = mountDataSetItem();
@@ -145,4 +191,8 @@ function findSectionContent(wrapper: ReturnType<typeof mountDataSetItem>) {
 
 function findVCard(wrapper: ReturnType<typeof mountDataSetItem>) {
   return wrapper.findComponent(VCard);
+}
+
+function findVCardActions(wrapper: ReturnType<typeof mountDataSetItem>) {
+  return wrapper.findComponent(VCardActions);
 }
