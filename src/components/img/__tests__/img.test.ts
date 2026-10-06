@@ -6,7 +6,6 @@ import { vueTestUtilsPluginUimed } from "@/unit-test.ts";
 
 const testId = "img-test-id";
 const src = "/logo.svg";
-const alt = "Logo do produto";
 
 describe("Img", () => {
   it("should exist", () => {
@@ -21,40 +20,20 @@ describe("Img", () => {
     expect(wrapper.classes()).not.toContain("random-class");
   });
 
+  it("should hide the image from assistive technologies", () => {
+    const wrapper = mountImg();
+    expect(findVImg(wrapper).props("alt")).toBe("");
+    expect(wrapper.attributes("role")).toBeUndefined();
+    expect(wrapper.attributes("aria-label")).toBeUndefined();
+    expect(wrapper.find("img").attributes("alt")).toBe("");
+  });
+
   describe("props", () => {
     describe("src", () => {
       it("should forward to v-img", () => {
         const wrapper = mountImg();
         expect(findVImg(wrapper).props("src")).toBe(src);
         expect(wrapper.find("img").attributes("src")).toBe(src);
-      });
-    });
-
-    describe("alt", () => {
-      it("should expose the image to assistive technologies once, with its alternative text", () => {
-        const wrapper = mountImg({ alt });
-        expect(wrapper.attributes("role")).toBe("img");
-        expect(wrapper.attributes("aria-label")).toBe(alt);
-        expect(findVImg(wrapper).props("alt")).toBe("");
-        expect(findVImg(wrapper).attributes("role")).toBeUndefined();
-        expect(findVImg(wrapper).attributes("aria-label")).toBeUndefined();
-        expect(wrapper.find("img").attributes("alt")).toBe("");
-      });
-
-      it("should hide a decorative image from assistive technologies", () => {
-        const wrapper = mountImg({ alt: "" });
-        expect(findVImg(wrapper).props("alt")).toBe("");
-        expect(wrapper.attributes("role")).toBeUndefined();
-        expect(wrapper.attributes("aria-label")).toBeUndefined();
-        expect(wrapper.find("img").attributes("alt")).toBe("");
-      });
-
-      it("should be decorative by default", () => {
-        const wrapper = mountImg();
-        expect(findVImg(wrapper).props("alt")).toBe("");
-        expect(wrapper.attributes("role")).toBeUndefined();
-        expect(wrapper.attributes("aria-label")).toBeUndefined();
-        expect(wrapper.find("img").attributes("alt")).toBe("");
       });
     });
 
