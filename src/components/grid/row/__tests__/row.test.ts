@@ -6,7 +6,8 @@ import { vueTestUtilsPluginUimed } from "@/unit-test.ts";
 const testId = "row-test-component";
 const styleValue = "random-style";
 const classValue = "random-class";
-const alignClasses = ["align-start", "align-center", "align-end", "align-stretch"];
+const alignXClasses = ["justify-start", "justify-center", "justify-end"];
+const alignYClasses = ["align-start", "align-center", "align-end", "align-stretch"];
 
 describe("Row", () => {
   const wrapper = mountRow();
@@ -30,9 +31,37 @@ describe("Row", () => {
   });
 
   describe("props", () => {
-    describe("align", () => {
+    describe("alignX", () => {
       it("should align the columns to the start by default", () => {
-        expectOnlyAlignClass(mountRow(), "align-start");
+        expectOnlyClassOf(mountRow(), alignXClasses, "justify-start");
+      });
+
+      it.each([
+        ["start", "justify-start"],
+        ["center", "justify-center"],
+        ["end", "justify-end"],
+      ])('should apply the "%s" alignment', (alignX, expectedClass) => {
+        expectOnlyClassOf(mountRow({ alignX }), alignXClasses, expectedClass);
+      });
+
+      it("should update the alignment when the prop changes", async () => {
+        const row = mountRow({ alignX: "center" });
+        expectOnlyClassOf(row, alignXClasses, "justify-center");
+
+        await row.setProps({ alignX: "end" });
+        expectOnlyClassOf(row, alignXClasses, "justify-end");
+      });
+
+      it("should keep the alignment on a list", () => {
+        const row = mountRow({ list: true, alignX: "center" });
+        expectOnlyClassOf(row, alignXClasses, "justify-center");
+        expect(row.classes()).toEqual(expect.arrayContaining(["pa-0", "ma-0"]));
+      });
+    });
+
+    describe("alignY", () => {
+      it("should align the columns to the start by default", () => {
+        expectOnlyClassOf(mountRow(), alignYClasses, "align-start");
       });
 
       it.each([
@@ -40,21 +69,21 @@ describe("Row", () => {
         ["center", "align-center"],
         ["end", "align-end"],
         ["stretch", "align-stretch"],
-      ])('should apply the "%s" alignment', (align, expectedClass) => {
-        expectOnlyAlignClass(mountRow({ align }), expectedClass);
+      ])('should apply the "%s" alignment', (alignY, expectedClass) => {
+        expectOnlyClassOf(mountRow({ alignY }), alignYClasses, expectedClass);
       });
 
       it("should update the alignment when the prop changes", async () => {
-        const row = mountRow({ align: "center" });
-        expectOnlyAlignClass(row, "align-center");
+        const row = mountRow({ alignY: "center" });
+        expectOnlyClassOf(row, alignYClasses, "align-center");
 
-        await row.setProps({ align: "end" });
-        expectOnlyAlignClass(row, "align-end");
+        await row.setProps({ alignY: "end" });
+        expectOnlyClassOf(row, alignYClasses, "align-end");
       });
 
       it("should keep the alignment on a list", () => {
-        const row = mountRow({ list: true, align: "stretch" });
-        expectOnlyAlignClass(row, "align-stretch");
+        const row = mountRow({ list: true, alignY: "stretch" });
+        expectOnlyClassOf(row, alignYClasses, "align-stretch");
         expect(row.classes()).toEqual(expect.arrayContaining(["pa-0", "ma-0"]));
       });
     });
@@ -64,7 +93,12 @@ describe("Row", () => {
         const row = mountRow();
         expect(row.findComponent(VRow).props("tag")).toBe("div");
         expect(row.element.tagName).toBe("DIV");
-        expect(row.classes()).toEqual(["v-row", "v-row--density-default", "align-start"]);
+        expect(row.classes()).toEqual([
+          "v-row",
+          "v-row--density-default",
+          "justify-start",
+          "align-start",
+        ]);
       });
 
       it("should render a list without its default spacing when true", () => {
@@ -99,6 +133,10 @@ function mountRow(props: Record<string, unknown> = {}) {
   });
 }
 
-function expectOnlyAlignClass(row: ReturnType<typeof mountRow>, expectedClass: string) {
-  expect(row.classes().filter((value) => alignClasses.includes(value))).toEqual([expectedClass]);
+function expectOnlyClassOf(
+  row: ReturnType<typeof mountRow>,
+  classes: string[],
+  expectedClass: string,
+) {
+  expect(row.classes().filter((value) => classes.includes(value))).toEqual([expectedClass]);
 }

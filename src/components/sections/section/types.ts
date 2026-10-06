@@ -55,7 +55,7 @@ export type SectionProps = {
   /**
    * Makes the section occupy 100% of its parent's height.
    *
-   * Inside a `URow`, set its `align` to `"stretch"` so the section takes the height of the
+   * Inside a `URow`, set its `alignY` to `"stretch"` so the section takes the height of the
    * tallest column on the same line.
    * @default false
    */

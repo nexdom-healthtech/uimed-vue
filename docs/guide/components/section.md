@@ -181,7 +181,7 @@ import { USection } from "@nexdom/uimed-vue/components";
 
 Utilize a prop `fullHeight` para fazer o agrupador ocupar 100% da altura do seu container.
 
-Quando o agrupador estiver dentro de uma [`URow`](./layout#alinhamento-vertical-das-colunas), utilize `align="stretch"` na linha para que ele acompanhe a altura da coluna mais alta.
+Quando o agrupador estiver dentro de uma [`URow`](./layout#alinhamento-vertical-das-colunas), utilize `align-y="stretch"` na linha para que ele acompanhe a altura da coluna mais alta.
 
 <demo>
 <div style="height: 300px;">

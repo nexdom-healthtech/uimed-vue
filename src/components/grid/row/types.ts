@@ -3,6 +3,23 @@
  */
 export type RowProps = {
   /**
+   * Horizontal alignment of the row's columns on each line.
+   * Available options are:
+   * - `"start"`: aligns the columns to the start of the line;
+   * - `"center"`: centers the columns horizontally;
+   * - `"end"`: aligns the columns to the end of the line.
+   *
+   * `"start"` and `"end"` follow the text direction. It only has a visible effect when the
+   * columns of a line don't fill it, e.g. with `cols="auto"` or sizes adding up to less than 12.
+   * When the columns wrap into several lines, each line is aligned on its own.
+   *
+   * Columns sit side by side only from the `sm` breakpoint up. Below it, each column takes a
+   * whole line, so the alignment has no visible effect.
+   * @default "start"
+   */
+  alignX?: RowAlignX;
+
+  /**
    * Vertical alignment of the row's columns, relative to the tallest column on the same line.
    * Available options are:
    * - `"start"`: aligns the columns to the top;
@@ -17,7 +34,7 @@ export type RowProps = {
    * whole line, so the alignment has no visible effect.
    * @default "start"
    */
-  align?: RowAlign;
+  alignY?: RowAlignY;
 
   /**
    * Renders the row as a list (`<ul>`), without the list's default indentation
@@ -34,4 +51,6 @@ export type RowProps = {
   dataTestid?: string;
 };
 
-export type RowAlign = "start" | "center" | "end" | "stretch";
+export type RowAlignX = "start" | "center" | "end";
+
+export type RowAlignY = "start" | "center" | "end" | "stretch";
