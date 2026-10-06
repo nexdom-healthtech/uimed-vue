@@ -1,4 +1,4 @@
-import { gotoPage } from "@e2e/utils.ts";
+import { gotoPage, pauseClock } from "@e2e/utils.ts";
 import { test, expect, type Page } from "@playwright/test";
 
 const testId = "btn-danger";
@@ -31,7 +31,7 @@ test.describe("use-run-or-toast", () => {
       const toastButton = page.getByTestId(testId);
       await toastButton.click();
 
-      await page.clock.pauseAt(new Date());
+      await pauseClock(page);
 
       await expect(toastButton).toMatchAriaSnapshot();
       await expect(page).toHaveScreenshot();

@@ -1,4 +1,4 @@
-import { gotoPage, selectOption } from "@e2e/utils.ts";
+import { gotoPage, pauseClock, selectOption } from "@e2e/utils.ts";
 import { test, expect, type Locator, type Page } from "@playwright/test";
 
 const actionDuration = 1500;
@@ -411,9 +411,4 @@ function getDialog(page: Page) {
 
 async function getWidth(dialog: Locator) {
   return (await dialog.locator(".v-card").boundingBox())?.width;
-}
-
-/** Keeps the demo actions running until the test fast-forwards the clock. */
-async function pauseClock(page: Page) {
-  await page.clock.pauseAt(new Date(Date.now() + 1000));
 }

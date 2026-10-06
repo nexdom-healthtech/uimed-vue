@@ -216,7 +216,7 @@ Use an existing composable (e.g. `use-toast`) as the reference, and deliver in t
 - Keep temporary files (scripts, specs, configs) outside the repo, e.g. in the system's temp folder. Vitest collects test files from every folder except the excluded ones in `vite.config.ts`, so a temporary spec in a gitignored folder such as `reports/` still runs, and fails, with the unit tests.
 - Never run Stryker at the same time as another test command: they share build output and Stryker fails with `ENOENT`.
 - Unit tests that mount several apps at once (e.g. nested dialogs) need a distinct `global.config.idPrefix` per mount, since `useId()` restarts in each app.
-- In E2E, a paused `page.clock` also freezes transitions, so overlays never finish leaving. Use `page.clock.pauseAt` to hold time-based work (e.g. a demo action with `setTimeout`), `page.clock.fastForward` to complete it, then `page.clock.resume()` before expecting the overlay to be hidden (see `e2e/composables/use-confirm.spec.ts`).
+- In E2E, a paused `page.clock` also freezes transitions, so overlays never finish leaving. Use `pauseClock(page)` from `e2e/utils.ts` to hold time-based work (e.g. a demo action with `setTimeout`), `page.clock.fastForward` to complete it, then `page.clock.resume()` before expecting the overlay to be hidden (see `e2e/composables/use-confirm.spec.ts`). Don't call `page.clock.pauseAt` with the test runner's time (`new Date()`, `Date.now()`): the page clock can be ahead of it, and the pause then fails with "Cannot fast-forward to the past". `pauseClock` pauses from the page's own time instead.
 
 ## Public API design
 

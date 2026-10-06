@@ -1,4 +1,4 @@
-import { gotoPage } from "@e2e/utils.ts";
+import { gotoPage, pauseClock } from "@e2e/utils.ts";
 import { test, expect, type Page } from "@playwright/test";
 
 const actionDuration = 1500;
@@ -158,9 +158,4 @@ test.describe("use-confirm", () => {
 
 function getDialog(page: Page) {
   return page.getByRole("alertdialog");
-}
-
-/** Keeps the demo actions running until the test fast-forwards the clock. */
-async function pauseClock(page: Page) {
-  await page.clock.pauseAt(new Date(Date.now() + 1000));
 }
