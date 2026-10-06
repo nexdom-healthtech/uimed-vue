@@ -5,9 +5,9 @@
     :data-testid="props.dataTestid"
   >
     <!--
-      v-img gives the same alt to its root (as role="img" with aria-label) and to its inner <img>,
-      which screen readers announce twice. This wrapper carries the alternative text instead, and
-      v-img stays decorative.
+      The image component exposes the alternative text twice, on its root element and on the
+      inner image, so screen readers announce it twice. This wrapper carries the text instead,
+      and the image component stays decorative.
     -->
     <v-img
       :src="props.src"
