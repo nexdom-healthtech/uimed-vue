@@ -107,7 +107,7 @@ const appBar = {
 
 ### Alinhamento vertical das colunas
 
-Na v1, as colunas de uma `Row` eram esticadas até a altura da coluna mais alta da linha. Na v2, a prop `align` da `URow` controla esse alinhamento e o padrão passou a ser `"start"`: cada coluna mantém a altura do próprio conteúdo e fica alinhada ao topo. Para manter o comportamento da v1, como em cartões lado a lado que devem ter a mesma altura, utilize `align="stretch"` (veja [Alinhamento vertical das colunas](./components/layout#alinhamento-vertical-das-colunas)).
+Na v1, as colunas de uma `Row` eram esticadas até a altura da coluna mais alta da linha. Na v2, a prop `alignY` da `URow` controla esse alinhamento e o padrão passou a ser `"start"`: cada coluna mantém a altura do próprio conteúdo e fica alinhada ao topo. Para manter o comportamento da v1, como em cartões lado a lado que devem ter a mesma altura, utilize `align-y="stretch"` (veja [Alinhamento vertical das colunas](./components/layout#alinhamento-vertical-das-colunas)).
 
 **Antes (v1):**
 
@@ -132,7 +132,7 @@ Na v1, as colunas de uma `Row` eram esticadas até a altura da coluna mais alta 
 
 ```vue
 <template>
-  <u-row align="stretch">
+  <u-row align-y="stretch">
     <u-column cols="6">
       <u-section title="Consultas" full-height>
         <!-- conteúdo curto -->
@@ -153,6 +153,6 @@ Na v1, as colunas de uma `Row` eram esticadas até a altura da coluna mais alta 
 2. Atualize todos os templates para usar as novas tags em kebab-case (ex: `<u-button>` em vez de `<btn>`)
 3. Os tipos de props não são mais exportados pela biblioteca. Utilize `ComponentProps`, de [`vue-component-type-helpers`](https://www.npmjs.com/package/vue-component-type-helpers), para obtê-los a partir do componente (veja [Tipagem de props](./getting-started#tipagem-de-props))
 4. Substitua a propriedade `date` das notificações do menu superior por `when`, informando o texto já formatado (veja [Notificações do menu superior](#notificacoes-do-menu-superior))
-5. Adicione `align="stretch"` às `URow` cujas colunas precisam ter a mesma altura (veja [Alinhamento vertical das colunas](#alinhamento-vertical-das-colunas))
+5. Adicione `align-y="stretch"` às `URow` cujas colunas precisam ter a mesma altura (veja [Alinhamento vertical das colunas](#alinhamento-vertical-das-colunas))
 
 Para mais informações sobre cada componente, consulte a [Documentação da API](../api/).
