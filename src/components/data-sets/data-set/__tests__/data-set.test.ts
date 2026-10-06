@@ -76,7 +76,7 @@ describe("DataSet", () => {
       });
 
       it("should stretch the columns so the items of the same line share its height", () => {
-        expect(findRow(mountDataSet()).props("align")).toBe("stretch");
+        expect(findRow(mountDataSet()).props("alignY")).toBe("stretch");
       });
 
       it("should render the items as a list, one list item per column", () => {

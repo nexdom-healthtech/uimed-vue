@@ -196,7 +196,7 @@ const especialidades = ["Cardiologia", "Dermatologia", "Pediatria"];
 
 ## Alinhamento vertical das colunas
 
-A prop `align` da `Row` define como as suas colunas se alinham verticalmente em relação à coluna mais alta da mesma linha:
+A prop `alignY` (`align-y` no template) da `Row` define como as suas colunas se alinham verticalmente em relação à coluna mais alta da mesma linha:
 
 | Valor       | Alinhamento                                               |
 | ----------- | --------------------------------------------------------- |
@@ -214,10 +214,10 @@ As colunas só ficam lado a lado em telas a partir de 600px de largura. Em telas
 <demo>
 <u-main>
   <u-container>
-    <u-row align="start" data-testid="demo-layout-align-start">
+    <u-row align-y="start" data-testid="demo-layout-align-y-start">
       <u-column cols="4">
         <div style="background: lightgreen; height: 100%;">
-          <code>align="start"</code>
+          <code>align-y="start"</code>
         </div>
       </u-column>
       <u-column cols="4">
@@ -231,10 +231,10 @@ As colunas só ficam lado a lado em telas a partir de 600px de largura. Em telas
         </div>
       </u-column>
     </u-row>
-    <u-row align="center" data-testid="demo-layout-align-center">
+    <u-row align-y="center" data-testid="demo-layout-align-y-center">
       <u-column cols="4">
         <div style="background: lightgreen; height: 100%;">
-          <code>align="center"</code>
+          <code>align-y="center"</code>
         </div>
       </u-column>
       <u-column cols="4">
@@ -248,10 +248,10 @@ As colunas só ficam lado a lado em telas a partir de 600px de largura. Em telas
         </div>
       </u-column>
     </u-row>
-    <u-row align="end" data-testid="demo-layout-align-end">
+    <u-row align-y="end" data-testid="demo-layout-align-y-end">
       <u-column cols="4">
         <div style="background: lightgreen; height: 100%;">
-          <code>align="end"</code>
+          <code>align-y="end"</code>
         </div>
       </u-column>
       <u-column cols="4">
@@ -265,10 +265,10 @@ As colunas só ficam lado a lado em telas a partir de 600px de largura. Em telas
         </div>
       </u-column>
     </u-row>
-    <u-row align="stretch" data-testid="demo-layout-align-stretch">
+    <u-row align-y="stretch" data-testid="demo-layout-align-y-stretch">
       <u-column cols="4">
         <div style="background: lightgreen; height: 100%;">
-          <code>align="stretch"</code>
+          <code>align-y="stretch"</code>
         </div>
       </u-column>
       <u-column cols="4">
@@ -290,10 +290,10 @@ As colunas só ficam lado a lado em telas a partir de 600px de largura. Em telas
 <template>
   <u-main>
     <u-container>
-      <u-row align="start">
+      <u-row align-y="start">
         <u-column cols="4">
           <div style="background: lightgreen; height: 100%;">
-            <code>align="start"</code>
+            <code>align-y="start"</code>
           </div>
         </u-column>
         <u-column cols="4">
@@ -305,10 +305,10 @@ As colunas só ficam lado a lado em telas a partir de 600px de largura. Em telas
           <div style="background: lightgreen; height: 100%;">Coluna com<br />duas linhas</div>
         </u-column>
       </u-row>
-      <u-row align="center">
+      <u-row align-y="center">
         <u-column cols="4">
           <div style="background: lightgreen; height: 100%;">
-            <code>align="center"</code>
+            <code>align-y="center"</code>
           </div>
         </u-column>
         <u-column cols="4">
@@ -320,10 +320,10 @@ As colunas só ficam lado a lado em telas a partir de 600px de largura. Em telas
           <div style="background: lightgreen; height: 100%;">Coluna com<br />duas linhas</div>
         </u-column>
       </u-row>
-      <u-row align="end">
+      <u-row align-y="end">
         <u-column cols="4">
           <div style="background: lightgreen; height: 100%;">
-            <code>align="end"</code>
+            <code>align-y="end"</code>
           </div>
         </u-column>
         <u-column cols="4">
@@ -335,10 +335,10 @@ As colunas só ficam lado a lado em telas a partir de 600px de largura. Em telas
           <div style="background: lightgreen; height: 100%;">Coluna com<br />duas linhas</div>
         </u-column>
       </u-row>
-      <u-row align="stretch">
+      <u-row align-y="stretch">
         <u-column cols="4">
           <div style="background: lightgreen; height: 100%;">
-            <code>align="stretch"</code>
+            <code>align-y="stretch"</code>
           </div>
         </u-column>
         <u-column cols="4">
@@ -359,24 +359,122 @@ import { UContainer, UMain, URow, UColumn } from "@nexdom/uimed-vue/components";
 </script>
 ```
 
-### Playground
+## Alinhamento horizontal das colunas
 
-Experimente os valores da prop `align`.
+A prop `alignX` (`align-x` no template) da `Row` define como as suas colunas se alinham horizontalmente em cada linha:
+
+| Valor      | Alinhamento                  |
+| ---------- | ---------------------------- |
+| `"start"`  | no início da linha (padrão). |
+| `"center"` | ao centro.                   |
+| `"end"`    | no fim da linha.             |
+
+O alinhamento só tem efeito visível quando as colunas não preenchem a linha toda, como com `cols="auto"`, em que a coluna ocupa apenas a largura do seu conteúdo, ou com tamanhos que somam menos de 12. Quando as colunas não cabem em uma linha e passam para a seguinte, cada linha é alinhada separadamente.
+
+::: info
+As colunas só ficam lado a lado em telas a partir de 600px de largura. Em telas menores, cada coluna ocupa uma linha inteira, mesmo com `cols="auto"`, e o alinhamento não tem efeito visível.
+
+`start` e `end` acompanham a direção do texto: em idiomas escritos da direita para a esquerda, `start` fica à direita e `end`, à esquerda.
+:::
+
+<demo>
+<u-main>
+  <u-container>
+    <u-row align-x="start" data-testid="demo-layout-align-x-start">
+      <u-column cols="auto">
+        <div style="background: lightgreen;">
+          <code>align-x="start"</code>
+        </div>
+      </u-column>
+    </u-row>
+    <u-row align-x="center" data-testid="demo-layout-align-x-center">
+      <u-column cols="auto">
+        <div style="background: lightgreen;">
+          <code>align-x="center"</code>
+        </div>
+      </u-column>
+    </u-row>
+    <u-row align-x="end" data-testid="demo-layout-align-x-end">
+      <u-column cols="auto">
+        <div style="background: lightgreen;">
+          <code>align-x="end"</code>
+        </div>
+      </u-column>
+    </u-row>
+  </u-container>
+</u-main>
+</demo>
+
+```vue
+<template>
+  <u-main>
+    <u-container>
+      <u-row align-x="start">
+        <u-column cols="auto">
+          <div style="background: lightgreen;">
+            <code>align-x="start"</code>
+          </div>
+        </u-column>
+      </u-row>
+      <u-row align-x="center">
+        <u-column cols="auto">
+          <div style="background: lightgreen;">
+            <code>align-x="center"</code>
+          </div>
+        </u-column>
+      </u-row>
+      <u-row align-x="end">
+        <u-column cols="auto">
+          <div style="background: lightgreen;">
+            <code>align-x="end"</code>
+          </div>
+        </u-column>
+      </u-row>
+    </u-container>
+  </u-main>
+</template>
+
+<script lang="ts" setup>
+import { UContainer, UMain, URow, UColumn } from "@nexdom/uimed-vue/components";
+</script>
+```
+
+Com uma coluna `cols="auto"` e `align-x="center"`, por exemplo, o formulário de uma tela de login fica centralizado na linha, sem estilos próprios:
+
+```vue
+<template>
+  <u-row align-x="center">
+    <u-column cols="auto">
+      <u-section title="Entrar">
+        <!-- formulário -->
+      </u-section>
+    </u-column>
+  </u-row>
+</template>
+
+<script lang="ts" setup>
+import { URow, UColumn, USection } from "@nexdom/uimed-vue/components";
+</script>
+```
+
+## Playground
+
+Experimente os valores das props `alignY` e `alignX`.
 
 <playground v-model:actions="playgroundActions">
 <u-container>
-  <u-row :align="playgroundActions.align.value" data-testid="layout-preview">
-    <u-column cols="4">
+  <u-row :align-y="playgroundActions.alignY.value" :align-x="playgroundActions.alignX.value" data-testid="layout-preview">
+    <u-column cols="3">
       <div style="background: lightgreen; height: 100%;">
         Coluna 1
       </div>
     </u-column>
-    <u-column cols="4">
+    <u-column cols="3">
       <div style="background: lightgreen; height: 100%;">
         Coluna 2<br />mais<br />alta
       </div>
     </u-column>
-    <u-column cols="4">
+    <u-column cols="3">
       <div style="background: lightgreen; height: 100%;">
         Coluna 3<br />média
       </div>
@@ -398,15 +496,23 @@ Consulte a referência de [API do UContainer](../../api/components/grid/containe
 
   const especialidades = ["Cardiologia", "Dermatologia", "Pediatria"];
 
-  const playgroundAlignOptions: Array<NonNullable<RowProps["align"]>> = ["start", "center", "end", "stretch"];
+  const playgroundAlignYOptions: Array<NonNullable<RowProps["alignY"]>> = ["start", "center", "end", "stretch"];
+  const playgroundAlignXOptions: Array<NonNullable<RowProps["alignX"]>> = ["start", "center", "end"];
 
   const playgroundActions = ref({
-    align: {
+    alignY: {
       type: "combobox",
-      label: "Alinhamento",
-      value: playgroundAlignOptions[0],
-      dataTestid: "layout-playground-align",
-      items: playgroundAlignOptions
+      label: "Alinhamento vertical",
+      value: playgroundAlignYOptions[0],
+      dataTestid: "layout-playground-align-y",
+      items: playgroundAlignYOptions
+    },
+    alignX: {
+      type: "combobox",
+      label: "Alinhamento horizontal",
+      value: playgroundAlignXOptions[0],
+      dataTestid: "layout-playground-align-x",
+      items: playgroundAlignXOptions
     },
   });
 </script>

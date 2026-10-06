@@ -1,5 +1,5 @@
 import { gotoPage, selectOption } from "@e2e/utils.ts";
-import { test, expect, type Locator } from "@playwright/test";
+import { test, expect, type Locator, type Page } from "@playwright/test";
 
 test.describe("layout", () => {
   test.beforeEach(async ({ page }) => {
@@ -33,9 +33,9 @@ test.describe("layout", () => {
     });
   });
 
-  test.describe("align", () => {
+  test.describe("alignY", () => {
     test("aligns the columns to the top with start", async ({ page }) => {
-      const row = page.getByTestId("demo-layout-align-start");
+      const row = page.getByTestId("demo-layout-align-y-start");
       await expect(row).toHaveCSS("align-items", "flex-start");
 
       const boxes = await getColumnBoxes(row);
@@ -44,7 +44,7 @@ test.describe("layout", () => {
     });
 
     test("centers the columns vertically with center", async ({ page }) => {
-      const row = page.getByTestId("demo-layout-align-center");
+      const row = page.getByTestId("demo-layout-align-y-center");
       await expect(row).toHaveCSS("align-items", "center");
 
       const boxes = await getColumnBoxes(row);
@@ -53,7 +53,7 @@ test.describe("layout", () => {
     });
 
     test("aligns the columns to the bottom with end", async ({ page }) => {
-      const row = page.getByTestId("demo-layout-align-end");
+      const row = page.getByTestId("demo-layout-align-y-end");
       await expect(row).toHaveCSS("align-items", "flex-end");
 
       const boxes = await getColumnBoxes(row);
@@ -62,7 +62,7 @@ test.describe("layout", () => {
     });
 
     test("stretches the columns to the tallest one with stretch", async ({ page }) => {
-      const row = page.getByTestId("demo-layout-align-stretch");
+      const row = page.getByTestId("demo-layout-align-y-stretch");
       await expect(row).toHaveCSS("align-items", "stretch");
 
       const boxes = await getColumnBoxes(row);
@@ -71,22 +71,67 @@ test.describe("layout", () => {
     });
   });
 
+  test.describe("alignX", () => {
+    for (const [alignX, justifyContent] of [
+      ["start", "flex-start"],
+      ["center", "center"],
+      ["end", "flex-end"],
+    ] as const) {
+      test(`aligns the column to the ${alignX} of the line with ${alignX}`, async ({ page }) => {
+        const row = page.getByTestId(`demo-layout-align-x-${alignX}`);
+        await expect(row).toHaveCSS("justify-content", justifyContent);
+
+        const rowBox = await getBox(row);
+        const columnBoxes = await getColumnBoxes(row, 1);
+        expect(columnBoxes[0].width).toBeLessThan(rowBox.width / 2);
+        expectAlignedX(rowBox, columnBoxes, alignX);
+      });
+    }
+
+    test("makes the auto column take the whole line below the sm breakpoint", async ({ page }) => {
+      await page.setViewportSize({ width: 599, height: 800 });
+      const row = page.getByTestId("demo-layout-align-x-center");
+
+      const rowBox = await getBox(row);
+      const [columnBox] = await getColumnBoxes(row, 1);
+      expectSameValue([columnBox.x, rowBox.x]);
+      expectSameValue([columnBox.width, rowBox.width]);
+    });
+  });
+
   test.describe("playground", () => {
-    test("aligns the columns to the top by default", async ({ page }) => {
-      await expect(page.getByTestId("layout-preview")).toHaveCSS("align-items", "flex-start");
+    test("aligns the columns to the top and to the start by default", async ({ page }) => {
+      const preview = page.getByTestId("layout-preview");
+      await expect(preview).toHaveCSS("align-items", "flex-start");
+      await expect(preview).toHaveCSS("justify-content", "flex-start");
+      expectAlignedX(await getBox(preview), await getColumnBoxes(preview), "start");
     });
 
-    test("updates the alignment when playground-align changes", async ({ page }) => {
+    test("updates the vertical alignment when playground-align-y changes", async ({ page }) => {
       const preview = page.getByTestId("layout-preview");
 
-      for (const [align, alignItems] of [
+      for (const [alignY, alignItems] of [
         ["center", "center"],
         ["end", "flex-end"],
         ["stretch", "stretch"],
         ["start", "flex-start"],
       ] as const) {
-        await selectOption(page, "layout-playground-align", align);
+        await selectPlaygroundOption(page, "layout-playground-align-y", alignY);
         await expect(preview).toHaveCSS("align-items", alignItems);
+      }
+    });
+
+    test("updates the horizontal alignment when playground-align-x changes", async ({ page }) => {
+      const preview = page.getByTestId("layout-preview");
+
+      for (const [alignX, justifyContent] of [
+        ["center", "center"],
+        ["end", "flex-end"],
+        ["start", "flex-start"],
+      ] as const) {
+        await selectPlaygroundOption(page, "layout-playground-align-x", alignX);
+        await expect(preview).toHaveCSS("justify-content", justifyContent);
+        expectAlignedX(await getBox(preview), await getColumnBoxes(preview), alignX);
       }
     });
   });
@@ -98,17 +143,45 @@ test.describe("layout", () => {
   });
 });
 
-async function getColumnBoxes(row: Locator) {
-  const columns = await row.locator(":scope > *").all();
-  expect(columns).toHaveLength(3);
+// The playground controls sit near the end of the page, so selecting an option scrolls the page
+// and can leave the next control under the fixed navigation bar, where the click doesn't reach it.
+// Centering the control first keeps it and its options in view, and waiting for the options to
+// close keeps the next selection from opening the menu while it's still closing.
+async function selectPlaygroundOption(page: Page, testId: string, option: string) {
+  await page.getByTestId(testId).evaluate((control) => control.scrollIntoView({ block: "center" }));
+  await selectOption(page, testId, option);
+  await expect(page.getByRole("option", { name: option, exact: true })).toBeHidden();
+}
 
-  return Promise.all(
-    columns.map(async (column) => {
-      const box = await column.boundingBox();
-      if (!box) throw new Error("The column should be visible");
-      return box;
-    }),
-  );
+type Box = { x: number; y: number; width: number; height: number };
+
+async function getBox(locator: Locator) {
+  const box = await locator.boundingBox();
+  if (!box) throw new Error("The element should be visible");
+  return box;
+}
+
+async function getColumnBoxes(row: Locator, count = 3) {
+  const columns = await row.locator(":scope > *").all();
+  expect(columns).toHaveLength(count);
+
+  return Promise.all(columns.map(getBox));
+}
+
+function expectAlignedX(rowBox: Box, columnBoxes: Box[], alignX: "start" | "center" | "end") {
+  const startGap = Math.min(...columnBoxes.map((box) => box.x)) - rowBox.x;
+  const endGap = rowBox.x + rowBox.width - Math.max(...columnBoxes.map((box) => box.x + box.width));
+
+  if (alignX === "start") {
+    expectSameValue([startGap, 0]);
+    expect(endGap).toBeGreaterThan(1);
+  } else if (alignX === "end") {
+    expectSameValue([endGap, 0]);
+    expect(startGap).toBeGreaterThan(1);
+  } else {
+    expectSameValue([startGap, endGap]);
+    expect(startGap).toBeGreaterThan(1);
+  }
 }
 
 function expectSameValue(values: number[]) {
