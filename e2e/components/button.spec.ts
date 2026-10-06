@@ -37,6 +37,10 @@ test.describe("button", () => {
 
       await page.getByTestId("btn-playground-loading").locator("input").click();
       await expect(previewButton.locator(".v-btn__loader")).toBeAttached();
+      await expect(previewButton.locator("[role='progressbar']")).toBeVisible();
+      await expect(previewButton).toHaveAttribute("aria-busy", "true");
+      await expect(previewButton).toHaveAccessibleName("Me clique");
+      await expect(previewButton.getByRole("progressbar")).toHaveCount(0);
     });
 
     test("disables when playground-disabled is toggled", async ({ page }) => {

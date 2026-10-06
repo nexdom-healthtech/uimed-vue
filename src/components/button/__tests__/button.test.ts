@@ -1,4 +1,4 @@
-import { VBtn } from "vuetify/components";
+import { VBtn, VProgressCircular } from "vuetify/components";
 import { mount } from "@vue/test-utils";
 import Button from "@/components/button/button.vue";
 import type { ButtonVariant } from "@/components/button/types.ts";
@@ -122,6 +122,17 @@ describe("Button", () => {
         const vBtn = findVBtn(wrapper);
         expect(vBtn.props("disabled")).toBe(false);
         expect(vBtn.props("loading")).toBe(false);
+        expect(wrapper.find("[role='progressbar']").exists()).toBe(false);
+      });
+
+      it("should hide the loading indicator from assistive technologies", async () => {
+        const wrapper = mountButton();
+        await wrapper.setProps({ loading: true });
+        const progress = wrapper.findComponent(VProgressCircular);
+        expect(progress.props("indeterminate")).toBe(true);
+        expect(progress.props("width")).toBe("2");
+        expect(progress.attributes("aria-hidden")).toBe("true");
+        expect(findVBtn(wrapper).attributes("aria-busy")).toBe("true");
       });
     });
   });
