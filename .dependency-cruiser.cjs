@@ -120,10 +120,10 @@ module.exports = {
     },
     {
       name: "components-and-composables",
-      comment: `The root folders from this project must be components, composables or consts only.`,
+      comment: `The root folders from this project must be components, composables, consts or utils only.`,
       severity: "error",
       from: {
-        pathNot: ["src/(__tests__|index|plugins|unit-test|components|composables|consts)"],
+        pathNot: ["src/(__tests__|index|plugins|unit-test|components|composables|consts|utils)"],
       },
       to: {},
     },
@@ -138,6 +138,22 @@ module.exports = {
         pathNot: "^src/(?:components|composables)/index[.]ts$",
       },
       to: {},
+    },
+  ],
+  required: [
+    {
+      name: "composables-use-vue",
+      comment:
+        "Composables (src/composables/<group>/use-*.ts) must depend on vue or vue-router, directly " +
+        "or through other modules. Pure helpers that don't use Vue belong in src/utils/.",
+      severity: "error",
+      module: {
+        path: "^src/composables/[^/]+/use-[^/]+[.]ts$",
+      },
+      to: {
+        path: "(^|/)node_modules/(?:vue|vue-router)/",
+        reachable: true,
+      },
     },
   ],
   options: {

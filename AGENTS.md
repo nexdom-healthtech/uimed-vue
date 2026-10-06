@@ -203,8 +203,9 @@ Use an existing composable (e.g. `use-toast`) as the reference, and deliver in t
   ```
 
 - Component layout: `src/components/<name>/<name>.vue`, `types.ts` for prop/option types, `__tests__/<name>.test.ts` for unit tests. Components that belong to a group live in the group's folder (e.g. the internal `src/components/dialogs/toast.vue`).
-- Composables live in a group folder: `src/composables/<group>/<name>.ts`, with `types.ts` and `__tests__/` in the group folder (e.g. `src/composables/dialogs/use-toast.ts`).
+- Composables live in a group folder: `src/composables/<group>/<name>.ts`, with `types.ts` and `__tests__/` in the group folder (e.g. `src/composables/dialogs/use-toast.ts`). A composable (`use-*.ts`) must depend on `vue` or `vue-router`, directly or through other modules (enforced by dependency-cruiser's `composables-use-vue` rule).
 - Library-wide configuration constants that aren't components or composables live in `src/consts/<name>.ts` (e.g. `src/consts/locale.ts`, the language set by `createUimed()` and `vueTestUtilsPluginUimed()`).
+- Pure helpers that don't use Vue live in `src/utils/<name>.ts`, with tests in `src/utils/__tests__/` (e.g. `src/utils/is-deep-equal.ts`).
 - Public components/composables are re-exported from `src/components/index.ts` and `src/composables/index.ts`. Prop types stay internal (`types.ts` is not re-exported); consumers derive them with `ComponentProps` (see [Usage](#usage)).
 - Every publicly exported component must use the `U` prefix on its export identifier (e.g., `UButton`, `UMain`), while internal file names and component names remain unprefixed.
 - Use [JSDoc](https://jsdoc.app/about-getting-started) on every method/prop/type intended to be part of the public API — it's the primary documentation surface and supports markdown/code examples.
