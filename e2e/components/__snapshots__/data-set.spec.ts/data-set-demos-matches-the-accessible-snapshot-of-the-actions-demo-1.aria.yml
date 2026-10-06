@@ -1,0 +1,22 @@
+- list:
+    - listitem:
+        - text: Ana Souza ana.souza@email.com
+        - table:
+            - rowgroup:
+                - row /Celular \(\d+\) \d+-\d+/:
+                    - rowheader "Celular"
+                    - cell /\(\d+\) \d+-\d+/
+                - row /Residencial \(\d+\) \d+-\d+/:
+                    - rowheader "Residencial"
+                    - cell /\(\d+\) \d+-\d+/
+        - button "Editar"
+        - button "Excluir"
+    - listitem:
+        - text: Bruno Lima bruno.lima@email.com
+        - table:
+            - rowgroup:
+                - row /Celular \(\d+\) \d+-\d+/:
+                    - rowheader "Celular"
+                    - cell /\(\d+\) \d+-\d+/
+        - button "Editar"
+        - button "Excluir"

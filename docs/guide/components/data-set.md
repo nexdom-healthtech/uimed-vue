@@ -307,6 +307,84 @@ const pacientes = [
 </script>
 ```
 
+### Ações
+
+A prop `actions` define as ações do registro, como "Editar" e "Excluir". Elas são exibidas como botões no rodapé do cartão, alinhadas entre os cartões de uma mesma linha mesmo quando os detalhes têm alturas diferentes, e aceitam as mesmas opções das [ações do agrupador de conteúdo](./section#acoes). Como as ações são definidas dentro do slot, cada uma pode usar o registro (`item`) diretamente.
+
+<demo col>
+<u-data-set :items="contatos" :columns="2" data-testid="demo-data-set-actions">
+  <template #default="{ item }">
+    <u-data-set-item
+      :title="item.nome"
+      :subtitle="item.email"
+      :data-testid="`demo-data-set-actions-item-${item.id}`"
+      :actions="[
+        { label: 'Editar', variant: 'secondary', onClick: () => editar(item) },
+        { label: 'Excluir', color: 'danger', variant: 'secondary', onClick: () => excluir(item) },
+      ]"
+    >
+      <u-table :headers="Object.keys(item.telefones)" :items="[Object.values(item.telefones)]" vertical />
+    </u-data-set-item>
+  </template>
+</u-data-set>
+<span data-testid="demo-data-set-actions-last">Última ação: {{ ultimaAcao }}</span>
+</demo>
+
+```vue
+<template>
+  <u-data-set :items="contatos" :columns="2">
+    <template #default="{ item }">
+      <u-data-set-item
+        :title="item.nome"
+        :subtitle="item.email"
+        :actions="[
+          { label: 'Editar', variant: 'secondary', onClick: () => editar(item) },
+          { label: 'Excluir', color: 'danger', variant: 'secondary', onClick: () => excluir(item) },
+        ]"
+      >
+        <u-table
+          :headers="Object.keys(item.telefones)"
+          :items="[Object.values(item.telefones)]"
+          vertical
+        />
+      </u-data-set-item>
+    </template>
+  </u-data-set>
+  Última ação: {{ ultimaAcao }}
+</template>
+
+<script lang="ts" setup>
+import { ref } from "vue";
+import { UDataSet, UDataSetItem, UTable } from "@nexdom/uimed-vue/components";
+
+type Contato = (typeof contatos)[number];
+
+const ultimaAcao = ref("nenhuma");
+const contatos = [
+  {
+    id: 1,
+    nome: "Ana Souza",
+    email: "ana.souza@email.com",
+    telefones: { Celular: "(11) 91234-5678", Residencial: "(11) 3456-7890" },
+  },
+  {
+    id: 2,
+    nome: "Bruno Lima",
+    email: "bruno.lima@email.com",
+    telefones: { Celular: "(31) 99876-5432" },
+  },
+];
+
+function editar(contato: Contato) {
+  ultimaAcao.value = `Editar ${contato.nome}`;
+}
+
+function excluir(contato: Contato) {
+  ultimaAcao.value = `Excluir ${contato.nome}`;
+}
+</script>
+```
+
 ### Variantes
 
 A prop `variant` define a variação de estilo do cartão, assim como no agrupador de conteúdo: `primary` ou `secondary`. O padrão é `primary`.
@@ -403,8 +481,22 @@ Consulte a referência de [API do UDataSet](../../api/components/data-sets/data-
     { id: 15, paciente: "Olívia Cardoso", especialidade: "Cardiologia", data: "15/10/2026" },
   ];
 
+  const contatos = [
+    { id: 1, nome: "Ana Souza", email: "ana.souza@email.com", telefones: { Celular: "(11) 91234-5678", Residencial: "(11) 3456-7890" } },
+    { id: 2, nome: "Bruno Lima", email: "bruno.lima@email.com", telefones: { Celular: "(31) 99876-5432" } },
+  ];
+
   const paginaAtual = ref(1);
   const pesquisa = ref("");
+  const ultimaAcao = ref("nenhuma");
+
+  function editar(contato: (typeof contatos)[number]) {
+    ultimaAcao.value = `Editar ${contato.nome}`;
+  }
+
+  function excluir(contato: (typeof contatos)[number]) {
+    ultimaAcao.value = `Excluir ${contato.nome}`;
+  }
 
   const playgroundColumnsOptions = ["1", "2", "3", "4", "6"];
   const playgroundItemsPerPageOptions = ["3", "5", "10"];

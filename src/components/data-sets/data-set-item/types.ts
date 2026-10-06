@@ -1,4 +1,4 @@
-import type { SectionVariant } from "@/components/sections/section/types.ts";
+import type { SectionAction, SectionVariant } from "@/components/sections/section/types.ts";
 
 /**
  * Props exposed by the {@link DataSetItem} component.
@@ -20,6 +20,13 @@ export type DataSetItemProps = {
    * @default "primary"
    */
   variant?: SectionVariant;
+
+  /**
+   * Actions of the record, like "Editar" and "Excluir", displayed at the
+   * bottom of its card, just like on `USection`. When undefined or empty, no
+   * actions area is rendered.
+   */
+  actions?: SectionAction[];
 
   /**
    * Component id to use on automated tests.
