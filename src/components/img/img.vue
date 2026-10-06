@@ -48,5 +48,7 @@ export default {
 import { VImg } from "vuetify/components";
 import type { ImgProps } from "@/components/img/types.ts";
 
-const props = defineProps<ImgProps>();
+const props = withDefaults(defineProps<ImgProps>(), {
+  alt: "",
+});
 </script>

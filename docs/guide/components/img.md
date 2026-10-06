@@ -9,13 +9,13 @@ O componente padrão para exibir imagens se chama `Img`.
 Por padrão, a imagem só é carregada quando está prestes a aparecer na tela. Até lá, e enquanto ela carrega, o espaço reservado para ela fica vazio. Informe as dimensões da imagem (`width` e `height`, ou `aspectRatio`) para reservar esse espaço e evitar que o conteúdo da página se desloque quando ela aparecer.
 
 > [!Warning]
-> Coloque a imagem dentro de uma `UColumn`. Diretamente dentro de uma `URow`, sem coluna, uma imagem sem `width` fica com largura zero e não aparece.
+> Coloque a imagem dentro de uma `UColumn`. Diretamente dentro de uma `URow`, sem coluna, a imagem só aparece com uma largura fixa em `width` (como `380` ou `"380px"`). Sem `width`, ou com uma largura em porcentagem (como `"100%"`), ela fica com largura zero e não aparece.
 
 ## Propriedades
 
 ### Texto alternativo
 
-A prop `alt` é obrigatória e define o texto anunciado por leitores de tela no lugar da imagem, conforme o critério [WCAG 1.1.1](https://www.w3.org/WAI/WCAG22/Understanding/non-text-content). Descreva o que a imagem transmite.
+A prop `alt` define o texto anunciado por leitores de tela no lugar da imagem, conforme o critério [WCAG 1.1.1](https://www.w3.org/WAI/WCAG22/Understanding/non-text-content). Sem ela, a imagem é tratada como decorativa (veja [Imagens decorativas](#imagens-decorativas)), então informe `alt` em toda imagem que transmite informação, descrevendo o que ela transmite.
 
 Se a imagem não puder ser carregada, o espaço reservado fica vazio, e leitores de tela continuam anunciando o texto alternativo.
 
@@ -43,12 +43,12 @@ import { UColumn, UImg, URow } from "@nexdom/uimed-vue/components";
 
 ### Imagens decorativas
 
-Imagens que não transmitem informação, como ilustrações que apenas acompanham um texto, devem receber `alt=""`. Assim, leitores de tela as ignoram.
+Por padrão, a imagem é decorativa: sem `alt`, leitores de tela a ignoram. Use esse padrão apenas em imagens que não transmitem informação, como ilustrações que apenas acompanham um texto.
 
 <demo>
 <u-row>
   <u-column>
-    <u-img src="/uimed-vue/favicon.svg" alt="" :width="94" :height="120" data-testid="demo-img-decorative" />
+    <u-img src="/uimed-vue/favicon.svg" :width="94" :height="120" data-testid="demo-img-decorative" />
   </u-column>
 </u-row>
 </demo>
@@ -57,7 +57,7 @@ Imagens que não transmitem informação, como ilustrações que apenas acompanh
 <template>
   <u-row>
     <u-column>
-      <u-img src="/ilustracao.svg" alt="" :width="94" :height="120" />
+      <u-img src="/ilustracao.svg" :width="94" :height="120" />
     </u-column>
   </u-row>
 </template>
@@ -69,7 +69,7 @@ import { UColumn, UImg, URow } from "@nexdom/uimed-vue/components";
 
 ### Dimensões
 
-As props `width` e `height` definem a largura e a altura da imagem, em pixels, e reservam esse espaço antes de ela carregar.
+As props `width` e `height` definem a largura e a altura da imagem e reservam esse espaço antes de ela carregar. Números são medidas em pixels, e textos aceitam qualquer unidade CSS, como `"50%"`, relativa à largura da coluna.
 
 Dentro de uma `UColumn`, a largura nunca ultrapassa a da coluna: quando é maior, a imagem encolhe até a largura da coluna, mantendo a altura informada.
 
@@ -86,6 +86,30 @@ Dentro de uma `UColumn`, a largura nunca ultrapassa a da coluna: quando é maior
   <u-row>
     <u-column>
       <u-img src="/logo.svg" alt="Logo do UIMed-Vue" :width="187" :height="239" />
+    </u-column>
+  </u-row>
+</template>
+
+<script lang="ts" setup>
+import { UColumn, UImg, URow } from "@nexdom/uimed-vue/components";
+</script>
+```
+
+Com uma porcentagem em `width` e uma `aspectRatio`, a imagem acompanha a largura da coluna e mantém a proporção.
+
+<demo>
+<u-row>
+  <u-column>
+    <u-img src="/uimed-vue/avatar.jpg" alt="Foto de perfil" width="50%" :aspect-ratio="3 / 4" data-testid="demo-img-relative-size" />
+  </u-column>
+</u-row>
+</demo>
+
+```vue
+<template>
+  <u-row>
+    <u-column>
+      <u-img src="/foto.jpg" alt="Foto de perfil" width="50%" :aspect-ratio="3 / 4" />
     </u-column>
   </u-row>
 </template>
@@ -207,8 +231,8 @@ Experimente as combinações de props do componente.
     <u-img
       :src="playgroundActions.src.value"
       :alt="playgroundActions.alt.value"
-      :width="toNumber(playgroundActions.width.value)"
-      :height="toNumber(playgroundActions.height.value)"
+      :width="toSize(playgroundActions.width.value)"
+      :height="toSize(playgroundActions.height.value)"
       :aspect-ratio="toNumber(playgroundActions.aspectRatio.value)"
       :cover="playgroundActions.cover.value"
       data-testid="img-preview"
@@ -227,6 +251,10 @@ Consulte a referência de [API do UImg](../../api/components/img) para a lista c
 
   function toNumber(value: string) {
     return Number(value) || undefined;
+  }
+
+  function toSize(value: string) {
+    return toNumber(value) ?? (value || undefined);
   }
 
   const playgroundActions = ref({
@@ -248,13 +276,13 @@ Consulte a referência de [API do UImg](../../api/components/img) para a lista c
     },
     width: {
       type: "text",
-      label: "Largura (px)",
+      label: "Largura (px, ou com unidade, ex.: 50%)",
       value: "94",
       dataTestid: "img-playground-width"
     },
     height: {
       type: "text",
-      label: "Altura (px)",
+      label: "Altura (px, ou com unidade, ex.: 10rem)",
       value: "120",
       dataTestid: "img-playground-height"
     },

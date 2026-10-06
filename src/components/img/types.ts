@@ -10,21 +10,25 @@ export type ImgProps = {
   /**
    * Alternative text announced by assistive technologies in place of the
    * image ([WCAG 1.1.1](https://www.w3.org/WAI/WCAG22/Understanding/non-text-content)).
-   * Describe what the image conveys. Use an empty string (`alt=""`) only for
-   * decorative images, which assistive technologies then ignore.
+   * Images are decorative by default, and assistive technologies ignore them.
+   * Set it on every image that conveys information, describing what it
+   * conveys.
+   * @default ""
    */
-  alt: string;
+  alt?: string;
 
   /**
-   * Width of the image, in pixels. Shrinks to fit the available width when
+   * Width of the image. A number sets it in pixels, and a string sets it in
+   * any CSS unit (e.g. `"100%"`). Shrinks to fit the available width when
    * it's larger (e.g. inside a narrow `UColumn`).
    */
-  width?: number;
+  width?: number | string;
 
   /**
-   * Height of the image, in pixels.
+   * Height of the image. A number sets it in pixels, and a string sets it in
+   * any CSS unit (e.g. `"10rem"`).
    */
-  height?: number;
+  height?: number | string;
 
   /**
    * Proportion between width and height (e.g. `16 / 9`), used to reserve the

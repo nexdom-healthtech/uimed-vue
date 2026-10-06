@@ -32,7 +32,7 @@ describe("Img", () => {
 
     describe("alt", () => {
       it("should expose the image to assistive technologies once, with its alternative text", () => {
-        const wrapper = mountImg();
+        const wrapper = mountImg({ alt });
         expect(wrapper.attributes("role")).toBe("img");
         expect(wrapper.attributes("aria-label")).toBe(alt);
         expect(findVImg(wrapper).props("alt")).toBe("");
@@ -48,13 +48,27 @@ describe("Img", () => {
         expect(wrapper.attributes("aria-label")).toBeUndefined();
         expect(wrapper.find("img").attributes("alt")).toBe("");
       });
+
+      it("should be decorative by default", () => {
+        const wrapper = mountImg();
+        expect(findVImg(wrapper).props("alt")).toBe("");
+        expect(wrapper.attributes("role")).toBeUndefined();
+        expect(wrapper.attributes("aria-label")).toBeUndefined();
+        expect(wrapper.find("img").attributes("alt")).toBe("");
+      });
     });
 
     describe("width", () => {
-      it("should forward to v-img", () => {
+      it("should forward a number to v-img, in pixels", () => {
         const wrapper = mountImg({ width: 380 });
         expect(findVImg(wrapper).props("width")).toBe(380);
         expect(findVImg(wrapper).attributes("style")).toContain("width: 380px");
+      });
+
+      it("should forward a string to v-img, in its own unit", () => {
+        const wrapper = mountImg({ width: "100%" });
+        expect(findVImg(wrapper).props("width")).toBe("100%");
+        expect(findVImg(wrapper).attributes("style")).toContain("width: 100%");
       });
 
       it("should be undefined by default", () => {
@@ -64,10 +78,16 @@ describe("Img", () => {
     });
 
     describe("height", () => {
-      it("should forward to v-img", () => {
+      it("should forward a number to v-img, in pixels", () => {
         const wrapper = mountImg({ height: 88 });
         expect(findVImg(wrapper).props("height")).toBe(88);
         expect(findVImg(wrapper).attributes("style")).toContain("height: 88px");
+      });
+
+      it("should forward a string to v-img, in its own unit", () => {
+        const wrapper = mountImg({ height: "10rem" });
+        expect(findVImg(wrapper).props("height")).toBe("10rem");
+        expect(findVImg(wrapper).attributes("style")).toContain("height: 10rem");
       });
 
       it("should be undefined by default", () => {
@@ -133,7 +153,7 @@ describe("Img", () => {
 
 function mountImg(props: Partial<ImgProps> = {}, attrs: Record<string, unknown> = {}) {
   return mount(Img, {
-    props: { src, alt, ...props },
+    props: { src, ...props },
     attrs,
     global: {
       plugins: [vueTestUtilsPluginUimed()],
