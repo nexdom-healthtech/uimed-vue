@@ -1,5 +1,5 @@
 - button "Menu de navegação"
-- text: Menu superior
+- heading "Menu superior" [level=1]
 - navigation:
     - textbox "Buscar":
         - /placeholder: Buscar (Ctrl+K)

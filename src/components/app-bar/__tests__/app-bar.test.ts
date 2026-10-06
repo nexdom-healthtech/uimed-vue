@@ -59,6 +59,14 @@ describe("AppBar", () => {
         expect(vAppBarTitle.exists()).toBeTruthy();
         expect(vAppBarTitle.text()).toBe(title);
       });
+
+      it("should expose the title as a level 1 heading", async () => {
+        await wrapper.setProps({ title: "AI Chat" });
+
+        const vAppBarTitle = findVAppBarTitle(wrapper);
+        expect(vAppBarTitle.attributes("role")).toBe("heading");
+        expect(vAppBarTitle.attributes("aria-level")).toBe("1");
+      });
     });
 
     describe("help", () => {
