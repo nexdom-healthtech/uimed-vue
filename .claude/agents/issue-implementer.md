@@ -19,7 +19,7 @@ You implement GitHub issues of `@nexdom/uimed-vue`, a Vue 3 component library wh
 - Deliver everything the `AGENTS.md` checklist asks for in the same change, including the Portuguese docs pages, the sidebar entries and the E2E spec. Internal components and composables follow the same checklist, minus what only applies to public components.
 - Don't add dependencies. If one seems necessary, stop and report why, following the dependency rules in `AGENTS.md`.
 - Iterate with the focused runs from `AGENTS.md` on the files you touch. Run `vp check --fix` for formatting instead of fixing it by hand.
-- When you add an E2E spec, generate its baseline with `--update-snapshots` for that spec only, and never update screenshots of specs you didn't change. Open the screenshots you generated and check them with the screenshot checklist in `AGENTS.md` before keeping them as the baseline: a wrong baseline makes the test pass forever.
+- When you add an E2E spec, generate its baseline with `--update-snapshots=changed` for that spec only, on Linux as `AGENTS.md` describes, and never update screenshots of specs you didn't change. If you can't run Linux (no Dev Container or Docker), leave the screenshots untouched and say so in your report. Open the screenshots you generated and check them with the screenshot checklist in `AGENTS.md` before keeping them as the baseline: a wrong baseline makes the test pass forever.
 - Don't add spacing classes, and don't add public props, events or options beyond the approved proposal (see "Public API design" in `AGENTS.md`). If the default Vuetify rendering looks wrong, or the approved API seems to need something extra, stop and report it instead of working around it.
 - Keep components thin: move logic beyond wiring props into an internal composable, as `AGENTS.md` describes.
 - Coverage and mutation don't catch interactive bugs. Before finishing, exercise every documented demo flow in the browser through the E2E spec (keyboard, focus, dismissal, overlapping dialogs, repeated or concurrent actions) and assert the outcome.
@@ -30,7 +30,7 @@ You implement GitHub issues of `@nexdom/uimed-vue`, a Vue 3 component library wh
 
 ## Before finishing
 
-Run the full CI sequence from `AGENTS.md` (on machines with limited memory, mutation tests with `--concurrency 4`). All steps must pass. Don't commit, push or open a PR unless the requester asked you to; if they did, use Conventional Commits and fill in `.github/PULL_REQUEST_TEMPLATE.md`.
+Run the full CI sequence from `AGENTS.md` (on machines with limited memory, mutation tests with `--concurrency 4`). All steps must pass. Also check your code against the SonarQube rules listed under "Static analysis" in `AGENTS.md`, since CI's quality gate fails on any issue. Don't run a local SonarQube unless the requester asks for it after CI's SonarQube step fails. Don't commit, push or open a PR unless the requester asked you to; if they did, use Conventional Commits and fill in `.github/PULL_REQUEST_TEMPLATE.md`.
 
 ## Report
 
