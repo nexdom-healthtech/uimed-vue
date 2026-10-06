@@ -35,6 +35,8 @@ export type ButtonProps = {
 
   /**
    * Displays a loading indicator on the button, disabling interaction.
+   * The button keeps its text as accessible name and is marked as busy, and
+   * assistive technologies ignore the indicator.
    * @default false
    */
   loading?: boolean;

@@ -10,6 +10,9 @@
     @click="onClick"
   >
     <slot />
+    <template #loader>
+      <v-progress-circular indeterminate width="2" aria-hidden="true" />
+    </template>
   </v-btn>
 </template>
 
@@ -34,7 +37,7 @@ export default {
 </script>
 
 <script setup lang="ts">
-import { VBtn } from "vuetify/components";
+import { VBtn, VProgressCircular } from "vuetify/components";
 import type { ButtonProps, ButtonEmits } from "@/components/button/types.ts";
 import { useButtonForm, useButtonType, useButtonVariant } from "@/composables/button/button.ts";
 import useVuetifyColor from "@/composables/colors/use-vuetify-color.ts";

@@ -83,7 +83,7 @@ import { UButton } from "@nexdom/uimed-vue/components";
 
 #### Carregamento
 
-A prop `loading` exibe um indicador de carregamento e desabilita a interação com o botão enquanto ativa.
+A prop `loading` exibe um indicador de carregamento e desabilita a interação com o botão enquanto ativa. Nesse estado, o botão mantém o texto como nome acessível e fica marcado como ocupado, e leitores de tela ignoram o indicador.
 
 <demo>
 <u-button loading>Carregando</u-button>
