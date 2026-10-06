@@ -25,6 +25,11 @@ test.describe("main", () => {
         await expect(demo).toMatchAriaSnapshot();
       });
 
+      test("exposes the title as the page's level 1 heading", async ({ page }) => {
+        const heading = getAppBar(page).getByRole("heading", { level: 1 });
+        await expect(heading).toHaveText("Menu superior");
+      });
+
       test.describe("help", () => {
         test("navigate to provided route", async ({ page }) => {
           const helpButton = getHelpButton(page);

@@ -1,4 +1,4 @@
-- text: Menu superior
+- heading "Menu superior" [level=1]
 - button "Notificações"
 - main:
     - heading "0 interação(ões)" [level=2]

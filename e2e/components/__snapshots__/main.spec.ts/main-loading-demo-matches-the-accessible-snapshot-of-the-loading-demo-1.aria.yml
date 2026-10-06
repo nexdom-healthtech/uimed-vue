@@ -1,5 +1,5 @@
 - button "Menu de navegação" [expanded]
-- text: Menu superior
+- heading "Menu superior" [level=1]
 - alert
 - navigation:
     - textbox "Buscar" [disabled]:

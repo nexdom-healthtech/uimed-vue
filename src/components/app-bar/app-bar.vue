@@ -19,7 +19,9 @@
       cover
     />
 
-    <v-app-bar-title v-if="props.title">{{ props.title }}</v-app-bar-title>
+    <v-app-bar-title v-if="props.title" role="heading" aria-level="1">
+      {{ props.title }}
+    </v-app-bar-title>
 
     <template #append>
       <v-skeleton-loader :loading="props.loading" type="avatar">
