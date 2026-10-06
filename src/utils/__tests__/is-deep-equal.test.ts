@@ -1,4 +1,4 @@
-import isDeepEqual from "@/composables/navigation/is-deep-equal.ts";
+import isDeepEqual from "@/utils/is-deep-equal.ts";
 
 class Patient {
   constructor(public name: string) {}
