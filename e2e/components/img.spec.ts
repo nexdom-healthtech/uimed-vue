@@ -7,42 +7,29 @@ test.describe("img", () => {
   });
 
   test.describe("demos", () => {
-    test("announces the image by its alternative text", async ({ page }) => {
-      const demo = page.getByTestId("demo-img-alt");
-      await loadImage(demo);
+    test("hides the images from assistive technologies", async ({ page }) => {
+      const images = page.locator(".vp-doc .v-img");
+      for (const image of await images.all()) {
+        await loadImage(image);
+        await expect(image.locator("img")).toHaveAttribute("alt", "");
+        await expect(image).not.toHaveAttribute("role");
+        await expect(image).not.toHaveAttribute("aria-label");
+      }
 
-      await expect(demo).toMatchAriaSnapshot();
-      await expect(getDemoContainer(page, demo).getByRole("img")).toHaveCount(1);
-      await expect(demo).toHaveRole("img");
-      await expect(demo).toHaveAccessibleName("Logo do UIMed-Vue");
+      await expect(images).toHaveCount(9);
+      await expect(page.locator(".vp-doc").getByRole("img")).toHaveCount(0);
     });
 
-    test("hides an image without alternative text from assistive technologies", async ({
-      page,
-    }) => {
-      const demo = page.getByTestId("demo-img-decorative");
-      await loadImage(demo);
-
-      await expect(demo.locator("img")).toHaveAttribute("alt", "");
-      await expect(demo).not.toHaveAttribute("role");
-      await expect(demo).not.toHaveAttribute("aria-label");
-      await expect(getDemoContainer(page, demo).getByRole("img")).toHaveCount(0);
-    });
-
-    test("keeps the reserved space empty and the alternative text when the image fails to load", async ({
-      page,
-    }) => {
+    test("keeps the reserved space empty when the image fails to load", async ({ page }) => {
       await page.route("**/favicon.svg", (route) => route.abort());
       await page.reload();
 
-      const demo = page.getByTestId("demo-img-alt");
+      const demo = page.getByTestId("demo-img-size");
       await demo.scrollIntoViewIfNeeded();
 
       await expect(demo.locator("img")).toBeAttached();
       await expect(demo.locator("img")).toBeHidden();
-      await expect(demo).toHaveRole("img");
-      await expect(demo).toHaveAccessibleName("Logo do UIMed-Vue");
-      await expectSize(demo, 94, 120);
+      await expectSize(demo, 187, 239);
     });
 
     test("reserves the space set by width and height before the image loads", async ({ page }) => {
@@ -135,29 +122,11 @@ test.describe("img", () => {
       await loadImage(getPreview(page));
     });
 
-    test("matches the accessible snapshot of the preview in its default state", async ({
-      page,
-    }) => {
-      await expect(getPreview(page)).toMatchAriaSnapshot();
-    });
-
     test("updates the image when playground-src changes", async ({ page }) => {
       await selectOption(page, "img-playground-src", "Foto (JPG)");
 
       await expect(getPreview(page).locator("img")).toHaveAttribute("src", "/uimed-vue/avatar.jpg");
       await expect.poll(() => isImageLoaded(getPreview(page))).toBe(true);
-    });
-
-    test("updates the alternative text when playground-alt changes", async ({ page }) => {
-      const preview = getPreview(page);
-      await fillControl(page, "img-playground-alt", "Novo texto");
-
-      await expect(preview).toHaveAttribute("role", "img");
-      await expect(preview).toHaveAttribute("aria-label", "Novo texto");
-
-      await fillControl(page, "img-playground-alt", "");
-      await expect(preview).not.toHaveAttribute("role");
-      await expect(preview.locator("img")).toHaveAttribute("alt", "");
     });
 
     test("updates the size when playground-width and playground-height change", async ({
@@ -222,10 +191,6 @@ function getPreview(page: Page) {
   return page.getByTestId("img-preview");
 }
 
-function getDemoContainer(page: Page, demo: Locator) {
-  return page.locator(".demo").filter({ has: demo });
-}
-
 async function fillControl(page: Page, testId: string, value: string) {
   await page.getByTestId(testId).locator("input").fill(value);
 }
@@ -278,7 +243,7 @@ async function getColumnContentWidth(image: Locator) {
 async function expectSize(image: Locator, width: number, height: number) {
   await expect
     .poll(async () => {
-      const box = (await image.locator(".v-img").boundingBox())!;
+      const box = (await image.boundingBox())!;
       return [Math.round(box.width), Math.round(box.height)];
     })
     .toEqual([Math.round(width), Math.round(height)]);

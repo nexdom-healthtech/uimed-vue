@@ -6,66 +6,14 @@ outline: deep
 
 O componente padrão para exibir imagens se chama `Img`.
 
+As imagens são decorativas: leitores de tela as ignoram. Quando a imagem transmite informação, apresente essa informação também em texto na página.
+
 Por padrão, a imagem só é carregada quando está prestes a aparecer na tela. Até lá, e enquanto ela carrega, o espaço reservado para ela fica vazio. Informe as dimensões da imagem (`width` e `height`, ou `aspectRatio`) para reservar esse espaço e evitar que o conteúdo da página se desloque quando ela aparecer.
 
 > [!Warning]
-> Coloque a imagem dentro de uma `UColumn`. Diretamente dentro de uma `URow`, sem coluna, a imagem só aparece com uma largura fixa em `width` (como `380` ou `"380px"`). Sem `width`, ou com uma largura em porcentagem (como `"100%"`), ela fica com largura zero e não aparece.
+> Coloque a imagem dentro de uma `UColumn`. Diretamente dentro de uma `URow`, sem coluna, a imagem ignora a `width` e ocupa toda a largura da linha.
 
 ## Propriedades
-
-### Texto alternativo
-
-A prop `alt` define o texto anunciado por leitores de tela no lugar da imagem, conforme o critério [WCAG 1.1.1](https://www.w3.org/WAI/WCAG22/Understanding/non-text-content). Sem ela, a imagem é tratada como decorativa (veja [Imagens decorativas](#imagens-decorativas)), então informe `alt` em toda imagem que transmite informação, descrevendo o que ela transmite.
-
-Se a imagem não puder ser carregada, o espaço reservado fica vazio, e leitores de tela continuam anunciando o texto alternativo.
-
-<demo>
-<u-row>
-  <u-column>
-    <u-img src="/uimed-vue/favicon.svg" alt="Logo do UIMed-Vue" :width="94" :height="120" data-testid="demo-img-alt" />
-  </u-column>
-</u-row>
-</demo>
-
-```vue
-<template>
-  <u-row>
-    <u-column>
-      <u-img src="/logo.svg" alt="Logo do UIMed-Vue" :width="94" :height="120" />
-    </u-column>
-  </u-row>
-</template>
-
-<script lang="ts" setup>
-import { UColumn, UImg, URow } from "@nexdom/uimed-vue/components";
-</script>
-```
-
-### Imagens decorativas
-
-Por padrão, a imagem é decorativa: sem `alt`, leitores de tela a ignoram. Use esse padrão apenas em imagens que não transmitem informação, como ilustrações que apenas acompanham um texto.
-
-<demo>
-<u-row>
-  <u-column>
-    <u-img src="/uimed-vue/favicon.svg" :width="94" :height="120" data-testid="demo-img-decorative" />
-  </u-column>
-</u-row>
-</demo>
-
-```vue
-<template>
-  <u-row>
-    <u-column>
-      <u-img src="/ilustracao.svg" :width="94" :height="120" />
-    </u-column>
-  </u-row>
-</template>
-
-<script lang="ts" setup>
-import { UColumn, UImg, URow } from "@nexdom/uimed-vue/components";
-</script>
-```
 
 ### Dimensões
 
@@ -76,7 +24,7 @@ Dentro de uma `UColumn`, a largura nunca ultrapassa a da coluna: quando é maior
 <demo>
 <u-row>
   <u-column>
-    <u-img src="/uimed-vue/favicon.svg" alt="Logo do UIMed-Vue" :width="187" :height="239" data-testid="demo-img-size" />
+    <u-img src="/uimed-vue/favicon.svg" :width="187" :height="239" data-testid="demo-img-size" />
   </u-column>
 </u-row>
 </demo>
@@ -85,7 +33,7 @@ Dentro de uma `UColumn`, a largura nunca ultrapassa a da coluna: quando é maior
 <template>
   <u-row>
     <u-column>
-      <u-img src="/logo.svg" alt="Logo do UIMed-Vue" :width="187" :height="239" />
+      <u-img src="/logo.svg" :width="187" :height="239" />
     </u-column>
   </u-row>
 </template>
@@ -100,7 +48,7 @@ Com uma porcentagem em `width` e uma `aspectRatio`, a imagem acompanha a largura
 <demo>
 <u-row>
   <u-column>
-    <u-img src="/uimed-vue/avatar.jpg" alt="Foto de perfil" width="50%" :aspect-ratio="3 / 4" data-testid="demo-img-relative-size" />
+    <u-img src="/uimed-vue/avatar.jpg" width="50%" :aspect-ratio="3 / 4" data-testid="demo-img-relative-size" />
   </u-column>
 </u-row>
 </demo>
@@ -109,7 +57,7 @@ Com uma porcentagem em `width` e uma `aspectRatio`, a imagem acompanha a largura
 <template>
   <u-row>
     <u-column>
-      <u-img src="/foto.jpg" alt="Foto de perfil" width="50%" :aspect-ratio="3 / 4" />
+      <u-img src="/foto.jpg" width="50%" :aspect-ratio="3 / 4" />
     </u-column>
   </u-row>
 </template>
@@ -128,10 +76,10 @@ Sem `width`, a imagem ocupa toda a largura da coluna. Quando `height` também é
 <demo>
 <u-row>
   <u-column cols="4">
-    <u-img src="/uimed-vue/avatar.jpg" alt="Foto de perfil" :aspect-ratio="3 / 4" data-testid="demo-img-aspect-ratio" />
+    <u-img src="/uimed-vue/avatar.jpg" :aspect-ratio="3 / 4" data-testid="demo-img-aspect-ratio" />
   </u-column>
   <u-column cols="8">
-    <u-img src="/uimed-vue/avatar.jpg" alt="Foto de perfil" :width="120" :aspect-ratio="3 / 4" data-testid="demo-img-aspect-ratio-width" />
+    <u-img src="/uimed-vue/avatar.jpg" :width="120" :aspect-ratio="3 / 4" data-testid="demo-img-aspect-ratio-width" />
   </u-column>
 </u-row>
 </demo>
@@ -140,10 +88,10 @@ Sem `width`, a imagem ocupa toda a largura da coluna. Quando `height` também é
 <template>
   <u-row>
     <u-column cols="4">
-      <u-img src="/foto.jpg" alt="Foto de perfil" :aspect-ratio="3 / 4" />
+      <u-img src="/foto.jpg" :aspect-ratio="3 / 4" />
     </u-column>
     <u-column cols="8">
-      <u-img src="/foto.jpg" alt="Foto de perfil" :width="120" :aspect-ratio="3 / 4" />
+      <u-img src="/foto.jpg" :width="120" :aspect-ratio="3 / 4" />
     </u-column>
   </u-row>
 </template>
@@ -162,10 +110,10 @@ A prop `cover` faz a imagem preencher todo o espaço, recortando o que exceder. 
 <demo>
 <u-row>
   <u-column cols="6">
-    <u-img src="/uimed-vue/avatar.jpg" alt="Foto de perfil inteira" :width="240" :height="160" data-testid="demo-img-contain" />
+    <u-img src="/uimed-vue/avatar.jpg" :width="240" :height="160" data-testid="demo-img-contain" />
   </u-column>
   <u-column cols="6">
-    <u-img src="/uimed-vue/avatar.jpg" alt="Foto de perfil recortada" :width="240" :height="160" cover data-testid="demo-img-cover" />
+    <u-img src="/uimed-vue/avatar.jpg" :width="240" :height="160" cover data-testid="demo-img-cover" />
   </u-column>
 </u-row>
 </demo>
@@ -174,10 +122,10 @@ A prop `cover` faz a imagem preencher todo o espaço, recortando o que exceder. 
 <template>
   <u-row>
     <u-column cols="6">
-      <u-img src="/foto.jpg" alt="Foto de perfil inteira" :width="240" :height="160" />
+      <u-img src="/foto.jpg" :width="240" :height="160" />
     </u-column>
     <u-column cols="6">
-      <u-img src="/foto.jpg" alt="Foto de perfil recortada" :width="240" :height="160" cover />
+      <u-img src="/foto.jpg" :width="240" :height="160" cover />
     </u-column>
   </u-row>
 </template>
@@ -196,10 +144,10 @@ A prop `eager` carrega a imagem assim que a página é aberta. Use-a em imagens 
 <demo>
 <u-row>
   <u-column cols="6">
-    <u-img src="/uimed-vue/avatar.jpg" alt="Foto carregada sob demanda" :width="120" :height="160" data-testid="demo-img-lazy" />
+    <u-img src="/uimed-vue/avatar.jpg" :width="120" :height="160" data-testid="demo-img-lazy" />
   </u-column>
   <u-column cols="6">
-    <u-img src="/uimed-vue/avatar.jpg" alt="Foto carregada imediatamente" :width="120" :height="160" eager data-testid="demo-img-eager" />
+    <u-img src="/uimed-vue/avatar.jpg" :width="120" :height="160" eager data-testid="demo-img-eager" />
   </u-column>
 </u-row>
 </demo>
@@ -208,10 +156,10 @@ A prop `eager` carrega a imagem assim que a página é aberta. Use-a em imagens 
 <template>
   <u-row>
     <u-column cols="6">
-      <u-img src="/foto.jpg" alt="Foto carregada sob demanda" :width="120" :height="160" />
+      <u-img src="/foto.jpg" :width="120" :height="160" />
     </u-column>
     <u-column cols="6">
-      <u-img src="/foto.jpg" alt="Foto carregada imediatamente" :width="120" :height="160" eager />
+      <u-img src="/foto.jpg" :width="120" :height="160" eager />
     </u-column>
   </u-row>
 </template>
@@ -230,7 +178,6 @@ Experimente as combinações de props do componente.
   <u-column>
     <u-img
       :src="playgroundActions.src.value"
-      :alt="playgroundActions.alt.value"
       :width="toSize(playgroundActions.width.value)"
       :height="toSize(playgroundActions.height.value)"
       :aspect-ratio="toNumber(playgroundActions.aspectRatio.value)"
@@ -267,12 +214,6 @@ Consulte a referência de [API do UImg](../../api/components/img) para a lista c
         { label: "Logo (SVG)", value: "/uimed-vue/favicon.svg" },
         { label: "Foto (JPG)", value: "/uimed-vue/avatar.jpg" },
       ]
-    },
-    alt: {
-      type: "text",
-      label: "Texto alternativo",
-      value: "Logo do UIMed-Vue",
-      dataTestid: "img-playground-alt"
     },
     width: {
       type: "text",
