@@ -17,7 +17,9 @@ test.describe("img", () => {
       await expect(demo).toHaveAccessibleName("Logo do UIMed-Vue");
     });
 
-    test("hides a decorative image from assistive technologies", async ({ page }) => {
+    test("hides an image without alternative text from assistive technologies", async ({
+      page,
+    }) => {
       const demo = page.getByTestId("demo-img-decorative");
       await loadImage(demo);
 
@@ -55,6 +57,25 @@ test.describe("img", () => {
       await releaseImages(pending);
       await expect(demo.locator("img")).toBeVisible();
       await expectSize(demo, 187, 239);
+    });
+
+    test("sizes the image relative to its column with a percentage width", async ({ page }) => {
+      const demo = page.getByTestId("demo-img-relative-size");
+      const pending = await holdImage(page, "**/avatar.jpg");
+
+      await demo.scrollIntoViewIfNeeded();
+      await expect(demo.locator("img")).toBeHidden();
+      const columnWidth = await getColumnContentWidth(demo);
+      await expectSize(demo, columnWidth / 2, (columnWidth / 2) * (4 / 3));
+
+      await releaseImages(pending);
+      await expect(demo.locator("img")).toBeVisible();
+      await expectSize(demo, columnWidth / 2, (columnWidth / 2) * (4 / 3));
+
+      await page.setViewportSize({ width: 800, height: 720 });
+      const resizedColumnWidth = await getColumnContentWidth(demo);
+      expect(resizedColumnWidth).not.toBe(columnWidth);
+      await expectSize(demo, resizedColumnWidth / 2, (resizedColumnWidth / 2) * (4 / 3));
     });
 
     test("reserves the space set by the aspect ratio before the image loads", async ({ page }) => {
@@ -148,6 +169,16 @@ test.describe("img", () => {
       await fillControl(page, "img-playground-width", "150");
       await fillControl(page, "img-playground-height", "80");
       await expectSize(preview, 150, 80);
+    });
+
+    test("accepts sizes with a unit in playground-width and playground-height", async ({
+      page,
+    }) => {
+      const preview = getPreview(page);
+      await fillControl(page, "img-playground-width", "50%");
+      await fillControl(page, "img-playground-height", "10rem");
+
+      await expectSize(preview, (await getColumnContentWidth(preview)) / 2, 160);
     });
 
     test("never gets wider than its column", async ({ page }) => {
