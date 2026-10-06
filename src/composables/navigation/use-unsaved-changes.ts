@@ -17,6 +17,22 @@ import {
 import { onBeforeRouteLeave } from "vue-router";
 
 /**
+ * Calls whose page is on display with unsaved changes. The `beforeunload` listener is registered
+ * while at least one of them exists, so a call that stops guarding doesn't remove the guard of the
+ * others.
+ */
+const unloadGuards = new Set<object>();
+
+function preventUnload(event: BeforeUnloadEvent) {
+  event.preventDefault();
+}
+
+function updateUnloadListener() {
+  if (unloadGuards.size > 0) globalThis.addEventListener("beforeunload", preventUnload);
+  else globalThis.removeEventListener("beforeunload", preventUnload);
+}
+
+/**
  * Composable which compares the original and the current values of a form, and asks the user to
  * confirm before leaving the page while they differ.
  *
@@ -96,17 +112,13 @@ export default function useUnsavedChanges<T>(
     });
   }
 
-  // One listener per call, so removing it doesn't affect other calls
-  function preventUnload(event: BeforeUnloadEvent) {
-    event.preventDefault();
-    // Browsers released before `preventDefault` was supported (e.g. Chrome before 119) only ask
-    // for confirmation when `returnValue` is set
-    event.returnValue = true;
-  }
+  /** Identifies this call in `unloadGuards`. */
+  const unloadGuard = {};
 
   function updateBeforeUnload() {
-    if (hasChanges.value && isActive) window.addEventListener("beforeunload", preventUnload);
-    else window.removeEventListener("beforeunload", preventUnload);
+    if (hasChanges.value && isActive) unloadGuards.add(unloadGuard);
+    else unloadGuards.delete(unloadGuard);
+    updateUnloadListener();
   }
 
   function deactivate() {

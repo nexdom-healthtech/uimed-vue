@@ -273,17 +273,6 @@ describe("useUnsavedChanges", () => {
       expect(unload()).toBe(true);
     });
 
-    it("should set returnValue for browsers which ignore preventDefault", async () => {
-      mountForm({ name: "Maria" }, { name: "Joana" });
-      const event = new Event("beforeunload", { cancelable: true });
-      // jsdom's Event only keeps `returnValue` as false, unlike a browser's BeforeUnloadEvent
-      Object.defineProperty(event, "returnValue", { value: undefined, writable: true });
-
-      window.dispatchEvent(event);
-
-      expect(event.returnValue).toBe(true);
-    });
-
     it("should stop preventing unloading while deactivated by KeepAlive", async () => {
       const saved = ref<Patient>({ name: "Maria" });
       const form = ref<Patient>({ name: "Joana" });
