@@ -12,12 +12,9 @@
  * attribute back, since Vuetify keeps rendering the same `"false"` value.
  */
 export default function useDecorativeTimer() {
-  function hideTimer({ el }: { el: Element }) {
-    el.querySelector(".v-snackbar__timer [role='progressbar']")?.setAttribute(
-      "aria-hidden",
-      "true",
-    );
-  }
-
   return { onVnodeMounted: hideTimer, onVnodeUpdated: hideTimer };
+}
+
+function hideTimer({ el }: { el: Element }) {
+  el.querySelector(".v-snackbar__timer [role='progressbar']")?.setAttribute("aria-hidden", "true");
 }
