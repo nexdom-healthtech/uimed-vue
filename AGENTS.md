@@ -112,12 +112,12 @@ On Windows, prefer VSCode's "Dev Containers: Clone Repository in Container Volum
 - `vpr check` — lint, formatter, and type-check (builds the library first, since the type-check reads `dist`)
 - `vp test --coverage` — unit tests with coverage (Vitest, jsdom, 100% coverage threshold enforced)
 - `vpr test:mutations` — mutation tests (Stryker; thresholds: high 100, low 100, break 100). It starts one test runner per CPU core; on machines with limited memory, run `vpx stryker run --concurrency 4` instead
-- `vpr test:e2e` — E2E tests (Playwright, runs against the built docs preview site). Outside CI it reuses any server already on port 4173, which is also `vpr docs:dev`'s port: stop the dev server first, or the tests run against it instead of the built site
+- `vpr test:e2e` — E2E tests (Playwright, runs against the built docs preview site). Outside CI it reuses any server already on port 4173, which is also `vpr docs:dev`'s port: stop the dev server first, or the tests run against it instead of the built site. A running `vitepress preview` keeps serving the build it started with, so restart it after rebuilding the docs
 - `vpr depcruise` — architecture/dependency rules (dependency-cruiser)
 - `vp pack` / `vpr build` — build the library
 - `vpr docs` / `vpr docs:dev` — run docs site (imports the lib from `dist`, not `src` — run `vpr dev` in a second terminal to keep `dist` updated while iterating)
 
-CI (`.github/workflows/ci.yml`) runs, in order: commitlint on PR commits, `vp pack`, `vpr check`, `vpr depcruise`, `vp test --coverage`, `vpr test:mutations`, `vpr test:e2e`. Match this locally before opening a PR.
+CI (`.github/workflows/ci.yml`) runs, in order: commitlint on PR commits, `vp pack`, `vpr check`, `vpr depcruise`, `vp test --coverage`, `vpr test:mutations`, `vpr test:e2e`, and then the SonarQube analysis (`vpr sonar`), whose quality gate fails the PR on any issue or unreviewed security hotspot in `src/` (see [Static analysis](#static-analysis-sonarqube)). Match this locally before opening a PR.
 
 ### Focused runs while iterating
 
@@ -138,6 +138,12 @@ vpx stryker run --mutate "src/components/button/button.vue,src/composables/butto
 # One E2E spec
 vpr test:e2e e2e/components/button.spec.ts
 ```
+
+### Static analysis (SonarQube)
+
+The company's SonarQube runs only in CI, after the E2E tests. Write code that avoids the rules that have already failed PRs here: use `globalThis` instead of `window`; move inner functions that don't use anything from the outer function out of it (S7721); don't use deprecated APIs (e.g. `event.returnValue`); don't write template comments that look like code; don't add non-null assertions or casts that don't change the type (S4325); no regular expressions with super-linear backtracking, such as two overlapping quantifiers (S5852); and prefer native elements to `role` attributes (S6819).
+
+Only if CI's SonarQube step fails and its dashboard doesn't show why, reproduce the analysis with a local SonarQube Community in the server's version (`sonarqube:26.3.0.120487-community`) and `vpx @sonar/scan` pointed at it. The goal is 0 issues and no new security hotspots in the files the PR changed.
 
 ## Adding a new component
 
@@ -205,6 +211,9 @@ Use an existing composable (e.g. `use-toast`) as the reference, and deliver in t
 - Coverage threshold is 100%; mutation testing threshold is 100% (break at 100). Don't add code paths without covering tests. Mutants that don't compile are reported as compile errors and don't count toward the score.
 - E2E tests (Playwright, `e2e/`) run against the built docs preview (`http://localhost:4173/uimed-vue/`). Snapshots/screenshots live under `__snapshots__`/`__screenshot__` next to each spec.
 - Before keeping a new screenshot as a baseline, open it and check it against how plain Vuetify renders the same component: overflowing content shows its scrollbar, buttons and cards keep their native paddings, nothing touches the edges or gets clipped. A screenshot that only "looks fine" isn't enough: name what you checked in your report.
+- Generate and update screenshots only on Linux, as CI does: in the Dev Container, or in the Playwright Docker image of the version in `package.json` (`mcr.microsoft.com/playwright:v<version>-noble`). Screenshots taken on Windows or macOS render fonts differently and fail in CI.
+- Update baselines with `--update-snapshots=changed`, scoped to the spec you changed. `--update-snapshots=all` also rewrites accessible snapshots (`.aria.yml`) that didn't need to change.
+- Keep temporary files (scripts, specs, configs) outside the repo, e.g. in the system's temp folder. Vitest collects test files from every folder except the excluded ones in `vite.config.ts`, so a temporary spec in a gitignored folder such as `reports/` still runs, and fails, with the unit tests.
 - Never run Stryker at the same time as another test command: they share build output and Stryker fails with `ENOENT`.
 - Unit tests that mount several apps at once (e.g. nested dialogs) need a distinct `global.config.idPrefix` per mount, since `useId()` restarts in each app.
 - In E2E, a paused `page.clock` also freezes transitions, so overlays never finish leaving. Use `page.clock.pauseAt` to hold time-based work (e.g. a demo action with `setTimeout`), `page.clock.fastForward` to complete it, then `page.clock.resume()` before expecting the overlay to be hidden (see `e2e/composables/use-confirm.spec.ts`).

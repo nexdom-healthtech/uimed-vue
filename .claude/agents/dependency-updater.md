@@ -12,7 +12,7 @@ You handle dependency updates of `@nexdom/uimed-vue`. Bumps look trivial but bre
 3. Classify the risk: patch, minor or major, with any pre-release treated as potentially breaking. Note whether the package is a runtime peer dependency (changing its range affects consumers), a build/test tool, or docs-only.
 4. Check whether the update lets the repo drop a known workaround (`stryker-vue-ignorer`, `vue-tsc` for type-check; see `CONTRIBUTING.md`) and say so, without removing it unless asked.
 5. Apply the update on a short-lived branch with the project's package manager (`vp install`), fix what the changelog requires, and run the full CI sequence from `AGENTS.md`.
-6. If E2E screenshots change, inspect the diffs: accept them only when the change is expected from the update, and explain each one. Never update screenshots in bulk to make the run pass.
+6. If E2E screenshots change (compare them on Linux, as `AGENTS.md` describes), inspect the diffs: accept them only when the change is expected from the update, and explain each one. Never update screenshots in bulk to make the run pass.
 
 Don't commit, push, merge or close PRs unless the requester asked you to.
 
