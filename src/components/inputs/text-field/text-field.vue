@@ -19,6 +19,17 @@
     <template #loader="loader">
       <field-loader v-bind="loader" />
     </template>
+    <template v-if="isPasswordField" #append-inner>
+      <v-btn
+        :icon="passwordToggleIcon"
+        aria-label="Mostrar senha"
+        :aria-pressed="isPasswordVisible"
+        :disabled="props.disabled"
+        size="small"
+        variant="text"
+        @click="togglePassword"
+      />
+    </template>
   </v-text-field>
 </template>
 
@@ -42,9 +53,13 @@ export default {
 
 <script setup lang="ts">
 import type { TextFieldProps } from "@/components/inputs/text-field/types.ts";
-import { useTextFieldRules, useTextFieldType } from "@/composables/inputs/text-field.ts";
+import {
+  useTextFieldPasswordToggle,
+  useTextFieldRules,
+  useTextFieldType,
+} from "@/composables/inputs/text-field.ts";
 import { useTextFieldVariant } from "@/composables/inputs/fields.ts";
-import { VTextField } from "vuetify/components";
+import { VBtn, VTextField } from "vuetify/components";
 import FieldLoader from "@/components/inputs/field-loader.vue";
 import { computed } from "vue";
 
@@ -56,7 +71,13 @@ const props = withDefaults(defineProps<TextFieldProps>(), {
 });
 
 const vuetifyVariant = useTextFieldVariant(() => props.variant);
-const vuetifyType = useTextFieldType(() => props.type);
+const {
+  isPasswordField,
+  isPasswordVisible,
+  icon: passwordToggleIcon,
+  toggle: togglePassword,
+} = useTextFieldPasswordToggle(() => props.type);
+const vuetifyType = useTextFieldType(() => props.type, isPasswordVisible);
 const rules = useTextFieldRules(props);
 const isSearchField = computed(() => props.type === "search");
 const computedClearable = computed(() => props.clearable ?? isSearchField.value);

@@ -109,6 +109,59 @@ test.describe("text-field", () => {
     });
   });
 
+  test.describe("password demo", () => {
+    test("shows and hides the password on click, keeping the focus on the field", async ({
+      page,
+    }) => {
+      const passwordTextField = page.getByTestId("text-field-demo-password");
+      const input = passwordTextField.locator("input");
+      const toggle = passwordTextField.getByRole("button", { name: "Mostrar senha" });
+
+      await expect(input).toHaveAttribute("type", "password");
+      await expect(toggle).toHaveAttribute("aria-pressed", "false");
+
+      await input.fill("senha-de-exemplo");
+      await toggle.click();
+
+      await expect(input).toHaveAttribute("type", "text");
+      await expect(input).toHaveValue("senha-de-exemplo");
+      await expect(toggle).toHaveAttribute("aria-pressed", "true");
+      await expect(input).toBeFocused();
+
+      await toggle.click();
+
+      await expect(input).toHaveAttribute("type", "password");
+      await expect(toggle).toHaveAttribute("aria-pressed", "false");
+      await expect(input).toBeFocused();
+    });
+
+    test("reaches the toggle with Tab and toggles it with Space and Enter", async ({ page }) => {
+      const passwordTextField = page.getByTestId("text-field-demo-password");
+      const input = passwordTextField.locator("input");
+      const toggle = passwordTextField.getByRole("button", { name: "Mostrar senha" });
+
+      await input.focus();
+      await page.keyboard.press("Tab");
+      await expect(toggle).toBeFocused();
+
+      await page.keyboard.press("Space");
+      await expect(input).toHaveAttribute("type", "text");
+      await expect(toggle).toHaveAttribute("aria-pressed", "true");
+      await expect(toggle).toBeFocused();
+
+      await page.keyboard.press("Enter");
+      await expect(input).toHaveAttribute("type", "password");
+      await expect(toggle).toHaveAttribute("aria-pressed", "false");
+      await expect(toggle).toBeFocused();
+    });
+
+    test("matches the accessible snapshot of the password demo", async ({ page }) => {
+      const passwordTextField = page.getByTestId("text-field-demo-password");
+
+      await expect(passwordTextField).toMatchAriaSnapshot();
+    });
+  });
+
   test.describe("UI consistency", () => {
     test("matches last screenshot", async ({ page }) => {
       await expect(page).toHaveScreenshot({ fullPage: true });
