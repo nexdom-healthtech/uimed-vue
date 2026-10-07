@@ -132,7 +132,10 @@ export default defineConfig({
             },
             {
               text: "Ações",
-              items: [{ text: "Botões", link: "/guide/components/button" }],
+              items: [
+                { text: "Botões", link: "/guide/components/button" },
+                { text: "Links", link: "/guide/components/link" },
+              ],
             },
             {
               text: "Dados",
@@ -206,6 +209,7 @@ export default defineConfig({
               ],
             },
             { text: "UImg", link: "/api/components/img" },
+            { text: "ULink", link: "/api/components/link" },
             { text: "UMain", link: "/api/components/main" },
             { text: "UTable", link: "/api/components/table" },
             { text: "UTextField", link: "/api/components/text-field" },
