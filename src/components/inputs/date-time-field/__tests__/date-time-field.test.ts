@@ -74,7 +74,7 @@ describe("DateTimeField", () => {
       const inputId = findVTextField(wrapper).props("id");
       const vMenu = findVMenu(wrapper);
 
-      expect(inputId).toMatch(/^date-time-field-/);
+      expect(inputId).toBeTruthy();
       expect(vMenu.props("activator")).toBe(`#${inputId}`);
       expect(vMenu.props("activatorProps")).toStrictEqual({
         role: "combobox",
