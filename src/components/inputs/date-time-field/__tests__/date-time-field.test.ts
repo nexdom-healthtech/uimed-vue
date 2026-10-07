@@ -66,7 +66,42 @@ describe("DateTimeField", () => {
       expect(vMenu.props("modelValue")).toBe(false);
       expect(vMenu.props("disabled")).toBe(false);
       expect(vMenu.props("closeOnContentClick")).toBe(false);
-      expect(vMenu.props("activator")).toBe("parent");
+      expect(vMenu.props("target")).toBe("parent");
+    });
+
+    it("should be activated by the input, described as a control that opens a dialog", () => {
+      const wrapper = mountDateTimeField({ label: "Data" });
+      const inputId = findVTextField(wrapper).props("id");
+      const vMenu = findVMenu(wrapper);
+
+      expect(inputId).toMatch(/^date-time-field-/);
+      expect(vMenu.props("activator")).toBe(`#${inputId}`);
+      expect(vMenu.props("activatorProps")).toStrictEqual({
+        role: "combobox",
+        "aria-haspopup": "dialog",
+        "aria-owns": undefined,
+      });
+      expect(vMenu.props("contentProps")).toStrictEqual({
+        role: "dialog",
+        "aria-labelledby": `${inputId}-label`,
+      });
+    });
+
+    it("should not name the dialog when the field has no label", () => {
+      const wrapper = mountDateTimeField();
+      expect(findVMenu(wrapper).props("contentProps")).toStrictEqual({
+        role: "dialog",
+        "aria-labelledby": undefined,
+      });
+    });
+
+    it("should open when the field is clicked outside the input", async () => {
+      const wrapper = mountDateTimeField();
+
+      findVTextField(wrapper).vm.$emit("click:control", new MouseEvent("click"));
+      await flushPromises();
+
+      expect(findVMenu(wrapper).props("modelValue")).toBe(true);
     });
 
     it("should open when the field is clicked", async () => {
@@ -76,6 +111,60 @@ describe("DateTimeField", () => {
       await clickField(wrapper);
 
       expect(findVMenu(wrapper).props("modelValue")).toBe(true);
+    });
+
+    describe("accessibility", () => {
+      it("should set the menu's attributes on the input, not on the field", async () => {
+        const wrapper = mountDateTimeField({ label: "Data" }, true);
+        await flushPromises();
+
+        const input = wrapper.find("input");
+        expect(input.attributes("role")).toBe("combobox");
+        expect(input.attributes("aria-haspopup")).toBe("dialog");
+        expect(input.attributes("aria-expanded")).toBe("false");
+        expect(input.attributes("aria-controls")).toBe(findVMenu(wrapper).vm.id);
+        expect(input.attributes()).not.toHaveProperty("aria-owns");
+        expect(fieldAriaAttributes(wrapper)).toEqual([]);
+
+        await input.trigger("click");
+        await flushPromises();
+        expect(input.attributes("aria-expanded")).toBe("true");
+
+        const dialog = document.querySelector(".v-overlay__content");
+        expect(dialog?.getAttribute("role")).toBe("dialog");
+        expect(dialog?.getAttribute("aria-labelledby")).toBe(`${input.attributes("id")}-label`);
+        expect(document.getElementById(`${input.attributes("id")}-label`)?.textContent).toBe(
+          "Data",
+        );
+      });
+
+      it.each<keyof DateTimeFieldProps>(["readonly", "disabled"])(
+        "should keep the input a plain field while %s",
+        async (prop) => {
+          const wrapper = mountDateTimeField({ [prop]: true }, true);
+          await flushPromises();
+
+          const input = wrapper.find("input");
+          expect(findVMenu(wrapper).props("activator")).toBeUndefined();
+          expect(input.attributes("role")).toBeUndefined();
+          expect(input.attributes("aria-haspopup")).toBeUndefined();
+          expect(input.attributes("aria-expanded")).toBeUndefined();
+          expect(fieldAriaAttributes(wrapper)).toEqual([]);
+        },
+      );
+
+      it("should remove the menu's attributes when it can't open anymore", async () => {
+        const wrapper = mountDateTimeField({}, true);
+        await flushPromises();
+
+        const input = wrapper.find("input");
+        expect(input.attributes("role")).toBe("combobox");
+
+        await wrapper.setProps({ readonly: true });
+        await flushPromises();
+        expect(input.attributes("role")).toBeUndefined();
+        expect(input.attributes("aria-expanded")).toBeUndefined();
+      });
     });
 
     it("should display the pickers in pt-BR", async () => {
@@ -356,6 +445,10 @@ describe("DateTimeField", () => {
 
           await clickField(wrapper);
           expect(findVMenu(wrapper).props("modelValue")).toBe(false);
+
+          findVTextField(wrapper).vm.$emit("click:control", new MouseEvent("click"));
+          await flushPromises();
+          expect(findVMenu(wrapper).props("modelValue")).toBe(false);
         },
       );
 
@@ -439,9 +532,20 @@ describe("DateTimeField", () => {
   });
 });
 
-function mountDateTimeField(props: DateTimeFieldProps & { modelValue?: string } = {}) {
-  return mount(DateTimeField, {
+const attachedWrappers: Array<{ unmount: () => void }> = [];
+
+afterEach(() => {
+  attachedWrappers.splice(0).forEach((wrapper) => wrapper.unmount());
+  document.body.innerHTML = "";
+});
+
+function mountDateTimeField(
+  props: DateTimeFieldProps & { modelValue?: string } = {},
+  attachToDocument = false,
+) {
+  const wrapper = mount(DateTimeField, {
     props,
+    attachTo: attachToDocument ? document.body : undefined,
     attrs: {
       "data-testid": testId,
       style: styleValue,
@@ -451,6 +555,9 @@ function mountDateTimeField(props: DateTimeFieldProps & { modelValue?: string } 
       plugins: [vueTestUtilsPluginUimed()],
     },
   });
+  if (attachToDocument) attachedWrappers.push(wrapper);
+
+  return wrapper;
 }
 
 type Wrapper = ReturnType<typeof mountDateTimeField>;
@@ -469,6 +576,12 @@ function findVDatePicker(wrapper: Wrapper) {
 
 function findVTimePicker(wrapper: Wrapper) {
   return wrapper.findComponent(VTimePicker);
+}
+
+function fieldAriaAttributes(wrapper: Wrapper) {
+  return Object.keys(wrapper.find(".v-field").attributes()).filter((name) =>
+    name.startsWith("aria-"),
+  );
 }
 
 async function clickField(wrapper: Wrapper) {

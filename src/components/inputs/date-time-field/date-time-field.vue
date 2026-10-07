@@ -1,5 +1,6 @@
 <template>
   <v-text-field
+    :id="inputId"
     :model-value="displayValue"
     :validation-value="modelValue"
     :variant="vuetifyVariant"
@@ -14,10 +15,14 @@
     :clearable="isClearable"
     readonly
     @click:clear="clear"
+    @click:control="openMenu"
   >
     <v-menu
       v-model="isMenuOpen"
-      activator="parent"
+      :activator
+      target="parent"
+      :activator-props
+      :content-props
       location="bottom start"
       min-width="0"
       :disabled="isMenuDisabled"
@@ -78,6 +83,7 @@ import {
   getDatePart,
   getTimePart,
   joinDateTime,
+  useDateTimeFieldMenu,
   useDateTimeFieldPickerBounds,
   useDateTimeFieldRules,
 } from "@/composables/inputs/date-time-field.ts";
@@ -116,6 +122,13 @@ const draftDate = computed(() => draft.value.date ?? getDatePart(modelValue.valu
 const draftTime = computed(() => draft.value.time ?? getTimePart(modelValue.value, props.type));
 const draftValue = computed(() => joinDateTime(props.type, draftDate.value, draftTime.value));
 const bounds = useDateTimeFieldPickerBounds(props, draftDate);
+const {
+  inputId,
+  activator,
+  activatorProps,
+  contentProps,
+  open: openMenu,
+} = useDateTimeFieldMenu(isMenuOpen, isMenuDisabled, () => !!props.label);
 
 watch(isMenuOpen, () => {
   draft.value = {};
