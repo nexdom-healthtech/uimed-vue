@@ -105,6 +105,63 @@ test.describe("autocomplete-field", () => {
       await expect(previewField.locator(".v-field__clearable")).toBeAttached();
     });
 
+    test("presents the field as a single combobox named by its label", async ({ page }) => {
+      const previewField = getPreviewField(page);
+      const field = previewField.locator(".v-field");
+      const combobox = previewField.getByRole("combobox", { name: "País" });
+
+      const fieldAttributes = () =>
+        field.evaluate((element) =>
+          element.getAttributeNames().filter((name) => name === "role" || name.startsWith("aria-")),
+        );
+      expect(await fieldAttributes()).toEqual([]);
+      await expect(previewField.getByRole("combobox")).toHaveCount(1);
+      await expect(combobox).toHaveAttribute("aria-expanded", "false");
+
+      await combobox.click();
+      await expect(combobox).toHaveAttribute("aria-expanded", "true");
+
+      const listboxId = await combobox.getAttribute("aria-controls");
+      const listbox = page.locator(`[id="${listboxId}"]`).getByRole("listbox", { name: "País" });
+      await expect(listbox).toBeVisible();
+      expect(await fieldAttributes()).toEqual([]);
+
+      await combobox.press("Escape");
+      await expect(listbox).toBeHidden();
+      await expect(combobox).toHaveAttribute("aria-expanded", "false");
+      await expect(combobox).toBeFocused();
+    });
+
+    test("keeps the menu open when clicking a chip or the field outside the input", async ({
+      page,
+    }) => {
+      const previewField = getPreviewField(page);
+      const combobox = previewField.getByRole("combobox", { name: "País" });
+      const listbox = page.getByRole("listbox", { name: "País" });
+
+      await combobox.click();
+      await listbox.getByRole("option", { name: "Brasil" }).click();
+      await expect(listbox).toBeHidden();
+
+      await combobox.click();
+      await expect(listbox).toBeVisible();
+
+      await previewField.locator(".v-chip").click();
+      await expect(listbox).toBeVisible();
+      await expect(combobox).toHaveAttribute("aria-expanded", "true");
+
+      const field = previewField.locator(".v-field");
+      const fieldBox = (await field.boundingBox())!;
+      const isInput = await page.evaluate(
+        ({ x, y }) => document.elementFromPoint(x, y)?.tagName === "INPUT",
+        { x: fieldBox.x + 2, y: fieldBox.y + fieldBox.height - 1 },
+      );
+      expect(isInput).toBe(false);
+      await field.click({ position: { x: 2, y: fieldBox.height - 1 } });
+      await expect(listbox).toBeVisible();
+      await expect(combobox).toHaveAttribute("aria-expanded", "true");
+    });
+
     test("matches the accessible snapshot of the preview field in its default state", async ({
       page,
     }) => {
