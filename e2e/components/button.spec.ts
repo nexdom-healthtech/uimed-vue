@@ -1,4 +1,4 @@
-import { test, expect, type Page } from "@playwright/test";
+import { test, expect, type Locator, type Page } from "@playwright/test";
 import { gotoPage, selectOption } from "@e2e/utils.ts";
 
 test.describe("button", () => {
@@ -41,6 +41,14 @@ test.describe("button", () => {
       await expect(previewButton).toHaveAttribute("aria-busy", "true");
       await expect(previewButton).toHaveAccessibleName("Me clique");
       await expect(previewButton.getByRole("progressbar")).toHaveCount(0);
+    });
+
+    test("fills the preview's width when playground-full-width is toggled", async ({ page }) => {
+      const previewButton = getPreviewButton(page);
+      expect(await getWidthRatio(previewButton)).toBeLessThan(0.5);
+
+      await page.getByTestId("btn-playground-full-width").locator("input").click();
+      await expect.poll(() => getWidthRatio(previewButton)).toBeCloseTo(1, 2);
     });
 
     test("disables when playground-disabled is toggled", async ({ page }) => {
@@ -89,4 +97,15 @@ test.describe("button", () => {
 
 function getPreviewButton(page: Page) {
   return page.getByTestId("btn-preview");
+}
+
+// How much of its parent's content box (without the padding) the button takes in width
+function getWidthRatio(button: Locator) {
+  return button.evaluate((element) => {
+    const parent = element.parentElement as HTMLElement;
+    const style = getComputedStyle(parent);
+    const available =
+      parent.clientWidth - parseFloat(style.paddingLeft) - parseFloat(style.paddingRight);
+    return element.getBoundingClientRect().width / available;
+  });
 }
