@@ -184,6 +184,7 @@ Use an existing composable (e.g. `use-toast`) as the reference, and deliver in t
 
 - Keep components thin: a component wires props, slots and events to Vuetify. Logic beyond that (focus management, queues, DOM lookups, comparisons) goes into an internal composable with its own unit tests.
 - Path aliases: `@/*` → `src/*`, `@e2e/*` → `e2e/*`.
+- A prop or option that points to a navigation destination is typed `RouteLocationRaw` (from `vue-router`) and named `route` (e.g. the items of `UNavigationMenu`), unless the name says which destination it is (e.g. `help` in `UAppBar`). Don't split it into `to`/`href` props: convert it with `useRouteProps`/`routeToProps` (`src/composables/navigation/use-route-props.ts`), which binds strings starting with `http` as `href` and anything else as the router's `to`.
 - Every public component follows this pattern to block access to internals and give it an editor-hover description:
 
   ```vue

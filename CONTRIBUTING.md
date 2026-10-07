@@ -112,6 +112,8 @@ export default {
 
 Every component exported publicly from `src/components/index.ts` **must be re-exported with a `U` prefix** on its identifier, while the component's internal file, folder, and component name stay unprefixed. For example, a component internally named `Button` in `src/components/button/button.vue` should be exported as `export { default as UButton } from ...` from the index file. This convention applies to all future public components.
 
+A prop or option that points to a navigation destination is typed `RouteLocationRaw` (from `vue-router`) and named `route` (e.g. the items of `UNavigationMenu`), unless the name says which destination it is (e.g. `help` in `UAppBar`). Don't split it into `to`/`href` props: convert it with `useRouteProps`/`routeToProps` (`src/composables/navigation/use-route-props.ts`), which binds strings starting with `http` as `href` and anything else as the router's `to`.
+
 #### Shared composables
 
 Some props recur across components, and each of them has an internal composable that maps it to Vuetify. **Reuse these composables instead of mapping the prop again**, so every component behaves the same way:
