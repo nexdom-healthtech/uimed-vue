@@ -4,11 +4,13 @@ import {
   getDatePart,
   getTimePart,
   joinDateTime,
+  useDateTimeFieldMenu,
   useDateTimeFieldPickerBounds,
   useDateTimeFieldRules,
 } from "@/composables/inputs/date-time-field.ts";
 import { required } from "@/composables/inputs/rules.ts";
 import type { Rule } from "@/composables/inputs/types.ts";
+import { mount } from "@vue/test-utils";
 import { reactive, ref } from "vue";
 
 type RulesProps = Parameters<typeof useDateTimeFieldRules>[0];
@@ -134,6 +136,57 @@ describe("date-time-field", () => {
     });
   });
 
+  describe("useDateTimeFieldMenu", () => {
+    it("should identify the input with a unique id", () => {
+      const { menu } = mountMenu();
+      expect(menu.inputId).toBe("date-time-field-test-0");
+    });
+
+    it("should activate the menu by the input, unless it can't open", () => {
+      const { menu, disabled } = mountMenu();
+      expect(menu.activator.value).toBe("#date-time-field-test-0");
+
+      disabled.value = true;
+      expect(menu.activator.value).toBeUndefined();
+    });
+
+    it("should describe the input as a control that opens a dialog", () => {
+      const { menu } = mountMenu();
+
+      expect(menu.activatorProps).toStrictEqual({
+        role: "combobox",
+        "aria-haspopup": "dialog",
+        "aria-owns": undefined,
+      });
+    });
+
+    it("should describe the content as a dialog named by the label, when there's one", () => {
+      const { menu, label } = mountMenu();
+
+      expect(menu.contentProps.value).toEqual({
+        role: "dialog",
+        "aria-labelledby": "date-time-field-test-0-label",
+      });
+
+      label.value = false;
+      expect(menu.contentProps.value).toEqual({ role: "dialog", "aria-labelledby": undefined });
+    });
+
+    it("should open the menu", () => {
+      const { menu, isOpen } = mountMenu();
+
+      menu.open();
+      expect(isOpen.value).toBe(true);
+    });
+
+    it("should not open the menu when it can't open", () => {
+      const { menu, isOpen } = mountMenu(true);
+
+      menu.open();
+      expect(isOpen.value).toBe(false);
+    });
+  });
+
   describe("useDateTimeFieldPickerBounds", () => {
     it("should have no bounds by default", () => {
       const bounds = useDateTimeFieldPickerBounds(boundsProps(), "");
@@ -196,6 +249,26 @@ describe("date-time-field", () => {
     });
   });
 });
+
+function mountMenu(isDisabled = false, hasLabel = true) {
+  const isOpen = ref(false);
+  const disabled = ref(isDisabled);
+  const label = ref(hasLabel);
+  let menu: ReturnType<typeof useDateTimeFieldMenu> | undefined;
+
+  mount(
+    {
+      setup() {
+        menu = useDateTimeFieldMenu(isOpen, disabled, label);
+        return () => null;
+      },
+    },
+    { global: { config: { idPrefix: "test" } } },
+  );
+
+  if (!menu) throw new Error("The composable wasn't called");
+  return { menu, isOpen, disabled, label };
+}
 
 function rulesProps(props: Partial<RulesProps> = {}): RulesProps {
   return reactive<RulesProps>({ required: false, type: "datetime", ...props });

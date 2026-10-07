@@ -1,10 +1,10 @@
-- textbox "Data": /\d+\/\d+\/\d+/
+- combobox "Data": /\d+\/\d+\/\d+/
 - text: Data
 - alert
-- textbox "Horário": /\d+:\d+/
+- combobox "Horário": /\d+:\d+/
 - text: Horário
 - alert
-- textbox "Data e hora": /\d+\/\d+\/\d+ \d+:\d+/
+- combobox "Data e hora": /\d+\/\d+\/\d+ \d+:\d+/
 - text: Data e hora
 - alert
 - list:

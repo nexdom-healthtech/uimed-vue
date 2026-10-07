@@ -62,6 +62,65 @@ test.describe("date-time-field", () => {
       await expect(getDay(page, "24 de setembro de 2026")).toBeVisible();
     });
 
+    test("presents the field as a combobox that opens a dialog named by its label", async ({
+      page,
+    }) => {
+      const field = page.getByTestId("date-time-field-demo-date");
+      const input = field.getByRole("combobox", { name: "Data", exact: true });
+
+      await expect(input).toHaveAttribute("aria-haspopup", "dialog");
+      await expect(input).toHaveAttribute("aria-expanded", "false");
+      await expect(input).not.toHaveAttribute("aria-owns");
+      expect(await getAriaAttributes(field.locator(".v-field"))).toEqual([]);
+
+      await input.click();
+
+      await expect(input).toHaveAttribute("aria-expanded", "true");
+      const controls = await input.getAttribute("aria-controls");
+      const dialog = page.locator(`[id="${controls}"]`).getByRole("dialog", { name: "Data" });
+      await expect(dialog).toBeVisible();
+      await expect(dialog.locator(".v-date-picker")).toBeVisible();
+
+      await page.keyboard.press("Escape");
+
+      await expect(getOpenMenu(page)).toBeHidden();
+      await expect(input).toHaveAttribute("aria-expanded", "false");
+    });
+
+    test("opens the picker with ArrowDown and closes it with Escape, keeping the focus", async ({
+      page,
+    }) => {
+      const input = page
+        .getByTestId("date-time-field-demo-date")
+        .getByRole("combobox", { name: "Data", exact: true });
+
+      await input.focus();
+      await page.keyboard.press("ArrowDown");
+
+      await expect(getOpenMenu(page)).toBeVisible();
+      await expect(input).toHaveAttribute("aria-expanded", "true");
+
+      await page.keyboard.press("Escape");
+
+      await expect(getOpenMenu(page)).toBeHidden();
+      await expect(input).toBeFocused();
+    });
+
+    test("opens the picker when the field is clicked outside the input", async ({ page }) => {
+      const field = page.getByTestId("date-time-field-demo-date");
+
+      const control = field.locator(".v-field");
+      const box = (await control.boundingBox())!;
+      const isInput = await page.evaluate(
+        ({ x, y }) => document.elementFromPoint(x, y)?.tagName === "INPUT",
+        { x: box.x + 4, y: box.y + 4 },
+      );
+      expect(isInput).toBe(false);
+      await control.click({ position: { x: 4, y: 4 } });
+
+      await expect(getOpenMenu(page)).toBeVisible();
+    });
+
     test("matches the accessible snapshot of the types demo", async ({ page }) => {
       await expect(page.getByTestId("demo-types")).toMatchAriaSnapshot();
     });
@@ -110,6 +169,25 @@ test.describe("date-time-field", () => {
       await expect(getOpenMenu(page)).toHaveCount(0);
     });
 
+    test.describe("doesn't present the field as a combobox", () => {
+      const states = [
+        ["disabled", "Desabilitado"],
+        ["readonly", "Somente leitura"],
+      ] as const;
+
+      for (const [state, label] of states) {
+        test(`while ${state}`, async ({ page }) => {
+          const field = page.getByTestId(`date-time-field-demo-${state}`);
+          const input = field.getByRole("textbox", { name: label });
+
+          await expect(input).toBeVisible();
+          await expect(input).not.toHaveAttribute("aria-haspopup");
+          await expect(input).not.toHaveAttribute("aria-expanded");
+          expect(await getAriaAttributes(field.locator(".v-field"))).toEqual([]);
+        });
+      }
+    });
+
     test("doesn't open the picker while readonly", async ({ page }) => {
       const field = page.getByTestId("date-time-field-demo-readonly");
 
@@ -129,6 +207,7 @@ test.describe("date-time-field", () => {
 
       await expect(value).toHaveText('""');
       await expect(field.locator("input")).toHaveValue("");
+      await expect(getOpenMenu(page)).toHaveCount(0);
     });
   });
 
@@ -249,6 +328,12 @@ test.describe("date-time-field", () => {
     });
   });
 });
+
+function getAriaAttributes(locator: Locator) {
+  return locator.evaluate((element) =>
+    element.getAttributeNames().filter((name) => name.startsWith("aria-")),
+  );
+}
 
 function getPreview(page: Page) {
   return page.getByTestId("date-time-field-preview");
