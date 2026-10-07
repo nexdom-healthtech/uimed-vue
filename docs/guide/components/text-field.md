@@ -87,6 +87,24 @@ import { UTextField } from "@nexdom/uimed-vue/components";
 </script>
 ```
 
+### Senha
+
+Com `type="password"`, o campo oculta o valor digitado e exibe o botão "Mostrar senha", que alterna entre mostrar e ocultar a senha. O botão também pode ser acessado pelo teclado: a partir do campo, pressione `Tab` para focá-lo e `Espaço` ou `Enter` para alternar. A senha volta a ficar oculta ao pressionar o botão novamente ou quando o `type` muda.
+
+<demo>
+<u-text-field label="Senha" type="password" data-testid="text-field-demo-password" />
+</demo>
+
+```vue
+<template>
+  <u-text-field label="Senha" type="password" />
+</template>
+
+<script lang="ts" setup>
+import { UTextField } from "@nexdom/uimed-vue/components";
+</script>
+```
+
 ### Estados
 
 #### Desabilitado

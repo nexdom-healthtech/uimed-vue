@@ -5,6 +5,7 @@ import { vueTestUtilsPluginUimed } from "@/unit-test.ts";
 import { mount } from "@vue/test-utils";
 import { VTextField } from "vuetify/components";
 import type { Rule } from "@/composables/inputs/types.ts";
+import { nextTick } from "vue";
 
 const variants: [TextFieldVariant, string][] = [
   ["primary", "underlined"],
@@ -118,6 +119,111 @@ describe("TextField", () => {
       it("should default to text type when not set", () => {
         const wrapper = mountTextField();
         expect(wrapper.findComponent(VTextField).props("type")).toBe("text");
+      });
+
+      describe("password toggle", () => {
+        it.each(types.filter(([type]) => type !== "password"))(
+          'should not render the toggle for type "%s"',
+          async (type) => {
+            const wrapper = mountTextField();
+            await wrapper.setProps({ type });
+
+            expect(findPasswordToggle(wrapper).exists()).toBe(false);
+          },
+        );
+
+        it("should keep the search icon without the toggle for search", async () => {
+          const wrapper = mountTextField();
+          await wrapper.setProps({ type: "search" });
+
+          expect(findVTextField(wrapper).props("appendInnerIcon")).toBe("mdi-magnify");
+          expect(wrapper.find(".v-field__append-inner .mdi-magnify").exists()).toBe(true);
+          expect(findPasswordToggle(wrapper).exists()).toBe(false);
+        });
+
+        it("should render a labeled, unpressed toggle with the show icon for password", async () => {
+          const wrapper = mountTextField();
+          await wrapper.setProps({ type: "password" });
+
+          const toggle = findPasswordToggle(wrapper);
+          expect(toggle.element.tagName).toBe("BUTTON");
+          expect(toggle.attributes("type")).toBe("button");
+          expect(toggle.attributes("aria-label")).toBe("Mostrar senha");
+          expect(toggle.attributes("aria-pressed")).toBe("false");
+          expect(toggle.attributes("disabled")).toBeUndefined();
+          expect(toggle.find(".v-icon").classes()).toContain("mdi-eye");
+          expect(toggle.find(".v-icon").attributes("aria-hidden")).toBe("true");
+          expect(findVTextField(wrapper).props("appendInnerIcon")).toBeUndefined();
+        });
+
+        it("should show and hide the password when clicked", async () => {
+          const wrapper = mountTextField();
+          await wrapper.setProps({ type: "password", modelValue: "segredo" });
+
+          await findPasswordToggle(wrapper).trigger("click");
+
+          expect(findVTextField(wrapper).props("type")).toBe("text");
+          expect(wrapper.find("input").attributes("type")).toBe("text");
+          expect(findPasswordToggle(wrapper).attributes("aria-pressed")).toBe("true");
+          expect(findPasswordToggle(wrapper).attributes("aria-label")).toBe("Mostrar senha");
+          expect(findPasswordToggle(wrapper).find(".v-icon").classes()).toContain("mdi-eye-off");
+
+          await findPasswordToggle(wrapper).trigger("click");
+
+          expect(wrapper.find("input").attributes("type")).toBe("password");
+          expect(findPasswordToggle(wrapper).attributes("aria-pressed")).toBe("false");
+          expect(findPasswordToggle(wrapper).find(".v-icon").classes()).toContain("mdi-eye");
+          expect(wrapper.props("modelValue")).toBe("segredo");
+        });
+
+        it("should hide the password again when the type changes away from and back to password", async () => {
+          const wrapper = mountTextField();
+          await wrapper.setProps({ type: "password" });
+          await findPasswordToggle(wrapper).trigger("click");
+
+          await wrapper.setProps({ type: "text" });
+          expect(wrapper.find("input").attributes("type")).toBe("text");
+          expect(findPasswordToggle(wrapper).exists()).toBe(false);
+
+          await wrapper.setProps({ type: "password" });
+          expect(wrapper.find("input").attributes("type")).toBe("password");
+          expect(findPasswordToggle(wrapper).attributes("aria-pressed")).toBe("false");
+        });
+
+        it("should disable the toggle when disabled, keeping the password hidden", async () => {
+          const wrapper = mountTextField();
+          await wrapper.setProps({ type: "password", disabled: true });
+
+          const toggle = findPasswordToggle(wrapper);
+          expect(toggle.attributes("disabled")).toBeDefined();
+
+          await toggle.trigger("click");
+          expect(wrapper.find("input").attributes("type")).toBe("password");
+        });
+
+        it("should keep the toggle active when readonly or loading", async () => {
+          const wrapper = mountTextField();
+          await wrapper.setProps({ type: "password", readonly: true, loading: true });
+
+          const toggle = findPasswordToggle(wrapper);
+          expect(toggle.attributes("disabled")).toBeUndefined();
+
+          await toggle.trigger("click");
+          expect(wrapper.find("input").attributes("type")).toBe("text");
+        });
+
+        it("should keep the password visible when the field is cleared", async () => {
+          const wrapper = mountTextField();
+          await wrapper.setProps({ type: "password", clearable: true, modelValue: "segredo" });
+          await findPasswordToggle(wrapper).trigger("click");
+
+          findVTextField(wrapper).vm.$emit("click:clear");
+          await nextTick();
+
+          expect(wrapper.emitted("update:modelValue")?.[0]).toEqual([""]);
+          expect(wrapper.find("input").attributes("type")).toBe("text");
+          expect(findPasswordToggle(wrapper).attributes("aria-pressed")).toBe("true");
+        });
       });
     });
 
@@ -269,4 +375,8 @@ function mountTextField() {
 
 function findVTextField(wrapper: ReturnType<typeof mountTextField>) {
   return wrapper.findComponent(VTextField);
+}
+
+function findPasswordToggle(wrapper: ReturnType<typeof mountTextField>) {
+  return wrapper.find("button[aria-label='Mostrar senha']");
 }
