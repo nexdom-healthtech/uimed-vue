@@ -129,7 +129,7 @@ export function useDateTimeFieldMenu(
   isDisabled: MaybeRefOrGetter<boolean>,
   hasLabel: MaybeRefOrGetter<boolean>,
 ): DateTimeFieldMenu {
-  const inputId = `date-time-field-${useId()}`;
+  const inputId = useId();
 
   const activator = computed(() => (toValue(isDisabled) ? undefined : `#${inputId}`));
   const contentProps = computed(() => ({

@@ -139,12 +139,12 @@ describe("date-time-field", () => {
   describe("useDateTimeFieldMenu", () => {
     it("should identify the input with a unique id", () => {
       const { menu } = mountMenu();
-      expect(menu.inputId).toBe("date-time-field-test-0");
+      expect(menu.inputId).toBe("test-0");
     });
 
     it("should activate the menu by the input, unless it can't open", () => {
       const { menu, disabled } = mountMenu();
-      expect(menu.activator.value).toBe("#date-time-field-test-0");
+      expect(menu.activator.value).toBe("#test-0");
 
       disabled.value = true;
       expect(menu.activator.value).toBeUndefined();
@@ -165,7 +165,7 @@ describe("date-time-field", () => {
 
       expect(menu.contentProps.value).toEqual({
         role: "dialog",
-        "aria-labelledby": "date-time-field-test-0-label",
+        "aria-labelledby": "test-0-label",
       });
 
       label.value = false;
