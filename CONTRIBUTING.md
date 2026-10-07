@@ -112,6 +112,35 @@ export default {
 
 Every component exported publicly from `src/components/index.ts` **must be re-exported with a `U` prefix** on its identifier, while the component's internal file, folder, and component name stay unprefixed. For example, a component internally named `Button` in `src/components/button/button.vue` should be exported as `export { default as UButton } from ...` from the index file. This convention applies to all future public components.
 
+#### Shared composables
+
+Some props recur across components, and each of them has an internal composable that maps it to Vuetify. **Reuse these composables instead of mapping the prop again**, so every component behaves the same way:
+
+| Props                     | Composable                      | File                                          |
+| ------------------------- | ------------------------------- | --------------------------------------------- |
+| `fullWidth`, `fullHeight` | `useFullWidth`, `useFullHeight` | `src/composables/dimensions/dimensions.ts`    |
+| `alignX`, `alignY`        | `useAlignX`, `useAlignY`        | `src/composables/alignment/alignment.ts`      |
+| `color`                   | `useVuetifyColor`               | `src/composables/colors/use-vuetify-color.ts` |
+
+For example, a component with a `fullWidth` prop applies the class `useFullWidth` returns:
+
+```vue
+<template>
+  <v-btn :class="widthClass">
+    <slot />
+  </v-btn>
+</template>
+
+<script setup lang="ts">
+import { useFullWidth } from "@/composables/dimensions/dimensions.ts";
+
+const props = defineProps<{ fullWidth?: boolean }>();
+const widthClass = useFullWidth(() => props.fullWidth);
+</script>
+```
+
+A new prop that does the same as one of these takes its name and type (e.g. `AlignX` from `src/composables/alignment/types.ts`). When a second component needs a mapping that only one component has, move it into a shared composable first. These composables are internal: they aren't exported from `src/composables/index.ts`.
+
 ### Workarounds
 
 - [Instrumenting Vue compiler macro arguments (defineModel/defineOptions/defineProps) produces code the SFC compiler hoists out of the helper's scope](https://github.com/stryker-mutator/stryker-js/issues/6178)

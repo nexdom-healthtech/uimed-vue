@@ -174,7 +174,14 @@ Use an existing composable (e.g. `use-toast`) as the reference, and deliver in t
 - Never write CSS or `<style>` blocks, and expose styling to consumers only through props.
 - Adjustments that Vuetify exposes as Sass variables (e.g. a font family or a line height) go in `src/styles/settings.scss`, which `vitePluginUimed()` compiles into Vuetify's stylesheets in the apps. That file only configures variables: still no CSS rules.
 - Don't add spacing to Vuetify components: no padding or margin utility classes (`pa-*`, `pt-6`, `px-4`, `ma-2`, ...) and no spacing props overriding the defaults. Vuetify already applies Material Design 3 spacing, and overriding it breaks what it handles on its own, such as button paddings and the scrollbar of scrollable content. If the default spacing looks wrong, stop and ask instead of adjusting it. The one accepted layout margin is `mt-auto` on `v-card-actions` (as in `USection`), which pushes the actions to the bottom of a full-height card without setting any spacing value.
-- Prefer a Vuetify component's own props to building its parts by hand (e.g. `title`/`text` on `v-card` instead of `v-card-item` > `v-card-title` > `v-card-text`). A non-spacing utility class is acceptable only when no prop covers the need (e.g. `text-wrap` on a card title), with a comment saying why.
+- Prefer a Vuetify component's own props to building its parts by hand (e.g. `title`/`text` on `v-card` instead of `v-card-item` > `v-card-title` > `v-card-text`). A non-spacing utility class is acceptable only when no prop covers the need (e.g. `text-wrap` on a card title), with a comment saying why. Props covered by the shared composables below are the exception: they always go through them.
+- Reuse the shared internal composables for props that recur across components, so every component maps them to Vuetify the same way, instead of mapping them again:
+  - `fullWidth`/`fullHeight`: `useFullWidth`/`useFullHeight` (`src/composables/dimensions/dimensions.ts`), applying Vuetify's `w-100`/`h-100` classes even where the component has `width`/`height` props.
+  - `alignX`/`alignY`: `useAlignX`/`useAlignY` (`src/composables/alignment/alignment.ts`), with the `AlignX`/`AlignY` types from the group's `types.ts`.
+  - `color`: `useVuetifyColor` (`src/composables/colors/use-vuetify-color.ts`), with the `ColorVariant` type from the group's `types.ts`.
+
+  A new prop that does the same as one of these takes its name and type. When a second component needs a mapping that only one component has, move it into a shared composable first.
+
 - Keep components thin: a component wires props, slots and events to Vuetify. Logic beyond that (focus management, queues, DOM lookups, comparisons) goes into an internal composable with its own unit tests.
 - Path aliases: `@/*` → `src/*`, `@e2e/*` → `e2e/*`.
 - Every public component follows this pattern to block access to internals and give it an editor-hover description:
