@@ -15,8 +15,16 @@ const vuetifyStylesheets = "/node_modules/vuetify/lib/";
  */
 const uncompiledStylesheetQuery = /[?&](?:raw|url)\b/;
 
+/** Matches the ids of the icon font's stylesheet, with or without a query and Windows separators */
+const iconFontStylesheet =
+  /[\\/]node_modules[\\/]@mdi[\\/]font[\\/]css[\\/]materialdesignicons\.css(?:\?|$)/;
+
+/** Start of the icon font's `@font-face` rule, the only one in its stylesheet */
+const iconFontFace = "@font-face {";
+
 /**
- * Vite plugin that compiles the components' styles with the library's font and Sass settings.
+ * Vite plugin that compiles the components' styles with the library's font and Sass settings, and
+ * loads the icon font with `font-display: swap`, so it doesn't block rendering while it loads.
  * Required: without it, the components lose the Unimed Slab font. Needs `sass-embedded`, a peer
  * dependency.
  *
@@ -72,6 +80,19 @@ export function vitePluginUimed(): Plugin[] {
         const current = compiler;
         compiler = undefined;
         await (await current)?.dispose();
+      },
+    },
+    {
+      // Adds `font-display` to the icon font's `@font-face`, which `@mdi/font` declares without it.
+      // Runs before Vite's CSS plugin, which turns the stylesheet into a module
+      name: "uimed:icon-font",
+      enforce: "pre",
+      transform: {
+        filter: { id: { include: iconFontStylesheet, exclude: uncompiledStylesheetQuery } },
+        handler(code) {
+          // Other versions of the stylesheet without the rule are left as they are
+          return code.replace(iconFontFace, `${iconFontFace} font-display: swap;`);
+        },
       },
     },
   ];

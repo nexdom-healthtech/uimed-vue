@@ -573,6 +573,24 @@ test.describe("main", () => {
     });
   });
 
+  test.describe("fonts", () => {
+    test("loads the icon and text fonts with font-display swap", async ({ page }) => {
+      await expect(getHelpButton(page)).toBeVisible();
+
+      const fonts = await page.evaluate(() =>
+        Array.from(document.fonts, (font) => ({
+          family: font.family.replaceAll('"', ""),
+          display: font.display,
+        })),
+      );
+      const families = ["Material Design Icons", "Unimed Slab"];
+      const faces = fonts.filter(({ family }) => families.includes(family));
+
+      expect(new Set(faces.map(({ family }) => family))).toEqual(new Set(families));
+      expect(faces.every(({ display }) => display === "swap")).toBe(true);
+    });
+  });
+
   test.describe("UI consistency", () => {
     test("matches last screenshot", async ({ page }) => {
       const userButton = getUserButton(page);

@@ -35,7 +35,7 @@ $ yarn add @nexdom/uimed-vue
 
 ## Configuração
 
-Adicione o plugin ao arquivo de configurações do Vite. Ele compila os estilos dos componentes com a fonte e os ajustes visuais da biblioteca, e sem ele os componentes perdem a fonte Unimed Slab:
+Adicione o plugin ao arquivo de configurações do Vite. Ele compila os estilos dos componentes com a fonte e os ajustes visuais da biblioteca, e declara a fonte de ícones com `font-display`, para que ela não bloqueie a exibição da página enquanto carrega. Sem ele, os componentes perdem a fonte Unimed Slab:
 
 ```js [vite.config.ts]
 import { defineConfig } from 'vite'
