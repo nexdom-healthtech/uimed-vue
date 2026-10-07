@@ -1,14 +1,16 @@
 <template>
-  <v-skeleton-loader :loading="props.loading" :type="skeletonType" :width :height>
+  <v-skeleton-loader
+    :loading="props.loading"
+    :type="skeletonType"
+    :class="[widthClass, heightClass]"
+  >
     <!-- The card and its actions have no alignment props, so `textAlign` uses utility classes -->
     <v-card
       :title
       :subtitle
       :variant
-      :width
-      :height
       :data-testid="props.dataTestid"
-      :class="['d-flex flex-column', textAlignClasses.content]"
+      :class="['d-flex flex-column', widthClass, heightClass, textAlignClasses.content]"
     >
       <slot />
 
@@ -53,6 +55,7 @@ import { VCard, VCardActions, VSkeletonLoader } from "vuetify/components";
 import Button from "@/components/button/button.vue";
 import type { SectionProps } from "@/components/sections/section/types.ts";
 import { useSectionTextAlign, useSectionVariant } from "@/composables/section/section.ts";
+import { useFullHeight, useFullWidth } from "@/composables/dimensions/dimensions.ts";
 
 const props = defineProps<SectionProps>();
 
@@ -60,8 +63,8 @@ const variant = useSectionVariant(() => props.variant);
 const textAlignClasses = useSectionTextAlign(() => props.textAlign);
 const title = computed(() => props.title || undefined);
 const subtitle = computed(() => props.subtitle || undefined);
-const width = computed(() => (props.fullWidth ? "100%" : undefined));
-const height = computed(() => (props.fullHeight ? "100%" : undefined));
+const widthClass = useFullWidth(() => props.fullWidth);
+const heightClass = useFullHeight(() => props.fullHeight);
 const showActions = computed(() => !!props.actions?.length);
 const skeletonType = computed(() => (showActions.value ? "image, actions" : "image"));
 </script>
