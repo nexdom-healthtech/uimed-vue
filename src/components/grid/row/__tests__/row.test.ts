@@ -97,13 +97,13 @@ describe("Row", () => {
     describe("fullHeight", () => {
       it("should not stretch the row by default", () => {
         const row = mountRow();
-        expect(row.classes()).not.toContain("fill-height");
+        expect(row.classes()).not.toContain("h-100");
         expectNoClassOf(row, alignContentClasses);
       });
 
       it("should stretch the row and align its lines to the start by default when true", () => {
         const row = mountRow({ fullHeight: true });
-        expect(row.classes()).toContain("fill-height");
+        expect(row.classes()).toContain("h-100");
         expectOnlyClassOf(row, alignContentClasses, "align-content-start");
         expectOnlyClassOf(row, alignYClasses, "align-start");
       });
@@ -128,14 +128,14 @@ describe("Row", () => {
         expectOnlyClassOf(row, alignContentClasses, "align-content-end");
 
         await row.setProps({ fullHeight: false });
-        expect(row.classes()).not.toContain("fill-height");
+        expect(row.classes()).not.toContain("h-100");
         expectNoClassOf(row, alignContentClasses);
       });
 
       it("should keep the alignment and the list classes", () => {
         const row = mountRow({ fullHeight: true, list: true, alignX: "center", alignY: "center" });
         expect(row.classes()).toEqual(
-          expect.arrayContaining(["fill-height", "justify-center", "align-center", "pa-0", "ma-0"]),
+          expect.arrayContaining(["h-100", "justify-center", "align-center", "pa-0", "ma-0"]),
         );
       });
     });

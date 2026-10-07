@@ -33,21 +33,23 @@ test.describe("section", () => {
       await expect(previewCard).toContainText(text);
     });
 
-    test("applies 100% width when playground-fullWidth is toggled", async ({ page }) => {
-      const previewCard = getPreviewCard(page);
-      await expect(previewCard).not.toHaveJSProperty("style.width", "100%");
+    for (const [prop, dimension] of [
+      ["fullWidth", "width"],
+      ["fullHeight", "height"],
+    ] as const) {
+      test(`fills the preview's ${dimension} when playground-${prop} is toggled`, async ({
+        page,
+      }) => {
+        const previewCard = getPreviewCard(page);
+        // The default content wraps across the whole preview, so a short one leaves room to fill
+        await page.getByTestId("content-set-playground-content").locator("input").fill("Curto");
+        await expect(previewCard).toContainText("Curto");
+        expect(await getFillRatio(previewCard, dimension)).toBeLessThan(0.99);
 
-      await page.getByTestId("content-set-playground-fullWidth").locator("input").click();
-      await expect(previewCard).toHaveJSProperty("style.width", "100%");
-    });
-
-    test("applies 100% height when playground-fullHeight is toggled", async ({ page }) => {
-      const previewCard = getPreviewCard(page);
-      await expect(previewCard).not.toHaveJSProperty("style.height", "100%");
-
-      await page.getByTestId("content-set-playground-fullHeight").locator("input").click();
-      await expect(previewCard).toHaveJSProperty("style.height", "100%");
-    });
+        await page.getByTestId(`content-set-playground-${prop}`).locator("input").click();
+        await expect.poll(() => getFillRatio(previewCard, dimension)).toBeCloseTo(1, 2);
+      });
+    }
 
     test("renders actions and reacts to clicks", async ({ page }) => {
       const previewCard = getPreviewCard(page);
@@ -196,6 +198,21 @@ test.describe("section", () => {
 
 function getPreviewCard(page: Page) {
   return page.getByTestId("content-set-preview");
+}
+
+// How much of its parent's content box (without the padding) the card takes in a dimension
+function getFillRatio(card: Locator, dimension: "width" | "height") {
+  return card.evaluate((element, dimension) => {
+    const parent = element.parentElement as HTMLElement;
+    const style = getComputedStyle(parent);
+    const [client, paddingStart, paddingEnd] =
+      dimension === "width"
+        ? [parent.clientWidth, style.paddingLeft, style.paddingRight]
+        : [parent.clientHeight, style.paddingTop, style.paddingBottom];
+
+    const available = client - parseFloat(paddingStart) - parseFloat(paddingEnd);
+    return element.getBoundingClientRect()[dimension] / available;
+  }, dimension);
 }
 
 type Gaps = { start: number; end: number };

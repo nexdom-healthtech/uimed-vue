@@ -1,3 +1,5 @@
+import type { AlignX, AlignY } from "@/composables/alignment/types.ts";
+
 /**
  * Props exposed by the {@link Row} component.
  */
@@ -17,7 +19,7 @@ export type RowProps = {
    * whole line, so the alignment has no visible effect.
    * @default "start"
    */
-  alignX?: RowAlignX;
+  alignX?: AlignX;
 
   /**
    * Vertical alignment of the row's columns, relative to the tallest column on the same line.
@@ -35,7 +37,7 @@ export type RowProps = {
    * the columns, as a group, are aligned within the row's height.
    * @default "start"
    */
-  alignY?: RowAlignY;
+  alignY?: AlignY;
 
   /**
    * Stretches the row to the whole height of its parent: the visible content area of `UMain`
@@ -62,7 +64,3 @@ export type RowProps = {
    */
   dataTestid?: string;
 };
-
-export type RowAlignX = "start" | "center" | "end";
-
-export type RowAlignY = "start" | "center" | "end" | "stretch";

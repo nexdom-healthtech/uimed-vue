@@ -36,7 +36,7 @@ describe("DataSetItem", () => {
   it("should fill the height of its column", () => {
     const wrapper = mountDataSetItem();
     expect(findSection(wrapper).props("fullHeight")).toBe(true);
-    expect(findVCard(wrapper).props("height")).toBe("100%");
+    expect(findVCard(wrapper).classes()).toContain("h-100");
   });
 
   describe("props", () => {

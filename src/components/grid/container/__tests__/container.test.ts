@@ -21,18 +21,17 @@ describe("Container", () => {
   });
 
   describe("fullHeight", () => {
-    it("should not set the height by default", () => {
-      expect(findVContainer(wrapper).props("height")).toBeUndefined();
+    it("should not stretch the container by default", () => {
+      expect(wrapper.classes()).not.toContain("h-100");
     });
 
-    it("should set the height to 100% when true", async () => {
+    it('should add "h-100" when true', async () => {
       const container = mountContainer();
       await container.setProps({ fullHeight: true });
-      expect(findVContainer(container).props("height")).toBe("100%");
-      expect(container.attributes("style")).toContain("height: 100%");
+      expect(container.classes()).toContain("h-100");
 
       await container.setProps({ fullHeight: false });
-      expect(findVContainer(container).props("height")).toBeUndefined();
+      expect(container.classes()).not.toContain("h-100");
     });
   });
 

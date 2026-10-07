@@ -165,51 +165,22 @@ describe("Section", () => {
       });
     });
 
-    describe("fullWidth", () => {
-      it("should set width to 100% when fullWidth is true", async () => {
+    describe.each([
+      ["fullWidth", "w-100"],
+      ["fullHeight", "h-100"],
+    ] as const)("%s", (prop, expectedClass) => {
+      it(`should add "${expectedClass}" to the card when true`, async () => {
         const wrapper = mountSection();
-        await wrapper.setProps({ fullWidth: true });
+        await wrapper.setProps({ [prop]: true });
+        expect(findVCard(wrapper).classes()).toContain(expectedClass);
 
-        const vCard = findVCard(wrapper);
-        expect(vCard.props("width")).toBe("100%");
-      });
-
-      it("should not set width when fullWidth is false", async () => {
-        const wrapper = mountSection();
-        await wrapper.setProps({ fullWidth: false });
-
-        const vCard = findVCard(wrapper);
-        expect(vCard.props("width")).toBeUndefined();
+        await wrapper.setProps({ [prop]: false });
+        expect(findVCard(wrapper).classes()).not.toContain(expectedClass);
       });
 
       it("should be false by default", () => {
         const wrapper = mountSection();
-        const vCard = findVCard(wrapper);
-        expect(vCard.props("width")).toBeUndefined();
-      });
-    });
-
-    describe("fullHeight", () => {
-      it("should set height to 100% when fullHeight is true", async () => {
-        const wrapper = mountSection();
-        await wrapper.setProps({ fullHeight: true });
-
-        const vCard = findVCard(wrapper);
-        expect(vCard.props("height")).toBe("100%");
-      });
-
-      it("should not set height when fullHeight is false", async () => {
-        const wrapper = mountSection();
-        await wrapper.setProps({ fullHeight: false });
-
-        const vCard = findVCard(wrapper);
-        expect(vCard.props("height")).toBeUndefined();
-      });
-
-      it("should be false by default", () => {
-        const wrapper = mountSection();
-        const vCard = findVCard(wrapper);
-        expect(vCard.props("height")).toBeUndefined();
+        expect(findVCard(wrapper).classes()).not.toContain(expectedClass);
       });
     });
 
@@ -243,19 +214,20 @@ describe("Section", () => {
         expect(findVSkeletonLoader(wrapper).props("type")).toBe("image, actions");
       });
 
-      it("should also accept fullWidth and fullHeight prop", async () => {
+      it("should also stretch the skeleton with fullWidth and fullHeight", async () => {
         const wrapper = mountSection();
+        await wrapper.setProps({ loading: true });
         const vSkeletonLoader = findVSkeletonLoader(wrapper);
-        expect(vSkeletonLoader.props("width")).toBeUndefined();
-        expect(vSkeletonLoader.props("height")).toBeUndefined();
+        expect(vSkeletonLoader.classes()).not.toContain("w-100");
+        expect(vSkeletonLoader.classes()).not.toContain("h-100");
 
         await wrapper.setProps({ fullWidth: true });
-        expect(vSkeletonLoader.props("width")).toBe("100%");
-        expect(vSkeletonLoader.props("height")).toBeUndefined();
+        expect(vSkeletonLoader.classes()).toContain("w-100");
+        expect(vSkeletonLoader.classes()).not.toContain("h-100");
 
         await wrapper.setProps({ fullWidth: false, fullHeight: true });
-        expect(vSkeletonLoader.props("width")).toBeUndefined();
-        expect(vSkeletonLoader.props("height")).toBe("100%");
+        expect(vSkeletonLoader.classes()).not.toContain("w-100");
+        expect(vSkeletonLoader.classes()).toContain("h-100");
       });
 
       it("should still render the underlying v-card", () => {

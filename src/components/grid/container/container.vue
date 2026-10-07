@@ -1,5 +1,5 @@
 <template>
-  <v-container :height :data-testid="props.dataTestid" fluid>
+  <v-container :class="heightClass" :data-testid="props.dataTestid" fluid>
     <slot />
   </v-container>
 </template>
@@ -25,11 +25,11 @@ export default {
 </script>
 
 <script setup lang="ts">
-import { computed } from "vue";
 import { type ContainerProps } from "@/components/grid/container/types.ts";
 import { VContainer } from "vuetify/components";
+import { useFullHeight } from "@/composables/dimensions/dimensions.ts";
 
 const props = defineProps<ContainerProps>();
 
-const height = computed(() => (props.fullHeight ? "100%" : undefined));
+const heightClass = useFullHeight(() => props.fullHeight);
 </script>
