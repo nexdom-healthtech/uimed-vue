@@ -364,14 +364,14 @@ const contatos = [
   {
     id: 1,
     nome: "Ana Souza",
-    email: "ana.souza@email.com",
-    telefones: { Celular: "(11) 91234-5678", Residencial: "(11) 3456-7890" },
+    email: "ana.souza@example.com",
+    telefones: { Celular: "(00) 90000-0001", Residencial: "(00) 3000-0001" },
   },
   {
     id: 2,
     nome: "Bruno Lima",
-    email: "bruno.lima@email.com",
-    telefones: { Celular: "(31) 99876-5432" },
+    email: "bruno.lima@example.com",
+    telefones: { Celular: "(00) 90000-0002" },
   },
 ];
 
@@ -482,8 +482,8 @@ Consulte a referência de [API do UDataSet](../../api/components/data-sets/data-
   ];
 
   const contatos = [
-    { id: 1, nome: "Ana Souza", email: "ana.souza@email.com", telefones: { Celular: "(11) 91234-5678", Residencial: "(11) 3456-7890" } },
-    { id: 2, nome: "Bruno Lima", email: "bruno.lima@email.com", telefones: { Celular: "(31) 99876-5432" } },
+    { id: 1, nome: "Ana Souza", email: "ana.souza@example.com", telefones: { Celular: "(00) 90000-0001", Residencial: "(00) 3000-0001" } },
+    { id: 2, nome: "Bruno Lima", email: "bruno.lima@example.com", telefones: { Celular: "(00) 90000-0002" } },
   ];
 
   const paginaAtual = ref(1);

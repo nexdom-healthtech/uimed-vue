@@ -1,6 +1,6 @@
 - list:
     - listitem:
-        - text: Ana Souza ana.souza@email.com
+        - text: Ana Souza ana.souza@example.com
         - table:
             - rowgroup:
                 - row /Celular \(\d+\) \d+-\d+/:
@@ -12,7 +12,7 @@
         - button "Editar"
         - button "Excluir"
     - listitem:
-        - text: Bruno Lima bruno.lima@email.com
+        - text: Bruno Lima bruno.lima@example.com
         - table:
             - rowgroup:
                 - row /Celular \(\d+\) \d+-\d+/:
