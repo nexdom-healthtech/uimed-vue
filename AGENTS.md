@@ -26,7 +26,7 @@ Peer dependencies (`@mdi/font`, `@nexdom/shared`, `resize-observer-polyfill`, `s
 
 ### Setup
 
-Add the Vite plugin, which compiles the components' styles with the library's font and Sass settings (without it, components lose the Unimed Slab font):
+Add the Vite plugin, which compiles the components' styles with the library's font and Sass settings, and loads the icon font with `font-display`, so it doesn't block rendering while it loads. Without it, components lose the Unimed Slab font:
 
 ```ts
 // vite.config.ts
