@@ -1,5 +1,5 @@
 import { mount } from "@vue/test-utils";
-import { VAutocomplete, VCombobox } from "vuetify/components";
+import { VAutocomplete, VCombobox, VMenu } from "vuetify/components";
 import { vueTestUtilsPluginUimed } from "@/unit-test.ts";
 import AutocompleteField from "@/components/inputs/autocomplete-field/autocomplete-field.vue";
 import { createAutocompleteRequiredRule } from "@/composables/inputs/autocomplete-field.ts";
@@ -386,6 +386,85 @@ describe("AutocompleteField", () => {
     });
   });
 });
+
+describe("AutocompleteField accessibility", () => {
+  let wrapper: ReturnType<typeof mountAttachedAutocompleteField> | undefined;
+
+  afterEach(() => {
+    wrapper?.unmount();
+    wrapper = undefined;
+    document.body.innerHTML = "";
+  });
+
+  describe.each([
+    ["strict", true],
+    ["non-strict", false],
+  ])("when %s", (_, strict) => {
+    describe.each([
+      ["single", false],
+      ["multiple", true],
+    ])("and %s", (__, multiple) => {
+      it("should expose only the input as a combobox", async () => {
+        wrapper = mountAttachedAutocompleteField({ strict, multiple });
+        await vi.runAllTimersAsync();
+
+        expectCleanField(wrapper);
+
+        const input = wrapper.find("input:not([type='hidden'])");
+        expect(input.attributes("role")).toBe("combobox");
+        expect(input.attributes("aria-expanded")).toBe("false");
+        expect(input.attributes("aria-controls")).toBe(wrapper.findComponent(VMenu).props("id"));
+        expect(input.attributes("aria-owns")).toBeUndefined();
+      });
+
+      it("should keep the field clean and update the input when the menu opens", async () => {
+        wrapper = mountAttachedAutocompleteField({ strict, multiple });
+        await vi.runAllTimersAsync();
+
+        await wrapper.find(".v-field").trigger("mousedown");
+        await vi.runAllTimersAsync();
+
+        const input = wrapper.find("input:not([type='hidden'])");
+        expect(wrapper.findComponent(VMenu).props("modelValue")).toBe(true);
+        expect(input.attributes("aria-expanded")).toBe("true");
+        expect(input.attributes("aria-controls")).toBe(wrapper.findComponent(VMenu).props("id"));
+        expectCleanField(wrapper);
+      });
+    });
+  });
+
+  it.each([
+    ["strict", { strict: true }],
+    ["disabled", { disabled: true }],
+    ["readonly", { readonly: true }],
+  ])("should keep the field clean after setting %s", async (_, props) => {
+    wrapper = mountAttachedAutocompleteField({});
+    await vi.runAllTimersAsync();
+
+    await wrapper.setProps(props);
+    await vi.runAllTimersAsync();
+
+    expectCleanField(wrapper);
+    expect(wrapper.find("input:not([type='hidden'])").attributes("role")).toBe("combobox");
+  });
+});
+
+function mountAttachedAutocompleteField(props: { strict?: boolean; multiple?: boolean }) {
+  return mount(AutocompleteField, {
+    attachTo: document.body,
+    props: { label: "País", items: ["Brasil", "Portugal"], ...props },
+    global: {
+      plugins: [vueTestUtilsPluginUimed()],
+    },
+  });
+}
+
+function expectCleanField(wrapper: ReturnType<typeof mountAttachedAutocompleteField>) {
+  const attributes = Object.keys(wrapper.find(".v-field").attributes());
+
+  expect(attributes).not.toContain("role");
+  expect(attributes.filter((name) => name.startsWith("aria-"))).toEqual([]);
+}
 
 function mountAutocompleteField() {
   return mount(AutocompleteField, {

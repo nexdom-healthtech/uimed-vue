@@ -16,6 +16,7 @@
     :multiple="isMultiple"
     item-title="label"
     :rules
+    :menu-props="autocompleteFieldMenuProps"
     chips
   >
     <template #loader="loader">
@@ -47,7 +48,10 @@ import type {
   AutocompleteFieldProps,
   NormalizedItem,
 } from "@/components/inputs/autocomplete-field/types.ts";
-import { useAutocompleteRules } from "@/composables/inputs/autocomplete-field.ts";
+import {
+  autocompleteFieldMenuProps,
+  useAutocompleteRules,
+} from "@/composables/inputs/autocomplete-field.ts";
 import { useTextFieldVariant } from "@/composables/inputs/fields.ts";
 import { VAutocomplete, VCombobox } from "vuetify/components";
 import FieldLoader from "@/components/inputs/field-loader.vue";
