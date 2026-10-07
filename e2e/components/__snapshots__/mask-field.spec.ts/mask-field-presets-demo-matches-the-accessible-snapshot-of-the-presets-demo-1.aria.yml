@@ -1,0 +1,26 @@
+- text: CPF
+- textbox "CPF":
+    - /placeholder: 000.000.000-00
+- alert
+- text: CNPJ
+- textbox "CNPJ":
+    - /placeholder: 00.000.000/0000-00
+- alert
+- text: CEP
+- textbox "CEP":
+    - /placeholder: 00000-000
+- alert
+- text: Celular
+- textbox "Celular":
+    - /placeholder: (00) 00000-0000
+- alert
+- text: Data
+- textbox "Data":
+    - /placeholder: 00/00/0000
+- alert
+- list:
+    - listitem: 'cpf: ""'
+    - listitem: 'cnpj: ""'
+    - listitem: 'cep: ""'
+    - listitem: 'phone: ""'
+    - listitem: 'date: ""'
