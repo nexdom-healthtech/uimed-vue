@@ -7,6 +7,7 @@
     :color
     :type
     :form
+    :class="widthClass"
     @click="onClick"
   >
     <slot />
@@ -41,6 +42,7 @@ import { VBtn, VProgressCircular } from "vuetify/components";
 import type { ButtonProps, ButtonEmits } from "@/components/button/types.ts";
 import { useButtonForm, useButtonType, useButtonVariant } from "@/composables/button/button.ts";
 import useVuetifyColor from "@/composables/colors/use-vuetify-color.ts";
+import { useFullWidth } from "@/composables/dimensions/dimensions.ts";
 
 const props = defineProps<ButtonProps>();
 const emit = defineEmits<ButtonEmits>();
@@ -49,6 +51,7 @@ const variant = useButtonVariant(() => props.variant);
 const color = useVuetifyColor(() => props.color);
 const type = useButtonType(() => props.type);
 const form = useButtonForm(() => props.form);
+const widthClass = useFullWidth(() => props.fullWidth);
 
 function onClick(event: MouseEvent) {
   emit("click", event);

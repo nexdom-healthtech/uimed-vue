@@ -42,6 +42,13 @@ export type ButtonProps = {
   loading?: boolean;
 
   /**
+   * Stretches the button to the whole width of its parent, e.g. the only action of a form on a
+   * small screen.
+   * @default false
+   */
+  fullWidth?: boolean;
+
+  /**
    * Associated [form](https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Attributes/form) id.
    */
   form?: string;
