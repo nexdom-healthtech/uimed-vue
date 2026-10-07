@@ -41,6 +41,22 @@ describe("Button", () => {
   });
 
   describe("props", () => {
+    describe("fullWidth", () => {
+      it("should not stretch the button by default", () => {
+        const wrapper = mountButton();
+        expect(findVBtn(wrapper).classes()).not.toContain("w-100");
+      });
+
+      it('should add "w-100" when true', async () => {
+        const wrapper = mountButton();
+        await wrapper.setProps({ fullWidth: true });
+        expect(findVBtn(wrapper).classes()).toContain("w-100");
+
+        await wrapper.setProps({ fullWidth: false });
+        expect(findVBtn(wrapper).classes()).not.toContain("w-100");
+      });
+    });
+
     describe("variant ", () => {
       it.each(variants)(
         'should forward `variant="%s"` to Vuetify\'s `%s` variant',
