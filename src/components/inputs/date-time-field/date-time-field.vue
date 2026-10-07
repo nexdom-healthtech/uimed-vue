@@ -7,6 +7,7 @@
     :data-testid="props.dataTestid"
     :disabled="props.disabled"
     :loading="props.loading"
+    :aria-busy="props.loading || undefined"
     :label="props.label"
     :placeholder="props.placeholder"
     :hint="props.hint"
@@ -43,6 +44,9 @@
         </v-locale-provider>
       </v-card>
     </v-menu>
+    <template #loader="loader">
+      <field-loader v-bind="loader" />
+    </template>
   </v-text-field>
 </template>
 
@@ -86,6 +90,7 @@ import {
   VTextField,
   VTimePicker,
 } from "vuetify/components";
+import FieldLoader from "@/components/inputs/field-loader.vue";
 import { pt } from "vuetify/locale";
 import { computed, ref, watch } from "vue";
 import { useTextFieldVariant } from "@/composables/inputs/fields.ts";
