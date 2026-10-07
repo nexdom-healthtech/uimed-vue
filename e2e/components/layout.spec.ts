@@ -99,6 +99,48 @@ test.describe("layout", () => {
     });
   });
 
+  test.describe("fullHeight", () => {
+    test("fills the visible content area below the app bar", async ({ page }) => {
+      const row = page.getByTestId("demo-layout-full-height");
+      await expect(row).toHaveCSS("align-content", "center");
+
+      const { rowHeight, availableHeight } = await row.evaluate((element) => {
+        const container = element.parentElement as HTMLElement;
+        const appBar = element.closest(".v-application")?.querySelector("header") as HTMLElement;
+        const style = getComputedStyle(container);
+        return {
+          rowHeight: element.getBoundingClientRect().height,
+          availableHeight:
+            window.innerHeight -
+            appBar.getBoundingClientRect().height -
+            parseFloat(style.paddingTop) -
+            parseFloat(style.paddingBottom),
+        };
+      });
+      expectSameValue([rowHeight, availableHeight]);
+    });
+
+    test("centers the column in both axes", async ({ page }) => {
+      const row = page.getByTestId("demo-layout-full-height");
+      const rowBox = await getBox(row);
+      const [columnBox] = await getColumnBoxes(row, 1);
+
+      expect(columnBox.height).toBeLessThan(rowBox.height / 2);
+      expectSameValue([columnBox.y + columnBox.height / 2, rowBox.y + rowBox.height / 2]);
+      expectAlignedX(rowBox, [columnBox], "center");
+    });
+
+    test("keeps the column centered vertically below the sm breakpoint", async ({ page }) => {
+      await page.setViewportSize({ width: 599, height: 800 });
+      const row = page.getByTestId("demo-layout-full-height");
+      const rowBox = await getBox(row);
+      const [columnBox] = await getColumnBoxes(row, 1);
+
+      expectSameValue([columnBox.width, rowBox.width]);
+      expectSameValue([columnBox.y + columnBox.height / 2, rowBox.y + rowBox.height / 2]);
+    });
+  });
+
   test.describe("playground", () => {
     test("aligns the columns to the top and to the start by default", async ({ page }) => {
       const preview = page.getByTestId("layout-preview");
