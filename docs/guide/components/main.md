@@ -322,6 +322,8 @@ Experimente as combinações de props do componente.
 
 Consulte a referência de [API do UMain](../../api/components/main) para a lista completa de props, slots e eventos.
 
+O conteúdo da página ocupa toda a altura visível abaixo do menu superior: para centralizar o formulário de uma tela de login nela, por exemplo, veja [Altura total](./layout#altura-total) nos componentes de layout.
+
 <script lang="ts" setup>
   import { computed, reactive, ref } from "vue"
   import type { ComponentProps } from "vue-component-type-helpers"

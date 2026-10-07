@@ -94,9 +94,9 @@ O menu conta com um campo de busca, focado pelo atalho `Ctrl + K` (`⌘ + K` no 
 
 ## Slots
 
-| Slot      | Descrição                              |
-| --------- | -------------------------------------- |
-| `default` | Conteúdo exibido dentro do componente. |
+| Slot      | Descrição                                                                                                                                                        |
+| --------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `default` | Conteúdo exibido dentro do componente, que ocupa toda a altura visível abaixo do menu superior. Utilize uma [`URow`](./grid/row) com `fullHeight` para ocupá-la. |
 
 ## Exemplo
 
