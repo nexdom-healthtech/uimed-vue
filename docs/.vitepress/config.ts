@@ -121,6 +121,7 @@ export default defineConfig({
               text: "Campos e formulários",
               items: [
                 { text: "Caixas de seleção", link: "/guide/components/checkbox" },
+                { text: "Campos com máscara", link: "/guide/components/mask-field" },
                 {
                   text: "Campos com preenchimento automático",
                   link: "/guide/components/autocomplete-field",
@@ -211,6 +212,7 @@ export default defineConfig({
             { text: "UImg", link: "/api/components/img" },
             { text: "ULink", link: "/api/components/link" },
             { text: "UMain", link: "/api/components/main" },
+            { text: "UMaskField", link: "/api/components/mask-field" },
             { text: "UTable", link: "/api/components/table" },
             { text: "UTextField", link: "/api/components/text-field" },
           ],
