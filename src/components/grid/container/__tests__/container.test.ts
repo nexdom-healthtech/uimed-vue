@@ -20,6 +20,22 @@ describe("Container", () => {
     expect(vContainer.props("fluid")).toBeTruthy();
   });
 
+  describe("fullHeight", () => {
+    it("should not set the height by default", () => {
+      expect(findVContainer(wrapper).props("height")).toBeUndefined();
+    });
+
+    it("should set the height to 100% when true", async () => {
+      const container = mountContainer();
+      await container.setProps({ fullHeight: true });
+      expect(findVContainer(container).props("height")).toBe("100%");
+      expect(container.attributes("style")).toContain("height: 100%");
+
+      await container.setProps({ fullHeight: false });
+      expect(findVContainer(container).props("height")).toBeUndefined();
+    });
+  });
+
   it('should inherit "data-testid" attribute', () => {
     expect(wrapper.attributes("data-testid")).toBe(testId);
   });

@@ -27,6 +27,10 @@ describe("Main", () => {
     expect(wrapper.findComponent(UContainer).exists()).toBeTruthy();
   });
 
+  it("should give the full height of the content area to the page", () => {
+    expect(wrapper.findComponent(UContainer).props("fullHeight")).toBe(true);
+  });
+
   it("should contain toast component", () => {
     const toast = wrapper.findComponent(Toast);
     expect(toast.exists()).toBeTruthy();
