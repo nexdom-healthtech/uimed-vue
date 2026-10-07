@@ -99,6 +99,24 @@ import { UButton } from "@nexdom/uimed-vue/components";
 </script>
 ```
 
+### Largura total
+
+Utilize a prop `fullWidth` (`full-width` no template) para fazer o botão ocupar 100% da largura do elemento em que está, como a única ação de um formulário em telas pequenas.
+
+<demo>
+<u-button full-width data-testid="btn-demo-full-width">Largura total</u-button>
+</demo>
+
+```vue
+<template>
+  <u-button full-width>Largura total</u-button>
+</template>
+
+<script lang="ts" setup>
+import { UButton } from "@nexdom/uimed-vue/components";
+</script>
+```
+
 ## Eventos
 
 ### Clique
@@ -132,7 +150,7 @@ function onClick() {
 Experimente as combinações de props do componente.
 
 <playground v-model:actions="playgroundActions">
-<u-button :variant="playgroundActions.variant.value" :color="playgroundActions.color.value" :disabled="playgroundActions.disabled.value" :loading="playgroundActions.loading.value" data-testid="btn-preview">
+<u-button :variant="playgroundActions.variant.value" :color="playgroundActions.color.value" :disabled="playgroundActions.disabled.value" :loading="playgroundActions.loading.value" :full-width="playgroundActions.fullWidth.value" data-testid="btn-preview">
 {{ playgroundActions.label.value }}
 </u-button>
 </playground>
@@ -188,6 +206,12 @@ type Props = ComponentProps<typeof UButton>;
       value: false,
       label: "Carregando",
       dataTestid: "btn-playground-loading"
+    },
+    fullWidth: {
+      type: "checkbox",
+      value: false,
+      label: "Largura total",
+      dataTestid: "btn-playground-full-width"
     },
   });
 </script>
