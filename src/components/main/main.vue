@@ -15,7 +15,8 @@
     />
 
     <v-main>
-      <container>
+      <!-- Full height, so the page's rows and containers with `fullHeight` have a height to fill -->
+      <container full-height>
         <slot />
         <toast />
         <dialog-host />

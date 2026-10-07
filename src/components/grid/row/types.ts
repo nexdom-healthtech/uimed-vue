@@ -31,10 +31,22 @@ export type RowProps = {
    * `USection`s with `fullHeight`.
    *
    * Columns sit side by side only from the `sm` breakpoint up. Below it, each column takes a
-   * whole line, so the alignment has no visible effect.
+   * whole line, so the alignment has no visible effect, unless the row has `fullHeight`: then
+   * the columns, as a group, are aligned within the row's height.
    * @default "start"
    */
   alignY?: RowAlignY;
+
+  /**
+   * Stretches the row to the whole height of its parent: the visible content area of `UMain`
+   * (below its app bar) or a `UContainer` with `fullHeight`.
+   *
+   * Combine it with `alignY` to place the columns within that height, e.g. `alignY="center"`
+   * and `alignX="center"` to center a login form on the screen. A row with `fullHeight` takes
+   * the whole height by itself, so other rows next to it are pushed below the visible area.
+   * @default false
+   */
+  fullHeight?: boolean;
 
   /**
    * Renders the row as a list (`<ul>`), without the list's default indentation

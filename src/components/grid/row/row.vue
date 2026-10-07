@@ -1,5 +1,9 @@
 <template>
-  <v-row :tag :class="[alignXClass, alignYClass, listClasses]" :data-testid="props.dataTestid">
+  <v-row
+    :tag
+    :class="[alignXClass, alignYClass, fullHeightClasses, listClasses]"
+    :data-testid="props.dataTestid"
+  >
     <slot />
   </v-row>
 </template>
@@ -51,8 +55,21 @@ const rowAlignYToClass: Record<RowAlignY, string> = {
   stretch: "align-stretch",
 };
 
+// A full height row has room left over around its lines of columns (e.g. stacked below the `sm`
+// breakpoint). By default the lines would share that room and drift apart, so `align-content-*`
+// keeps them together, placed as `alignY` asks. VRow has no height prop, hence `fill-height`.
+const rowAlignYToContentClass: Record<RowAlignY, string> = {
+  start: "align-content-start",
+  center: "align-content-center",
+  end: "align-content-end",
+  stretch: "align-content-stretch",
+};
+
 const alignXClass = computed(() => rowAlignXToClass[props.alignX]);
 const alignYClass = computed(() => rowAlignYToClass[props.alignY]);
+const fullHeightClasses = computed(() =>
+  props.fullHeight ? ["fill-height", rowAlignYToContentClass[props.alignY]] : undefined,
+);
 const tag = computed(() => (props.list ? "ul" : undefined));
 const listClasses = computed(() => (props.list ? "pa-0 ma-0" : undefined));
 </script>
