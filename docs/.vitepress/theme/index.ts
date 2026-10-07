@@ -1,5 +1,6 @@
 // https://vitepress.dev/guide/custom-theme
 import { h } from "vue";
+import { createMemoryHistory, createRouter } from "vue-router";
 import { inBrowser, type Theme } from "vitepress";
 import DefaultTheme from "vitepress/theme";
 import "virtual:group-icons.css";
@@ -28,6 +29,13 @@ export default {
   },
   enhanceApp({ app }) {
     app.use(createUimed());
+    // Lets the demos navigate to app routes (e.g. `ULink`'s) without leaving the docs page
+    app.use(
+      createRouter({
+        history: createMemoryHistory(),
+        routes: [{ path: "/:pathMatch(.*)*", component: { render: () => null } }],
+      }),
+    );
     app.component("Playground", Playground);
     app.component("Demo", Demo);
   },
