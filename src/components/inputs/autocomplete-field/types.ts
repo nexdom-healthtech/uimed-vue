@@ -23,7 +23,9 @@ export type AutocompleteFieldProps<T = string, Multiple extends boolean = false>
   disabled?: boolean;
 
   /**
-   * Displays a loading indicator on the input.
+   * Displays a loading indicator on the input. The field keeps its label as
+   * accessible name and is marked as busy, and assistive technologies ignore
+   * the indicator.
    * @default false
    */
   loading?: boolean;

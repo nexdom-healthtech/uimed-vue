@@ -202,7 +202,7 @@ import { UDateTimeField } from "@nexdom/uimed-vue/components";
 
 #### Carregamento
 
-A prop `loading` exibe um indicador de carregamento no campo enquanto ativa.
+A prop `loading` exibe um indicador de carregamento no campo enquanto ativa. Nesse estado, o campo mantém o rótulo como nome acessível e fica marcado como ocupado, e leitores de tela ignoram o indicador.
 
 <demo>
 <u-date-time-field label="Carregando" loading />

@@ -4,20 +4,20 @@ Componente para utilização de campos de text.
 
 ## Props
 
-| Prop          | Tipo                                                               | Padrão      | Descrição                                                                                      |
-| ------------- | ------------------------------------------------------------------ | ----------- | ---------------------------------------------------------------------------------------------- |
-| `modelValue`  | `string`                                                           | `""`        | Aplica uma variação de estilo distinta ao botão.                                               |
-| `variant`     | `"primary" \| "secondary"`                                         | `"primary"` | Aplica uma variação de estilo distinta ao campo.                                               |
-| `type`        | `"text" \| "phone" \| "email" \| "url" \| "password" \| "search" ` | `"text"`    | Ajusta o tipo de campo de texto.                                                               |
-| `label`       | `string`                                                           |             | Título dado ao campo.                                                                          |
-| `placeholder` | `string`                                                           |             | Exemplo de valor para preenchimento do campo.                                                  |
-| `hint`        | `string`                                                           |             | Dica, instrução ou mensagem relacionada ao campo.                                              |
-| `required`    | `boolean`                                                          | `false`     | Torna o campo obrigatório para a submissão do formulário.                                      |
-| `disabled`    | `boolean`                                                          | `false`     | Remove a possibilidade de interação com o campo.                                               |
-| `readonly`    | `boolean`                                                          | `false`     | Remove a possibilidade de edição do campo.                                                     |
-| `loading`     | `boolean`                                                          | `false`     | Exibe um indicador de carregamento.                                                            |
-| `clearable`   | `boolean`                                                          | `false`     | Exibe recurso para limpar o campo. O valor padrão muda para `true` quando o `type` é `search`. |
-| `dataTestid`  | `string`                                                           |             | Aplica atributo `data-testid` para testes sobre o componente.                                  |
+| Prop          | Tipo                                                               | Padrão      | Descrição                                                                                                                                            |
+| ------------- | ------------------------------------------------------------------ | ----------- | ---------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `modelValue`  | `string`                                                           | `""`        | Valor digitado no campo.                                                                                                                             |
+| `variant`     | `"primary" \| "secondary"`                                         | `"primary"` | Aplica uma variação de estilo distinta ao campo.                                                                                                     |
+| `type`        | `"text" \| "phone" \| "email" \| "url" \| "password" \| "search" ` | `"text"`    | Ajusta o tipo de campo de texto.                                                                                                                     |
+| `label`       | `string`                                                           |             | Título dado ao campo.                                                                                                                                |
+| `placeholder` | `string`                                                           |             | Exemplo de valor para preenchimento do campo.                                                                                                        |
+| `hint`        | `string`                                                           |             | Dica, instrução ou mensagem relacionada ao campo.                                                                                                    |
+| `required`    | `boolean`                                                          | `false`     | Torna o campo obrigatório para a submissão do formulário.                                                                                            |
+| `disabled`    | `boolean`                                                          | `false`     | Remove a possibilidade de interação com o campo.                                                                                                     |
+| `readonly`    | `boolean`                                                          | `false`     | Remove a possibilidade de edição do campo.                                                                                                           |
+| `loading`     | `boolean`                                                          | `false`     | Exibe um indicador de carregamento. O campo mantém o rótulo como nome acessível e fica marcado como ocupado, e leitores de tela ignoram o indicador. |
+| `clearable`   | `boolean`                                                          | `false`     | Exibe recurso para limpar o campo. O valor padrão muda para `true` quando o `type` é `search`.                                                       |
+| `dataTestid`  | `string`                                                           |             | Aplica atributo `data-testid` para testes sobre o componente.                                                                                        |
 
 ## Eventos
 

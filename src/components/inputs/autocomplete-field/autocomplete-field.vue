@@ -7,6 +7,7 @@
     :data-testid="props.dataTestid"
     :disabled="props.disabled"
     :loading="props.loading"
+    :aria-busy="props.loading || undefined"
     :readonly="props.readonly"
     :label="props.label"
     :placeholder="props.placeholder"
@@ -16,7 +17,11 @@
     item-title="label"
     :rules
     chips
-  />
+  >
+    <template #loader="loader">
+      <field-loader v-bind="loader" />
+    </template>
+  </component>
 </template>
 
 <script lang="ts">
@@ -45,6 +50,7 @@ import type {
 import { useAutocompleteRules } from "@/composables/inputs/autocomplete-field.ts";
 import { useTextFieldVariant } from "@/composables/inputs/fields.ts";
 import { VAutocomplete, VCombobox } from "vuetify/components";
+import FieldLoader from "@/components/inputs/field-loader.vue";
 import { computed } from "vue";
 
 const modelValue = defineModel<Multiple extends true ? T[] : T>();

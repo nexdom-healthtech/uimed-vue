@@ -402,6 +402,22 @@ describe("DateTimeField", () => {
 
         expect(findVTextField(wrapper).props("loading")).toBe(true);
       });
+
+      it("should hide the loading indicator from assistive technologies and mark the field as busy", async () => {
+        const wrapper = mountDateTimeField();
+        await wrapper.setProps({ loading: true });
+
+        expect(wrapper.find(".v-field").classes()).toContain("v-field--loading");
+        expect(wrapper.find("[role='progressbar']").attributes("aria-hidden")).toBe("true");
+        expect(wrapper.find("input").attributes("aria-busy")).toBe("true");
+      });
+
+      it("should keep the loading indicator inactive and the field not busy by default", () => {
+        const wrapper = mountDateTimeField();
+
+        expect(wrapper.find(".v-field").classes()).not.toContain("v-field--loading");
+        expect(wrapper.find("input").attributes("aria-busy")).toBeUndefined();
+      });
     });
 
     describe("label, placeholder and hint", () => {

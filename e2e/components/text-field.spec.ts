@@ -59,9 +59,14 @@ test.describe("text-field", () => {
     test("presents loading when playground-loading is toggled", async ({ page }) => {
       const previewTextField = getPreviewTextField(page);
       await expect(previewTextField.locator(".v-progress-linear--active")).not.toBeAttached();
+      await expect(previewTextField.locator("input")).not.toHaveAttribute("aria-busy");
 
       await page.getByTestId("text-field-playground-loading").locator("input").click();
       await expect(previewTextField.locator(".v-progress-linear--active")).toBeAttached();
+      await expect(previewTextField.locator(".v-progress-linear--active")).toBeVisible();
+      await expect(previewTextField.getByRole("progressbar")).toHaveCount(0);
+      await expect(previewTextField.locator("input")).toHaveAttribute("aria-busy", "true");
+      await expect(previewTextField.locator("input")).toHaveAccessibleName("Label");
     });
 
     test("turns clearable when playground-clearable is toggled", async ({ page }) => {

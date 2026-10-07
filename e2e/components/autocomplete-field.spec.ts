@@ -87,9 +87,14 @@ test.describe("autocomplete-field", () => {
     test("presents loading when playground-loading is toggled", async ({ page }) => {
       const previewField = getPreviewField(page);
       await expect(previewField.locator(".v-progress-linear--active")).not.toBeAttached();
+      await expect(previewField.locator("input")).not.toHaveAttribute("aria-busy");
 
       await page.getByTestId("autocomplete-field-playground-loading").locator("input").click();
       await expect(previewField.locator(".v-progress-linear--active")).toBeAttached();
+      await expect(previewField.locator(".v-progress-linear--active")).toBeVisible();
+      await expect(previewField.getByRole("progressbar")).toHaveCount(0);
+      await expect(previewField.locator("input")).toHaveAttribute("aria-busy", "true");
+      await expect(previewField.locator("input")).toHaveAccessibleName("País");
     });
 
     test("turns clearable when playground-clearable is toggled", async ({ page }) => {

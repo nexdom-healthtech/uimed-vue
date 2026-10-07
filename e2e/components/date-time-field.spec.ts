@@ -218,9 +218,14 @@ test.describe("date-time-field", () => {
     test("presents loading when playground-loading is toggled", async ({ page }) => {
       const preview = getPreview(page);
       await expect(preview.locator(".v-progress-linear--active")).not.toBeAttached();
+      await expect(preview.locator("input")).not.toHaveAttribute("aria-busy");
 
       await page.getByTestId("date-time-field-playground-loading").locator("input").click();
       await expect(preview.locator(".v-progress-linear--active")).toBeAttached();
+      await expect(preview.locator(".v-progress-linear--active")).toBeVisible();
+      await expect(preview.getByRole("progressbar")).toHaveCount(0);
+      await expect(preview.locator("input")).toHaveAttribute("aria-busy", "true");
+      await expect(preview.locator("input")).toHaveAccessibleName("Label");
     });
 
     test("turns clearable when playground-clearable is toggled", async ({ page }) => {

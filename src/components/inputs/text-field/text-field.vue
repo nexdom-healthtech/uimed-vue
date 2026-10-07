@@ -8,13 +8,18 @@
     :data-testid="props.dataTestid"
     :disabled="props.disabled"
     :loading="props.loading"
+    :aria-busy="props.loading || undefined"
     :readonly="props.readonly"
     :label="props.label"
     :placeholder="props.placeholder"
     :hint="props.hint"
     :clearable="computedClearable"
     @click:clear="clear"
-  />
+  >
+    <template #loader="loader">
+      <field-loader v-bind="loader" />
+    </template>
+  </v-text-field>
 </template>
 
 <script lang="ts">
@@ -40,6 +45,7 @@ import type { TextFieldProps } from "@/components/inputs/text-field/types.ts";
 import { useTextFieldRules, useTextFieldType } from "@/composables/inputs/text-field.ts";
 import { useTextFieldVariant } from "@/composables/inputs/fields.ts";
 import { VTextField } from "vuetify/components";
+import FieldLoader from "@/components/inputs/field-loader.vue";
 import { computed } from "vue";
 
 const modelValue = defineModel<string>({ default: "" });
