@@ -6,9 +6,10 @@ Responsável por agrupar diversos [componentes de linha](./row).
 
 ## Props
 
-| Prop         | Tipo     | Padrão | Descrição                                                     |
-| ------------ | -------- | ------ | ------------------------------------------------------------- |
-| `dataTestid` | `string` |        | Aplica atributo `data-testid` para testes sobre o componente. |
+| Prop         | Tipo      | Padrão  | Descrição                                                                                                                                                                                                             |
+| ------------ | --------- | ------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `fullHeight` | `boolean` | `false` | Faz o container ocupar 100% da altura do elemento em que está, que precisa ter uma altura própria, como a área de conteúdo do [`UMain`](../main). Veja [Altura total](../../../guide/components/layout#altura-total). |
+| `dataTestid` | `string`  |         | Aplica atributo `data-testid` para testes sobre o componente.                                                                                                                                                         |
 
 ## Slots
 

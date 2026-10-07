@@ -208,7 +208,7 @@ A prop `alignY` (`align-y` no template) da `Row` define como as suas colunas se 
 Com `stretch`, é a coluna que cresce até a altura da mais alta: o seu conteúdo só a preenche visualmente quando também ocupa a altura toda, como as caixas do exemplo abaixo ou um [`USection`](./section) com `fullHeight`. Por isso, utilize `stretch` para manter colunas lado a lado com a mesma altura, como cartões.
 
 ::: info
-As colunas só ficam lado a lado em telas a partir de 600px de largura. Em telas menores, cada coluna ocupa uma linha inteira e o alinhamento não tem efeito visível.
+As colunas só ficam lado a lado em telas a partir de 600px de largura. Em telas menores, cada coluna ocupa uma linha inteira e o alinhamento não tem efeito visível, exceto em [linhas com altura total](#altura-total), em que as colunas são alinhadas, em conjunto, dentro da altura da linha.
 :::
 
 <demo>
@@ -439,7 +439,7 @@ import { UContainer, UMain, URow, UColumn } from "@nexdom/uimed-vue/components";
 </script>
 ```
 
-Com uma coluna `cols="auto"` e `align-x="center"`, por exemplo, o formulário de uma tela de login fica centralizado na linha, sem estilos próprios:
+Com uma coluna `cols="auto"` e `align-x="center"`, por exemplo, o formulário de uma tela de login fica centralizado na linha, sem estilos próprios (para centralizá-lo também na altura da tela, veja [Altura total](#altura-total)):
 
 ```vue
 <template>
@@ -456,6 +456,57 @@ Com uma coluna `cols="auto"` e `align-x="center"`, por exemplo, o formulário de
 import { URow, UColumn, USection } from "@nexdom/uimed-vue/components";
 </script>
 ```
+
+## Altura total
+
+Por padrão, uma `Row` cresce apenas até a altura do seu conteúdo. Com a prop `fullHeight` (`full-height` no template), ela ocupa toda a altura visível da área de conteúdo do [`UMain`](./main), descontado o menu superior, quando houver.
+
+Combinada às props `alignY` e `alignX`, a linha posiciona as suas colunas nessa altura. Com `align-y="center"` e `align-x="center"`, por exemplo, o formulário de uma tela de login fica centralizado na tela, nos dois eixos:
+
+<demo contained>
+<u-main :app-bar="{ title: 'Acesso' }">
+  <u-row full-height align-y="center" align-x="center" data-testid="demo-layout-full-height">
+    <u-column cols="auto">
+      <u-section title="Entrar" subtitle="Informe os seus dados de acesso" :actions="demoLoginActions">
+        <u-section-content>Conteúdo do formulário</u-section-content>
+      </u-section>
+    </u-column>
+  </u-row>
+</u-main>
+</demo>
+
+```vue
+<template>
+  <u-main :app-bar="{ title: 'Acesso' }">
+    <u-row full-height align-y="center" align-x="center">
+      <u-column cols="auto">
+        <u-section title="Entrar" subtitle="Informe os seus dados de acesso" :actions>
+          <u-section-content>
+            <!-- formulário -->
+          </u-section-content>
+        </u-section>
+      </u-column>
+    </u-row>
+  </u-main>
+</template>
+
+<script lang="ts" setup>
+import type { ComponentProps } from "vue-component-type-helpers";
+import { UMain, URow, UColumn, USection, USectionContent } from "@nexdom/uimed-vue/components";
+
+type SectionAction = NonNullable<ComponentProps<typeof USection>["actions"]>[number];
+
+const actions: SectionAction[] = [{ label: "Entrar", onClick: () => window.alert("Entrando...") }];
+</script>
+```
+
+Em telas com menos de 600px de largura, em que cada coluna ocupa uma linha inteira, as colunas continuam alinhadas, em conjunto, conforme a prop `alignY`.
+
+::: warning
+A linha com `fullHeight` ocupa sozinha toda a altura disponível: outras linhas ao seu lado ficam abaixo da área visível. Por isso, utilize-a como a única linha da página.
+:::
+
+Para que um [`UContainer`](../../api/components/grid/container) dentro do `UMain` também ocupe toda a altura disponível, e as suas linhas com `fullHeight` possam ocupá-la, utilize a prop `fullHeight` também no `UContainer`.
 
 ## Playground
 
@@ -490,11 +541,13 @@ Consulte a referência de [API do UContainer](../../api/components/grid/containe
 <script lang="ts" setup>
   import { ref } from "vue"
   import type { ComponentProps } from "vue-component-type-helpers"
-  import { UContainer, UMain, URow, UColumn } from "../../../dist/components.js"
+  import { UContainer, UMain, URow, UColumn, USection, USectionContent } from "../../../dist/components.js"
 
   type RowProps = ComponentProps<typeof URow>
 
   const especialidades = ["Cardiologia", "Dermatologia", "Pediatria"];
+
+  const demoLoginActions = [{ label: "Entrar", onClick: () => window.alert("Entrando...") }];
 
   const playgroundAlignYOptions: Array<NonNullable<RowProps["alignY"]>> = ["start", "center", "end", "stretch"];
   const playgroundAlignXOptions: Array<NonNullable<RowProps["alignX"]>> = ["start", "center", "end"];
