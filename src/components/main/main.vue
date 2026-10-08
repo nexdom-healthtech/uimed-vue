@@ -22,6 +22,8 @@
         <dialog-host />
       </container>
     </v-main>
+
+    <app-footer v-if="props.footer?.description" v-bind="props.footer" />
   </v-app>
 </template>
 
@@ -48,6 +50,7 @@ export default {
 <script setup lang="ts">
 import AppBar from "@/components/app-bar/app-bar.vue";
 import NavigationMenu from "@/components/navigation-menu/navigation-menu.vue";
+import AppFooter from "@/components/footer/footer.vue";
 import { type MainProps } from "@/components/main/types.ts";
 import { VApp, VMain } from "vuetify/components";
 import Container from "@/components/grid/container/container.vue";
