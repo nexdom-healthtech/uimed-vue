@@ -6,17 +6,18 @@ outline: deep
 
 Componente principal do projeto.
 
-Responsável por carregar o menu superior, o menu de navegação lateral, componentes para as composables de [Toasts](../composables/use-toast), [Diálogos](../composables/use-dialog), [Confirmações](../composables/use-confirm) e [Alterações não salvas](../composables/use-unsaved-changes) e os estilos para os demais componentes.
+Responsável por carregar o menu superior, o menu de navegação lateral, o rodapé, componentes para as composables de [Toasts](../composables/use-toast), [Diálogos](../composables/use-dialog), [Confirmações](../composables/use-confirm) e [Alterações não salvas](../composables/use-unsaved-changes) e os estilos para os demais componentes.
 
 ## Props
 
-| Prop             | Tipo                                | Padrão  | Descrição                                                                                                                                                   |
-| ---------------- | ----------------------------------- | ------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `dataTestid`     | `string`                            |         | Aplica atributo `data-testid` para testes sobre o componente.                                                                                               |
-| `logo`           | `string`                            |         | URL utilizada para carregar a logo que será apresentada. A logo é decorativa (`alt=""`): o título do menu superior (`appBar.title`) identifica a aplicação. |
-| `appBar`         | [`AppBar`](#appbar)                 |         | Conjunto de propriedades para aplicar à barra superior.                                                                                                     |
-| `navigationMenu` | [`NavigationMenu`](#navigationmenu) |         | Conjunto de propriedades para aplicar ao menu lateral de navegação.                                                                                         |
-| `loading`        | `boolean`                           | `false` | Exibe skeletons no lugar das ações do menu superior e dos itens do menu de navegação enquanto os dados são carregados. O conteúdo da página não é afetado.  |
+| Prop             | Tipo                                | Padrão  | Descrição                                                                                                                                                                      |
+| ---------------- | ----------------------------------- | ------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `dataTestid`     | `string`                            |         | Aplica atributo `data-testid` para testes sobre o componente.                                                                                                                  |
+| `logo`           | `string`                            |         | URL utilizada para carregar a logo que será apresentada. A logo é decorativa (`alt=""`): o título do menu superior (`appBar.title`) identifica a aplicação.                    |
+| `appBar`         | [`AppBar`](#appbar)                 |         | Conjunto de propriedades para aplicar à barra superior.                                                                                                                        |
+| `navigationMenu` | [`NavigationMenu`](#navigationmenu) |         | Conjunto de propriedades para aplicar ao menu lateral de navegação.                                                                                                            |
+| `footer`         | [`Footer`](#footer)                 |         | Conjunto de propriedades para aplicar ao rodapé, fixo na parte inferior da tela. **O rodapé será ocultado sempre que essa prop for omitida ou o seu `description` for vazio.** |
+| `loading`        | `boolean`                           | `false` | Exibe skeletons no lugar das ações do menu superior e dos itens do menu de navegação enquanto os dados são carregados. O conteúdo da página não é afetado.                     |
 
 ### `AppBar`
 
@@ -86,6 +87,13 @@ O menu conta com um campo de busca, focado pelo atalho `Ctrl + K` (`⌘ + K` no 
 | `route`       | [`RouteLocationRaw`](https://router.vuejs.org/api/type-aliases/RouteLocationRaw.html) \| `string` |        | Rota para direcionar o usuário ao clicar no item, podendo essa ser uma rota externa (exemplo: `"https://google.com"`) ou local (exemplo: `"/"`). |
 | `action`      | `() => void`                                                                                      |        | Função que será executada quando o usuário clicar no item.                                                                                       |
 
+### `Footer`
+
+| Prop          | Tipo     | Padrão | Descrição                                                                                                                          |
+| ------------- | -------- | ------ | ---------------------------------------------------------------------------------------------------------------------------------- |
+| `dataTestid`  | `string` |        | Aplica atributo `data-testid` para testes sobre o rodapé.                                                                          |
+| `description` | `string` |        | Texto exibido no rodapé, por exemplo a versão da aplicação (`"Versão 1.4.2"`). **O rodapé será ocultado quando omitido ou vazio.** |
+
 ## Eventos
 
 | Event                      | Retorno   | Descrição                                                      |
@@ -94,9 +102,9 @@ O menu conta com um campo de busca, focado pelo atalho `Ctrl + K` (`⌘ + K` no 
 
 ## Slots
 
-| Slot      | Descrição                                                                                                                                                        |
-| --------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `default` | Conteúdo exibido dentro do componente, que ocupa toda a altura visível abaixo do menu superior. Utilize uma [`URow`](./grid/row) com `fullHeight` para ocupá-la. |
+| Slot      | Descrição                                                                                                                                                                                            |
+| --------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `default` | Conteúdo exibido dentro do componente, que ocupa toda a altura visível abaixo do menu superior (e acima do rodapé, quando exibido). Utilize uma [`URow`](./grid/row) com `fullHeight` para ocupá-la. |
 
 ## Exemplo
 

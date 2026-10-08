@@ -7,6 +7,7 @@ import Toast from "@/components/dialogs/toast.vue";
 import DialogHost from "@/components/dialogs/dialog-host.vue";
 import AppBar from "@/components/app-bar/app-bar.vue";
 import NavigationMenu from "@/components/navigation-menu/navigation-menu.vue";
+import Footer from "@/components/footer/footer.vue";
 import { owners } from "@/composables/navigation/use-navigation-search-shortcut.ts";
 import { nextTick } from "vue";
 
@@ -194,6 +195,54 @@ describe("Main", () => {
         expect(findNavigationMenu(wrapper).props("loading")).toBe(true);
       });
     });
+
+    describe("footer", () => {
+      const description = "Versão 1.4.2";
+
+      it("should not render the footer when its prop is omitted", () => {
+        expect(findFooter(wrapper).exists()).toBe(false);
+      });
+
+      it("should not render the footer without a description", async () => {
+        await wrapper.setProps({ footer: {} });
+
+        expect(findFooter(wrapper).exists()).toBe(false);
+      });
+
+      it("should not render the footer with an empty description", async () => {
+        await wrapper.setProps({ footer: { description: "" } });
+
+        expect(findFooter(wrapper).exists()).toBe(false);
+      });
+
+      it("should render the footer when it has a description", async () => {
+        await wrapper.setProps({ footer: { description } });
+
+        expect(findFooter(wrapper).exists()).toBe(true);
+      });
+
+      it("should forward props to the footer", async () => {
+        const footer = { description, dataTestid: "main-footer" };
+        await wrapper.setProps({ footer });
+
+        expect(findFooter(wrapper).props()).toEqual(footer);
+      });
+
+      it("should not be affected by loading", async () => {
+        await wrapper.setProps({ footer: { description }, loading: true });
+
+        expect(findFooter(wrapper).props()).toEqual({ description, dataTestid: undefined });
+      });
+
+      it("should remove the footer when its description is cleared", async () => {
+        await wrapper.setProps({ footer: { description } });
+        expect(findFooter(wrapper).exists()).toBe(true);
+
+        await wrapper.setProps({ footer: { description: "" } });
+
+        expect(findFooter(wrapper).exists()).toBe(false);
+      });
+    });
   });
 });
 
@@ -216,4 +265,8 @@ function findAppBar(wrapper: ReturnType<typeof mountMain>) {
 
 function findNavigationMenu(wrapper: ReturnType<typeof mountMain>) {
   return wrapper.findComponent(NavigationMenu);
+}
+
+function findFooter(wrapper: ReturnType<typeof mountMain>) {
+  return wrapper.findComponent(Footer);
 }

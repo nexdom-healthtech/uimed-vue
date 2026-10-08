@@ -1,5 +1,6 @@
 import type { AppBarProps } from "@/components/app-bar/types.ts";
 import type { NavigationMenuProps } from "@/components/navigation-menu/types.ts";
+import type { FooterProps } from "@/components/footer/types.ts";
 
 /**
  * Props exposed by the {@link Main} component.
@@ -27,6 +28,17 @@ export type MainProps = {
    * Navigation menu properties.
    */
   navigationMenu?: NavigationMenuProps;
+
+  /**
+   * Footer properties. The footer is fixed at the bottom of the screen and
+   * is hidden when it's omitted or its `description` is empty.
+   *
+   * @example
+   * ```vue
+   * <u-main :footer="{ description: `Versão ${version}` }" />
+   * ```
+   */
+  footer?: FooterProps;
 
   /**
    * Shows skeleton loaders in place of the user-related parts of the app bar

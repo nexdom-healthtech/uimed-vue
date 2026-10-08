@@ -322,7 +322,52 @@ test.describe("main", () => {
     });
   });
 
+  test.describe("footer demo", () => {
+    test("shows the footer text", async ({ page }) => {
+      await expect(getFooter(page)).toHaveText("Versão 1.4.2");
+    });
+
+    // In an app, a footer outside any sectioning element is the `contentinfo` landmark. Here the
+    // docs page wraps the demo in its own `main`, which turns the footer into a generic element
+    test("renders the footer as a footer element", async ({ page }) => {
+      await expect(getFooter(page)).toHaveJSProperty("tagName", "FOOTER");
+    });
+
+    test("matches the accessible snapshot of the footer demo", async ({ page }) => {
+      await expect(getFooterDemo(page)).toMatchAriaSnapshot();
+    });
+
+    test("sits at the bottom of the demo, below the page content", async ({ page }) => {
+      const demo = await getBox(getFooterDemo(page));
+      const footer = await getBox(getFooter(page));
+      const content = await getBox(getFooterDemo(page).locator(".v-main > .v-container"));
+
+      expect(Math.abs(footer.y + footer.height - (demo.y + demo.height))).toBeLessThanOrEqual(1);
+      expect(content.y + content.height).toBeLessThanOrEqual(footer.y + 1);
+    });
+  });
+
   test.describe("playground", () => {
+    test("updates the footer text when playground-footer-description changes", async ({ page }) => {
+      const footer = getPlaygroundFooter(page);
+      await expect(footer).toHaveText("Versão 1.0.0");
+
+      await getPlaygroundFooterField(page).fill("Versão 2.0.0");
+
+      await expect(footer).toHaveText("Versão 2.0.0");
+    });
+
+    test("removes the footer when playground-footer-description is cleared", async ({ page }) => {
+      const footer = getPlaygroundFooter(page);
+      await expect(footer).toBeVisible();
+
+      await getPlaygroundFooterField(page).fill("");
+      await expect(footer).not.toBeAttached();
+
+      await getPlaygroundFooterField(page).fill("Versão 1.0.1");
+      await expect(footer).toHaveText("Versão 1.0.1");
+    });
+
     test("shows and hides the skeletons when playground-loading is toggled", async ({ page }) => {
       const appBar = getPlaygroundAppBar(page);
       const navigationMenu = getPlaygroundNavigationMenu(page);
@@ -597,27 +642,48 @@ test.describe("main", () => {
   });
 
   test.describe("UI consistency", () => {
-    test("matches last screenshot", async ({ page }) => {
-      const userButton = getUserButton(page);
-      await userButton.click();
-
-      const userMenu = getUserMenu(page);
-      await userMenu.getByRole("listitem").first().click();
+    // Each state builds on the previous one, as a user would reach it, with one full-page screenshot
+    // per test, so each test fits in the default timeout
+    test("matches last screenshot after choosing a user menu option", async ({ page }) => {
+      await chooseUserMenuOption(page);
       await expect(page).toHaveScreenshot({ fullPage: true });
+    });
 
-      const notificationsButton = getNotificationsButton(page);
-      await notificationsButton.click();
+    test("matches last screenshot with the notifications menu open", async ({ page }) => {
+      await chooseUserMenuOption(page);
+      await openNotificationsMenu(page);
       await expect(page).toHaveScreenshot({ fullPage: true });
+    });
 
+    test("matches last screenshot after closing the notifications menu", async ({ page }) => {
+      await chooseUserMenuOption(page);
+      await openNotificationsMenu(page);
       await page.keyboard.press("Escape");
       await expect(page).toHaveScreenshot({ fullPage: true });
+    });
 
-      const navToggleButton = getNavigationToggleButton(page);
-      await navToggleButton.click();
+    test("matches last screenshot with the navigation menu open", async ({ page }) => {
+      await chooseUserMenuOption(page);
+      await openNotificationsMenu(page);
+      await page.keyboard.press("Escape");
+      await getNavigationToggleButton(page).click();
       await expect(page).toHaveScreenshot({ fullPage: true });
+    });
 
-      await navToggleButton.click();
+    test("matches last screenshot after closing the navigation menu", async ({ page }) => {
+      await chooseUserMenuOption(page);
+      await openNotificationsMenu(page);
+      await page.keyboard.press("Escape");
+      await getNavigationToggleButton(page).click();
+      await getNavigationToggleButton(page).click();
       await expect(page).toHaveScreenshot({ fullPage: true });
+    });
+
+    test("matches last screenshot of the footer demo", async ({ page }) => {
+      await expect(getFooter(page)).toBeVisible();
+      // The demo is as tall as the viewport, so the docs' fixed navigation bar would cover its top
+      await page.addStyleTag({ content: ".VPNav { visibility: hidden; }" });
+      await expect(getFooterDemo(page)).toHaveScreenshot();
     });
 
     // The loading demo with its drawer closed is already in the screenshots above
@@ -631,6 +697,15 @@ test.describe("main", () => {
   });
 });
 
+async function chooseUserMenuOption(page: Page) {
+  await getUserButton(page).click();
+  await getUserMenu(page).getByRole("listitem").first().click();
+}
+
+async function openNotificationsMenu(page: Page) {
+  await getNotificationsButton(page).click();
+}
+
 function getDocsSearch(page: Page) {
   return page.locator(".VPLocalSearchBox");
 }
@@ -640,6 +715,28 @@ function getSelection(input: Locator) {
     element.selectionStart,
     element.selectionEnd,
   ]);
+}
+
+async function getBox(locator: Locator) {
+  const box = await locator.boundingBox();
+  if (!box) throw new Error("The element should be visible");
+  return box;
+}
+
+function getFooterDemo(page: Page) {
+  return page.getByTestId("demo-root-footer");
+}
+
+function getFooter(page: Page) {
+  return page.getByTestId("demo-root-footer-footer");
+}
+
+function getPlaygroundFooter(page: Page) {
+  return page.getByTestId("root-playground-footer");
+}
+
+function getPlaygroundFooterField(page: Page) {
+  return page.getByTestId("root-playground-footer-description").locator("input");
 }
 
 function getLoadingDemo(page: Page) {

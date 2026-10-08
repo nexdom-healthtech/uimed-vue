@@ -6,7 +6,7 @@ outline: deep
 
 O componente destinado a raiz do projeto se chama `Main`.
 
-É responsável por carregar o menu superior, o menu de navegação lateral, os componentes utilizados pelos composables de [Toasts](../composables/use-toast), [Diálogos](../composables/use-dialog), [Confirmações](../composables/use-confirm) e [Alterações não salvas](../composables/use-unsaved-changes) e os estilos necessários para os demais componentes.
+É responsável por carregar o menu superior, o menu de navegação lateral, o rodapé, os componentes utilizados pelos composables de [Toasts](../composables/use-toast), [Diálogos](../composables/use-dialog), [Confirmações](../composables/use-confirm) e [Alterações não salvas](../composables/use-unsaved-changes) e os estilos necessários para os demais componentes.
 
 ## Propriedades
 
@@ -265,6 +265,44 @@ const navigationMenu: NonNullable<MainProps["navigationMenu"]> = {
 </script>
 ```
 
+### Rodapé
+
+A prop `footer` exibe um texto fixo na parte inferior da tela, como a versão da aplicação, para que o usuário consiga informá-la ao suporte ao relatar um problema. O texto fica centralizado e o conteúdo da página termina acima do rodapé, sem ficar coberto por ele.
+
+Para ocultar o rodapé, basta omitir essa prop ou deixar o seu `description` vazio, por exemplo enquanto o usuário não estiver autenticado. O carregamento (prop `loading`) não afeta o rodapé.
+
+<demo contained data-testid="demo-root-footer">
+<u-main :appBar="{ title: appBar.title }" :footer="footer">
+  <h2>O conteúdo da página vai aqui...</h2>
+</u-main>
+</demo>
+
+```vue
+<template>
+  <u-main :appBar :footer="isAuthenticated ? footer : undefined">
+    <h2>O conteúdo da página vai aqui...</h2>
+  </u-main>
+</template>
+
+<script lang="ts" setup>
+import { ref } from "vue";
+import type { ComponentProps } from "vue-component-type-helpers";
+import { UMain } from "@nexdom/uimed-vue/components";
+
+type MainProps = ComponentProps<typeof UMain>;
+
+const isAuthenticated = ref(true);
+
+const appBar: NonNullable<MainProps["appBar"]> = {
+  title: "Menu superior",
+};
+
+const footer: NonNullable<MainProps["footer"]> = {
+  description: "Versão 1.4.2",
+};
+</script>
+```
+
 ## Eventos
 
 ### Notificações
@@ -312,7 +350,7 @@ Experimente as combinações de props do componente.
 
 <playground v-model:actions="playgroundActions">
 <demo contained>
-<u-main :app-bar="playgroundAppBar" :navigationMenu="playgroundActions.showNavigationMenu.value ? playgroundNavigationMenu : undefined" :loading="playgroundActions.loading.value" data-testid="root-preview">
+<u-main :app-bar="playgroundAppBar" :navigationMenu="playgroundActions.showNavigationMenu.value ? playgroundNavigationMenu : undefined" :loading="playgroundActions.loading.value" :footer="{ description: playgroundActions.footer.value, dataTestid: 'root-playground-footer' }" data-testid="root-preview">
   <h2>O conteúdo da página vai aqui...</h2>
 </u-main>
 </demo>
@@ -322,7 +360,7 @@ Experimente as combinações de props do componente.
 
 Consulte a referência de [API do UMain](../../api/components/main) para a lista completa de props, slots e eventos.
 
-O conteúdo da página ocupa toda a altura visível abaixo do menu superior: para centralizar o formulário de uma tela de login nela, por exemplo, veja [Altura total](./layout#altura-total) nos componentes de layout.
+O conteúdo da página ocupa toda a altura visível abaixo do menu superior (e acima do rodapé, quando exibido): para centralizar o formulário de uma tela de login nela, por exemplo, veja [Altura total](./layout#altura-total) nos componentes de layout.
 
 <script lang="ts" setup>
   import { computed, reactive, ref } from "vue"
@@ -488,6 +526,12 @@ O conteúdo da página ocupa toda a altura visível abaixo do menu superior: par
       label: "Carregando",
       dataTestid: "root-playground-loading"
     },
+    footer: {
+      type: "text",
+      label: "Texto do rodapé",
+      value: "Versão 1.0.0",
+      dataTestid: "root-playground-footer-description",
+    },
   });
 
   const playgroundNotifications = ref<NonNullable<NonNullable<MainProps["appBar"]>["notifications"]>>([]);
@@ -535,6 +579,11 @@ O conteúdo da página ocupa toda a altura visível abaixo do menu superior: par
     title: "Menu superior",
     dataTestid: "demo-root-navigation-toggle-app-bar",
   });
+
+  const footer: NonNullable<MainProps["footer"]> = {
+    description: "Versão 1.4.2",
+    dataTestid: "demo-root-footer-footer",
+  };
 
   const loadingAppBar: NonNullable<MainProps["appBar"]> = {
     title: "Menu superior",
