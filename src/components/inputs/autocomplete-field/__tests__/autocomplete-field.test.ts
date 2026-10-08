@@ -449,6 +449,71 @@ describe("AutocompleteField accessibility", () => {
   });
 });
 
+describe("AutocompleteField options", () => {
+  let wrapper: ReturnType<typeof mountAttachedAutocompleteField> | undefined;
+
+  afterEach(() => {
+    wrapper?.unmount();
+    wrapper = undefined;
+    document.body.innerHTML = "";
+  });
+
+  describe.each([
+    ["strict", true, "v-autocomplete__mask", "Portugal"],
+    ["non-strict", false, "v-combobox__mask", { label: "Portugal", value: "Portugal" }],
+  ])("when %s", (_, strict, maskClass, selectedValue) => {
+    it("should render a visual-only checkbox inside each option in multiple mode", async () => {
+      wrapper = mountAttachedAutocompleteField({ strict, multiple: true });
+      await openOptions(wrapper);
+
+      const options = getOptions();
+      expect(options).toHaveLength(2);
+      for (const option of options) {
+        const checkbox = option.querySelector(".v-checkbox-btn");
+        expect(checkbox?.hasAttribute("inert")).toBe(true);
+        expect(checkbox?.querySelector("input")?.getAttribute("aria-hidden")).toBe("true");
+      }
+    });
+
+    it("should select an option when it's clicked in multiple mode", async () => {
+      wrapper = mountAttachedAutocompleteField({ strict, multiple: true });
+      await openOptions(wrapper);
+
+      expect(getOptions()[1]?.getAttribute("aria-selected")).toBe("false");
+
+      getOptions()[1]?.click();
+      await vi.runAllTimersAsync();
+
+      expect(wrapper.emitted("update:modelValue")?.at(-1)).toEqual([[selectedValue]]);
+      expect(getOptions()[1]?.getAttribute("aria-selected")).toBe("true");
+      expect(getOptions()[1]?.querySelector("input")?.checked).toBe(true);
+    });
+
+    it("should not render a checkbox inside the options in single mode", async () => {
+      wrapper = mountAttachedAutocompleteField({ strict, multiple: false });
+      await openOptions(wrapper);
+
+      expect(getOptions()).toHaveLength(2);
+      expect(document.querySelector("[role='option'] .v-checkbox-btn")).toBeNull();
+    });
+
+    it("should highlight the searched text in the options in multiple mode", async () => {
+      wrapper = mountAttachedAutocompleteField({ strict, multiple: true });
+      await openOptions(wrapper);
+
+      expect(document.querySelector("[role='option'] mark")).toBeNull();
+
+      await wrapper.find("input:not([type='hidden'])").setValue("bra");
+      await vi.runAllTimersAsync();
+
+      const marks = document.querySelectorAll("[role='option'] mark");
+      expect(marks).toHaveLength(1);
+      expect(marks[0]?.textContent).toBe("Bra");
+      expect(marks[0]?.classList.contains(maskClass)).toBe(true);
+    });
+  });
+});
+
 function mountAttachedAutocompleteField(props: { strict?: boolean; multiple?: boolean }) {
   return mount(AutocompleteField, {
     attachTo: document.body,
@@ -464,6 +529,16 @@ function expectCleanField(wrapper: ReturnType<typeof mountAttachedAutocompleteFi
 
   expect(attributes).not.toContain("role");
   expect(attributes.filter((name) => name.startsWith("aria-"))).toEqual([]);
+}
+
+async function openOptions(wrapper: ReturnType<typeof mountAttachedAutocompleteField>) {
+  await vi.runAllTimersAsync();
+  await wrapper.find(".v-field").trigger("mousedown");
+  await vi.runAllTimersAsync();
+}
+
+function getOptions() {
+  return [...document.querySelectorAll<HTMLElement>("[role='option']")];
 }
 
 function mountAutocompleteField() {

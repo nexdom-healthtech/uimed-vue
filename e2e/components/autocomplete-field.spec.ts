@@ -191,6 +191,89 @@ test.describe("autocomplete-field", () => {
     });
   });
 
+  test.describe("multiple selection demo", () => {
+    test("keeps the options free of focusable elements", async ({ page }) => {
+      await getComboboxInput(getMultipleField(page)).click();
+
+      const options = page.getByRole("listbox").getByRole("option");
+      await expect(options).toHaveCount(3);
+      await expect(page.getByRole("listbox").getByRole("checkbox")).toHaveCount(0);
+
+      const focusableCounts = await options.evaluateAll((elements) =>
+        elements.map(
+          (option) =>
+            [
+              ...option.querySelectorAll("input, button, a[href], select, textarea, [tabindex]"),
+            ].filter((element) => !element.closest("[inert]")).length,
+        ),
+      );
+      expect(focusableCounts).toEqual([0, 0, 0]);
+    });
+
+    test("toggles an option with the keyboard", async ({ page }) => {
+      const field = getMultipleField(page);
+      const input = getComboboxInput(field);
+      await input.click();
+
+      const option = page.getByRole("option", { name: "Brasil" });
+      await expect(option).toHaveAttribute("aria-selected", "false");
+
+      await input.press("ArrowDown");
+      await expect(option).toBeFocused();
+      await page.keyboard.press("Enter");
+
+      await expect(option).toHaveAttribute("aria-selected", "true");
+      await expect(option.locator("input")).toBeChecked();
+      await expect(field.locator(".v-chip")).toHaveText(["Brasil"]);
+    });
+
+    test("toggles an option with a click", async ({ page }) => {
+      const field = getMultipleField(page);
+      await getComboboxInput(field).click();
+
+      const option = page.getByRole("option", { name: "Portugal" });
+      await option.click();
+
+      await expect(option).toHaveAttribute("aria-selected", "true");
+      await expect(field.locator(".v-chip")).toHaveText(["Portugal"]);
+
+      await option.click();
+
+      await expect(option).toHaveAttribute("aria-selected", "false");
+      await expect(field.locator(".v-chip")).toHaveCount(0);
+    });
+
+    test("toggles an option with a click on its checkbox", async ({ page }) => {
+      const field = getMultipleField(page);
+      await getComboboxInput(field).click();
+
+      const option = page.getByRole("option", { name: "Portugal" });
+      // The checkbox is inert, so the click is dispatched at its position and reaches the option
+      const checkbox = option.locator(".v-checkbox-btn");
+      // Waits for the menu's opening transition to end, so the checkbox stops moving
+      let previous = "";
+      await expect
+        .poll(async () => {
+          const current = JSON.stringify(await checkbox.boundingBox());
+          const isStable = current === previous;
+          previous = current;
+          return isStable;
+        })
+        .toBe(true);
+      const box = (await checkbox.boundingBox())!;
+      await page.mouse.click(box.x + box.width / 2, box.y + box.height / 2);
+
+      await expect(option).toHaveAttribute("aria-selected", "true");
+      await expect(field.locator(".v-chip")).toHaveText(["Portugal"]);
+    });
+
+    test("matches the accessible snapshot of the open options", async ({ page }) => {
+      await getComboboxInput(getMultipleField(page)).click();
+
+      await expect(page.getByRole("listbox")).toMatchAriaSnapshot();
+    });
+  });
+
   test.describe("UI consistency", () => {
     test("matches last screenshot", async ({ page }) => {
       await expect(page).toHaveScreenshot({ fullPage: true });
@@ -200,6 +283,10 @@ test.describe("autocomplete-field", () => {
 
 function getPreviewField(page: Page) {
   return page.getByTestId("autocomplete-field-preview");
+}
+
+function getMultipleField(page: Page) {
+  return page.locator(".v-combobox").filter({ hasText: "Selecione países" });
 }
 
 function getComboboxInput(field: ReturnType<Page["getByTestId"]>) {

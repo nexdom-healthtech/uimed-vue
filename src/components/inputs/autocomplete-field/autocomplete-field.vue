@@ -2,6 +2,7 @@
   <component
     :is="vuetifyComponent"
     v-model="modelValue"
+    @update:search="search = $event"
     :variant="vuetifyVariant"
     :items="normalizedItems"
     :data-testid="props.dataTestid"
@@ -21,6 +22,22 @@
   >
     <template #loader="loader">
       <field-loader v-bind="loader" />
+    </template>
+    <template v-if="isMultiple" #item="{ props: itemProps }">
+      <v-list-item v-bind="itemProps">
+        <template #prepend="{ isSelected }">
+          <v-checkbox-btn :model-value="isSelected" :ripple="false" inert aria-hidden="true" />
+        </template>
+        <template #title>
+          <v-highlight
+            :text="itemProps.title"
+            :query="search"
+            match-all
+            ignore-case
+            :mark-class="maskClass"
+          />
+        </template>
+      </v-list-item>
     </template>
   </component>
 </template>
@@ -53,9 +70,10 @@ import {
   useAutocompleteRules,
 } from "@/composables/inputs/autocomplete-field.ts";
 import { useTextFieldVariant } from "@/composables/inputs/fields.ts";
-import { VAutocomplete, VCombobox } from "vuetify/components";
+import { VAutocomplete, VCheckboxBtn, VCombobox, VListItem } from "vuetify/components";
+import { VHighlight } from "vuetify/labs/VHighlight";
 import FieldLoader from "@/components/inputs/field-loader.vue";
-import { computed } from "vue";
+import { computed, ref } from "vue";
 
 const modelValue = defineModel<Multiple extends true ? T[] : T>();
 const props = withDefaults(defineProps<AutocompleteFieldProps<T, Multiple>>(), {
@@ -71,6 +89,9 @@ const rules = useAutocompleteRules(() => ({
 }));
 
 const vuetifyComponent = computed(() => (props.strict ? VAutocomplete : VCombobox));
+
+const search = ref<string>();
+const maskClass = computed(() => (props.strict ? "v-autocomplete__mask" : "v-combobox__mask"));
 
 const normalizedItems = computed<NormalizedItem<T>[]>(() => {
   return props.items.map((item) => {
