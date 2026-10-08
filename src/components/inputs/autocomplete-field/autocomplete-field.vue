@@ -2,7 +2,7 @@
   <component
     :is="vuetifyComponent"
     v-model="modelValue"
-    @update:search="search = $event"
+    v-model:search="search"
     :variant="vuetifyVariant"
     :items="normalizedItems"
     :data-testid="props.dataTestid"
@@ -90,7 +90,7 @@ const rules = useAutocompleteRules(() => ({
 
 const vuetifyComponent = computed(() => (props.strict ? VAutocomplete : VCombobox));
 
-const search = ref<string>();
+const search = ref("");
 const maskClass = computed(() => (props.strict ? "v-autocomplete__mask" : "v-combobox__mask"));
 
 const normalizedItems = computed<NormalizedItem<T>[]>(() => {
