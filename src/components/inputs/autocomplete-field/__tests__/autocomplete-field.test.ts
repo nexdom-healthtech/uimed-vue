@@ -462,6 +462,12 @@ describe("AutocompleteField options", () => {
     ["strict", true, "v-autocomplete__mask", "Portugal"],
     ["non-strict", false, "v-combobox__mask", { label: "Portugal", value: "Portugal" }],
   ])("when %s", (_, strict, maskClass, selectedValue) => {
+    it("should start with an empty search", () => {
+      wrapper = mountAttachedAutocompleteField({ strict, multiple: true });
+
+      expect(wrapper.find<HTMLInputElement>("input:not([type='hidden'])").element.value).toBe("");
+    });
+
     it("should render a visual-only checkbox inside each option in multiple mode", async () => {
       wrapper = mountAttachedAutocompleteField({ strict, multiple: true });
       await openOptions(wrapper);
