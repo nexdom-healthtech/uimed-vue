@@ -27,8 +27,8 @@ importers:
         specifier: ^7.4.47
         version: 7.4.47
       '@nexdom/shared':
-        specifier: ^2.1.1
-        version: 2.1.1(type-fest@5.9.0)
+        specifier: ^2.3.0
+        version: 2.3.0(type-fest@5.9.0)
       '@playwright/test':
         specifier: ^1.62.1
         version: 1.62.1
@@ -658,8 +658,8 @@ packages:
   '@mdi/font@7.4.47':
     resolution: {integrity: sha512-43MtGpd585SNzHZPcYowu/84Vz2a2g31TvPMTm9uTiCSWzaheQySUcSyUH/46fPnuPQWof2yd0pGBtzee/IQWw==}
 
-  '@nexdom/shared@2.1.1':
-    resolution: {integrity: sha512-5GeKihI4GSmNFYi7SftNDkQ+SAnmASxHDstXx6YWHl9mbzVsXVys0z9wgRNF2At6B0fICbDa+JDV5W1TB9uC0A==}
+  '@nexdom/shared@2.3.0':
+    resolution: {integrity: sha512-Fb4aX1L3mXmL0yBd4kx+JXNO3TL/Kr5TNHcp+K4gI5zo0/W1EdZCbapbNhdcZHAczdBgZUsgBkBoK65wdOv2pA==}
     peerDependencies:
       type-fest: ^5.8.0
 
@@ -4423,7 +4423,7 @@ snapshots:
 
   '@mdi/font@7.4.47': {}
 
-  '@nexdom/shared@2.1.1(type-fest@5.9.0)':
+  '@nexdom/shared@2.3.0(type-fest@5.9.0)':
     dependencies:
       type-fest: 5.9.0
 

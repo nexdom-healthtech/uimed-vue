@@ -1,5 +1,5 @@
 import useConfirm from "@/composables/dialogs/use-confirm.ts";
-import isDeepEqual from "@/utils/is-deep-equal.ts";
+import { isDeepEqual } from "@nexdom/shared/utils";
 import type {
   UnsavedChangesOptions,
   UnsavedChangesValues,
