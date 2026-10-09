@@ -168,8 +168,8 @@ describe("NavigationMenu", () => {
       const hospitalItem: NavigationMenuItem = { description: "Units", icon: "hospital" };
       const iconParentItem: NavigationMenuParentItem = {
         description: "Settings",
-        icon: "cog-outline",
-        items: [{ description: "Profile", icon: "account-outline" }, parentItemFirstChild],
+        icon: "cog-alternative",
+        items: [{ description: "Profile", icon: "account-alternative" }, parentItemFirstChild],
       };
 
       it("should show the icon of a plain item before its description", async () => {
