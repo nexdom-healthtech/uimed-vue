@@ -9,6 +9,7 @@ describe("components", () => {
   it("should avoid breaking changes", () => {
     expect(components.UMain).not.toBeUndefined();
     expect(components.UButton).not.toBeUndefined();
+    expect(components.UIconButton).not.toBeUndefined();
     expect(components.UTextField).not.toBeUndefined();
     expect(components.UDateTimeField).not.toBeUndefined();
     expect(components.UContainer).not.toBeUndefined();

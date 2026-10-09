@@ -6,6 +6,8 @@ import { createVuetify } from "vuetify";
 import { type Plugin } from "vue";
 import { localeOptions } from "@/consts/locale.ts";
 
+export { icons } from "@/consts/icons.ts";
+
 /**
  * Create an UIMed-Vue instance to be installed after [createApp](https://vuejs.org/guide/essentials/application.html#the-application-instance).
  * @returns an instance to be used with [app.use](https://vuejs.org/guide/essentials/application.html#the-application-instance)

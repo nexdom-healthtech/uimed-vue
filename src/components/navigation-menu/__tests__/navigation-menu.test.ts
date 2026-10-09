@@ -163,6 +163,64 @@ describe("NavigationMenu", () => {
       });
     });
 
+    describe("icon", () => {
+      const homeItem: NavigationMenuItem = { description: "Home", route: "/", icon: "home" };
+      const hospitalItem: NavigationMenuItem = { description: "Units", icon: "hospital" };
+      const iconParentItem: NavigationMenuParentItem = {
+        description: "Settings",
+        icon: "cog-alternative",
+        items: [{ description: "Profile", icon: "account-alternative" }, parentItemFirstChild],
+      };
+
+      it("should show the icon of a plain item before its description", async () => {
+        await wrapper.setProps({ items: [homeItem, hospitalItem] });
+
+        const [homeListItem, hospitalListItem] = findVListItems(wrapper);
+        expect(homeListItem.props("prependIcon")).toBe("mdi-home");
+        expect(hospitalListItem.props("prependIcon")).toBe("mdi-hospital-building");
+      });
+
+      it("should show the icon of a group before its description", async () => {
+        await wrapper.setProps({ items: [iconParentItem] });
+
+        const groupActivator = findVListGroups(wrapper)[0].findComponent(VListItem);
+        expect(groupActivator.props("prependIcon")).toBe("mdi-cog-outline");
+      });
+
+      it("should show the icon of an item inside a group before its description", async () => {
+        await wrapper.setProps({ items: [iconParentItem] });
+
+        const [vListGroup] = findVListGroups(wrapper);
+        await vListGroup.trigger("click");
+
+        const [, profileItem, firstChildItem] = vListGroup.findAllComponents(VListItem);
+        expect(profileItem.props("prependIcon")).toBe("mdi-account-outline");
+        expect(firstChildItem.props("prependIcon")).toBeUndefined();
+      });
+
+      it("should show no icon when the item or group has none", async () => {
+        await wrapper.setProps({ items: [firstItem, parentItem] });
+
+        const [vListGroup] = findVListGroups(wrapper);
+        await vListGroup.trigger("click");
+
+        const vListItems = findVListItems(wrapper);
+        expect(vListItems).toHaveLength(4); // plain item + group activator + 2 children
+        for (const vListItem of vListItems) {
+          expect(vListItem.props("prependIcon")).toBeUndefined();
+        }
+        expect(wrapper.find(".v-list-item__prepend").exists()).toBeFalsy();
+      });
+
+      it("should keep the icon out of the item's accessible name", async () => {
+        await wrapper.setProps({ items: [homeItem] });
+
+        const [vListItem] = findVListItems(wrapper);
+        expect(vListItem.find(".mdi-home").attributes("aria-hidden")).toBe("true");
+        expect(vListItem.text()).toBe(homeItem.description);
+      });
+    });
+
     describe("model", () => {
       it("should forward v-model value to navigation drawer", async () => {
         const vNavigationDrawer = findVNavigationDrawer(wrapper);

@@ -74,16 +74,18 @@ O menu conta com um campo de busca, focado pelo atalho `Ctrl + K` (`⌘ + K` no 
 
 #### `NavigationMenuParent`
 
-| Prop          | Tipo                                          | Padrão | Descrição                                                               |
-| ------------- | --------------------------------------------- | ------ | ----------------------------------------------------------------------- |
-| `description` | `string`                                      |        | Título do agrupador de itens ([item](#navigationmenuitem)).             |
-| `items`       | [`NavigationMenuItem[]`](#navigationmenuitem) |        | Lista de [itens](#navigationmenuitem) que serão agrupados neste tópico. |
+| Prop          | Tipo                                          | Padrão | Descrição                                                                                            |
+| ------------- | --------------------------------------------- | ------ | ---------------------------------------------------------------------------------------------------- |
+| `description` | `string`                                      |        | Título do agrupador de itens ([item](#navigationmenuitem)).                                          |
+| `icon`        | [`Icon`](../../guide/icons)                   |        | Ícone exibido antes da descrição do agrupador. Um dos nomes listados em [Ícones](../../guide/icons). |
+| `items`       | [`NavigationMenuItem[]`](#navigationmenuitem) |        | Lista de [itens](#navigationmenuitem) que serão agrupados neste tópico.                              |
 
 #### `NavigationMenuItem`
 
 | Prop          | Tipo                                                                                              | Padrão | Descrição                                                                                                                                        |
 | ------------- | ------------------------------------------------------------------------------------------------- | ------ | ------------------------------------------------------------------------------------------------------------------------------------------------ |
 | `description` | `string`                                                                                          |        | Título/descrição do item.                                                                                                                        |
+| `icon`        | [`Icon`](../../guide/icons)                                                                       |        | Ícone exibido antes da descrição do item. Um dos nomes listados em [Ícones](../../guide/icons).                                                  |
 | `route`       | [`RouteLocationRaw`](https://router.vuejs.org/api/type-aliases/RouteLocationRaw.html) \| `string` |        | Rota para direcionar o usuário ao clicar no item, podendo essa ser uma rota externa (exemplo: `"https://google.com"`) ou local (exemplo: `"/"`). |
 | `action`      | `() => void`                                                                                      |        | Função que será executada quando o usuário clicar no item.                                                                                       |
 
