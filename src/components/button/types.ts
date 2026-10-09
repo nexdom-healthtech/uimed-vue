@@ -1,3 +1,4 @@
+import type { RouteLocationRaw } from "vue-router";
 import type { ColorVariant } from "@/composables/colors/types.ts";
 
 export type ButtonVariant = "primary" | "secondary" | "ghost";
@@ -15,7 +16,7 @@ export type ButtonProps = {
 
   /**
    * Applies a distinct behavior to the button.
-   * One of `button` or `submit`.
+   * One of `button` or `submit`. Ignored when `route` is set.
    * @default "button"
    */
   type?: "submit" | "button";
@@ -53,8 +54,17 @@ export type ButtonProps = {
 
   /**
    * Associated [form](https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Attributes/form) id.
+   * Ignored when `route` is set.
    */
   form?: string;
+
+  /**
+   * Where the button goes when clicked, rendering it as a link with the button's look. A route
+   * inside the app (`"/patients"`, `{ name: "patient", params: { id } }`) navigates through the
+   * app's router; a URL starting with `http` navigates through the browser, in the same tab. While
+   * `disabled` or `loading`, the button doesn't navigate and is rendered as a disabled button.
+   */
+  route?: RouteLocationRaw;
 
   /**
    * Component id to use on automated tests.

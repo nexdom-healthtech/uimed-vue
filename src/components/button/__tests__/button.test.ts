@@ -1,7 +1,8 @@
 import { VBtn, VProgressCircular } from "vuetify/components";
-import { mount, type VueWrapper } from "@vue/test-utils";
+import { flushPromises, mount, type VueWrapper } from "@vue/test-utils";
+import { createMemoryHistory, createRouter } from "vue-router";
 import Button from "@/components/button/button.vue";
-import type { ButtonVariant } from "@/components/button/types.ts";
+import type { ButtonProps, ButtonVariant } from "@/components/button/types.ts";
 import { vueTestUtilsPluginUimed } from "@/unit-test.ts";
 import type { ColorVariant, VuetifyColor } from "@/composables/colors/types.ts";
 import { colorToVuetifyColor } from "@/composables/colors/constants.ts";
@@ -14,6 +15,7 @@ const variants: [ButtonVariant, string][] = [
 const colors = Object.entries(colorToVuetifyColor) as [ColorVariant, VuetifyColor][];
 
 const testId = "button-test-id";
+const externalUrl = "https://example.com/help";
 const styleValue = "random-style";
 const classValue = "random-class";
 
@@ -203,6 +205,134 @@ describe("Button", () => {
         expect(form.onsubmit).toHaveBeenCalledOnce();
       });
     });
+
+    describe("route", () => {
+      it("should render a button that doesn't navigate by default", () => {
+        const wrapper = mountButton();
+        const vBtn = findVBtn(wrapper);
+
+        expect(wrapper.element.tagName).toBe("BUTTON");
+        expect(wrapper.attributes("href")).toBeUndefined();
+        expect(vBtn.props("to")).toBeUndefined();
+        expect(vBtn.props("href")).toBeUndefined();
+      });
+
+      describe("inside the app", () => {
+        it("should render a link with the href resolved by the router", async () => {
+          const { wrapper } = await mountRouteButton({ route: { name: "patients" } });
+          const vBtn = findVBtn(wrapper);
+
+          expect(vBtn.props("to")).toEqual({ name: "patients" });
+          expect(vBtn.props("href")).toBeUndefined();
+          expect(wrapper.element.tagName).toBe("A");
+          expect(wrapper.attributes("href")).toBe("/patients");
+          expect(wrapper.attributes("data-testid")).toBe(testId);
+        });
+
+        it("should navigate through the router when clicked, emitting `click`", async () => {
+          const onClick = vi.fn();
+          const { wrapper, router } = await mountRouteButton({ route: "/patients" }, { onClick });
+
+          await wrapper.trigger("click");
+          await flushPromises();
+
+          expect(router.currentRoute.value.path).toBe("/patients");
+          expect(onClick).toHaveBeenCalledOnce();
+        });
+
+        it("should keep its look when it points to the current route", async () => {
+          const { wrapper, router } = await mountRouteButton({ route: "/patients" });
+          expect(wrapper.attributes("aria-current")).toBeUndefined();
+
+          await router.push("/patients");
+
+          expect(wrapper.attributes("aria-current")).toBe("page");
+          expect(wrapper.classes()).not.toContain("v-btn--active");
+        });
+
+        it("should follow changes of the route", async () => {
+          const { wrapper } = await mountRouteButton({ route: "/patients" });
+          expect(wrapper.attributes("href")).toBe("/patients");
+
+          await wrapper.setProps({ route: "/home" });
+          expect(wrapper.attributes("href")).toBe("/home");
+
+          await wrapper.setProps({ route: undefined });
+          expect(wrapper.element.tagName).toBe("BUTTON");
+          expect(wrapper.attributes("href")).toBeUndefined();
+        });
+      });
+
+      describe("starting with http", () => {
+        it("should render a link with the URL as href", async () => {
+          const { wrapper } = await mountRouteButton({ route: externalUrl });
+          const vBtn = findVBtn(wrapper);
+
+          expect(vBtn.props("href")).toBe(externalUrl);
+          expect(vBtn.props("to")).toBeUndefined();
+          expect(wrapper.element.tagName).toBe("A");
+          expect(wrapper.attributes("href")).toBe(externalUrl);
+          expect(wrapper.attributes("target")).toBeUndefined();
+        });
+
+        it("should not navigate through the router when clicked", async () => {
+          const onClick = vi.fn();
+          const { wrapper, router } = await mountRouteButton({ route: externalUrl }, { onClick });
+          const push = vi.spyOn(router, "push");
+
+          await wrapper.trigger("click");
+          await flushPromises();
+
+          expect(push).not.toHaveBeenCalled();
+          expect(router.currentRoute.value.path).toBe("/home");
+          expect(onClick).toHaveBeenCalledOnce();
+        });
+      });
+
+      it("should ignore `type` and `form`, which don't apply to a link", async () => {
+        const { wrapper } = await mountRouteButton({
+          route: "/patients",
+          type: "submit",
+          form: "form-id",
+        });
+
+        expect(wrapper.element.tagName).toBe("A");
+        expect(wrapper.attributes("type")).toBeUndefined();
+        expect(wrapper.attributes("form")).toBeUndefined();
+      });
+
+      it.each([
+        ["disabled", { disabled: true }],
+        ["loading", { loading: true }],
+      ])(
+        "should render a disabled button that doesn't navigate while %s",
+        async (_, blockingProps) => {
+          const onClick = vi.fn();
+          const { wrapper, router } = await mountRouteButton(
+            { route: "/patients", type: "submit", form: "form-id", ...blockingProps },
+            { onClick },
+          );
+          const vBtn = findVBtn(wrapper);
+
+          expect(vBtn.props("to")).toBeUndefined();
+          expect(vBtn.props("href")).toBeUndefined();
+          expect(wrapper.element.tagName).toBe("BUTTON");
+          expect(wrapper.attributes("href")).toBeUndefined();
+          expect(wrapper.attributes("disabled")).toBe("");
+          expect(wrapper.attributes("type")).toBe("button");
+          expect(wrapper.attributes("form")).toBeUndefined();
+
+          wrapper.element.click();
+          await flushPromises();
+          expect(router.currentRoute.value.path).toBe("/home");
+          expect(onClick).not.toHaveBeenCalled();
+
+          await wrapper.setProps({ disabled: false, loading: false });
+          expect(wrapper.element.tagName).toBe("A");
+          expect(wrapper.attributes("href")).toBe("/patients");
+        },
+      );
+    });
   });
 
   describe("slots", () => {
@@ -283,7 +413,29 @@ function mountButton(
   return wrapper;
 }
 
-function findVBtn(wrapper: ReturnType<typeof mountButton>) {
+/** Mounts the button with the given props, in an app with a router at `/home`. */
+async function mountRouteButton(props: ButtonProps, attrs: Record<string, unknown> = {}) {
+  const router = createRouter({
+    history: createMemoryHistory(),
+    routes: [
+      { path: "/home", component: {} },
+      { path: "/patients", name: "patients", component: {} },
+    ],
+  });
+  await router.push("/home");
+
+  const wrapper = mount(Button, {
+    props,
+    attrs: { "data-testid": testId, ...attrs },
+    global: {
+      plugins: [vueTestUtilsPluginUimed(), router],
+    },
+  });
+
+  return { wrapper, router };
+}
+
+function findVBtn(wrapper: VueWrapper) {
   return wrapper.findComponent(VBtn);
 }
 

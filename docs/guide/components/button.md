@@ -132,6 +132,33 @@ import { UButton } from "@nexdom/uimed-vue/components";
 </script>
 ```
 
+### Navegação
+
+A prop `route` faz o botão navegar ao ser clicado. Nesse caso, ele é exibido como um link, com a aparência de botão. Uma rota da aplicação, como `"/pacientes"` ou `{ name: "paciente", params: { id: 42 } }`, navega sem recarregar a página. Enquanto essa rota é a página atual, o botão mantém a aparência e é anunciado como a página atual pelos leitores de tela. Um endereço que começa com `http` navega pelo navegador, na mesma aba.
+
+O evento `click` continua sendo disparado ao clicar no botão. As props `type` e `form` não se aplicam a links e são ignoradas. Enquanto `disabled` ou `loading`, o botão não navega: ele é exibido como um botão desabilitado, sem link.
+
+> [!Warning]
+> Rotas da aplicação só funcionam em aplicações que usam o [Vue Router](https://router.vuejs.org/). Esta documentação não usa o Vue Router, por isso o exemplo abaixo navega para um endereço externo.
+
+<demo data-testid="demo-route">
+<u-button route="https://nexdom-healthtech.github.io/shared/">Documentação do Shared</u-button>
+</demo>
+
+```vue
+<template>
+  <u-button route="/pacientes">Pacientes</u-button>
+  <u-button :route="{ name: 'paciente' }">Paciente</u-button>
+  <u-button :route="sharedDocs">Documentação do Shared</u-button>
+</template>
+
+<script lang="ts" setup>
+import { UButton } from "@nexdom/uimed-vue/components";
+
+const sharedDocs = "https://nexdom-healthtech.github.io/shared/";
+</script>
+```
+
 ## Eventos
 
 ### Clique
