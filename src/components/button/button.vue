@@ -41,15 +41,22 @@ export default {
 import { computed } from "vue";
 import { VBtn, VProgressCircular } from "vuetify/components";
 import type { ButtonProps, ButtonEmits } from "@/components/button/types.ts";
-import { useButtonForm, useButtonType, useButtonVariant } from "@/composables/button/button.ts";
-import useVuetifyColor from "@/composables/colors/use-vuetify-color.ts";
+import {
+  useButtonColor,
+  useButtonForm,
+  useButtonType,
+  useButtonVariant,
+} from "@/composables/button/button.ts";
 import { useFullWidth } from "@/composables/dimensions/dimensions.ts";
 
 const props = defineProps<ButtonProps>();
 const emit = defineEmits<ButtonEmits>();
 
 const variant = useButtonVariant(() => props.variant);
-const color = useVuetifyColor(() => props.color);
+const color = useButtonColor(
+  () => props.color,
+  () => props.variant,
+);
 const type = useButtonType(() => props.type);
 const form = useButtonForm(() => props.form);
 const widthClass = useFullWidth(() => props.fullWidth);

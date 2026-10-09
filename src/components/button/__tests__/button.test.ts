@@ -3,8 +3,8 @@ import { mount, type VueWrapper } from "@vue/test-utils";
 import Button from "@/components/button/button.vue";
 import type { ButtonVariant } from "@/components/button/types.ts";
 import { vueTestUtilsPluginUimed } from "@/unit-test.ts";
-import type { ColorVariant, VuetifyColor } from "@/composables/colors/types.ts";
-import { colorToVuetifyColor } from "@/composables/colors/constants.ts";
+import type { ColorVariant, VuetifyColor, VuetifyTextColor } from "@/composables/colors/types.ts";
+import { colorToVuetifyColor, colorToVuetifyTextColor } from "@/composables/colors/constants.ts";
 
 const variants: [ButtonVariant, string][] = [
   ["primary", "elevated"],
@@ -12,6 +12,7 @@ const variants: [ButtonVariant, string][] = [
   ["ghost", "text"],
 ];
 const colors = Object.entries(colorToVuetifyColor) as [ColorVariant, VuetifyColor][];
+const textColors = Object.entries(colorToVuetifyTextColor) as [ColorVariant, VuetifyTextColor][];
 
 const testId = "button-test-id";
 const styleValue = "random-style";
@@ -86,6 +87,21 @@ describe("Button", () => {
       it("should have `primary` color by default", () => {
         const wrapper = mountButton();
         expect(findVBtn(wrapper).props("color")).toBe("primary");
+      });
+
+      it.each(textColors)(
+        'should forward `color="%s"` to Vuetify\'s `%s` text color in the ghost variant',
+        async (color, vuetifyTextColor) => {
+          const wrapper = mountButton();
+          await wrapper.setProps({ color, variant: "ghost" });
+          expect(findVBtn(wrapper).props("color")).toBe(vuetifyTextColor);
+        },
+      );
+
+      it("should have `primary`'s text color by default in the ghost variant", async () => {
+        const wrapper = mountButton();
+        await wrapper.setProps({ variant: "ghost" });
+        expect(findVBtn(wrapper).props("color")).toBe("primary-text");
       });
     });
 
