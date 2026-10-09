@@ -1,5 +1,5 @@
 import { test, expect, type Locator, type Page } from "@playwright/test";
-import { gotoPage, selectOption } from "@e2e/utils.ts";
+import { expectNoA11yViolations, gotoPage, selectOption } from "@e2e/utils.ts";
 
 test.describe("data-set", () => {
   test.beforeEach(async ({ page }) => {
@@ -322,6 +322,12 @@ test.describe("data-set", () => {
       await expect(preview.getByRole("textbox", { name: "Pesquisar" })).toBeVisible();
       await expect(getPreviewCards(page)).toHaveCount(3);
       await expect(preview).toMatchAriaSnapshot();
+    });
+  });
+
+  test.describe("accessibility", () => {
+    test("has no violations", async ({ page }) => {
+      await expectNoA11yViolations(page);
     });
   });
 

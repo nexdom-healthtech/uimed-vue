@@ -1,5 +1,5 @@
 import { test, expect, type Page } from "@playwright/test";
-import { gotoPage } from "@e2e/utils.ts";
+import { expectNoA11yViolations, gotoPage } from "@e2e/utils.ts";
 
 test.describe("table", () => {
   test.beforeEach(async ({ page }) => {
@@ -68,6 +68,12 @@ test.describe("table", () => {
 
       await loadingCheckbox.locator("input").click();
       await expect(previewTable).toBeVisible();
+    });
+  });
+
+  test.describe("accessibility", () => {
+    test("has no violations", async ({ page }) => {
+      await expectNoA11yViolations(page);
     });
   });
 

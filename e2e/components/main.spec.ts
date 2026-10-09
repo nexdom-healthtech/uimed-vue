@@ -1,4 +1,4 @@
-import { gotoPage } from "@e2e/utils.ts";
+import { expectNoA11yViolations, gotoPage } from "@e2e/utils.ts";
 import { test, expect, type Locator, type Page } from "@playwright/test";
 
 test.describe("main", () => {
@@ -102,7 +102,7 @@ test.describe("main", () => {
 
           const dialogPromise = page.waitForEvent("dialog");
 
-          await userMenu.getByRole("listitem").filter({ hasText: "Sair" }).click();
+          await userMenu.getByRole("button", { name: "Sair" }).click();
 
           const dialog = await dialogPromise;
           expect(dialog).toBeTruthy();
@@ -596,13 +596,35 @@ test.describe("main", () => {
     });
   });
 
+  test.describe("accessibility", () => {
+    test("has no violations", async ({ page }) => {
+      await expectNoA11yViolations(page);
+    });
+
+    test("has no violations with the menus open", async ({ page }) => {
+      await getUserButton(page).click();
+      await expect(getUserMenu(page)).toBeVisible();
+      await expectNoA11yViolations(page);
+      await page.keyboard.press("Escape");
+
+      await getNotificationsButton(page).click();
+      await expect(getNotificationsMenu(page)).toBeVisible();
+      await expectNoA11yViolations(page);
+      await page.keyboard.press("Escape");
+
+      await getNavigationToggleButton(page).click();
+      await expect(getNavigationToggleDrawer(page)).toContainClass("v-navigation-drawer--active");
+      await expectNoA11yViolations(page);
+    });
+  });
+
   test.describe("UI consistency", () => {
     test("matches last screenshot", async ({ page }) => {
       const userButton = getUserButton(page);
       await userButton.click();
 
       const userMenu = getUserMenu(page);
-      await userMenu.getByRole("listitem").first().click();
+      await userMenu.getByRole("button", { name: "Bibliotecas" }).click();
       await expect(page).toHaveScreenshot({ fullPage: true });
 
       const notificationsButton = getNotificationsButton(page);

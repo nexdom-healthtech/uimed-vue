@@ -1,5 +1,5 @@
 import { test, expect, type Locator, type Page } from "@playwright/test";
-import { gotoPage, selectOption } from "@e2e/utils.ts";
+import { expectNoA11yViolations, gotoPage, selectOption } from "@e2e/utils.ts";
 
 test.describe("section", () => {
   test.beforeEach(async ({ page }) => {
@@ -186,6 +186,12 @@ test.describe("section", () => {
       expect(innerContent.start).toBeLessThan(innerContent.end);
       expect(innerTitle.start).toBeLessThanOrEqual(24);
       expect(innerContent.start).toBeLessThanOrEqual(24);
+    });
+  });
+
+  test.describe("accessibility", () => {
+    test("has no violations", async ({ page }) => {
+      await expectNoA11yViolations(page);
     });
   });
 

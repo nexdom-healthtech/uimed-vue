@@ -1,7 +1,9 @@
 import { test, expect, type Locator, type Page } from "@playwright/test";
-import { gotoPage, selectOption } from "@e2e/utils.ts";
+import { expectNoA11yViolations, gotoPage, selectOption } from "@e2e/utils.ts";
 
 const actionDuration = 1500;
+
+const colors = ["primary", "secondary", "positive", "informative", "caution", "danger"];
 
 test.describe("button", () => {
   test.beforeEach(async ({ page }) => {
@@ -131,6 +133,28 @@ test.describe("button", () => {
       const demo = page.getByTestId("demo-loading");
       await expect(demo).toMatchAriaSnapshot();
     });
+  });
+
+  test.describe("accessibility", () => {
+    test("has no violations", async ({ page }) => {
+      await expectNoA11yViolations(page);
+    });
+
+    // A ghost button has no fill, so its color is the text's, against the background
+    for (const color of colors) {
+      test(`has no violations in the ghost variant of the ${color} color`, async ({ page }) => {
+        await selectOption(page, "btn-playground-variant", "ghost");
+        // Opening the variant's menu scrolls the color field under the docs' header, which would
+        // take the click
+        await page
+          .getByTestId("btn-playground-color")
+          .evaluate((field) => field.scrollIntoView({ block: "center" }));
+        await selectOption(page, "btn-playground-color", color);
+        await expect(getPreviewButton(page)).toContainClass("v-btn--variant-text");
+
+        await expectNoA11yViolations(page);
+      });
+    }
   });
 
   test.describe("UI consistency", () => {
