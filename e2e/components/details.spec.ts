@@ -1,5 +1,10 @@
 import { test, expect, type Page } from "@playwright/test";
-import { expectLoadingAnnouncement, gotoPage, selectOption } from "@e2e/utils.ts";
+import {
+  expectLoadingAnnouncement,
+  expectNoA11yViolations,
+  gotoPage,
+  selectOption,
+} from "@e2e/utils.ts";
 
 test.describe("details", () => {
   test.beforeEach(async ({ page }) => {
@@ -101,6 +106,12 @@ test.describe("details", () => {
       await getPreviewHeader(page).click();
       await expect(getPreviewDetails(page).getByText(/Teste o componente Details/)).toBeVisible();
       await expect(getPreviewDetails(page)).toMatchAriaSnapshot();
+    });
+  });
+
+  test.describe("accessibility", () => {
+    test("has no violations", async ({ page }) => {
+      await expectNoA11yViolations(page);
     });
   });
 

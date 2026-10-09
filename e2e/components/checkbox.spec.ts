@@ -1,5 +1,5 @@
 import { test, expect, type Page } from "@playwright/test";
-import { gotoPage } from "@e2e/utils.ts";
+import { expectNoA11yViolations, gotoPage } from "@e2e/utils.ts";
 
 test.describe("checkbox", () => {
   test.beforeEach(async ({ page }) => {
@@ -87,6 +87,12 @@ test.describe("checkbox", () => {
       const customValuesCheckbox = getCustomValuesCheckbox(page);
 
       await expect(customValuesCheckbox).toMatchAriaSnapshot();
+    });
+  });
+
+  test.describe("accessibility", () => {
+    test("has no violations", async ({ page }) => {
+      await expectNoA11yViolations(page);
     });
   });
 

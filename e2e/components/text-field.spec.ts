@@ -1,5 +1,5 @@
 import { test, expect, type Page } from "@playwright/test";
-import { gotoPage, selectOption } from "@e2e/utils.ts";
+import { expectNoA11yViolations, gotoPage, selectOption } from "@e2e/utils.ts";
 
 test.describe("text-field", () => {
   test.beforeEach(async ({ page }) => {
@@ -182,6 +182,12 @@ test.describe("text-field", () => {
       const searchTextField = page.getByTestId("text-field-demo-search");
 
       await expect(searchTextField).toMatchAriaSnapshot();
+    });
+  });
+
+  test.describe("accessibility", () => {
+    test("has no violations", async ({ page }) => {
+      await expectNoA11yViolations(page);
     });
   });
 

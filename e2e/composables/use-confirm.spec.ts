@@ -1,4 +1,4 @@
-import { gotoPage, pauseClock } from "@e2e/utils.ts";
+import { expectNoA11yViolations, gotoPage, pauseClock } from "@e2e/utils.ts";
 import { test, expect, type Page } from "@playwright/test";
 
 const actionDuration = 1500;
@@ -133,6 +133,15 @@ test.describe("use-confirm", () => {
       await expect(dialog).toBeHidden();
       await expect(page.getByRole("status")).toContainText("Não foi possível excluir o paciente.");
       await expect(page.getByTestId("confirm-result")).toHaveText("Resultado: false");
+    });
+  });
+
+  test.describe("accessibility", () => {
+    test("has no violations with the confirmation open", async ({ page }) => {
+      await page.getByTestId("btn-destructive").click();
+      await expect(getDialog(page).getByRole("button", { name: "Manter" })).toBeFocused();
+
+      await expectNoA11yViolations(page);
     });
   });
 

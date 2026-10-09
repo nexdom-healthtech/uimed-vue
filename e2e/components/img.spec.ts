@@ -1,5 +1,5 @@
 import { test, expect, type Locator, type Page, type Route } from "@playwright/test";
-import { gotoPage, selectOption } from "@e2e/utils.ts";
+import { expectNoA11yViolations, gotoPage, selectOption } from "@e2e/utils.ts";
 
 test.describe("img", () => {
   test.beforeEach(async ({ page }) => {
@@ -172,6 +172,16 @@ test.describe("img", () => {
 
       await page.getByTestId("img-playground-cover").locator("input").click();
       await expect(img).toHaveCSS("object-fit", "cover");
+    });
+  });
+
+  test.describe("accessibility", () => {
+    test("has no violations", async ({ page }) => {
+      for (const img of await page.locator(".vp-doc .v-img").all()) {
+        await loadImage(img);
+      }
+
+      await expectNoA11yViolations(page);
     });
   });
 
