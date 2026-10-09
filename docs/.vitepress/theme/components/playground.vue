@@ -97,6 +97,14 @@ const actions = defineModel<Record<string, Action>>("actions", {
     transparent
   );
 
+  // The library only has a light theme, so in the docs' dark mode the demos keep the app's
+  // background, or the theme's text would be dark on the docs' dark background
+  .dark & {
+    background: rgb(var(--v-theme-background));
+    border-radius: 8px;
+    padding: 1rem;
+  }
+
   &-preview {
     flex: 1;
     display: flex;

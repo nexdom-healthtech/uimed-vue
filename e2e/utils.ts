@@ -40,8 +40,23 @@ async function waitForAnimations(page: Page) {
  * Checks the page's demos and overlays (e.g. toasts and dialogs, which render outside the demos)
  * against WCAG 2.2 AA and axe's best practices, failing on any violation. The docs' own content is
  * left out, since it isn't part of the library.
+ *
+ * The check runs in both of the docs' color schemes, since the demos sit on the docs' background,
+ * which turns dark in dark mode while the components keep their light theme.
  */
 export async function expectNoA11yViolations(page: Page) {
+  for (const colorScheme of ["light", "dark"] as const) {
+    await page.emulateMedia({ colorScheme });
+    // The docs follow the system's color scheme, switching the `dark` class on `html`
+    const html = expect(page.locator("html"));
+    await (colorScheme === "dark" ? html : html.not).toHaveClass(/\bdark\b/);
+    await expectNoA11yViolationsInColorScheme(page, colorScheme);
+  }
+
+  await page.emulateMedia({ colorScheme: "light" });
+}
+
+async function expectNoA11yViolationsInColorScheme(page: Page, colorScheme: "light" | "dark") {
   // Elements still fading in or out would be measured with partial contrast
   await waitForAnimations(page);
 
@@ -72,5 +87,5 @@ export async function expectNoA11yViolations(page: Page) {
 
   await decorativeLayers.evaluate((element) => element.parentNode?.removeChild(element));
 
-  expect(violations).toEqual([]);
+  expect(violations, `violations in the ${colorScheme} color scheme`).toEqual([]);
 }
