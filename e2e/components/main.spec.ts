@@ -1,4 +1,4 @@
-import { expectLoadingAnnouncement, gotoPage } from "@e2e/utils.ts";
+import { expectLoadingAnnouncement, expectNoA11yViolations, gotoPage } from "@e2e/utils.ts";
 import { icons } from "@/consts/icons.ts";
 import { test, expect, type Locator, type Page } from "@playwright/test";
 
@@ -103,7 +103,7 @@ test.describe("main", () => {
 
           const dialogPromise = page.waitForEvent("dialog");
 
-          await userMenu.getByRole("listitem").filter({ hasText: "Sair" }).click();
+          await userMenu.getByRole("button", { name: "Sair" }).click();
 
           const dialog = await dialogPromise;
           expect(dialog).toBeTruthy();
@@ -662,11 +662,42 @@ test.describe("main", () => {
     });
   });
 
+  test.describe("accessibility", () => {
+    test("has no violations", async ({ page }) => {
+      await expectNoA11yViolations(page);
+    });
+
+    test("has no violations with the menus open", async ({ page }) => {
+      await getUserButton(page).click();
+      await expect(getUserMenu(page)).toBeVisible();
+      await expectNoA11yViolations(page);
+      await page.keyboard.press("Escape");
+
+      await getNotificationsButton(page).click();
+      await expect(getNotificationsMenu(page)).toBeVisible();
+      await expectNoA11yViolations(page);
+      await page.keyboard.press("Escape");
+
+      await getNavigationToggleButton(page).click();
+      await expect(getNavigationToggleDrawer(page)).toContainClass("v-navigation-drawer--active");
+      await expectNoA11yViolations(page);
+    });
+  });
+
   test.describe("UI consistency", () => {
     // Each state builds on the previous one, as a user would reach it, with one full-page screenshot
     // per test, so each test fits in the default timeout
     test("matches last screenshot after choosing a user menu option", async ({ page }) => {
       await chooseUserMenuOption(page);
+      await expect(page).toHaveScreenshot({ fullPage: true });
+    });
+
+    test("matches last screenshot", async ({ page }) => {
+      const userButton = getUserButton(page);
+      await userButton.click();
+
+      const userMenu = getUserMenu(page);
+      await userMenu.getByRole("button", { name: "Bibliotecas" }).click();
       await expect(page).toHaveScreenshot({ fullPage: true });
     });
 

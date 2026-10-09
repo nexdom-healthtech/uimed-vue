@@ -1,5 +1,5 @@
 import { test, expect, type Locator, type Page } from "@playwright/test";
-import { gotoPage, selectOption } from "@e2e/utils.ts";
+import { expectNoA11yViolations, gotoPage, selectOption } from "@e2e/utils.ts";
 
 test.describe("date-time-field", () => {
   test.beforeEach(async ({ page }) => {
@@ -319,6 +319,19 @@ test.describe("date-time-field", () => {
       page,
     }) => {
       await expect(getPreview(page)).toMatchAriaSnapshot();
+    });
+  });
+
+  test.describe("accessibility", () => {
+    test("has no violations", async ({ page }) => {
+      await expectNoA11yViolations(page);
+    });
+
+    test("has no violations with the picker open", async ({ page }) => {
+      await getPreview(page).locator("input").click();
+      await expect(getOpenMenu(page)).toBeVisible();
+
+      await expectNoA11yViolations(page);
     });
   });
 

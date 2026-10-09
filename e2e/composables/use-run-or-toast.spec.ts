@@ -1,4 +1,4 @@
-import { gotoPage, pauseClock } from "@e2e/utils.ts";
+import { expectNoA11yViolations, gotoPage, pauseClock } from "@e2e/utils.ts";
 import { test, expect, type Page } from "@playwright/test";
 
 const testId = "btn-danger";
@@ -41,6 +41,16 @@ test.describe("use-run-or-toast", () => {
       await expect(timerBar).toHaveAttribute("aria-hidden", "true");
       await expect(toasts.getByRole("progressbar")).toHaveCount(0);
       await expect(toasts.getByRole("status")).toHaveText(message);
+    });
+  });
+
+  test.describe("accessibility", () => {
+    test("has no violations with the toast open", async ({ page }) => {
+      await page.getByTestId(testId).click();
+      await page.clock.fastForward(1500);
+      await expect(getOverlayContainer(page)).toContainText(message);
+
+      await expectNoA11yViolations(page);
     });
   });
 

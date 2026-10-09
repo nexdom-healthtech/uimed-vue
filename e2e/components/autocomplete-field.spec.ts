@@ -1,5 +1,5 @@
 import { test, expect, type Page } from "@playwright/test";
-import { gotoPage, selectOption } from "@e2e/utils.ts";
+import { expectNoA11yViolations, gotoPage, selectOption } from "@e2e/utils.ts";
 
 test.describe("autocomplete-field", () => {
   test.beforeEach(async ({ page }) => {
@@ -271,6 +271,19 @@ test.describe("autocomplete-field", () => {
       await getComboboxInput(getMultipleField(page)).click();
 
       await expect(page.getByRole("listbox")).toMatchAriaSnapshot();
+    });
+  });
+
+  test.describe("accessibility", () => {
+    test("has no violations", async ({ page }) => {
+      await expectNoA11yViolations(page);
+    });
+
+    test("has no violations with the menu open", async ({ page }) => {
+      await getComboboxInput(getPreviewField(page)).click();
+      await expect(page.locator(".v-menu.v-overlay--active")).toBeVisible();
+
+      await expectNoA11yViolations(page);
     });
   });
 

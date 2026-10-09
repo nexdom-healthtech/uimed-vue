@@ -1,4 +1,4 @@
-import { gotoPage, pauseClock, selectOption } from "@e2e/utils.ts";
+import { expectNoA11yViolations, gotoPage, pauseClock, selectOption } from "@e2e/utils.ts";
 import { test, expect, type Locator, type Page } from "@playwright/test";
 
 const actionDuration = 1500;
@@ -378,6 +378,27 @@ test.describe("dialog", () => {
       await page.keyboard.press("Escape");
       await expect(dialog).toBeHidden();
       await expect(opener).toBeFocused();
+    });
+  });
+
+  test.describe("accessibility", () => {
+    test("has no violations", async ({ page }) => {
+      await expectNoA11yViolations(page);
+    });
+
+    test("has no violations with a dialog open", async ({ page }) => {
+      for (const [testId, focused] of [
+        ["btn-basic", getDialog(page).getByRole("button", { name: "Fechar" })],
+        ["btn-form", getDialog(page).getByRole("textbox", { name: "Nome" })],
+      ] as const) {
+        await page.getByTestId(testId).click();
+        await expect(focused).toBeFocused();
+
+        await expectNoA11yViolations(page);
+
+        await page.keyboard.press("Escape");
+        await expect(getDialog(page)).toBeHidden();
+      }
     });
   });
 

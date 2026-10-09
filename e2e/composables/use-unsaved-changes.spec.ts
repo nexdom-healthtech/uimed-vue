@@ -1,4 +1,4 @@
-import { gotoPage } from "@e2e/utils.ts";
+import { expectNoA11yViolations, gotoPage } from "@e2e/utils.ts";
 import { test, expect, type Page } from "@playwright/test";
 
 test.describe("use-unsaved-changes", () => {
@@ -158,6 +158,22 @@ test.describe("use-unsaved-changes", () => {
       await page.waitForEvent("close");
 
       expect(asked).toBe(false);
+    });
+  });
+
+  test.describe("accessibility", () => {
+    test("has no violations", async ({ page }) => {
+      await expectNoA11yViolations(page);
+    });
+
+    test("has no violations with the confirmation open", async ({ page }) => {
+      await getNameField(page).fill("Joana Souza");
+      await page.getByRole("button", { name: "Ir para a lista", exact: true }).click();
+      await expect(
+        getDialog(page).getByRole("button", { name: "Continuar editando" }),
+      ).toBeFocused();
+
+      await expectNoA11yViolations(page);
     });
   });
 
