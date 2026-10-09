@@ -1,4 +1,5 @@
 import type { RouteLocationRaw } from "vue-router";
+import type { Icon } from "@/consts/icons.ts";
 
 /**
  * Props exposed by the {@link NavigationMenu} component.
@@ -25,6 +26,14 @@ export type NavigationMenuParentItem = {
   description: string;
 
   /**
+   * Icon shown before the group's description. One of the names listed on the "Ícones" guide
+   * page.
+   *
+   * @see {@link https://nexdom-healthtech.github.io/uimed-vue/guide/icons | Icons Guide}
+   */
+  icon?: Icon;
+
+  /**
    * Child {@link NavigationMenuItem} list.
    */
   items: Array<NavigationMenuItem>;
@@ -35,6 +44,14 @@ export interface NavigationMenuItem {
    * Text to present for the item.
    */
   description: string;
+
+  /**
+   * Icon shown before the item's description. One of the names listed on the "Ícones" guide
+   * page.
+   *
+   * @see {@link https://nexdom-healthtech.github.io/uimed-vue/guide/icons | Icons Guide}
+   */
+  icon?: Icon;
 
   /**
    * Route to navigate when item is clicked.
