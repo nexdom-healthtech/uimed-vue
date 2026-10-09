@@ -5,9 +5,9 @@
         - /placeholder: Buscar (Ctrl+K)
     - alert
     - separator
-    - list:
+    - group:
         - link "Início"
-        - listitem: Documentação
-        - listitem: Configurações
+        - button "Documentação"
+        - button "Configurações"
 - main:
     - heading "O conteúdo da página vai aqui..." [level=2]

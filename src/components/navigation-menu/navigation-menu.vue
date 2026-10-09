@@ -24,22 +24,27 @@
     <v-divider />
 
     <skeleton-loader :loading="props.loading" type="list-item@6" color="primary">
-      <v-list nav>
+      <!-- Vuetify's `list` role only allows list items, but the items are links -->
+      <v-list nav role="group">
         <template v-for="(item, index) in filteredItems" :key="index">
           <template v-if="isParentItem(item)">
             <v-list-group>
-              <template #activator="{ props: activatorProps }">
+              <!-- Vuetify makes the group's header a list item, but it's a button that expands the
+              group -->
+              <template #activator="{ props: activatorProps, isOpen }">
                 <v-list-item
                   v-bind="activatorProps"
                   :title="item.description"
                   :prepend-icon="item.icon && icons[item.icon]"
+                  :aria-expanded="isOpen"
+                  role="button"
                 />
               </template>
 
               <v-list-item
                 v-for="(childItem, childIndex) in item.items"
                 :key="childIndex"
-                v-bind="routeToProps(childItem.route)"
+                v-bind="routeToListItemProps(childItem.route)"
                 :title="childItem.description"
                 :prepend-icon="childItem.icon && icons[childItem.icon]"
                 @click="childItem.action"
@@ -51,7 +56,7 @@
             v-else
             :title="item.description"
             :prepend-icon="item.icon && icons[item.icon]"
-            v-bind="routeToProps(item.route)"
+            v-bind="routeToListItemProps(item.route)"
             @click="item.action"
           />
         </template>
@@ -76,7 +81,7 @@ import {
   type NavigationMenuParentItem,
   type NavigationMenuParentItemOrItem,
 } from "@/components/navigation-menu/types.ts";
-import { routeToProps } from "@/composables/navigation/use-route-props.ts";
+import { routeToListItemProps } from "@/composables/navigation/use-route-props.ts";
 import { icons } from "@/consts/icons.ts";
 import TextField from "@/components/inputs/text-field/text-field.vue";
 import SkeletonLoader from "@/components/skeleton-loader/skeleton-loader.vue";
