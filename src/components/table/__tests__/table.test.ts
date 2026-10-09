@@ -1,5 +1,5 @@
 import { VSkeletonLoader, VTable } from "vuetify/components";
-import { mount } from "@vue/test-utils";
+import { mount, renderToString } from "@vue/test-utils";
 import Table from "@/components/table/table.vue";
 import type { TableProps } from "@/components/table/types.ts";
 import { vueTestUtilsPluginUimed } from "@/unit-test.ts";
@@ -315,6 +315,14 @@ describe("Table", () => {
         expect(findVSkeletonLoader(wrapper).attributes("aria-label")).toBe("Carregando...");
       });
 
+      it("should announce the loading with valid ARIA attributes when rendered on the server", async () => {
+        const html = await renderTable({ loading: true });
+        expect(html).toContain('aria-label="Carregando..."');
+        expect(html).toContain('aria-live="polite"');
+        expect(html).not.toContain("arialabel");
+        expect(html).not.toContain("arialive");
+      });
+
       it("should be falsy by default", () => {
         const wrapper = mountTable();
         expect(findVSkeletonLoader(wrapper).props("loading")).toBeFalsy();
@@ -523,6 +531,15 @@ function findVTable(wrapper: ReturnType<typeof mountTable>) {
 
 function findAllVTables(wrapper: ReturnType<typeof mountTable>) {
   return wrapper.findAllComponents(VTable);
+}
+
+function renderTable(props: Partial<TableProps>) {
+  return renderToString(Table, {
+    props,
+    global: {
+      plugins: [vueTestUtilsPluginUimed()],
+    },
+  });
 }
 
 function findVSkeletonLoader(wrapper: ReturnType<typeof mountTable>) {

@@ -14,7 +14,7 @@ import {
   VSkeletonLoader,
 } from "vuetify/components";
 import AppBar from "@/components/app-bar/app-bar.vue";
-import { mount } from "@vue/test-utils";
+import { mount, renderToString } from "@vue/test-utils";
 import { vueTestUtilsPluginUimed } from "@/unit-test.ts";
 import useRouteProps, { isExternalRoute } from "@/composables/navigation/use-route-props.ts";
 import type { AppBarUserProps, Option, ParentOption } from "@/components/app-bar/types.ts";
@@ -436,6 +436,14 @@ describe("AppBar", () => {
         expect(vSkeletonLoader.find(".v-skeleton-loader__avatar").exists()).toBeTruthy();
       });
 
+      it("should announce the loading with valid ARIA attributes when rendered on the server", async () => {
+        const html = await renderAppBar({ ...loadedProps, loading: true });
+        expect(html).toContain('aria-label="Carregando..."');
+        expect(html).toContain('aria-live="polite"');
+        expect(html).not.toContain("arialabel");
+        expect(html).not.toContain("arialive");
+      });
+
       it("should hide the help, notifications and user buttons while loading", async () => {
         await wrapper.setProps({ ...loadedProps, loading: true });
 
@@ -627,22 +635,33 @@ function mountAppBar() {
       style: styleValue,
       class: classValue,
     },
-    global: {
-      stubs: {
-        VAppBar: {
-          props: ["title"],
-          template: `
-            <div v-bind="$props">
-              <slot name="prepend" />
-              <slot />
-              <slot name="append" />
-            </div>
-          `,
-        },
-      },
-      plugins: [vueTestUtilsPluginUimed()],
-    },
+    global: getGlobalMountingOptions(),
   });
+}
+
+function renderAppBar(props: Record<string, unknown>) {
+  return renderToString(AppBar, {
+    props,
+    global: getGlobalMountingOptions(),
+  });
+}
+
+function getGlobalMountingOptions() {
+  return {
+    stubs: {
+      VAppBar: {
+        props: ["title"],
+        template: `
+          <div v-bind="$props">
+            <slot name="prepend" />
+            <slot />
+            <slot name="append" />
+          </div>
+        `,
+      },
+    },
+    plugins: [vueTestUtilsPluginUimed()],
+  };
 }
 
 function findVAppBar(wrapper: ReturnType<typeof mountAppBar>) {

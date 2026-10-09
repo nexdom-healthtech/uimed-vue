@@ -1,5 +1,5 @@
 <template>
-  <v-skeleton-loader :loading="props.loading" :type>
+  <skeleton-loader :loading="props.loading" :type>
     <template v-if="props.vertical">
       <v-table
         v-for="(item, itemIndex) in itemRows"
@@ -35,7 +35,7 @@
         </tbody>
       </v-table>
     </template>
-  </v-skeleton-loader>
+  </skeleton-loader>
 </template>
 
 <script lang="ts">
@@ -59,7 +59,8 @@ export default {
 
 <script setup lang="ts">
 import { computed } from "vue";
-import { VTable, VSkeletonLoader } from "vuetify/components";
+import { VTable } from "vuetify/components";
+import SkeletonLoader from "@/components/skeleton-loader/skeleton-loader.vue";
 import type { TableProps } from "@/components/table/types.ts";
 
 const props = defineProps<TableProps>();

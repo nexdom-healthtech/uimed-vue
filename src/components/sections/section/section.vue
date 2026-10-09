@@ -1,8 +1,9 @@
 <template>
-  <v-skeleton-loader
+  <skeleton-loader
     :loading="props.loading"
     :type="skeletonType"
-    :class="[widthClass, heightClass]"
+    :full-width="props.fullWidth"
+    :full-height="props.fullHeight"
   >
     <!-- The card and its actions have no alignment props, so `textAlign` uses utility classes -->
     <v-card
@@ -25,7 +26,7 @@
         </Button>
       </v-card-actions>
     </v-card>
-  </v-skeleton-loader>
+  </skeleton-loader>
 </template>
 
 <script lang="ts">
@@ -51,8 +52,9 @@ export default {
 
 <script setup lang="ts">
 import { computed } from "vue";
-import { VCard, VCardActions, VSkeletonLoader } from "vuetify/components";
+import { VCard, VCardActions } from "vuetify/components";
 import Button from "@/components/button/button.vue";
+import SkeletonLoader from "@/components/skeleton-loader/skeleton-loader.vue";
 import type { SectionProps } from "@/components/sections/section/types.ts";
 import { useSectionTextAlign, useSectionVariant } from "@/composables/section/section.ts";
 import { useFullHeight, useFullWidth } from "@/composables/dimensions/dimensions.ts";

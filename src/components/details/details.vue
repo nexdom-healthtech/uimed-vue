@@ -1,5 +1,5 @@
 <template>
-  <v-skeleton-loader :loading="props.loading" type="heading" width="100%">
+  <skeleton-loader :loading="props.loading" type="heading" full-width>
     <v-expansion-panels :flat="outlined" :data-testid="props.dataTestid">
       <v-expansion-panel :class="{ border: outlined }">
         <v-expansion-panel-title>{{ props.title }}</v-expansion-panel-title>
@@ -8,7 +8,7 @@
         </v-expansion-panel-text>
       </v-expansion-panel>
     </v-expansion-panels>
-  </v-skeleton-loader>
+  </skeleton-loader>
 </template>
 
 <script lang="ts">
@@ -39,8 +39,8 @@ import {
   VExpansionPanels,
   VExpansionPanelText,
   VExpansionPanelTitle,
-  VSkeletonLoader,
 } from "vuetify/components";
+import SkeletonLoader from "@/components/skeleton-loader/skeleton-loader.vue";
 import type { DetailsProps } from "@/components/details/types.ts";
 
 const props = defineProps<DetailsProps>();

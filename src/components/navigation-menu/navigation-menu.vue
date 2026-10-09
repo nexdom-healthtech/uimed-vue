@@ -23,7 +23,7 @@
 
     <v-divider />
 
-    <v-skeleton-loader :loading="props.loading" type="list-item@6" color="primary">
+    <skeleton-loader :loading="props.loading" type="list-item@6" color="primary">
       <v-list nav>
         <template v-for="(item, index) in filteredItems" :key="index">
           <template v-if="isParentItem(item)">
@@ -50,7 +50,7 @@
           />
         </template>
       </v-list>
-    </v-skeleton-loader>
+    </skeleton-loader>
   </v-navigation-drawer>
 </template>
 
@@ -72,14 +72,8 @@ import {
 } from "@/components/navigation-menu/types.ts";
 import { routeToProps } from "@/composables/navigation/use-route-props.ts";
 import TextField from "@/components/inputs/text-field/text-field.vue";
-import {
-  VNavigationDrawer,
-  VList,
-  VListItem,
-  VListGroup,
-  VDivider,
-  VSkeletonLoader,
-} from "vuetify/components";
+import SkeletonLoader from "@/components/skeleton-loader/skeleton-loader.vue";
+import { VNavigationDrawer, VList, VListItem, VListGroup, VDivider } from "vuetify/components";
 import { useNavigationSearchShortcut } from "@/composables/navigation/use-navigation-search-shortcut.ts";
 import { computed, ref, useTemplateRef, type ComponentPublicInstance } from "vue";
 

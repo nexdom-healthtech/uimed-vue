@@ -1,5 +1,5 @@
 import { test, expect, type Page } from "@playwright/test";
-import { gotoPage } from "@e2e/utils.ts";
+import { expectLoadingAnnouncement, gotoPage } from "@e2e/utils.ts";
 
 test.describe("table", () => {
   test.beforeEach(async ({ page }) => {
@@ -27,6 +27,14 @@ test.describe("table", () => {
       const tbody = demoTable.locator("tbody");
       const rows = tbody.locator("tr");
       await expect(rows).toHaveCount(2);
+    });
+  });
+
+  test.describe("loading demo", () => {
+    test("renders the loading skeleton in the loading demo", async ({ page }) => {
+      const bones = page.locator(".vp-doc .v-skeleton-loader__bone");
+      await expect(bones.first()).toBeVisible();
+      await expectLoadingAnnouncement(page.locator(".vp-doc .v-skeleton-loader"), 1);
     });
   });
 

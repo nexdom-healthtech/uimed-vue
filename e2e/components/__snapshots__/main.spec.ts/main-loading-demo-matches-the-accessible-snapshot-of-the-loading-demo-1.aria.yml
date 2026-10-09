@@ -1,11 +1,11 @@
 - button "Menu de navegação" [expanded]
 - heading "Menu superior" [level=1]
-- alert
+- alert "Carregando..."
 - navigation:
     - textbox "Buscar" [disabled]:
         - /placeholder: Buscar (Ctrl+K)
     - alert
     - separator
-    - alert
+    - alert "Carregando..."
 - main:
     - heading "O conteúdo da página vai aqui..." [level=2]
