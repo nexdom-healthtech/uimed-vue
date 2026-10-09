@@ -3,7 +3,6 @@
     v-model="modelValue"
     :variant="vuetifyVariant"
     :type="vuetifyType"
-    :append-inner-icon="appendIcon"
     :rules
     :data-testid="props.dataTestid"
     :disabled="props.disabled"
@@ -19,16 +18,8 @@
     <template #loader="loader">
       <field-loader v-bind="loader" />
     </template>
-    <template v-if="isPasswordField" #append-inner>
-      <v-btn
-        :icon="passwordToggleIcon"
-        aria-label="Mostrar senha"
-        :aria-pressed="isPasswordVisible"
-        :disabled="props.disabled"
-        size="small"
-        variant="text"
-        @click="togglePassword"
-      />
+    <template v-if="appendIconProps" #append-inner>
+      <v-icon v-bind="appendIconProps" :disabled="props.disabled" />
     </template>
   </v-text-field>
 </template>
@@ -54,12 +45,12 @@ export default {
 <script setup lang="ts">
 import type { TextFieldProps } from "@/components/inputs/text-field/types.ts";
 import {
-  useTextFieldPasswordToggle,
+  useTextFieldAppendIcon,
   useTextFieldRules,
   useTextFieldType,
 } from "@/composables/inputs/text-field.ts";
 import { useTextFieldVariant } from "@/composables/inputs/fields.ts";
-import { VBtn, VTextField } from "vuetify/components";
+import { VIcon, VTextField } from "vuetify/components";
 import FieldLoader from "@/components/inputs/field-loader.vue";
 import { computed } from "vue";
 
@@ -71,17 +62,13 @@ const props = withDefaults(defineProps<TextFieldProps>(), {
 });
 
 const vuetifyVariant = useTextFieldVariant(() => props.variant);
-const {
-  isPasswordField,
-  isPasswordVisible,
-  icon: passwordToggleIcon,
-  toggle: togglePassword,
-} = useTextFieldPasswordToggle(() => props.type);
+const { isPasswordVisible, iconProps: appendIconProps } = useTextFieldAppendIcon(
+  () => props.type,
+  () => props.disabled,
+);
 const vuetifyType = useTextFieldType(() => props.type, isPasswordVisible);
 const rules = useTextFieldRules(props);
-const isSearchField = computed(() => props.type === "search");
-const computedClearable = computed(() => props.clearable ?? isSearchField.value);
-const appendIcon = computed(() => (isSearchField.value ? "mdi-magnify" : undefined));
+const computedClearable = computed(() => props.clearable ?? props.type === "search");
 
 function clear() {
   modelValue.value = "";

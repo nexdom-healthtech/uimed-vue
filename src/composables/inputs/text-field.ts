@@ -53,32 +53,65 @@ export function useTextFieldType(
   });
 }
 
-type PasswordToggle = {
-  isPasswordField: ComputedRef<boolean>;
+type AppendIconProps = {
+  icon: string;
+  "aria-label"?: string;
+  "aria-pressed"?: boolean;
+  onClick?: () => void;
+  onKeydown?: (event: KeyboardEvent) => void;
+};
+
+type AppendIcon = {
   isPasswordVisible: Readonly<Ref<boolean>>;
-  icon: ComputedRef<string>;
-  toggle: () => void;
+  iconProps: ComputedRef<AppendIconProps | undefined>;
 };
 
 /**
- * Controls the button that shows or hides a password field's value. The
- * password starts hidden and hides again whenever the type stops being
- * `password`.
+ * Controls the icon at the end of the field: a decorative magnifier on
+ * `search`, and the toggle that shows or hides the value on `password`. The
+ * toggle works with click, `Enter` and `Space`, does nothing while disabled,
+ * and the password hides again whenever the type stops being `password`.
  */
-export function useTextFieldPasswordToggle(type: MaybeRefOrGetter<TextFieldType>): PasswordToggle {
+export function useTextFieldAppendIcon(
+  type: MaybeRefOrGetter<TextFieldType>,
+  disabled: MaybeRefOrGetter<boolean>,
+): AppendIcon {
   const isPasswordField = computed(() => toValue(type) === "password");
   const isPasswordVisible = ref(false);
-  const icon = computed(() => (isPasswordVisible.value ? "mdi-eye-off" : "mdi-eye"));
 
   watch(isPasswordField, () => {
     isPasswordVisible.value = false;
   });
 
   function toggle() {
+    if (toValue(disabled)) return;
+
     isPasswordVisible.value = !isPasswordVisible.value;
   }
 
-  return { isPasswordField, isPasswordVisible: readonly(isPasswordVisible), icon, toggle };
+  // Same keys and handling as the input icons, which only respond to click otherwise
+  function onKeydown(event: KeyboardEvent) {
+    if (event.key !== "Enter" && event.key !== " ") return;
+
+    event.preventDefault();
+    event.stopPropagation();
+    toggle();
+  }
+
+  const iconProps = computed<AppendIconProps | undefined>(() => {
+    if (toValue(type) === "search") return { icon: "mdi-magnify" };
+    if (!isPasswordField.value) return undefined;
+
+    return {
+      icon: isPasswordVisible.value ? "mdi-eye-off" : "mdi-eye",
+      "aria-label": "Mostrar senha",
+      "aria-pressed": isPasswordVisible.value,
+      onClick: toggle,
+      onKeydown,
+    };
+  });
+
+  return { isPasswordVisible: readonly(isPasswordVisible), iconProps };
 }
 
 export function useTextFieldRules(

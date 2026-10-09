@@ -6,6 +6,9 @@ outline: deep
 
 O componente padrão para agrupar conteúdo relacionado se chama `Section`.
 
+> [!Warning]
+> Deve ser utilizado no lugar do `<section>` nativo.
+
 Dentro do mesmo também podemos adicionar o [`SectionContent`](#componente-sectioncontent).
 
 ## Propriedades
