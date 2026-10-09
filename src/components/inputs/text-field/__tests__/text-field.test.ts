@@ -106,13 +106,13 @@ describe("TextField", () => {
       it("should use text with clearable for search", async () => {
         const wrapper = mountTextField();
         const vTextField = findVTextField(wrapper);
-        expect(vTextField.props("appendInnerIcon")).toBeUndefined();
+        expect(wrapper.find(".v-field__append-inner .v-icon").exists()).toBe(false);
         expect(vTextField.props("clearable")).toBeFalsy();
 
         await wrapper.setProps({ type: "search" });
 
         expect(vTextField.props("type")).toBe("text");
-        expect(vTextField.props("appendInnerIcon")).toBe("mdi-magnify");
+        expect(wrapper.find(".v-field__append-inner .mdi-magnify").exists()).toBe(true);
         expect(vTextField.props("clearable")).toBeTruthy();
       });
 
@@ -132,12 +132,16 @@ describe("TextField", () => {
           },
         );
 
-        it("should keep the search icon without the toggle for search", async () => {
+        it("should keep the search icon decorative and out of the tab order", async () => {
           const wrapper = mountTextField();
           await wrapper.setProps({ type: "search" });
 
-          expect(findVTextField(wrapper).props("appendInnerIcon")).toBe("mdi-magnify");
-          expect(wrapper.find(".v-field__append-inner .mdi-magnify").exists()).toBe(true);
+          const icon = wrapper.find(".v-field__append-inner .v-icon");
+          expect(icon.classes()).toContain("mdi-magnify");
+          expect(icon.attributes("aria-hidden")).toBe("true");
+          expect(icon.attributes("role")).toBeUndefined();
+          expect(icon.attributes("tabindex")).toBeUndefined();
+          expect(icon.attributes("aria-label")).toBeUndefined();
           expect(findPasswordToggle(wrapper).exists()).toBe(false);
         });
 
@@ -146,14 +150,23 @@ describe("TextField", () => {
           await wrapper.setProps({ type: "password" });
 
           const toggle = findPasswordToggle(wrapper);
-          expect(toggle.element.tagName).toBe("BUTTON");
-          expect(toggle.attributes("type")).toBe("button");
+          expect(toggle.classes()).toContain("v-icon");
+          expect(toggle.element.parentElement?.classList).toContain("v-field__append-inner");
           expect(toggle.attributes("aria-label")).toBe("Mostrar senha");
           expect(toggle.attributes("aria-pressed")).toBe("false");
-          expect(toggle.attributes("disabled")).toBeUndefined();
-          expect(toggle.find(".v-icon").classes()).toContain("mdi-eye");
-          expect(toggle.find(".v-icon").attributes("aria-hidden")).toBe("true");
-          expect(findVTextField(wrapper).props("appendInnerIcon")).toBeUndefined();
+          expect(toggle.attributes("aria-hidden")).toBe("false");
+          expect(toggle.attributes("tabindex")).toBe("0");
+          expect(toggle.classes()).toContain("mdi-eye");
+        });
+
+        it.each(["Enter", " "])('should toggle the password on "%s"', async (key) => {
+          const wrapper = mountTextField();
+          await wrapper.setProps({ type: "password" });
+
+          await findPasswordToggle(wrapper).trigger("keydown", { key });
+
+          expect(wrapper.find("input").attributes("type")).toBe("text");
+          expect(findPasswordToggle(wrapper).attributes("aria-pressed")).toBe("true");
         });
 
         it("should show and hide the password when clicked", async () => {
@@ -166,13 +179,13 @@ describe("TextField", () => {
           expect(wrapper.find("input").attributes("type")).toBe("text");
           expect(findPasswordToggle(wrapper).attributes("aria-pressed")).toBe("true");
           expect(findPasswordToggle(wrapper).attributes("aria-label")).toBe("Mostrar senha");
-          expect(findPasswordToggle(wrapper).find(".v-icon").classes()).toContain("mdi-eye-off");
+          expect(findPasswordToggle(wrapper).classes()).toContain("mdi-eye-off");
 
           await findPasswordToggle(wrapper).trigger("click");
 
           expect(wrapper.find("input").attributes("type")).toBe("password");
           expect(findPasswordToggle(wrapper).attributes("aria-pressed")).toBe("false");
-          expect(findPasswordToggle(wrapper).find(".v-icon").classes()).toContain("mdi-eye");
+          expect(findPasswordToggle(wrapper).classes()).toContain("mdi-eye");
           expect(wrapper.props("modelValue")).toBe("segredo");
         });
 
@@ -195,9 +208,13 @@ describe("TextField", () => {
           await wrapper.setProps({ type: "password", disabled: true });
 
           const toggle = findPasswordToggle(wrapper);
-          expect(toggle.attributes("disabled")).toBeDefined();
+          expect(toggle.classes()).toContain("v-icon--disabled");
+          expect(toggle.attributes("tabindex")).toBe("-1");
 
           await toggle.trigger("click");
+          expect(wrapper.find("input").attributes("type")).toBe("password");
+
+          await toggle.trigger("keydown", { key: "Enter" });
           expect(wrapper.find("input").attributes("type")).toBe("password");
         });
 
@@ -206,7 +223,8 @@ describe("TextField", () => {
           await wrapper.setProps({ type: "password", readonly: true, loading: true });
 
           const toggle = findPasswordToggle(wrapper);
-          expect(toggle.attributes("disabled")).toBeUndefined();
+          expect(toggle.classes()).not.toContain("v-icon--disabled");
+          expect(toggle.attributes("tabindex")).toBe("0");
 
           await toggle.trigger("click");
           expect(wrapper.find("input").attributes("type")).toBe("text");
@@ -378,5 +396,5 @@ function findVTextField(wrapper: ReturnType<typeof mountTextField>) {
 }
 
 function findPasswordToggle(wrapper: ReturnType<typeof mountTextField>) {
-  return wrapper.find("button[aria-label='Mostrar senha']");
+  return wrapper.find("[role='button'][aria-label='Mostrar senha']");
 }

@@ -89,7 +89,7 @@ import { UTextField } from "@nexdom/uimed-vue/components";
 
 ### Senha
 
-Com `type="password"`, o campo oculta o valor digitado e exibe o botão "Mostrar senha", que alterna entre mostrar e ocultar a senha. O botão também pode ser acessado pelo teclado: a partir do campo, pressione `Tab` para focá-lo e `Espaço` ou `Enter` para alternar. A senha volta a ficar oculta ao pressionar o botão novamente ou quando o `type` muda.
+Com `type="password"`, o campo oculta o valor digitado e exibe um ícone de olho, anunciado pelos leitores de tela como o botão "Mostrar senha", que alterna entre mostrar e ocultar a senha. O ícone também pode ser acessado pelo teclado: a partir do campo, pressione `Tab` para focá-lo e `Espaço` ou `Enter` para alternar. A senha volta a ficar oculta ao pressionar o ícone novamente ou quando o `type` muda.
 
 <demo>
 <u-text-field label="Senha" type="password" data-testid="text-field-demo-password" />
@@ -98,6 +98,24 @@ Com `type="password"`, o campo oculta o valor digitado e exibe o botão "Mostrar
 ```vue
 <template>
   <u-text-field label="Senha" type="password" />
+</template>
+
+<script lang="ts" setup>
+import { UTextField } from "@nexdom/uimed-vue/components";
+</script>
+```
+
+### Pesquisa
+
+Com `type="search"`, o campo exibe um ícone de lupa e, por padrão, o recurso para limpar o valor digitado (`clearable`). A lupa é apenas visual: não é anunciada pelos leitores de tela e não recebe foco ao pressionar `Tab`.
+
+<demo>
+<u-text-field label="Pesquisar" type="search" data-testid="text-field-demo-search" />
+</demo>
+
+```vue
+<template>
+  <u-text-field label="Pesquisar" type="search" />
 </template>
 
 <script lang="ts" setup>

@@ -162,6 +162,29 @@ test.describe("text-field", () => {
     });
   });
 
+  test.describe("search demo", () => {
+    test("skips the search icon with Tab, leaving the field", async ({ page }) => {
+      const searchTextField = page.getByTestId("text-field-demo-search");
+      const input = searchTextField.locator("input");
+      const icon = searchTextField.locator(".v-field__append-inner .v-icon");
+
+      await input.fill("consulta");
+      await expect(icon).toHaveAttribute("aria-hidden", "true");
+      await expect(icon).not.toHaveAttribute("tabindex");
+
+      await page.keyboard.press("Tab");
+
+      await expect(input).not.toBeFocused();
+      await expect(searchTextField.locator(":focus")).toHaveCount(0);
+    });
+
+    test("matches the accessible snapshot of the search demo", async ({ page }) => {
+      const searchTextField = page.getByTestId("text-field-demo-search");
+
+      await expect(searchTextField).toMatchAriaSnapshot();
+    });
+  });
+
   test.describe("UI consistency", () => {
     test("matches last screenshot", async ({ page }) => {
       await expect(page).toHaveScreenshot({ fullPage: true });
