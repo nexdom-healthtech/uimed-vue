@@ -6,6 +6,9 @@ outline: deep
 
 O componente padrão para exibir imagens se chama `Img`.
 
+> [!Warning]
+> Deve ser utilizado no lugar do `<img>` nativo.
+
 As imagens são decorativas: leitores de tela as ignoram. Quando a imagem transmite informação, apresente essa informação também em texto na página.
 
 Por padrão, a imagem só é carregada quando está prestes a aparecer na tela. Até lá, e enquanto ela carrega, o espaço reservado para ela fica vazio. Informe as dimensões da imagem (`width` e `height`, ou `aspectRatio`) para reservar esse espaço e evitar que o conteúdo da página se desloque quando ela aparecer.
