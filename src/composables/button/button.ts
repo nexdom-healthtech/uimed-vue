@@ -1,4 +1,6 @@
 import type { ButtonProps, ButtonVariant } from "@/components/button/types.ts";
+import useVuetifyColor from "@/composables/colors/use-vuetify-color.ts";
+import useVuetifyTextColor from "@/composables/colors/use-vuetify-text-color.ts";
 import { computed, toValue, type ComputedRef, type MaybeRefOrGetter } from "vue";
 import type { ComponentProps } from "vue-component-type-helpers";
 import type { RouteLocationRaw } from "vue-router";
@@ -52,6 +54,20 @@ export function useButtonType(
     if (!toValue(route)) return toValue(type) ?? "button";
     return toValue(blocked) ? "button" : undefined;
   });
+}
+
+/**
+ * Maps the button's color to Vuetify's. A ghost button has no fill, so its color is the text's,
+ * which takes the color's text shade to keep WCAG AA's contrast.
+ */
+export function useButtonColor(
+  color: MaybeRefOrGetter<ButtonProps["color"]>,
+  variant: MaybeRefOrGetter<ButtonProps["variant"]>,
+) {
+  const fillColor = useVuetifyColor(color);
+  const textColor = useVuetifyTextColor(color);
+
+  return computed(() => (toValue(variant) === "ghost" ? textColor.value : fillColor.value));
 }
 
 /**
