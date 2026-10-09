@@ -52,6 +52,7 @@
     "postinstall": "playwright install --with-deps chromium"
   },
   "devDependencies": {
+    "@axe-core/playwright": "^4.13.0",
     "@commitlint/cli": "^21.2.1",
     "@commitlint/config-conventional": "^21.2.0",
     "@mdi/font": "^7.4.47",
