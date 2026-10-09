@@ -31,6 +31,7 @@ describe("useToast", () => {
             text: message,
             color: vuetifyColor,
             prependIcon: `$${vuetifyColor}`,
+            timerColor: `rgb(var(--v-theme-on-${vuetifyColor}))`,
           };
 
           toast({ message, color });
