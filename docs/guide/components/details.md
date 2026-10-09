@@ -6,6 +6,9 @@ outline: deep
 
 O componente padrão para exibir conteúdo que pode ser expandido e recolhido se chama `Details`.
 
+> [!Warning]
+> Deve ser utilizado no lugar do `<details>` nativo.
+
 O conteúdo inicia recolhido e é exibido ao clicar no título.
 
 ## Propriedades
