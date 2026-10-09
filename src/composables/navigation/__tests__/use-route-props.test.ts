@@ -1,4 +1,4 @@
-import useRouteProps from "@/composables/navigation/use-route-props.ts";
+import useRouteProps, { routeToListItemProps } from "@/composables/navigation/use-route-props.ts";
 import { ref } from "vue";
 
 describe("useRouteProps", () => {
@@ -24,5 +24,21 @@ describe("useRouteProps", () => {
 
     expect(props.value).not.toHaveProperty("to");
     expect(props.value).toHaveProperty("href", help.value);
+  });
+});
+
+describe("routeToListItemProps", () => {
+  it.each([undefined, ""])("should make an item without a route (%j) a button", (route) => {
+    expect(routeToListItemProps(route)).toEqual({ role: "button" });
+  });
+
+  it("should link an item with a vue router route", () => {
+    const route = { path: "/help" };
+    expect(routeToListItemProps(route)).toEqual({ to: route });
+  });
+
+  it("should link an item with an external route", () => {
+    const route = "https://localhost:8080/help";
+    expect(routeToListItemProps(route)).toEqual({ href: route });
   });
 });

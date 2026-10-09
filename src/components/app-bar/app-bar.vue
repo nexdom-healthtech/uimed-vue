@@ -64,11 +64,18 @@
                   :active="!notification.read"
                   :title="notification.title"
                   :subtitle="notification.subtitle"
-                  active-class="text-primary"
+                  active-class="text-primary-text"
                 >
+                  <!-- Only the unread notifications' title is green: the subtitle's lower opacity
+                  would take the green below WCAG AA's contrast, so it keeps the theme's text color.
+                  No prop sets the subtitle's color -->
+                  <template #subtitle="{ subtitle }">
+                    <span class="text-high-emphasis">{{ subtitle }}</span>
+                  </template>
                   <template v-if="notification.when" #append>
                     <v-list-item-action end>
-                      <small class="opacity-60">
+                      <!-- No prop sets the secondary text color, which follows the theme's contrast -->
+                      <small class="text-medium-emphasis">
                         {{ notification.when }}
                       </small>
                     </v-list-item-action>
@@ -98,20 +105,29 @@
 
             <v-divider />
 
-            <v-list nav>
+            <!-- Vuetify's `list` role only allows list items, but the options are links and
+            separators -->
+            <v-list nav role="group">
               <template v-for="(option, index) in props.user?.options" :key="index">
                 <v-divider v-if="index > 0" class="mt-1" />
 
                 <template v-if="isParentOption(option)">
                   <v-list-group>
-                    <template #activator="{ props }">
-                      <v-list-item v-bind="props" :title="option.description" />
+                    <!-- Vuetify makes the group's header a list item, but it's a button that expands
+                    the group -->
+                    <template #activator="{ props, isOpen }">
+                      <v-list-item
+                        v-bind="props"
+                        :title="option.description"
+                        :aria-expanded="isOpen"
+                        role="button"
+                      />
                     </template>
 
                     <v-list-item
                       v-for="(childOption, index) in option.items"
                       :key="index"
-                      v-bind="routeToProps(childOption.route)"
+                      v-bind="routeToListItemProps(childOption.route)"
                       :title="childOption.description"
                       @click="childOption.action"
                     />
@@ -121,7 +137,7 @@
                 <v-list-item
                   v-else
                   :title="option.description"
-                  v-bind="routeToProps(option.route)"
+                  v-bind="routeToListItemProps(option.route)"
                   @click="option.action"
                 />
               </template>
@@ -145,7 +161,7 @@ import {
   type ParentOption,
   type ParentOptionOrOption,
 } from "@/components/app-bar/types.ts";
-import useRouteProps, { routeToProps } from "@/composables/navigation/use-route-props.ts";
+import useRouteProps, { routeToListItemProps } from "@/composables/navigation/use-route-props.ts";
 import { useNavigationShortcutKeys } from "@/composables/navigation/use-navigation-search-shortcut.ts";
 import { computed, watch } from "vue";
 import {

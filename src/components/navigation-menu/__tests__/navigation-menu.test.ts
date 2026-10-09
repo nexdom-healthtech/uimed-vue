@@ -1,4 +1,10 @@
-import { VNavigationDrawer, VListItem, VListGroup, VSkeletonLoader } from "vuetify/components";
+import {
+  VNavigationDrawer,
+  VList,
+  VListItem,
+  VListGroup,
+  VSkeletonLoader,
+} from "vuetify/components";
 import NavigationMenu from "@/components/navigation-menu/navigation-menu.vue";
 import TextField from "@/components/inputs/text-field/text-field.vue";
 import { owners } from "@/composables/navigation/use-navigation-search-shortcut.ts";
@@ -61,6 +67,11 @@ describe("NavigationMenu", () => {
         expect(vListItems).toHaveLength(0);
       });
 
+      // Vuetify's `list` role only allows list items, but the items are links
+      it("should present the items as a group", () => {
+        expect(wrapper.findComponent(VList).attributes("role")).toBe("group");
+      });
+
       it("should render plain items with correct title", async () => {
         await wrapper.setProps({ items });
 
@@ -110,6 +121,24 @@ describe("NavigationMenu", () => {
 
         const groupActivator = vListGroup.findComponent(VListItem);
         expect(groupActivator.props("title")).toBe(parentItem.description);
+      });
+
+      it("should present a group's header as a button that tells whether it's expanded", async () => {
+        await wrapper.setProps({ items: parentItems });
+
+        const header = findVListGroups(wrapper)[0].findComponent(VListItem);
+        expect(header.attributes("role")).toBe("button");
+        expect(header.attributes("aria-expanded")).toBe("false");
+
+        await header.trigger("click");
+        expect(header.attributes("aria-expanded")).toBe("true");
+      });
+
+      it("should present items with a route as links and the others as buttons", async () => {
+        await wrapper.setProps({ items });
+
+        const roles = findVListItems(wrapper).map((vListItem) => vListItem.attributes("role"));
+        expect(roles).toEqual(items.map(({ route }) => (route ? "link" : "button")));
       });
 
       it("should render grouped items' children correctly", async () => {
