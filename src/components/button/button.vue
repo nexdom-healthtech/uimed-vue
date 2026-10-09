@@ -44,12 +44,12 @@ import { computed } from "vue";
 import { VBtn, VProgressCircular } from "vuetify/components";
 import type { ButtonProps, ButtonEmits } from "@/components/button/types.ts";
 import {
+  useButtonColor,
   useButtonForm,
   useButtonRoute,
   useButtonType,
   useButtonVariant,
 } from "@/composables/button/button.ts";
-import useVuetifyColor from "@/composables/colors/use-vuetify-color.ts";
 import { useFullWidth } from "@/composables/dimensions/dimensions.ts";
 import useRouteProps from "@/composables/navigation/use-route-props.ts";
 
@@ -57,7 +57,10 @@ const props = defineProps<ButtonProps>();
 const emit = defineEmits<ButtonEmits>();
 
 const variant = useButtonVariant(() => props.variant);
-const color = useVuetifyColor(() => props.color);
+const color = useButtonColor(
+  () => props.color,
+  () => props.variant,
+);
 const widthClass = useFullWidth(() => props.fullWidth);
 // Disabling the button while loading keeps it from being clicked and from submitting its form,
 // including through the implicit submission of pressing `Enter` in one of the form's fields
