@@ -1,62 +1,83 @@
 /**
- * Name of an icon available to the components that accept one (e.g. the items of the navigation
- * menu). The full list, with a preview of each icon, is on the "Ícones" guide page.
+ * Names of the icons available to the components that accept one (e.g. `UIconButton` and the
+ * items of the navigation menu), in the order the "Ícones" guide page lists them. A name ending
+ * in `-alternative` is an alternative version of the same drawing (currently, outlined).
+ *
+ * Like the rest of the library, it's meant for apps built with a bundler (e.g. Vite), as importing
+ * it also imports the library's styles.
+ *
+ * @example
+ * ```ts
+ * import { icons } from "@nexdom/uimed-vue";
+ *
+ * const isIcon = (name: string) => icons.some((icon) => icon === name);
+ * ```
  *
  * @see {@link https://nexdom-healthtech.github.io/uimed-vue/guide/icons | Icons Guide}
  */
-export type Icon =
-  | "home"
-  | "home-outline"
-  | "account"
-  | "account-outline"
-  | "account-group"
-  | "account-group-outline"
-  | "calendar"
-  | "calendar-outline"
-  | "clipboard-text"
-  | "clipboard-text-outline"
-  | "file-document"
-  | "file-document-outline"
-  | "flask"
-  | "flask-outline"
-  | "folder"
-  | "folder-outline"
-  | "chart-box"
-  | "chart-box-outline"
-  | "wallet"
-  | "wallet-outline"
-  | "cog"
-  | "cog-outline"
-  | "stethoscope"
-  | "pill"
-  | "hospital";
+export const icons = [
+  "home",
+  "home-alternative",
+  "account",
+  "account-alternative",
+  "account-group",
+  "account-group-alternative",
+  "calendar",
+  "calendar-alternative",
+  "clipboard-text",
+  "clipboard-text-alternative",
+  "file-document",
+  "file-document-alternative",
+  "flask",
+  "flask-alternative",
+  "folder",
+  "folder-alternative",
+  "chart-box",
+  "chart-box-alternative",
+  "wallet",
+  "wallet-alternative",
+  "cog",
+  "cog-alternative",
+  "stethoscope",
+  "pill",
+  "hospital",
+] as const;
+
+/**
+ * Name of an icon available to the components that accept one (e.g. `UIconButton` and the items
+ * of the navigation menu): one of {@link icons}. The full list, with a preview of each icon, is on
+ * the "Ícones" guide page.
+ *
+ * @see {@link https://nexdom-healthtech.github.io/uimed-vue/guide/icons | Icons Guide}
+ */
+export type Icon = (typeof icons)[number];
 
 /**
  * Icon font class of each {@link Icon}.
  */
 export const iconToVuetifyIcon: Record<Icon, string> = {
   home: "mdi-home",
-  "home-outline": "mdi-home-outline",
+  "home-alternative": "mdi-home-outline",
   account: "mdi-account",
-  "account-outline": "mdi-account-outline",
+  "account-alternative": "mdi-account-outline",
   "account-group": "mdi-account-group",
-  "account-group-outline": "mdi-account-group-outline",
+  "account-group-alternative": "mdi-account-group-outline",
   calendar: "mdi-calendar",
-  "calendar-outline": "mdi-calendar-outline",
+  "calendar-alternative": "mdi-calendar-outline",
   "clipboard-text": "mdi-clipboard-text",
-  "clipboard-text-outline": "mdi-clipboard-text-outline",
+  "clipboard-text-alternative": "mdi-clipboard-text-outline",
   "file-document": "mdi-file-document",
-  "file-document-outline": "mdi-file-document-outline",
+  "file-document-alternative": "mdi-file-document-outline",
   flask: "mdi-flask",
-  "flask-outline": "mdi-flask-outline",
+  "flask-alternative": "mdi-flask-outline",
   folder: "mdi-folder",
-  "folder-outline": "mdi-folder-outline",
+  "folder-alternative": "mdi-folder-outline",
   "chart-box": "mdi-chart-box",
-  "chart-box-outline": "mdi-chart-box-outline",
+  "chart-box-alternative": "mdi-chart-box-outline",
   wallet: "mdi-wallet",
-  "wallet-outline": "mdi-wallet-outline",
+  "wallet-alternative": "mdi-wallet-outline",
   cog: "mdi-cog",
-  "cog-outline": "mdi-cog-outline",
+  "cog-alternative": "mdi-cog-outline",
   stethoscope: "mdi-stethoscope",
   pill: "mdi-pill",
   hospital: "mdi-hospital-building",

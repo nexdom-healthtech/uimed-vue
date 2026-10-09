@@ -1,4 +1,5 @@
-import { createUimed } from "@/index.ts";
+import { createUimed, icons } from "@/index.ts";
+import { icons as iconNames } from "@/consts/icons.ts";
 import { createVuetify, type ThemeDefinition } from "vuetify";
 import { pt } from "vuetify/locale";
 
@@ -33,6 +34,13 @@ describe("index", () => {
         locale: { locale: "pt-BR", messages: { "pt-BR": pt } },
         theme: { defaultTheme: "light", themes: { light } },
       });
+    });
+  });
+
+  describe("icons", () => {
+    it("should export the names of the available icons", () => {
+      expect(icons).toBe(iconNames);
+      expect(icons).toContain("home");
     });
   });
 });

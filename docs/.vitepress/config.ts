@@ -135,6 +135,7 @@ export default defineConfig({
               text: "Ações",
               items: [
                 { text: "Botões", link: "/guide/components/button" },
+                { text: "Botões de ícone", link: "/guide/components/icon-button" },
                 { text: "Links", link: "/guide/components/link" },
               ],
             },
@@ -209,6 +210,7 @@ export default defineConfig({
                 { text: "UColumn", link: "/api/components/grid/column" },
               ],
             },
+            { text: "UIconButton", link: "/api/components/icon-button" },
             { text: "UImg", link: "/api/components/img" },
             { text: "ULink", link: "/api/components/link" },
             { text: "UMain", link: "/api/components/main" },

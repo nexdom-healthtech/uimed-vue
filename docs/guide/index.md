@@ -22,6 +22,7 @@ Os componentes a seguir possuem exemplos práticos de utilização dentro desta 
 | Recurso                                                                | Descrição                                              |
 | ---------------------------------------------------------------------- | ------------------------------------------------------ |
 | [Botões](./components/button)                                          | Componente de botão.                                   |
+| [Botões de ícone](./components/icon-button)                            | Componente de botão que exibe apenas um ícone.         |
 | [Campos com preenchimento automático](./components/autocomplete-field) | Componente para autocomplete/combobox.                 |
 | [Caixas de seleção](./components/checkbox)                             | Componente para caixa de seleção.                      |
 | [Campos de data e hora](./components/date-time-field)                  | Componente para campo de data e/ou hora.               |

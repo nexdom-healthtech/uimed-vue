@@ -1,41 +1,38 @@
 import { gotoPage } from "@e2e/utils.ts";
-import { iconToVuetifyIcon } from "@/consts/icons.ts";
+import { iconToVuetifyIcon, icons } from "@/consts/icons.ts";
 import { test, expect, type Locator, type Page } from "@playwright/test";
-
-// The names the components accept, in the order the page lists them
-const icons = Object.keys(iconToVuetifyIcon);
 
 test.describe("icons", () => {
   test.beforeEach(async ({ page }) => {
     await gotoPage(page, "guide/icons");
   });
 
-  test("lists every icon name in the table", async ({ page }) => {
-    const names = await getTable(page).locator("tbody code").allTextContents();
+  test.describe("list", () => {
+    test("lists every icon, in order, with its name below the button that copies it", async ({
+      page,
+    }) => {
+      const items = getItems(page);
 
-    expect(names.toSorted()).toEqual(icons.toSorted());
-  });
-
-  test.describe("demo", () => {
-    test.beforeEach(async ({ page }) => {
-      await getNavigationButton(page).click();
-      await expect(getNavigationMenu(page)).toContainClass("v-navigation-drawer--active");
+      await expect(items).toHaveCount(icons.length);
+      await expect(items.locator("code")).toHaveText([...icons]);
+      for (const [index, icon] of icons.entries()) {
+        await expect(items.nth(index).getByRole("button")).toHaveAccessibleName(
+          `Copiar o nome ${icon}`,
+        );
+      }
+      await expect(getCount(page)).toHaveText(`${icons.length} ícones`);
+      await expect(getCount(page)).toHaveAttribute("aria-live", "polite");
     });
 
-    test("lists every icon, named after it, in the navigation menu", async ({ page }) => {
-      await expect(getItems(page)).toHaveText(icons);
-    });
-
-    test("renders each icon before its name, hidden from screen readers", async ({ page }) => {
+    test("draws each icon with the icon font, hidden from screen readers", async ({ page }) => {
       await page.evaluate(() => document.fonts.ready);
       const items = await getItems(page).all();
       expect(items).toHaveLength(icons.length);
 
       for (const [index, item] of items.entries()) {
-        const icon = item.locator(".v-list-item__prepend .v-icon");
-        const vuetifyIcon = Object.values(iconToVuetifyIcon)[index];
+        const icon = item.locator(".v-icon");
 
-        await expect(icon).toContainClass(vuetifyIcon);
+        await expect(icon).toContainClass(iconToVuetifyIcon[icons[index]]);
         await expect(icon).toHaveAttribute("aria-hidden", "true");
         expect(await getGlyph(icon)).toEqual({
           content: expect.not.stringMatching(/^(none|normal|"")$/),
@@ -43,32 +40,160 @@ test.describe("icons", () => {
         });
       }
     });
+
+    test("shows the suggested use below each name, shared by the alternative version", async ({
+      page,
+    }) => {
+      await expect(getItem(page, "home")).toContainText("Início");
+      await expect(getItem(page, "home-alternative")).toContainText("Início");
+      await expect(getItem(page, "hospital")).toContainText("Unidades, rede");
+    });
+
+    test("matches the accessible snapshot of the list", async ({ page }) => {
+      await expect(getList(page)).toMatchAriaSnapshot();
+    });
+  });
+
+  test.describe("search", () => {
+    test("filters by name, ignoring case", async ({ page }) => {
+      await getSearch(page).fill("PILL");
+
+      await expect(getNames(page)).toHaveText(["pill"]);
+      await expect(getCount(page)).toHaveText("1 ícone");
+    });
+
+    test("filters by suggested use, ignoring case and accents", async ({ page }) => {
+      await getSearch(page).fill("PRONTUARIO");
+      await expect(getNames(page)).toHaveText(["clipboard-text", "clipboard-text-alternative"]);
+      await expect(getCount(page)).toHaveText("2 ícones");
+
+      await getSearch(page).fill("unidádes");
+      await expect(getNames(page)).toHaveText(["hospital"]);
+    });
+
+    test("ignores spaces around the search", async ({ page }) => {
+      await getSearch(page).fill("  exames  ");
+
+      await expect(getNames(page)).toHaveText(["flask", "flask-alternative"]);
+    });
+
+    test("tells when no icon is found, and lists every icon again once cleared", async ({
+      page,
+    }) => {
+      await getSearch(page).fill("xyz");
+
+      await expect(getCount(page)).toHaveText("Nenhum ícone encontrado.");
+      await expect(getList(page)).not.toBeAttached();
+
+      await page
+        .getByTestId("icons-search")
+        .getByRole("button", { name: /limpar/i })
+        .click();
+
+      await expect(getSearch(page)).toHaveValue("");
+      await expect(getItems(page)).toHaveCount(icons.length);
+      await expect(getCount(page)).toHaveText(`${icons.length} ícones`);
+    });
+  });
+
+  test.describe("copy", () => {
+    test.describe("when the browser allows writing to the clipboard", () => {
+      test.use({ permissions: ["clipboard-read", "clipboard-write"] });
+
+      test("copies the name of the clicked icon and confirms it", async ({ page }) => {
+        await getCopyButton(page, "home-alternative").click();
+
+        await expect
+          .poll(() => page.evaluate(() => navigator.clipboard.readText()))
+          .toBe("home-alternative");
+        await expect(getToast(page, "success")).toHaveText(/Nome "home-alternative" copiado\./);
+      });
+
+      test("copies by keyboard", async ({ page }) => {
+        await getCopyButton(page, "pill").focus();
+        await page.keyboard.press("Enter");
+
+        await expect.poll(() => page.evaluate(() => navigator.clipboard.readText())).toBe("pill");
+        await expect(getToast(page, "success")).toHaveText(/Nome "pill" copiado\./);
+      });
+    });
+
+    test.describe("when the clipboard rejects the copy", () => {
+      test.beforeEach(async ({ page }) => {
+        await page.addInitScript(() => {
+          Object.defineProperty(navigator, "clipboard", {
+            value: { writeText: () => Promise.reject(new Error("Write permission denied.")) },
+          });
+        });
+        await page.reload();
+      });
+
+      test("asks to select the name instead", async ({ page }) => {
+        await getCopyButton(page, "home").click();
+
+        await expect(getToast(page, "error")).toHaveText(
+          /Não foi possível copiar\. Selecione o nome "home" abaixo do ícone\./,
+        );
+      });
+    });
+
+    test.describe("when the browser has no clipboard", () => {
+      test.beforeEach(async ({ page }) => {
+        await page.addInitScript(() => {
+          Object.defineProperty(navigator, "clipboard", { value: undefined });
+        });
+        await page.reload();
+      });
+
+      test("asks to select the name instead", async ({ page }) => {
+        await getCopyButton(page, "cog").click();
+
+        await expect(getToast(page, "error")).toHaveText(
+          /Não foi possível copiar\. Selecione o nome "cog" abaixo do ícone\./,
+        );
+      });
+    });
   });
 
   test.describe("UI consistency", () => {
     test("matches last screenshot", async ({ page }) => {
-      await getNavigationButton(page).click();
-      await expect(getNavigationMenu(page)).toContainClass("v-navigation-drawer--active");
-
+      await page.evaluate(() => document.fonts.ready);
       await expect(page).toHaveScreenshot({ fullPage: true });
     });
   });
 });
 
-function getTable(page: Page) {
-  return page.locator(".vp-doc table");
+function getSearch(page: Page) {
+  return page.getByRole("textbox", { name: "Buscar ícone" });
 }
 
-function getNavigationButton(page: Page) {
-  return page.getByTestId("demo-icons-app-bar-navigation");
+function getCount(page: Page) {
+  return page.getByTestId("icons-count");
 }
 
-function getNavigationMenu(page: Page) {
-  return page.getByTestId("demo-icons-navigation-menu");
+function getList(page: Page) {
+  return page.getByTestId("icons-list");
 }
 
 function getItems(page: Page) {
-  return getNavigationMenu(page).locator(".v-list-item");
+  return getList(page).getByRole("listitem");
+}
+
+function getNames(page: Page) {
+  return getItems(page).locator("code");
+}
+
+function getItem(page: Page, icon: string) {
+  return getItems(page).filter({ has: page.locator("code").getByText(icon, { exact: true }) });
+}
+
+function getCopyButton(page: Page, icon: string) {
+  return page.getByRole("button", { name: `Copiar o nome ${icon}`, exact: true });
+}
+
+/** The toast of the given color, which also holds its close button */
+function getToast(page: Page, color: "success" | "error") {
+  return page.locator(`.v-overlay-container .v-snackbar__wrapper.bg-${color}`);
 }
 
 /**

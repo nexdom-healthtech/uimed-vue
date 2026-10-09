@@ -1,0 +1,101 @@
+- list:
+    - listitem:
+        - button "Copiar o nome home"
+        - code: home
+        - text: Início
+    - listitem:
+        - button "Copiar o nome home-alternative"
+        - code: home-alternative
+        - text: Início
+    - listitem:
+        - button "Copiar o nome account"
+        - code: account
+        - text: Perfil, beneficiário
+    - listitem:
+        - button "Copiar o nome account-alternative"
+        - code: account-alternative
+        - text: Perfil, beneficiário
+    - listitem:
+        - button "Copiar o nome account-group"
+        - code: account-group
+        - text: Pacientes, equipes
+    - listitem:
+        - button "Copiar o nome account-group-alternative"
+        - code: account-group-alternative
+        - text: Pacientes, equipes
+    - listitem:
+        - button "Copiar o nome calendar"
+        - code: calendar
+        - text: Agenda
+    - listitem:
+        - button "Copiar o nome calendar-alternative"
+        - code: calendar-alternative
+        - text: Agenda
+    - listitem:
+        - button "Copiar o nome clipboard-text"
+        - code: clipboard-text
+        - text: Prontuário, atendimentos
+    - listitem:
+        - button "Copiar o nome clipboard-text-alternative"
+        - code: clipboard-text-alternative
+        - text: Prontuário, atendimentos
+    - listitem:
+        - button "Copiar o nome file-document"
+        - code: file-document
+        - text: Documentos, guias
+    - listitem:
+        - button "Copiar o nome file-document-alternative"
+        - code: file-document-alternative
+        - text: Documentos, guias
+    - listitem:
+        - button "Copiar o nome flask"
+        - code: flask
+        - text: Exames
+    - listitem:
+        - button "Copiar o nome flask-alternative"
+        - code: flask-alternative
+        - text: Exames
+    - listitem:
+        - button "Copiar o nome folder"
+        - code: folder
+        - text: Cadastros
+    - listitem:
+        - button "Copiar o nome folder-alternative"
+        - code: folder-alternative
+        - text: Cadastros
+    - listitem:
+        - button "Copiar o nome chart-box"
+        - code: chart-box
+        - text: Relatórios
+    - listitem:
+        - button "Copiar o nome chart-box-alternative"
+        - code: chart-box-alternative
+        - text: Relatórios
+    - listitem:
+        - button "Copiar o nome wallet"
+        - code: wallet
+        - text: Financeiro
+    - listitem:
+        - button "Copiar o nome wallet-alternative"
+        - code: wallet-alternative
+        - text: Financeiro
+    - listitem:
+        - button "Copiar o nome cog"
+        - code: cog
+        - text: Configurações
+    - listitem:
+        - button "Copiar o nome cog-alternative"
+        - code: cog-alternative
+        - text: Configurações
+    - listitem:
+        - button "Copiar o nome stethoscope"
+        - code: stethoscope
+        - text: Consultas
+    - listitem:
+        - button "Copiar o nome pill"
+        - code: pill
+        - text: Medicamentos
+    - listitem:
+        - button "Copiar o nome hospital"
+        - code: hospital
+        - text: Unidades, rede
