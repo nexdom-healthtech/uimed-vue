@@ -1,4 +1,4 @@
-import { gotoPage } from "@e2e/utils.ts";
+import { expectNoA11yViolations, gotoPage } from "@e2e/utils.ts";
 import { test, expect, type Page } from "@playwright/test";
 
 test.describe("use-dialog", () => {
@@ -142,6 +142,22 @@ test.describe("use-dialog", () => {
         await expect(closeButton).toBeFocused();
       });
     }
+  });
+
+  test.describe("accessibility", () => {
+    test("has no violations with a dialog open", async ({ page }) => {
+      const dialog = getDialog(page);
+
+      for (const testId of ["btn-simple", "btn-actions"]) {
+        await page.getByTestId(testId).click();
+        await expect(dialog.getByRole("button").first()).toBeFocused();
+
+        await expectNoA11yViolations(page);
+
+        await page.keyboard.press("Escape");
+        await expect(dialog).toBeHidden();
+      }
+    });
   });
 
   test.describe("UI consistency", () => {

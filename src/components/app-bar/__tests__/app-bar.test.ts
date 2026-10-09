@@ -9,6 +9,7 @@ import {
   VIcon,
   VImg,
   VListGroup,
+  VList,
   VListItem,
   VMenu,
   VSkeletonLoader,
@@ -262,8 +263,25 @@ describe("AppBar", () => {
           const vCardNotifications = findVCardNotifications(vCard);
 
           vCardNotifications.forEach((vCardNotification, index) => {
-            expect(vCardNotification.props("activeClass")).toBe("text-primary");
+            expect(vCardNotification.props("activeClass")).toBe("text-primary-text");
             expect(vCardNotification.props("active")).toBe(!notifications[index].read);
+          });
+        });
+
+        // The subtitle's lower opacity would take the unread notifications' green below WCAG AA's
+        // contrast
+        it("should keep the theme's text color in the notification subtitles", async () => {
+          await wrapper.setProps({ notifications });
+
+          const vBtn = findVBtn(wrapper);
+          await vBtn.trigger("click");
+
+          const vCard = findVCard(wrapper);
+          const vCardNotifications = findVCardNotifications(vCard);
+
+          vCardNotifications.forEach((vCardNotification, index) => {
+            const subtitle = vCardNotification.find(".v-list-item-subtitle .text-high-emphasis");
+            expect(subtitle.text()).toBe(notifications[index].subtitle);
           });
         });
 
@@ -515,6 +533,17 @@ describe("AppBar", () => {
         expect(vMenu.emitted("update:modelValue")?.[0]).toBeTruthy();
       });
 
+      // Vuetify's `list` role only allows list items, but the options are links and separators
+      it("should present the user options as a group", async () => {
+        await wrapper.setProps({ user });
+
+        const vBtn = findVBtn(wrapper);
+        await vBtn.trigger("click");
+
+        const vList = findVCard(wrapper).findComponent(VList);
+        expect(vList.attributes("role")).toBe("group");
+      });
+
       describe("title and subtitle", () => {
         it("should present user info in the menu", async () => {
           await wrapper.setProps({ user });
@@ -606,10 +635,15 @@ describe("AppBar", () => {
             vCardOptionGroups.map(async (groupOptions, index) => {
               expect(groupOptions.exists()).toBeTruthy();
 
-              await groupOptions.trigger("click");
+              const header = groupOptions.findComponent(VListItem);
+              expect(header.attributes("role")).toBe("button");
+              expect(header.attributes("aria-expanded")).toBe("false");
+
+              await header.trigger("click");
 
               const [groupOption, ...groupItems] = groupOptions.findAllComponents(VListItem);
               expect(groupOption.props("title")).toBe(options[index].description);
+              expect(groupOption.attributes("aria-expanded")).toBe("true");
 
               await validateUserOptions(options[index].items, groupItems);
             }),
@@ -698,7 +732,7 @@ function findVCardNotifications(vCard: ReturnType<typeof findVCard>) {
 function findNotificationWhen(
   vCardNotification: ReturnType<typeof findVCardNotifications>[number],
 ) {
-  return vCardNotification.find(".opacity-60");
+  return vCardNotification.find(".text-medium-emphasis");
 }
 
 function findVCardAvatar(vCard: ReturnType<typeof findVCard>) {
@@ -725,6 +759,7 @@ async function validateUserOptions(
       expect(option.props("title")).toBe(options[index].description);
 
       const route = options[index].route;
+      expect(option.attributes("role")).toBe(route ? "link" : "button");
       expect(option.props(isExternalRoute(route) ? "href" : "to")).toBe(route);
       expect(option.props(isExternalRoute(route) ? "to" : "href")).toBeUndefined();
 

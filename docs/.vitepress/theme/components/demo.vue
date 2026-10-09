@@ -26,6 +26,13 @@ const classes = computed(() => ({
   display: flex;
   flex-wrap: wrap;
   gap: 0.5rem;
+  // Apps render the components inside `UMain`, which sets the theme's text color. The demos
+  // don't, so they'd inherit the docs' text color instead
+  color: color-mix(
+    in srgb,
+    rgb(var(--v-theme-on-background)) calc(var(--v-high-emphasis-opacity) * 100%),
+    transparent
+  );
 
   &-items-center {
     align-items: center;

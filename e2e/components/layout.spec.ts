@@ -1,4 +1,4 @@
-import { gotoPage, selectOption } from "@e2e/utils.ts";
+import { expectNoA11yViolations, gotoPage, selectOption } from "@e2e/utils.ts";
 import { test, expect, type Locator, type Page } from "@playwright/test";
 
 test.describe("layout", () => {
@@ -175,6 +175,12 @@ test.describe("layout", () => {
         await expect(preview).toHaveCSS("justify-content", justifyContent);
         expectAlignedX(await getBox(preview), await getColumnBoxes(preview), alignX);
       }
+    });
+  });
+
+  test.describe("accessibility", () => {
+    test("has no violations", async ({ page }) => {
+      await expectNoA11yViolations(page);
     });
   });
 

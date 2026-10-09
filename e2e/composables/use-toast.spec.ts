@@ -1,4 +1,4 @@
-import { gotoPage } from "@e2e/utils.ts";
+import { expectNoA11yViolations, gotoPage } from "@e2e/utils.ts";
 import { test, expect, type Page } from "@playwright/test";
 
 const buttons = [
@@ -23,6 +23,18 @@ test.describe("use-toast", () => {
         await expect(toasts).toBeVisible();
         await expect(toasts).toContainText(message);
       });
+    });
+  });
+
+  test.describe("accessibility", () => {
+    test("has no violations with a toast of each color open", async ({ page }) => {
+      for (const { testId } of buttons) {
+        await page.getByTestId(testId).click();
+        // Hovering pauses the toast's timer, so it doesn't close during the check
+        await (await getOverlay(page)).hover();
+
+        await expectNoA11yViolations(page);
+      }
     });
   });
 
