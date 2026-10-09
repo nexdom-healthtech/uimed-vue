@@ -6,6 +6,9 @@ outline: deep
 
 O componente padrão para exibir links de texto se chama `Link`.
 
+> [!Warning]
+> Deve ser utilizado no lugar do `<a>` nativo e do `<router-link>`.
+
 O texto do link é informado pelo slot padrão e também é o nome lido pelos leitores de tela. Por isso, ele deve descrever o destino do link (por exemplo, "Esqueceu sua senha?" em vez de "Clique aqui").
 
 Use o link para links avulsos, como um "Esqueceu sua senha?" abaixo de um formulário de login. Ele não é sublinhado, então não o use no meio de um parágrafo de texto, onde só a cor o distinguiria do texto ao redor. Para executar ações, use o [Button](./button).

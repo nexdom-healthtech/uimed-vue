@@ -6,6 +6,9 @@ outline: deep
 
 O componente para caixas de seleção se chama `Checkbox`.
 
+> [!Warning]
+> Deve ser utilizado no lugar do `<input>` nativo do tipo `checkbox`.
+
 ## Propriedades
 
 ### Labels

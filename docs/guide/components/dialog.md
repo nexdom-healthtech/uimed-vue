@@ -6,6 +6,9 @@ outline: deep
 
 O componente para apresentar conteúdo em uma janela modal, sobre a página, se chama `Dialog`. Enquanto a janela está aberta, o restante da página fica inacessível.
 
+> [!Warning]
+> Deve ser utilizado no lugar do `<dialog>` nativo.
+
 A janela abre e fecha pelo `v-model`. Para apresentar apenas uma mensagem ou pedir uma confirmação, prefira as composables [useDialog](../composables/use-dialog) e [useConfirm](../composables/use-confirm).
 
 ## Uso
