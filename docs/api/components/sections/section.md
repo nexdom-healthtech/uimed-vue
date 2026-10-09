@@ -19,7 +19,7 @@ Inclui suporte para ações sobre esses conteúdos, como botões para salvar, et
 
 ### `Action`
 
-Estende [`UButtonProps`](../button#props) com as seguintes propriedades adicionais:
+Estende [`UButtonProps`](../button#props), exceto `route`, com as seguintes propriedades adicionais:
 
 | Prop      | Tipo              | Descrição                                                                                             |
 | --------- | ----------------- | ----------------------------------------------------------------------------------------------------- |

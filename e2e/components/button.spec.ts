@@ -2,6 +2,7 @@ import { test, expect, type Locator, type Page } from "@playwright/test";
 import { gotoPage, selectOption } from "@e2e/utils.ts";
 
 const actionDuration = 1500;
+const externalUrl = "https://nexdom-healthtech.github.io/shared/";
 
 test.describe("button", () => {
   test.beforeEach(async ({ page }) => {
@@ -133,6 +134,39 @@ test.describe("button", () => {
     });
   });
 
+  test.describe("route demo", () => {
+    test("exposes the button as a link to the URL, in the same tab", async ({ page }) => {
+      const routeButton = getRouteButton(page);
+
+      await expect(routeButton).toHaveAttribute("href", externalUrl);
+      await expect(routeButton).not.toHaveAttribute("target");
+      await expect(routeButton).not.toHaveAttribute("type");
+    });
+
+    test("navigates to the URL through the browser when clicked", async ({ page, context }) => {
+      await mockExternalPage(page);
+
+      await getRouteButton(page).click();
+
+      await expect(page).toHaveURL(externalUrl);
+      await expect(page.getByRole("heading", { name: "Shared" })).toBeVisible();
+      expect(context.pages()).toHaveLength(1);
+    });
+
+    test("navigates to the URL by keyboard", async ({ page }) => {
+      await mockExternalPage(page);
+
+      await getRouteButton(page).focus();
+      await page.keyboard.press("Enter");
+
+      await expect(page).toHaveURL(externalUrl);
+    });
+
+    test("matches the accessible snapshot of the route demo", async ({ page }) => {
+      await expect(page.getByTestId("demo-route")).toMatchAriaSnapshot();
+    });
+  });
+
   test.describe("UI consistency", () => {
     test("matches last screenshot", async ({ page }) => {
       await expect(page).toHaveScreenshot({ fullPage: true });
@@ -142,6 +176,17 @@ test.describe("button", () => {
 
 function getPreviewButton(page: Page) {
   return page.getByTestId("btn-preview");
+}
+
+function getRouteButton(page: Page) {
+  return page.getByRole("link", { name: "Documentação do Shared", exact: true });
+}
+
+/** Serves the demo's external URL locally, so the tests don't depend on the network. */
+async function mockExternalPage(page: Page) {
+  await page.route(`${externalUrl}**`, (route) =>
+    route.fulfill({ contentType: "text/html", body: "<h1>Shared</h1>" }),
+  );
 }
 
 // How much of its parent's content box (without the padding) the button takes in width
