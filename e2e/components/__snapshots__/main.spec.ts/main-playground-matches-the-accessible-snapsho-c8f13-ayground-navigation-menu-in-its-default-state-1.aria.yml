@@ -3,6 +3,6 @@
         - /placeholder: Buscar (Ctrl+K)
     - alert
     - separator
-    - list:
+    - group:
         - link "Início"
-        - listitem: Documentação
+        - button "Documentação"
