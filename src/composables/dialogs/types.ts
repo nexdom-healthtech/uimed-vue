@@ -23,6 +23,7 @@ export interface ToastMessage {
   text: string;
   color: VuetifyColor;
   prependIcon?: string;
+  timerColor: string;
 }
 
 /**
