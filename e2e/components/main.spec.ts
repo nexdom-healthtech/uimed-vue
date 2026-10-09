@@ -1,5 +1,5 @@
 import { expectLoadingAnnouncement, gotoPage } from "@e2e/utils.ts";
-import { iconToVuetifyIcon } from "@/consts/icons.ts";
+import { icons } from "@/consts/icons.ts";
 import { test, expect, type Locator, type Page } from "@playwright/test";
 
 test.describe("main", () => {
@@ -129,14 +129,14 @@ test.describe("main", () => {
       }) => {
         // The children of the closed group are rendered, but hidden
         const items = getNavigationMenu(page).locator(".v-list-item").filter({ visible: true });
-        const icons = items.locator(".v-list-item__prepend .v-icon");
+        const itemIcons = items.locator(".v-list-item__prepend .v-icon");
         await expect(items).toHaveText(["Início", "Documentação", "Configurações"]);
 
-        await expect(icons).toHaveCount(3);
-        await expect(icons.nth(0)).toContainClass(iconToVuetifyIcon.home);
-        await expect(icons.nth(1)).toContainClass(iconToVuetifyIcon.folder);
-        await expect(icons.nth(2)).toContainClass(iconToVuetifyIcon.cog);
-        for (const icon of await icons.all()) {
+        await expect(itemIcons).toHaveCount(3);
+        await expect(itemIcons.nth(0)).toContainClass(icons.home);
+        await expect(itemIcons.nth(1)).toContainClass(icons.folder);
+        await expect(itemIcons.nth(2)).toContainClass(icons.cog);
+        for (const icon of await itemIcons.all()) {
           await expect(icon).toBeVisible();
           await expect(icon).toHaveAttribute("aria-hidden", "true");
         }

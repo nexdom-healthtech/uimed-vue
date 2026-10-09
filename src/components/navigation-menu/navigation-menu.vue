@@ -32,7 +32,7 @@
                 <v-list-item
                   v-bind="activatorProps"
                   :title="item.description"
-                  :prepend-icon="item.icon && iconToVuetifyIcon[item.icon]"
+                  :prepend-icon="item.icon && icons[item.icon]"
                 />
               </template>
 
@@ -41,7 +41,7 @@
                 :key="childIndex"
                 v-bind="routeToProps(childItem.route)"
                 :title="childItem.description"
-                :prepend-icon="childItem.icon && iconToVuetifyIcon[childItem.icon]"
+                :prepend-icon="childItem.icon && icons[childItem.icon]"
                 @click="childItem.action"
               />
             </v-list-group>
@@ -50,7 +50,7 @@
           <v-list-item
             v-else
             :title="item.description"
-            :prepend-icon="item.icon && iconToVuetifyIcon[item.icon]"
+            :prepend-icon="item.icon && icons[item.icon]"
             v-bind="routeToProps(item.route)"
             @click="item.action"
           />
@@ -77,7 +77,7 @@ import {
   type NavigationMenuParentItemOrItem,
 } from "@/components/navigation-menu/types.ts";
 import { routeToProps } from "@/composables/navigation/use-route-props.ts";
-import { iconToVuetifyIcon } from "@/consts/icons.ts";
+import { icons } from "@/consts/icons.ts";
 import TextField from "@/components/inputs/text-field/text-field.vue";
 import SkeletonLoader from "@/components/skeleton-loader/skeleton-loader.vue";
 import { VNavigationDrawer, VList, VListItem, VListGroup, VDivider } from "vuetify/components";

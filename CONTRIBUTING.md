@@ -143,6 +143,10 @@ const widthClass = useFullWidth(() => props.fullWidth);
 
 A new prop that does the same as one of these takes its name and type (e.g. `AlignX` from `src/composables/alignment/types.ts`). When a second component needs a mapping that only one component has, move it into a shared composable first. These composables are internal: they aren't exported from `src/composables/index.ts`.
 
+#### Icons
+
+Components accept icons by name (e.g. `icon="home"`), and the internal `icons` object in `src/consts/icons.ts` maps each name to its icon font class. To add an icon, add it to that map and to the list on the "Ícones" guide page (`docs/guide/icons.md`), and check that its class exists in the installed icon font. The unit test of `src/consts/icons.ts` checks every class, and the page's E2E test fails when the page and the map list different icons.
+
 ### Workarounds
 
 - [Instrumenting Vue compiler macro arguments (defineModel/defineOptions/defineProps) produces code the SFC compiler hoists out of the helper's scope](https://github.com/stryker-mutator/stryker-js/issues/6178)

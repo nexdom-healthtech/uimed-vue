@@ -1,7 +1,7 @@
 // @vitest-environment node
 // Reads the icon font's stylesheet from Node, as `src/__tests__/plugins.test.ts` does
 
-import { iconToVuetifyIcon } from "@/consts/icons.ts";
+import { icons } from "@/consts/icons.ts";
 import { readFileSync } from "node:fs";
 import { createRequire } from "node:module";
 
@@ -10,25 +10,27 @@ const iconFontCss = readFileSync(
   createRequire(import.meta.url).resolve("@mdi/font/css/materialdesignicons.css"),
   "utf8",
 );
-const icons = Object.entries(iconToVuetifyIcon);
+const mappedIcons = Object.entries(icons);
+const alternativeSuffix = "-alternative";
 
 describe("icons", () => {
-  it.each(icons)("should map %s to an icon of the installed icon font", (_, vuetifyIcon) => {
-    expect(iconFontCss).toContain(`.${vuetifyIcon}::before {`);
+  it.each(mappedIcons)("should map %s to an icon of the installed icon font", (_, iconClass) => {
+    expect(iconFontCss).toContain(`.${iconClass}::before {`);
   });
 
   it("should map each name to a different icon", () => {
-    const vuetifyIcons = new Set(Object.values(iconToVuetifyIcon));
+    const iconClasses = new Set(Object.values(icons));
 
-    expect(vuetifyIcons.size).toBe(icons.length);
+    expect(iconClasses.size).toBe(mappedIcons.length);
   });
 
-  it.each(icons.filter(([icon]) => icon.endsWith("-outline")))(
-    "should map %s to the outlined version of the same icon",
-    (icon, vuetifyIcon) => {
-      const [, filled] = icons.find(([name]) => `${name}-outline` === icon) ?? [];
+  it.each(mappedIcons.filter(([icon]) => icon.endsWith(alternativeSuffix)))(
+    "should map %s to the outlined version of its base icon",
+    (icon, iconClass) => {
+      const base = icon.slice(0, -alternativeSuffix.length);
+      const [, baseIconClass] = mappedIcons.find(([name]) => name === base) ?? [];
 
-      expect(vuetifyIcon).toBe(`${filled}-outline`);
+      expect(iconClass).toBe(`${baseIconClass}-outline`);
     },
   );
 });

@@ -1,5 +1,5 @@
 import type { RouteLocationRaw } from "vue-router";
-import type { Icon } from "@/consts/icons.ts";
+import type { Icon } from "@/consts/types.ts";
 
 /**
  * Props exposed by the {@link NavigationMenu} component.
