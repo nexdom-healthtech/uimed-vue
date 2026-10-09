@@ -149,6 +149,8 @@ A prop `navigation-menu` define as configurações para apresentação do menu l
 
 Para ocultar o menu de navegação, basta omitir essa prop.
 
+Cada item ou grupo pode exibir um ícone antes da sua descrição, informado pelo nome na propriedade `icon`. Os nomes disponíveis estão em [Ícones](../icons). Utilize ícones em todos os itens de um mesmo nível do menu, ou em nenhum deles: itens sem ícone ao lado de itens com ícone ficam com os títulos desalinhados.
+
 O menu também conta com um campo de busca que filtra itens e grupos em tempo real, no formato _case-insensitive_.
 
 O atalho `Ctrl + K` (`⌘ + K` no macOS), indicado no próprio campo de busca, abre o menu e coloca o foco na busca, com o texto já digitado selecionado. Com o menu aberto, o atalho apenas leva o foco de volta à busca. Ele funciona mesmo com o foco em um campo de formulário, mas é ignorado com o foco dentro de diálogos, confirmações, menus suspensos e editores de texto rico, ou no botão de um menu suspenso aberto.
@@ -186,9 +188,11 @@ const navigationMenu: NonNullable<MainProps["navigationMenu"]> = {
     {
       description: "Início",
       route: "/",
+      icon: "home",
     },
     {
       description: "Documentação",
+      icon: "folder",
       items: [
         {
           description: "Componentes",
@@ -202,6 +206,7 @@ const navigationMenu: NonNullable<MainProps["navigationMenu"]> = {
     },
     {
       description: "Configurações",
+      icon: "cog",
       action: () => window.alert("Abrindo configurações..."),
     },
   ],
@@ -384,9 +389,11 @@ O conteúdo da página ocupa toda a altura visível abaixo do menu superior (e a
       {
         description: "Início",
         route: "/",
+        icon: "home",
       },
       {
         description: "Documentação",
+        icon: "folder",
         items: [
           {
             description: "Componentes",
@@ -400,6 +407,7 @@ O conteúdo da página ocupa toda a altura visível abaixo do menu superior (e a
       },
       {
         description: "Configurações",
+        icon: "cog",
         action: () => window.alert("Abrindo configurações..."),
       },
     ],

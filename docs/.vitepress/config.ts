@@ -98,6 +98,7 @@ export default defineConfig({
           items: [
             { text: "O que é UIMed-Vue?", link: "/guide/" },
             { text: "Iniciando", link: "/guide/getting-started" },
+            { text: "Ícones", link: "/guide/icons" },
             { text: "Testes Unitários", link: "/guide/unit-testing" },
             { text: "Migrando da v1 para v2", link: "/guide/migration-v1-to-v2" },
           ],

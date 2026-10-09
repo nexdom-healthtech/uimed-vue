@@ -29,7 +29,11 @@
           <template v-if="isParentItem(item)">
             <v-list-group>
               <template #activator="{ props: activatorProps }">
-                <v-list-item v-bind="activatorProps" :title="item.description" />
+                <v-list-item
+                  v-bind="activatorProps"
+                  :title="item.description"
+                  :prepend-icon="item.icon && iconToVuetifyIcon[item.icon]"
+                />
               </template>
 
               <v-list-item
@@ -37,6 +41,7 @@
                 :key="childIndex"
                 v-bind="routeToProps(childItem.route)"
                 :title="childItem.description"
+                :prepend-icon="childItem.icon && iconToVuetifyIcon[childItem.icon]"
                 @click="childItem.action"
               />
             </v-list-group>
@@ -45,6 +50,7 @@
           <v-list-item
             v-else
             :title="item.description"
+            :prepend-icon="item.icon && iconToVuetifyIcon[item.icon]"
             v-bind="routeToProps(item.route)"
             @click="item.action"
           />
@@ -71,6 +77,7 @@ import {
   type NavigationMenuParentItemOrItem,
 } from "@/components/navigation-menu/types.ts";
 import { routeToProps } from "@/composables/navigation/use-route-props.ts";
+import { iconToVuetifyIcon } from "@/consts/icons.ts";
 import TextField from "@/components/inputs/text-field/text-field.vue";
 import {
   VNavigationDrawer,

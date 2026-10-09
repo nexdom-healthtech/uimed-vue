@@ -1,4 +1,5 @@
 import { gotoPage } from "@e2e/utils.ts";
+import { iconToVuetifyIcon } from "@/consts/icons.ts";
 import { test, expect, type Locator, type Page } from "@playwright/test";
 
 test.describe("main", () => {
@@ -121,6 +122,24 @@ test.describe("main", () => {
       test("matches the accessible snapshot of the navigation menu demo", async ({ page }) => {
         const demo = getNavigationMenu(page);
         await expect(demo).toMatchAriaSnapshot();
+      });
+
+      test("shows the icon of each item and group, hidden from screen readers", async ({
+        page,
+      }) => {
+        // The children of the closed group are rendered, but hidden
+        const items = getNavigationMenu(page).locator(".v-list-item").filter({ visible: true });
+        const icons = items.locator(".v-list-item__prepend .v-icon");
+        await expect(items).toHaveText(["Início", "Documentação", "Configurações"]);
+
+        await expect(icons).toHaveCount(3);
+        await expect(icons.nth(0)).toContainClass(iconToVuetifyIcon.home);
+        await expect(icons.nth(1)).toContainClass(iconToVuetifyIcon.folder);
+        await expect(icons.nth(2)).toContainClass(iconToVuetifyIcon.cog);
+        for (const icon of await icons.all()) {
+          await expect(icon).toBeVisible();
+          await expect(icon).toHaveAttribute("aria-hidden", "true");
+        }
       });
 
       test("triggers action callback", async ({ page }) => {
