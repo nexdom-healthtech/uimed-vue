@@ -1,9 +1,10 @@
+import type { VNode } from "vue";
 import useDecorativeTimer from "@/composables/dialogs/use-decorative-timer.ts";
 
 describe("useDecorativeTimer", () => {
   describe.each(["onVnodeMounted", "onVnodeUpdated"] as const)("%s", (hook) => {
     // Called inside each test (not while collecting them), so mutation tests can cover it
-    const hideTimer = (content: { el: Element }) => useDecorativeTimer()[hook](content);
+    const hideTimer = (content: Pick<VNode<Element>, "el">) => useDecorativeTimer()[hook](content);
 
     it("should hide the timer bar from assistive technologies", () => {
       const el = createContent(`
@@ -30,6 +31,10 @@ describe("useDecorativeTimer", () => {
 
       expect(() => hideTimer({ el })).not.toThrow();
       expect(el.innerHTML).toBe(`<div role="status" aria-live="polite">Message</div>`);
+    });
+
+    it("should ignore a vnode without element", () => {
+      expect(() => hideTimer({ el: null })).not.toThrow();
     });
   });
 });
