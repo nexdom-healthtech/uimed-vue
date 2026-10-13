@@ -210,7 +210,7 @@ import { USection } from "@nexdom/uimed-vue/components";
 
 ### Ações
 
-A prop `actions` define uma lista de botões exibidos na área de ações (rodapé) do agrupador, alinhados ao fim (veja [Alinhamento](#alinhamento)), nesta ordem. Coloque a ação principal por último.
+A prop `actions` define uma lista de botões exibidos na área de ações (rodapé) do agrupador, alinhados ao fim (veja [Alinhamento](#alinhamento)), nesta ordem. Coloque a ação principal por último. Cada ação aceita as props do [Button](./button), como `variant`, `color`, `disabled` e `route`, que faz a ação navegar para uma rota (veja [Navegação](./button#navegacao)).
 
 Coloque o conteúdo dentro do [`SectionContent`](#componente-sectioncontent) para que ele fique espaçado das bordas do agrupador e dos botões de ação.
 

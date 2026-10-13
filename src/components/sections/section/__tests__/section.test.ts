@@ -321,6 +321,18 @@ describe("Section", () => {
         expect(button.attributes("data-testid")).toBe("action-btn");
       });
 
+      it("should render an action with a route as a link", async () => {
+        const route = "https://example.com/help";
+        const actions: SectionProps["actions"] = [{ label: "Help", route }];
+        const wrapper = mountSection();
+        await wrapper.setProps({ actions });
+
+        const button = findVCardActions(wrapper).findComponent(Button);
+        expect(button.props("route")).toBe(route);
+        expect(button.element.tagName).toBe("A");
+        expect(button.attributes("href")).toBe(route);
+      });
+
       it("should call action onClick when button is clicked", async () => {
         const onClick = vi.fn();
         const actions = [{ label: "Click me", onClick }];
