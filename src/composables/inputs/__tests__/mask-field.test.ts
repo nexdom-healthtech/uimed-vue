@@ -1,6 +1,7 @@
 import type { MaskFieldMask, MaskFieldProps } from "@/components/inputs/mask-field/types.ts";
 import {
   getMaskPlaceholder,
+  getMaskTokens,
   maskFieldPresets,
   resolveMask,
   toVuetifyMask,
@@ -12,13 +13,16 @@ import { reactive, ref } from "vue";
 const withLetters = "Nº ####";
 // Every character other than `#` that the masking would otherwise read as special
 const withSpecialLiterals = "AaNnX\\ ##";
+// Examples of nexdom-healthtech/shared#90, which formats the CNPJ the same way
+const alphanumericCnpj = "12ABC34501DE35";
+const numericCnpj = "12345678000195";
 
 describe("mask-field", () => {
   describe("maskFieldPresets", () => {
     it("should provide the masks of every preset", () => {
       expect(maskFieldPresets).toEqual({
         cpf: "###.###.###-##",
-        cnpj: "##.###.###/####-##",
+        cnpj: "NN.NNN.NNN/NNNN-##",
         cep: "#####-###",
         phone: "(##) #####-####",
         date: "##/##/####",
@@ -29,14 +33,16 @@ describe("mask-field", () => {
   describe("resolveMask", () => {
     it.each<[string, string]>([
       ["cpf", "###.###.###-##"],
-      ["cnpj", "##.###.###/####-##"],
+      ["cnpj", "NN.NNN.NNN/NNNN-##"],
       ["cep", "#####-###"],
       ["phone", "(##) #####-####"],
       ["date", "##/##/####"],
       ["####-##/####", "####-##/####"],
+      [withLetters, String.raw`\Nº ####`],
+      ["NN.NNN.NNN/NNNN-##", String.raw`\N\N.\N\N\N.\N\N\N/\N\N\N\N-##`],
       ["time", "time"],
       ["", ""],
-      ["toString", "toString"],
+      ["toString", String.raw`toStri\ng`],
     ])('should resolve "%s" to the mask "%s"', (mask, resolved) => {
       expect(resolveMask(mask)).toBe(resolved);
     });
@@ -55,16 +61,33 @@ describe("mask-field", () => {
     });
   });
 
+  describe("getMaskTokens", () => {
+    it.each<[string, string]>([
+      ["cpf", "###########"],
+      ["cnpj", "NNNNNNNNNNNN##"],
+      ["(##) #####-####", "###########"],
+      [withLetters, "####"],
+      [withSpecialLiterals, "##"],
+      [String.raw`#\#`, "##"],
+      ["NN##", "##"],
+      ["", ""],
+    ])('should take the tokens of the mask "%s" as "%s"', (mask, tokens) => {
+      expect(getMaskTokens(resolveMask(mask))).toBe(tokens);
+    });
+  });
+
   describe("getMaskPlaceholder", () => {
     it.each<[string, string]>([
-      ["###.###.###-##", "000.000.000-00"],
+      ["cpf", "000.000.000-00"],
+      ["cnpj", "00.000.000/0000-00"],
       ["(##) #####-####", "(00) 00000-0000"],
       [withLetters, "Nº 0000"],
       [withSpecialLiterals, String.raw`AaNnX\ 00`],
+      ["NN.##", "NN.00"],
       ["0800 ###-####", "0800 000-0000"],
       ["", ""],
     ])('should turn mask "%s" into the placeholder "%s"', (mask, placeholder) => {
-      expect(getMaskPlaceholder(mask)).toBe(placeholder);
+      expect(getMaskPlaceholder(resolveMask(mask))).toBe(placeholder);
     });
   });
 
@@ -86,6 +109,14 @@ describe("mask-field", () => {
         ["##X##", "1234", "12X34"],
         ["##X##", "12/34", "12X34"],
         ["cpf", "123.456.789-0999abc", "123.456.789-09"],
+        ["cnpj", alphanumericCnpj, "12.ABC.345/01DE-35"],
+        ["cnpj", numericCnpj, "12.345.678/0001-95"],
+        ["cnpj", "12abc34501de35", "12.ABC.345/01DE-35"],
+        ["cnpj", "12.abc.345/01de-35", "12.ABC.345/01DE-35"],
+        ["cnpj", "12ABC34501DEF5", "12.ABC.345/01DE-5"],
+        ["cnpj", "12ÁBÇ!C34501DE35", "12.BC3.450/1DE3-5"],
+        ["cnpj", "12ABC34501DE3599", "12.ABC.345/01DE-35"],
+        ["NN.##", "1234", "NN.12"],
       ])('should display with mask "%s" the model "%s" as "%s"', (mask, modelValue, display) => {
         const { displayValue } = useMaskField(fieldProps({ mask }), ref(modelValue));
 
@@ -140,6 +171,9 @@ describe("mask-field", () => {
 
         expect(placeholder.value).toBe("000.000.000-00");
 
+        props.mask = "cnpj";
+        expect(placeholder.value).toBe("00.000.000/0000-00");
+
         props.mask = withLetters;
         expect(placeholder.value).toBe("Nº 0000");
       });
@@ -148,6 +182,38 @@ describe("mask-field", () => {
         const { placeholder } = useMaskField(fieldProps({ placeholder: given }), ref(""));
 
         expect(placeholder.value).toBe(given);
+      });
+    });
+
+    describe("keyboard", () => {
+      it.each<[MaskFieldMask, string, string | undefined]>([
+        ["cpf", "numeric", undefined],
+        ["cnpj", "text", "characters"],
+        ["cep", "numeric", undefined],
+        ["phone", "numeric", undefined],
+        ["date", "numeric", undefined],
+        ["####-##/####", "numeric", undefined],
+        [withLetters, "numeric", undefined],
+        ["NN##", "numeric", undefined],
+      ])(
+        'should use with mask "%s" the input mode "%s" and the capitalization "%s"',
+        (mask, inputMode, autocapitalize) => {
+          const field = useMaskField(fieldProps({ mask }), ref(""));
+
+          expect(field.inputMode.value).toBe(inputMode);
+          expect(field.autocapitalize.value).toBe(autocapitalize);
+        },
+      );
+
+      it("should follow the mask", () => {
+        const props = fieldProps();
+        const { inputMode, autocapitalize } = useMaskField(props, ref(""));
+
+        props.mask = "cnpj";
+        expect([inputMode.value, autocapitalize.value]).toEqual(["text", "characters"]);
+
+        props.mask = "cep";
+        expect([inputMode.value, autocapitalize.value]).toEqual(["numeric", undefined]);
       });
     });
 
@@ -181,6 +247,21 @@ describe("mask-field", () => {
         [withLetters, "a1234", true, "Valor inválido"],
         [withSpecialLiterals, "12", true, true],
         [withSpecialLiterals, "1", "Valor incompleto", true],
+        ["cnpj", alphanumericCnpj, true, true],
+        ["cnpj", numericCnpj, true, true],
+        ["cnpj", "12abc34501de35", true, true],
+        ["cnpj", "12.abc.345/01De-35", true, true],
+        ["cnpj", "12.ABC.345/01DE-35", true, true],
+        ["cnpj", "12ABC34501DE3", "Valor incompleto", true],
+        ["cnpj", "1", "Valor incompleto", true],
+        ["cnpj", "12ABC34501DEF5", true, "Valor inválido"],
+        ["cnpj", "12ABC34501DE3F", true, "Valor inválido"],
+        ["cnpj", "12ABC34501DE355", true, "Valor inválido"],
+        ["cnpj", "12ÁBC34501DE35", true, "Valor inválido"],
+        ["cnpj", "12ÇBC34501DE35", true, "Valor inválido"],
+        ["cnpj", "12!BC34501DE35", true, "Valor inválido"],
+        ["cnpj", "12ıBC34501DE35", true, "Valor inválido"],
+        [withLetters, "nº 1234", true, "Valor inválido"],
       ])(
         'should validate with mask "%s" the value "%s" as %s and %s',
         (mask, value, ...results) => {
@@ -276,6 +357,66 @@ describe("mask-field", () => {
           mask: withSpecialLiterals,
           from: ["", "1", 1, "insertText"],
           to: ["AaNnX\\ 1", 8, "1"],
+        },
+        {
+          name: "types a lowercase letter where the mask accepts letters",
+          mask: "cnpj",
+          from: ["12", "12.a", 4, "insertText"],
+          to: ["12.A", 4, "12A"],
+        },
+        {
+          name: "types an uppercase letter where the mask accepts letters",
+          mask: "cnpj",
+          from: ["12AB", "12.ABC", 6, "insertText"],
+          to: ["12.ABC.", 7, "12ABC"],
+        },
+        {
+          name: "types a letter in the middle, keeping the caret after it",
+          mask: "cnpj",
+          from: ["12ABC345", "12.AxBC.345", 5, "insertText"],
+          to: ["12.AXB.C34/5", 5, "12AXBC345"],
+        },
+        {
+          name: "types a letter where the mask accepts only digits",
+          mask: "cnpj",
+          from: ["12ABC34501DE", "12.ABC.345/01DE-a", 17, "insertText"],
+          to: ["12.ABC.345/01DE-", 16, "12ABC34501DE"],
+        },
+        {
+          name: "types an accented letter",
+          mask: "cnpj",
+          from: ["12", "12.Ç", 4, "insertText"],
+          to: ["12.", 3, "12"],
+        },
+        {
+          name: "types beyond the last position",
+          mask: "cnpj",
+          from: [alphanumericCnpj, "12.ABC.345/01DE-35A", 19, "insertText"],
+          to: ["12.ABC.345/01DE-35", 18, alphanumericCnpj],
+        },
+        {
+          name: "pastes a lowercase formatted value",
+          mask: "cnpj",
+          from: ["", "12.abc.345/01de-35", 18, "insertFromPaste"],
+          to: ["12.ABC.345/01DE-35", 18, alphanumericCnpj],
+        },
+        {
+          name: "pastes an unformatted value",
+          mask: "cnpj",
+          from: ["", "12abc34501de35", 14, "insertFromPaste"],
+          to: ["12.ABC.345/01DE-35", 18, alphanumericCnpj],
+        },
+        {
+          name: "deletes a letter in the middle, shifting the characters after it",
+          mask: "cnpj",
+          from: [alphanumericCnpj, "12.BC.345/01DE-35", 3, "deleteContentBackward"],
+          to: ["12.BC3.450/1DE3-5", 2, "12BC34501DE35"],
+        },
+        {
+          name: "types in the middle, discarding a letter shifted into the digits",
+          mask: "cnpj",
+          from: ["1234567890AB12", "912.345.678/90AB-12", 1, "insertText"],
+          to: ["91.234.567/890A-12", 1, "91234567890A12"],
         },
         {
           name: "deletes backwards",
@@ -414,6 +555,18 @@ describe("mask-field", () => {
         expect(model.value).toBe("");
       });
 
+      it("should keep a lowercase model when its displayed value doesn't change", () => {
+        const model = ref("12abc34501de35");
+        const { displayValue, onInput } = useMaskField(fieldProps({ mask: "cnpj" }), model);
+        const input = createInput("12.ABC.345/01DE-35!", 19);
+
+        onInput(inputEvent(input, "insertText"));
+
+        expect(displayValue.value).toBe("12.ABC.345/01DE-35");
+        expect(input.value).toBe("12.ABC.345/01DE-35");
+        expect(model.value).toBe("12abc34501de35");
+      });
+
       it("should consider the caret at the end when the input has no caret", () => {
         const model = ref("");
         const { onInput } = useMaskField(fieldProps(), model);
@@ -454,6 +607,18 @@ describe("mask-field", () => {
 
         expect(input.value).toBe("123.");
         expect(input.selectionStart).toBe(4);
+      });
+
+      it("should mask letters composed where the mask accepts them", () => {
+        const model = ref("12");
+        const { onCompositionEnd } = useMaskField(fieldProps({ mask: "cnpj" }), model);
+        const input = createInput("12ab", 4);
+
+        onCompositionEnd(compositionEndEvent(input));
+
+        expect(input.value).toBe("12.AB");
+        expect(input.selectionStart).toBe(5);
+        expect(model.value).toBe("12AB");
       });
     });
   });

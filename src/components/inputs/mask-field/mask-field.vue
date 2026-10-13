@@ -14,7 +14,8 @@
     :hint="props.hint"
     :clearable="props.clearable"
     type="text"
-    inputmode="numeric"
+    :inputmode="inputMode"
+    :autocapitalize
     @update:model-value="keepFieldControlled"
     @input="onInput"
     @compositionend="onCompositionEnd"
@@ -28,9 +29,10 @@
 
 <script lang="ts">
 /**
- * Text field that masks the value while the user types, such as CPF, CNPJ,
- * CEP, phone or a custom mask. Its value holds only the digits, without the
- * mask's literals.
+ * Text field that masks the value while the user types, such as CPF, CNPJ
+ * (numeric or alphanumeric), CEP, phone or a custom mask. Its value holds only
+ * the typed characters, without the mask's literals and with letters in
+ * uppercase.
  *
  * @example
  * ```vue
@@ -60,10 +62,8 @@ const props = withDefaults(defineProps<MaskFieldProps>(), {
 });
 
 const vuetifyVariant = useTextFieldVariant(() => props.variant);
-const { displayValue, placeholder, rules, onInput, onCompositionEnd } = useMaskField(
-  props,
-  modelValue,
-);
+const { displayValue, placeholder, inputMode, autocapitalize, rules, onInput, onCompositionEnd } =
+  useMaskField(props, modelValue);
 
 function keepFieldControlled() {
   // Vuetify only uses `model-value` as the source of the text when there's an update listener;

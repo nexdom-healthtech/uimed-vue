@@ -17,6 +17,9 @@ const variants: [MaskFieldVariant, string][] = [
 const typing: [MaskFieldMask, string, string, string][] = [
   ["cpf", "12345678909", "123.456.789-09", "12345678909"],
   ["cnpj", "12345678000195", "12.345.678/0001-95", "12345678000195"],
+  ["cnpj", "12ABC34501DE35", "12.ABC.345/01DE-35", "12ABC34501DE35"],
+  ["cnpj", "12abc34501de35", "12.ABC.345/01DE-35", "12ABC34501DE35"],
+  ["cnpj", "12ÁbÇ!c34501dE3X5", "12.BC3.450/1DE3-5", "12BC34501DE35"],
   ["cep", "01310100", "01310-100", "01310100"],
   ["phone", "11912345678", "(11) 91234-5678", "11912345678"],
   ["date", "31122026", "31/12/2026", "31122026"],
@@ -56,6 +59,7 @@ describe("MaskField", () => {
     const input = wrapper.find("input");
 
     expect(input.attributes("inputmode")).toBe("numeric");
+    expect(input.attributes("autocapitalize")).toBeUndefined();
     expect(input.attributes("type")).toBe("text");
     expect(input.attributes("maxlength")).toBeUndefined();
   });
@@ -64,6 +68,20 @@ describe("MaskField", () => {
     const wrapper = mountMaskField({ mask: "Nº ####" });
 
     expect(wrapper.find("input").attributes("inputmode")).toBe("numeric");
+    expect(wrapper.find("input").attributes("autocapitalize")).toBeUndefined();
+  });
+
+  it("should show the uppercase text keyboard when the mask accepts letters", async () => {
+    const wrapper = mountMaskField({ mask: "cnpj" });
+    const input = wrapper.find("input");
+
+    expect(input.attributes("inputmode")).toBe("text");
+    expect(input.attributes("autocapitalize")).toBe("characters");
+
+    await wrapper.setProps({ mask: "cpf" });
+
+    expect(input.attributes("inputmode")).toBe("numeric");
+    expect(input.attributes("autocapitalize")).toBeUndefined();
   });
 
   describe("typing", () => {
@@ -93,6 +111,35 @@ describe("MaskField", () => {
       await typeText(wrapper, "123.4", "insertText");
       expect(findInput(wrapper).value).toBe("123.4");
       expect(findInput(wrapper).selectionStart).toBe(5);
+    });
+
+    it("should keep the caret after a letter typed in the middle", async () => {
+      const wrapper = mountMaskField({ mask: "cnpj", modelValue: "12ABC345" });
+
+      await typeText(wrapper, "12.AxBC.345", "insertText", 5);
+
+      expect(findInput(wrapper).value).toBe("12.AXB.C34/5");
+      expect(findInput(wrapper).selectionStart).toBe(5);
+      expect(emittedValues(wrapper)).toEqual([["12AXBC345"]]);
+    });
+
+    it("should discard a letter typed where the mask accepts only digits", async () => {
+      const wrapper = mountMaskField({ mask: "cnpj", modelValue: "12ABC34501DE" });
+
+      await typeText(wrapper, "12.ABC.345/01DE-a", "insertText");
+
+      expect(findInput(wrapper).value).toBe("12.ABC.345/01DE-");
+      expect(findInput(wrapper).selectionStart).toBe(16);
+      expect(emittedValues(wrapper)).toBeUndefined();
+    });
+
+    it("should paste a lowercase value in uppercase", async () => {
+      const wrapper = mountMaskField({ mask: "cnpj" });
+
+      await typeText(wrapper, "12.abc.345/01de-35", "insertFromPaste");
+
+      expect(findInput(wrapper).value).toBe("12.ABC.345/01DE-35");
+      expect(emittedValues(wrapper)).toEqual([["12ABC34501DE35"]]);
     });
 
     it("should discard letters and symbols without emitting", async () => {
@@ -254,6 +301,22 @@ describe("MaskField", () => {
         expect(emittedValues(wrapper)).toBeUndefined();
       });
 
+      it("should display a lowercase value in uppercase, validating it without emitting", async () => {
+        const wrapper = mountMaskField({ mask: "cnpj", modelValue: "12abc34501de35" });
+        await flushPromises();
+        const vTextField = findVTextField(wrapper);
+
+        expect(findInput(wrapper).value).toBe("12.ABC.345/01DE-35");
+        expect(vTextField.props("validationValue")).toBe("12abc34501de35");
+        expect(await vTextField.vm.validate()).toEqual([]);
+
+        await typeText(wrapper, "12.ABC.345/01DE-35", "insertFromPaste");
+        expect(emittedValues(wrapper)).toBeUndefined();
+
+        await typeText(wrapper, "12.ABC.345/01DE-3", "deleteContentBackward");
+        expect(emittedValues(wrapper)).toEqual([["12ABC34501DE3"]]);
+      });
+
       it("should be an empty string by default", () => {
         const wrapper = mountMaskField();
         const vTextField = findVTextField(wrapper);
@@ -295,6 +358,17 @@ describe("MaskField", () => {
 
         await wrapper.setProps({ modelValue: "123.456.789-09" });
         expect(await vTextField.vm.validate()).toEqual([]);
+      });
+
+      it.each<[string, string[]]>([
+        ["12ABC34501DE3", ["Valor incompleto"]],
+        ["12ABC34501DE35", []],
+        ["12ABC34501DEF5", ["Valor inválido"]],
+        ["12ABC34501DE35X", ["Valor inválido"]],
+      ])('should validate the CNPJ "%s" with %j', async (modelValue, errors) => {
+        const wrapper = mountMaskField({ mask: "cnpj", modelValue });
+
+        expect(await findVTextField(wrapper).vm.validate()).toEqual(errors);
       });
 
       it("should show the error after typing", async () => {
@@ -394,6 +468,9 @@ describe("MaskField", () => {
       it("should use the mask as placeholder by default", async () => {
         const wrapper = mountMaskField();
         expect(wrapper.find("input").attributes("placeholder")).toBe("000.000.000-00");
+
+        await wrapper.setProps({ mask: "cnpj" });
+        expect(wrapper.find("input").attributes("placeholder")).toBe("00.000.000/0000-00");
 
         await wrapper.setProps({ mask: "Nº ####" });
         expect(wrapper.find("input").attributes("placeholder")).toBe("Nº 0000");

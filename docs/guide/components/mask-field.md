@@ -6,7 +6,7 @@ outline: deep
 
 O componente para campos com máscara se chama `MaskField`.
 
-Ele funciona como um [campo de texto](./text-field), mas formata o valor enquanto o usuário digita, inserindo automaticamente os separadores da máscara (`.`, `-`, `/`, `(`, `)`, espaço). O `v-model` recebe **somente os dígitos** do valor (por exemplo, `12345678909` para o CPF `123.456.789-09`), que é o formato normalmente enviado ao backend.
+Ele funciona como um [campo de texto](./text-field), mas formata o valor enquanto o usuário digita, inserindo automaticamente os separadores da máscara (`.`, `-`, `/`, `(`, `)`, espaço). O `v-model` recebe **somente os caracteres digitados**, sem os separadores e com as letras em maiúsculas (por exemplo, `12345678909` para o CPF `123.456.789-09` e `12ABC34501DE35` para o CNPJ `12.ABC.345/01DE-35`), que é o formato normalmente enviado ao backend.
 
 > [!Warning]
 > Deve ser utilizado no lugar do `<input>` nativo e do `UTextField` sempre que o valor tiver uma máscara.
@@ -17,13 +17,15 @@ Ele funciona como um [campo de texto](./text-field), mas formata o valor enquant
 
 A prop `mask` é obrigatória e define a máscara aplicada ao campo. A biblioteca oferece as seguintes máscaras predefinidas:
 
-| `mask`  | Máscara              | Exemplo exibido      | `v-model`        |
-| ------- | -------------------- | -------------------- | ---------------- |
-| `cpf`   | `###.###.###-##`     | `123.456.789-09`     | `12345678909`    |
-| `cnpj`  | `##.###.###/####-##` | `12.345.678/0001-95` | `12345678000195` |
-| `cep`   | `#####-###`          | `01310-100`          | `01310100`       |
-| `phone` | `(##) #####-####`    | `(11) 91234-5678`    | `11912345678`    |
-| `date`  | `##/##/####`         | `31/12/2026`         | `31122026`       |
+| `mask`  | Máscara              | Exemplo exibido                              | `v-model`                            |
+| ------- | -------------------- | -------------------------------------------- | ------------------------------------ |
+| `cpf`   | `###.###.###-##`     | `123.456.789-09`                             | `12345678909`                        |
+| `cnpj`  | `##.###.###/####-##` | `12.345.678/0001-95`<br>`12.ABC.345/01DE-35` | `12345678000195`<br>`12ABC34501DE35` |
+| `cep`   | `#####-###`          | `01310-100`                                  | `01310100`                           |
+| `phone` | `(##) #####-####`    | `(11) 91234-5678`                            | `11912345678`                        |
+| `date`  | `##/##/####`         | `31/12/2026`                                 | `31122026`                           |
+
+A máscara `cnpj` aceita tanto o CNPJ numérico quanto o alfanumérico (IN RFB nº 2.229/2024): as 12 primeiras posições aceitam letras de A a Z, sem acento, ou dígitos, e as 2 últimas (os dígitos verificadores), somente dígitos. As letras podem ser digitadas ou coladas em minúsculas: o campo as exibe e as envia ao `v-model` em maiúsculas. O CNPJ alfanumérico só é aceito com `mask="cnpj"`: a máscara `##.###.###/####-##`, informada como máscara personalizada, aceita somente dígitos.
 
 <demo col data-testid="demo-presets">
 <u-mask-field v-model="cpfValue" label="CPF" mask="cpf" data-testid="mask-field-demo-cpf" />
@@ -67,9 +69,6 @@ const date = ref("");
 > [!Warning]
 > O campo não valida os dígitos verificadores do CPF e do CNPJ nem a existência do documento: ele só confere o formato. Valide o documento no backend da aplicação.
 
-> [!Warning]
-> A máscara `cnpj` aceita somente dígitos. Desde julho de 2026 (IN RFB nº 2.229/2024), o CNPJ pode conter letras nas 12 primeiras posições, formato que ainda não é suportado.
-
 > [!Tip]
 > A máscara `date` apenas formata o valor: ela não valida se a data existe (`31/02/2026` é aceito) e o `v-model` fica no formato `DDMMAAAA` (por exemplo, `31122026`). Para datas, prefira os [campos de data e hora](./date-time-field), que oferecem seletor, limites e o formato padrão `YYYY-MM-DD`.
 
@@ -104,20 +103,21 @@ const number = ref("");
 
 ### Comportamento ao digitar
 
-- Somente dígitos são aceitos: letras e símbolos digitados são descartados, sem atualizar o `v-model`. O número de dígitos é limitado pela quantidade de `#` da máscara.
+- Somente dígitos são aceitos, exceto nas 12 primeiras posições da máscara `cnpj`, que também aceitam letras de A a Z, sem acento, convertidas para maiúsculas. Os demais caracteres (símbolos, letras acentuadas, `ç` e letras nos dígitos verificadores do CNPJ) são descartados, sem atualizar o `v-model`. O número de caracteres é limitado pela quantidade de posições da máscara (por exemplo, 14 no CNPJ).
 - Um separador aparece assim que a posição anterior a ele é preenchida (`123` vira `123.`). Se o usuário digitar o próprio separador na posição dele, ele não é duplicado.
-- Com a máscara completa, um dígito digitado no final é ignorado. Digitado no meio, ele é inserido, e o último dígito do valor é descartado.
-- `Backspace` logo após um separador apenas move o cursor para antes dele, e o próximo `Backspace` apaga o dígito anterior. Da mesma forma, `Delete` logo antes de um separador move o cursor para depois dele. Ao apagar uma seleção, somente os dígitos selecionados são removidos (uma seleção só com separadores não apaga nada), e o valor é formatado novamente.
-- Ao colar um valor, com ou sem formatação, o resultado é o mesmo: os caracteres que não são dígitos são descartados e o excesso é cortado no final.
-- O cursor permanece após o mesmo dígito ao digitar, apagar ou colar no meio do valor, inclusive com teclados com composição de texto (IME).
-- Em dispositivos móveis, o teclado numérico é exibido.
+- Com a máscara completa, um caractere digitado no final é ignorado. Digitado no meio, ele é inserido, e o último caractere do valor é descartado.
+- Inserir ou apagar um caractere no meio do valor desloca os caracteres seguintes, e um caractere que não cabe na nova posição é descartado. Por exemplo, no CNPJ `12.345.678/90AB-12`, digitar `9` no início desloca a letra `B` para os dígitos verificadores, onde ela é descartada, e o valor passa a ser `91.234.567/890A-12`.
+- `Backspace` logo após um separador apenas move o cursor para antes dele, e o próximo `Backspace` apaga o caractere anterior. Da mesma forma, `Delete` logo antes de um separador move o cursor para depois dele. Ao apagar uma seleção, somente os caracteres selecionados são removidos (uma seleção só com separadores não apaga nada), e o valor é formatado novamente.
+- Ao colar um valor, com ou sem formatação, em maiúsculas ou minúsculas, o resultado é o mesmo: os caracteres que a máscara não aceita são descartados e o excesso é cortado no final.
+- O cursor permanece após o mesmo caractere ao digitar, apagar ou colar no meio do valor, inclusive com teclados com composição de texto (IME).
+- Em dispositivos móveis, o teclado numérico é exibido nas máscaras que aceitam somente dígitos. Na máscara `cnpj`, que aceita letras, é exibido o teclado de texto, já em maiúsculas.
 
 > [!Warning]
 > Como o valor é reescrito a cada alteração, o histórico de desfazer do navegador (`Ctrl+Z`) não fica disponível no campo.
 
 ### Valor inicial
 
-Quando o `v-model` chega fora do formato (com a máscara, por exemplo), o campo exibe o valor normalizado, sem alterar o `v-model`. Quando ele não cabe na máscara, por ter mais dígitos do que ela comporta ou caracteres fora do formato dela (como letras), o campo exibe somente a parte que cabe, e a validação falha com a mensagem "Valor inválido", exibida assim que o campo é validado (ao sair dele ou ao enviar o [formulário](./form)). Em todos os casos, o `v-model` só é alterado quando o usuário altera o valor exibido: colar o mesmo valor que já está exibido não o altera.
+Quando o `v-model` chega fora do formato (com a máscara, por exemplo), o campo exibe o valor normalizado, sem alterar o `v-model`. Um `v-model` com letras minúsculas na máscara `cnpj` (como `12abc34501de35`) é exibido em maiúsculas e é válido, e só é enviado em maiúsculas quando o usuário altera o valor. Quando ele não cabe na máscara, por ter mais caracteres do que ela comporta ou caracteres fora do formato dela (como letras no CPF ou nos dígitos verificadores do CNPJ), o campo exibe somente a parte que cabe, e a validação falha com a mensagem "Valor inválido", exibida assim que o campo é validado (ao sair dele ou ao enviar o [formulário](./form)). Em todos os casos, o `v-model` só é alterado quando o usuário altera o valor exibido: colar o mesmo valor que já está exibido não o altera.
 
 <demo col data-testid="demo-initial-value">
 <u-mask-field v-model="initialValue" label="CPF com máscara" mask="cpf" data-testid="mask-field-demo-initial" />
@@ -168,7 +168,7 @@ import { UMaskField } from "@nexdom/uimed-vue/components";
 
 As props `label`, `placeholder` e `hint` funcionam da mesma forma que nos [campos de texto](./text-field).
 
-Sem a prop `placeholder`, o campo exibe a própria máscara como placeholder, com `0` no lugar de cada `#` e os separadores fixos como na máscara: `000.000.000-00` para `cpf`, `00000-000` para `cep` e `Nº 0000` para `Nº ####`. Um `placeholder` informado substitui o padrão, e `placeholder=""` remove o placeholder. Como nos campos de texto, com um `label`, o placeholder só aparece quando o campo está em foco.
+Sem a prop `placeholder`, o campo exibe a própria máscara como placeholder, com `0` no lugar de cada `#` e os separadores fixos como na máscara: `000.000.000-00` para `cpf`, `00.000.000/0000-00` para `cnpj`, `00000-000` para `cep` e `Nº 0000` para `Nº ####`. Um `placeholder` informado substitui o padrão, e `placeholder=""` remove o placeholder. Como nos campos de texto, com um `label`, o placeholder só aparece quando o campo está em foco.
 
 <demo col data-testid="demo-placeholder">
 <u-mask-field label="CEP" mask="cep" hint="Somente os dígitos são salvos" data-testid="mask-field-demo-placeholder-default" />
@@ -188,7 +188,7 @@ import { UMaskField } from "@nexdom/uimed-vue/components";
 
 ### Validação
 
-Enquanto houver um valor sem que a máscara esteja completa, o campo exibe a mensagem "Valor incompleto", e um valor que não cabe na máscara (veja [Valor inicial](#valor-inicial)) exibe a mensagem "Valor inválido". A validação confere somente o formato, e não se o documento é válido. Com a prop `required`, o campo também impede o envio do [formulário](./form) enquanto estiver vazio, exibindo a mensagem "Campo obrigatório".
+Enquanto houver um valor sem que a máscara esteja completa (por exemplo, um CNPJ com menos de 14 caracteres), o campo exibe a mensagem "Valor incompleto", e um valor que não cabe na máscara (veja [Valor inicial](#valor-inicial)) exibe a mensagem "Valor inválido". A validação confere somente o formato, e não se o documento é válido. Com a prop `required`, o campo também impede o envio do [formulário](./form) enquanto estiver vazio, exibindo a mensagem "Campo obrigatório".
 
 <demo col data-testid="demo-required">
 <u-form>
@@ -292,7 +292,7 @@ const cep = ref("01310100");
 
 ### Atualização
 
-O evento `update:modelValue` será emitido toda vez que o valor do campo for alterado pelo usuário, repassando somente os dígitos do valor, sem os separadores, como uma `string`. Caracteres descartados e separadores digitados não emitem o evento.
+O evento `update:modelValue` será emitido toda vez que o valor do campo for alterado pelo usuário, repassando somente os caracteres do valor, sem os separadores e com as letras em maiúsculas, como uma `string`. Caracteres descartados e separadores digitados não emitem o evento.
 
 <demo col data-testid="demo-update-event">
 <u-mask-field label="Celular" mask="phone" :model-value="updateValue" data-testid="mask-field-demo-update" @update:model-value="onUpdateValue" />
