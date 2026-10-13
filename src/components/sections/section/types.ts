@@ -77,7 +77,7 @@ export type SectionProps = {
 /**
  * A single action rendered inside {@link Section}'s actions area.
  */
-export interface SectionAction extends Omit<ButtonProps, "route"> {
+export interface SectionAction extends ButtonProps {
   /**
    * Text displayed on the action button.
    */
