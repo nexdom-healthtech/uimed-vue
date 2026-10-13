@@ -1,5 +1,5 @@
 <template>
-  <v-app :data-testid="props.dataTestid">
+  <v-app :class="backgroundClass" :data-testid="props.dataTestid">
     <app-bar
       v-if="appBarProps"
       v-bind="appBarProps"
@@ -56,6 +56,7 @@ import { VApp, VMain } from "vuetify/components";
 import Container from "@/components/grid/container/container.vue";
 import Toast from "@/components/dialogs/toast.vue";
 import DialogHost from "@/components/dialogs/dialog-host.vue";
+import useVuetifyBackgroundColor from "@/composables/colors/use-vuetify-background-color.ts";
 import { computed, ref } from "vue";
 
 const props = defineProps<MainProps>();
@@ -69,6 +70,8 @@ const appBarProps = computed(() =>
       }
     : undefined,
 );
+
+const backgroundClass = useVuetifyBackgroundColor(() => props.background);
 
 const notificationsOpen = defineModel<boolean>("notificationsOpen", { default: false });
 const navigationMenuOpen = ref<boolean>(false);

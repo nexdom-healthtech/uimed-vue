@@ -1,6 +1,14 @@
-import { expectLoadingAnnouncement, expectNoA11yViolations, gotoPage } from "@e2e/utils.ts";
+import {
+  expectLoadingAnnouncement,
+  expectNoA11yViolations,
+  gotoPage,
+  selectOption,
+} from "@e2e/utils.ts";
 import { icons } from "@/consts/icons.ts";
 import { test, expect, type Locator, type Page } from "@playwright/test";
+
+// Any of the background color classes, e.g. `bg-primary`
+const backgroundClass = /(^|\s)bg-/;
 
 test.describe("main", () => {
   test.beforeEach(async ({ page }) => {
@@ -368,7 +376,48 @@ test.describe("main", () => {
     });
   });
 
+  test.describe("background demo", () => {
+    test("colors the background of the app and the text placed on it", async ({ page }) => {
+      const app = getBackgroundApp(page);
+
+      await expect(app).toContainClass("bg-primary");
+      await expect(app).toHaveCSS("background-color", "rgb(0, 153, 93)");
+      await expect(app.getByRole("heading", { level: 2 })).toHaveCSS("color", "rgb(0, 0, 0)");
+    });
+
+    test("keeps the background of the app bar", async ({ page }) => {
+      const defaultAppBar = getLogoDemo(page).locator(".v-app-bar");
+      const defaultBackground = await defaultAppBar.evaluate(
+        (element) => getComputedStyle(element).backgroundColor,
+      );
+
+      await expect(getBackgroundAppBar(page)).toHaveCSS("background-color", defaultBackground);
+      expect(defaultBackground).not.toBe("rgb(0, 153, 93)");
+    });
+
+    test("matches the accessible snapshot of the background demo", async ({ page }) => {
+      await expect(getBackgroundDemo(page)).toMatchAriaSnapshot();
+    });
+  });
+
   test.describe("playground", () => {
+    test("changes and clears the background when playground-background changes", async ({
+      page,
+    }) => {
+      const preview = page.getByTestId("root-preview");
+      await expect(preview).not.toHaveClass(backgroundClass);
+
+      await selectOption(page, "root-playground-background", "danger");
+      await expect(preview).toContainClass("bg-error");
+
+      await selectOption(page, "root-playground-background", "positive");
+      await expect(preview).toContainClass("bg-success");
+      await expect(preview).not.toContainClass("bg-error");
+
+      await selectOption(page, "root-playground-background", "Padrão");
+      await expect(preview).not.toHaveClass(backgroundClass);
+    });
+
     test("updates the footer text when playground-footer-description changes", async ({ page }) => {
       const footer = getPlaygroundFooter(page);
       await expect(footer).toHaveText("Versão 1.0.0");
@@ -729,6 +778,13 @@ test.describe("main", () => {
       await expect(getFooterDemo(page)).toHaveScreenshot();
     });
 
+    test("matches last screenshot of the background demo", async ({ page }) => {
+      await expect(getBackgroundApp(page)).toContainClass("bg-primary");
+      // The demo is as tall as the viewport, so the docs' fixed navigation bar would cover its top
+      await page.addStyleTag({ content: ".VPNav { visibility: hidden; }" });
+      await expect(getBackgroundDemo(page)).toHaveScreenshot();
+    });
+
     // The loading demo with its drawer closed is already in the screenshots above
     test("matches last screenshot of the loading demo with its navigation menu open", async ({
       page,
@@ -764,6 +820,18 @@ async function getBox(locator: Locator) {
   const box = await locator.boundingBox();
   if (!box) throw new Error("The element should be visible");
   return box;
+}
+
+function getBackgroundDemo(page: Page) {
+  return page.getByTestId("demo-root-background");
+}
+
+function getBackgroundApp(page: Page) {
+  return page.getByTestId("root-demo-background");
+}
+
+function getBackgroundAppBar(page: Page) {
+  return page.getByTestId("demo-root-background-app-bar");
 }
 
 function getFooterDemo(page: Page) {

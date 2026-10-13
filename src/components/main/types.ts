@@ -1,6 +1,7 @@
 import type { AppBarProps } from "@/components/app-bar/types.ts";
 import type { NavigationMenuProps } from "@/components/navigation-menu/types.ts";
 import type { FooterProps } from "@/components/footer/types.ts";
+import type { ColorVariant } from "@/composables/colors/types.ts";
 
 /**
  * Props exposed by the {@link Main} component.
@@ -47,4 +48,17 @@ export type MainProps = {
    * @default false
    */
   loading?: boolean;
+
+  /**
+   * Applies a color to the background of the whole app, e.g. on landing pages. Text placed
+   * directly on the background takes the color the theme pairs with it (white or black), while
+   * the app bar, the footer, sections and dialogs keep their own backgrounds. When omitted, the
+   * app uses the theme's default background.
+   *
+   * @example
+   * ```vue
+   * <u-main background="primary" />
+   * ```
+   */
+  background?: ColorVariant;
 };

@@ -308,6 +308,42 @@ const footer: NonNullable<MainProps["footer"]> = {
 </script>
 ```
 
+### Cor de fundo
+
+A prop `background` aplica uma cor ao fundo de toda a aplicação, como em landing pages, com as mesmas opções de cor do [Botão](./button): `primary`, `secondary`, `positive`, `informative`, `caution` e `danger`. Quando omitida, a aplicação usa o fundo padrão do tema.
+
+O texto colocado diretamente sobre o fundo passa a usar a cor associada a ele (branco ou preto). O menu superior, o rodapé, as [Sections](./section) e os diálogos mantêm os próprios fundos.
+
+Cuide do contraste ao escolher a cor:
+
+- `secondary` é a mesma cor do fundo das [Sections](./section) e do menu superior, que perdem a separação do restante da página.
+- Evite combinações em que o componente some no fundo, como um botão `primary` ou links sobre o fundo `primary`, ou links e campos de formulário sobre o fundo `danger`.
+
+<demo contained data-testid="demo-root-background">
+<u-main background="primary" :appBar="backgroundAppBar" data-testid="root-demo-background">
+  <h2>Boas-vindas ao portal</h2>
+</u-main>
+</demo>
+
+```vue
+<template>
+  <u-main background="primary" :appBar>
+    <h2>Boas-vindas ao portal</h2>
+  </u-main>
+</template>
+
+<script lang="ts" setup>
+import type { ComponentProps } from "vue-component-type-helpers";
+import { UMain } from "@nexdom/uimed-vue/components";
+
+type MainProps = ComponentProps<typeof UMain>;
+
+const appBar: NonNullable<MainProps["appBar"]> = {
+  title: "Menu superior",
+};
+</script>
+```
+
 ## Eventos
 
 ### Notificações
@@ -355,7 +391,7 @@ Experimente as combinações de props do componente.
 
 <playground v-model:actions="playgroundActions">
 <demo contained>
-<u-main :app-bar="playgroundAppBar" :navigationMenu="playgroundActions.showNavigationMenu.value ? playgroundNavigationMenu : undefined" :loading="playgroundActions.loading.value" :footer="{ description: playgroundActions.footer.value, dataTestid: 'root-playground-footer' }" data-testid="root-preview">
+<u-main :app-bar="playgroundAppBar" :navigationMenu="playgroundActions.showNavigationMenu.value ? playgroundNavigationMenu : undefined" :loading="playgroundActions.loading.value" :footer="{ description: playgroundActions.footer.value, dataTestid: 'root-playground-footer' }" :background="playgroundBackground" data-testid="root-preview">
   <h2>O conteúdo da página vai aqui...</h2>
 </u-main>
 </demo>
@@ -485,6 +521,9 @@ O conteúdo da página ocupa toda a altura visível abaixo do menu superior (e a
     };
   }
 
+  // "Padrão" omite a prop, mantendo o fundo padrão do tema
+  const playgroundBackgroundOptions = [{ label: "Padrão", value: "" }, "primary", "secondary", "positive", "informative", "caution", "danger"];
+
   const playgroundActions = ref({
     title: {
       type: "text",
@@ -540,6 +579,13 @@ O conteúdo da página ocupa toda a altura visível abaixo do menu superior (e a
       value: "Versão 1.0.0",
       dataTestid: "root-playground-footer-description",
     },
+    background: {
+      type: "combobox",
+      label: "Cor de fundo",
+      value: "",
+      dataTestid: "root-playground-background",
+      items: playgroundBackgroundOptions,
+    },
   });
 
   const playgroundNotifications = ref<NonNullable<NonNullable<MainProps["appBar"]>["notifications"]>>([]);
@@ -559,6 +605,8 @@ O conteúdo da página ocupa toda a altura visível abaixo do menu superior (e a
     notifications: playgroundActions.value.showNotifications.value ? playgroundNotifications.value : undefined,
     user: playgroundActions.value.showUser.value ? appBar.user : undefined
   }));
+
+  const playgroundBackground = computed(() => (playgroundActions.value.background.value || undefined) as MainProps["background"]);
 
   const playgroundNavigationMenu = computed<NonNullable<MainProps["navigationMenu"]>>(() => ({
     dataTestid: "root-playground-navigation-menu",
@@ -587,6 +635,11 @@ O conteúdo da página ocupa toda a altura visível abaixo do menu superior (e a
     title: "Menu superior",
     dataTestid: "demo-root-navigation-toggle-app-bar",
   });
+
+  const backgroundAppBar: NonNullable<MainProps["appBar"]> = {
+    title: "Menu superior",
+    dataTestid: "demo-root-background-app-bar",
+  };
 
   const footer: NonNullable<MainProps["footer"]> = {
     description: "Versão 1.4.2",

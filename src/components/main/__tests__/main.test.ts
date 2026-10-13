@@ -243,8 +243,54 @@ describe("Main", () => {
         expect(findFooter(wrapper).exists()).toBe(false);
       });
     });
+
+    describe("background", () => {
+      it("should keep the default background when omitted", () => {
+        expect(findBackgroundClasses(wrapper)).toEqual([]);
+      });
+
+      it("should apply the background color to the app", async () => {
+        await wrapper.setProps({ background: "informative" });
+
+        expect(findBackgroundClasses(wrapper)).toEqual(["bg-info"]);
+      });
+
+      it("should change and remove the background color", async () => {
+        await wrapper.setProps({ background: "primary" });
+        expect(findBackgroundClasses(wrapper)).toEqual(["bg-primary"]);
+
+        await wrapper.setProps({ background: "danger" });
+        expect(findBackgroundClasses(wrapper)).toEqual(["bg-error"]);
+
+        await wrapper.setProps({ background: undefined });
+        expect(findBackgroundClasses(wrapper)).toEqual([]);
+      });
+
+      it("should only apply the background color to the app", async () => {
+        await wrapper.setProps({
+          background: "primary",
+          appBar: { title: "AI Chat" },
+          footer: { description: "Versão 1.4.2" },
+        });
+
+        const coloredElements = wrapper.findAll("[class*='bg-']");
+        expect(coloredElements).toHaveLength(1);
+        expect(coloredElements[0]?.classes()).toContain("v-application");
+      });
+
+      it("should not inherit unexpected attributes", async () => {
+        await wrapper.setProps({ background: "primary" });
+
+        expect(wrapper.attributes("style")).toBeUndefined();
+        expect(wrapper.classes()).not.toContain(classValue);
+      });
+    });
   });
 });
+
+function findBackgroundClasses(wrapper: ReturnType<typeof mountMain>) {
+  return wrapper.classes().filter((className) => className.startsWith("bg-"));
+}
 
 function mountMain() {
   return mount(Main, {
