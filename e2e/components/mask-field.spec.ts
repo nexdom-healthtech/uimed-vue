@@ -163,6 +163,153 @@ test.describe("mask-field", () => {
     test("matches the accessible snapshot of the presets demo", async ({ page }) => {
       await expect(page.getByTestId("demo-presets")).toMatchAriaSnapshot();
     });
+
+    test.describe("alphanumeric CNPJ", () => {
+      // Examples of nexdom-healthtech/shared#90, which formats the CNPJ the same way
+      const cnpjs = [
+        ["alphanumeric", "12ABC34501DE35", "12.ABC.345/01DE-35"],
+        ["numeric", "12345678000195", "12.345.678/0001-95"],
+      ];
+
+      for (const [format, value, masked] of cnpjs) {
+        test(`masks the ${format} CNPJ while typing and emits it without literals`, async ({
+          page,
+        }) => {
+          const input = getInput(page, "mask-field-demo-cnpj");
+
+          await input.pressSequentially(value);
+
+          await expect(input).toHaveValue(masked);
+          await expect(getCnpjValue(page)).toHaveText(`"${value}"`);
+        });
+      }
+
+      test("shows and emits lowercase letters in uppercase", async ({ page }) => {
+        const input = getInput(page, "mask-field-demo-cnpj");
+
+        await input.pressSequentially("12abc34501de35");
+
+        await expect(input).toHaveValue("12.ABC.345/01DE-35");
+        await expect(getCnpjValue(page)).toHaveText('"12ABC34501DE35"');
+      });
+
+      for (const pasted of ["12.ABC.345/01DE-35", "12ABC34501DE35", "12.abc.345/01de-35"]) {
+        test(`pastes "${pasted}" as the same uppercase CNPJ`, async ({ page }) => {
+          const input = getInput(page, "mask-field-demo-cnpj");
+
+          await paste(page, input, pasted);
+
+          await expect(input).toHaveValue("12.ABC.345/01DE-35");
+          await expect(getCnpjValue(page)).toHaveText('"12ABC34501DE35"');
+        });
+      }
+
+      test("discards a letter typed in the check digits, without emitting", async ({ page }) => {
+        const input = getInput(page, "mask-field-demo-cnpj");
+        await input.pressSequentially("12ABC34501DE");
+        await expect(getCnpjValue(page)).toHaveText('"12ABC34501DE"');
+
+        await input.pressSequentially("aZ");
+
+        await expect(input).toHaveValue("12.ABC.345/01DE-");
+        await expect(getCnpjValue(page)).toHaveText('"12ABC34501DE"');
+      });
+
+      test("discards symbols, accented letters and Ç", async ({ page }) => {
+        const input = getInput(page, "mask-field-demo-cnpj");
+
+        await input.pressSequentially("12!Ç@ç#ÁáB$c");
+
+        await expect(input).toHaveValue("12.BC");
+        await expect(getCnpjValue(page)).toHaveText('"12BC"');
+      });
+
+      test("limits the CNPJ to 14 positions", async ({ page }) => {
+        const input = getInput(page, "mask-field-demo-cnpj");
+
+        await input.pressSequentially("12ABC34501DE3599A");
+
+        await expect(input).toHaveValue("12.ABC.345/01DE-35");
+        await expect(getCnpjValue(page)).toHaveText('"12ABC34501DE35"');
+      });
+
+      test("shows the incomplete message with 13 positions, and none with 14", async ({ page }) => {
+        const field = page.getByTestId("mask-field-demo-cnpj");
+        const input = field.locator("input");
+
+        await input.pressSequentially("12ABC34501DE3");
+        await input.blur();
+
+        await expect(input).toHaveValue("12.ABC.345/01DE-3");
+        await expect(field).toContainText("Valor incompleto");
+
+        await input.press("End");
+        await input.pressSequentially("5");
+
+        await expect(input).toHaveValue("12.ABC.345/01DE-35");
+        await expect(field).not.toContainText("Valor incompleto");
+        await expect(field).not.toContainText("Valor inválido");
+      });
+
+      test("shows the uppercase text keyboard only where the mask accepts letters", async ({
+        page,
+      }) => {
+        const cnpj = getInput(page, "mask-field-demo-cnpj");
+        const cpf = getInput(page, "mask-field-demo-cpf");
+
+        await expect(cnpj).toHaveAttribute("inputmode", "text");
+        await expect(cnpj).toHaveAttribute("autocapitalize", "characters");
+        await expect(cpf).toHaveAttribute("inputmode", "numeric");
+        await expect(cpf).not.toHaveAttribute("autocapitalize");
+      });
+
+      test("shows the CNPJ mask as placeholder", async ({ page }) => {
+        await expect(getInput(page, "mask-field-demo-cnpj")).toHaveAttribute(
+          "placeholder",
+          "00.000.000/0000-00",
+        );
+      });
+
+      test("deletes a letter in the middle with Backspace, shifting the characters after it", async ({
+        page,
+      }) => {
+        const input = getInput(page, "mask-field-demo-cnpj");
+        await input.pressSequentially("12ABC34501DE35");
+
+        await setSelection(input, 5);
+        await input.press("Backspace");
+
+        await expect(input).toHaveValue("12.AC3.450/1DE3-5");
+        await expect.poll(() => getSelection(input)).toEqual([4, 4]);
+        await expect(getCnpjValue(page)).toHaveText('"12AC34501DE35"');
+      });
+
+      test("keeps the caret after a letter typed in the middle", async ({ page }) => {
+        const input = getInput(page, "mask-field-demo-cnpj");
+        await input.pressSequentially("12ABC345");
+
+        await setSelection(input, 4);
+        await input.press("x");
+
+        await expect(input).toHaveValue("12.AXB.C34/5");
+        await expect.poll(() => getSelection(input)).toEqual([5, 5]);
+        await expect(getCnpjValue(page)).toHaveText('"12AXBC345"');
+      });
+
+      test("discards a letter shifted into the check digits by typing in the middle", async ({
+        page,
+      }) => {
+        const input = getInput(page, "mask-field-demo-cnpj");
+        await input.pressSequentially("1234567890AB12");
+
+        await setSelection(input, 0);
+        await input.press("9");
+
+        await expect(input).toHaveValue("91.234.567/890A-12");
+        await expect.poll(() => getSelection(input)).toEqual([1, 1]);
+        await expect(getCnpjValue(page)).toHaveText('"91234567890A12"');
+      });
+    });
   });
 
   test.describe("custom mask demo", () => {
@@ -508,6 +655,10 @@ function getInput(page: Page, testId: string) {
 
 function getCpfValue(page: Page) {
   return page.getByTestId("mask-field-demo-cpf-value");
+}
+
+function getCnpjValue(page: Page) {
+  return page.getByTestId("mask-field-demo-cnpj-value");
 }
 
 async function setSelection(input: Locator, start: number, end = start) {
