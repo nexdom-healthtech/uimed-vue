@@ -1,3 +1,5 @@
+import type { VNode } from "vue";
+
 /**
  * Content props that hide a snackbar's timer bar from assistive technologies,
  * keeping it only as a visual countdown, since the message itself is already
@@ -15,6 +17,6 @@ export default function useDecorativeTimer() {
   return { onVnodeMounted: hideTimer, onVnodeUpdated: hideTimer };
 }
 
-function hideTimer({ el }: { el: Element }) {
-  el.querySelector(".v-snackbar__timer [role='progressbar']")?.setAttribute("aria-hidden", "true");
+function hideTimer({ el }: Pick<VNode<Element>, "el">) {
+  el?.querySelector(".v-snackbar__timer [role='progressbar']")?.setAttribute("aria-hidden", "true");
 }
