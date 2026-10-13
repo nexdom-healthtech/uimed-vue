@@ -164,7 +164,9 @@ test.describe("dialog", () => {
       await expect(opener).toBeFocused();
     });
 
-    test("closes by Esc while saving, without stopping it", async ({ page }) => {
+    test("stays open on Esc and a click outside while saving, and closes once saved", async ({
+      page,
+    }) => {
       const opener = page.getByTestId("btn-form");
       await opener.click();
 
@@ -179,15 +181,21 @@ test.describe("dialog", () => {
       await expect(save.locator(".v-btn__loader")).toBeAttached();
 
       await page.keyboard.press("Escape");
-      await expect(opener).toBeFocused();
+      // A click outside closes the dialog on the next timer, which the paused clock holds
+      await page.mouse.click(5, 5);
+      await page.clock.runFor(500);
+
+      // The paused clock also holds the leave transition, so check that it didn't start
+      await expect(dialog).toHaveClass(/v-overlay--active/);
+      await expect(opener).not.toBeFocused();
       await expect(page.getByTestId("form-result")).toHaveText("Nome: Maria da Silva");
 
-      await page.clock.resume();
-      await expect(dialog).toBeHidden();
       await page.clock.fastForward(actionDuration);
+      await page.clock.resume();
 
-      await expect(page.getByTestId("form-result")).toHaveText("Nome: João Pereira");
       await expect(dialog).toBeHidden();
+      await expect(page.getByTestId("form-result")).toHaveText("Nome: João Pereira");
+      await expect(opener).toBeFocused();
     });
 
     test("doesn't submit the form while a field is invalid", async ({ page }) => {

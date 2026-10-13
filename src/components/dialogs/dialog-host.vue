@@ -54,11 +54,11 @@ const actions = computed(() => {
   }));
 });
 
-// Confirmations are alert dialogs, and their text messages describe them. The dialog can't be
-// closed while the confirmed action runs, and the next one is displayed once it leaves
+// Confirmations are alert dialogs, and their text messages describe them. The next dialog is
+// displayed once the current one leaves. While the confirmed action runs, its action loads, which
+// keeps the dialog from being closed
 provide(dialogHostKey, {
   role: () => request.value?.role,
-  persistent: () => isRunning.value,
   afterLeave: showNext,
 });
 

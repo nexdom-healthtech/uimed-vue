@@ -16,6 +16,8 @@ export type DialogProps = {
    * Buttons displayed at the bottom of the dialog, right-aligned, in the given order.
    * Place the main action last. When undefined or empty, no actions area is rendered.
    * Clicking an action doesn't close the dialog: set `v-model` to `false` in `onClick`.
+   * While any action is `loading`, the user can't close the dialog with `Esc`, a click outside or
+   * the browser's back button, but setting `v-model` to `false` still closes it.
    */
   actions?: DialogButtonAction[];
 
@@ -34,7 +36,7 @@ export type DialogProps = {
 
 /**
  * A single action rendered inside {@link Dialog}'s actions area. Same shape as `USection`'s
- * actions.
+ * actions. While it's `loading`, the user can't close the dialog, but setting `v-model` to `false` still does.
  */
 export interface DialogButtonAction extends ButtonProps {
   /**
@@ -58,12 +60,6 @@ export interface DialogHostContext {
    * `dialog` when it's `undefined`.
    */
   role: () => "dialog" | "alertdialog" | undefined;
-
-  /**
-   * Prevents closing the dialog with `Esc`, a click outside or the browser's back button while it
-   * returns `true`, e.g. while a confirmed action runs.
-   */
-  persistent: () => boolean;
 
   /**
    * Called at the end of every leave transition of the dialog, whatever closed it.

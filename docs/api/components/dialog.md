@@ -5,13 +5,13 @@ O título e as ações ficam fixos enquanto o conteúdo rola.
 
 ## Props
 
-| Prop         | Tipo                              | Padrão     | Descrição                                                                                                                                                                                                      |
-| ------------ | --------------------------------- | ---------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `modelValue` | `boolean`                         | `false`    | Indica se a janela está aberta. Use com `v-model`. Quando o usuário fecha a janela, passa a ser `false` somente ao fim da animação de fechamento.                                                              |
-| `title`      | `string`                          |            | Título da janela, em texto simples (HTML não é interpretado), em uma única linha: títulos longos são cortados com reticências. Também é o nome acessível da janela; sem título, o nome acessível é o conteúdo. |
-| `actions`    | [`DialogButtonAction[]`](#action) |            | Botões exibidos no rodapé da janela, alinhados à direita, nesta ordem. Sem ações, o rodapé não é exibido.                                                                                                      |
-| `size`       | `"small" \| "medium" \| "large"`  | `"medium"` | Largura máxima da janela: `small` (400px), `medium` (560px) ou `large` (800px).                                                                                                                                |
-| `dataTestid` | `string`                          |            | Id do componente para uso em testes automatizados.                                                                                                                                                             |
+| Prop         | Tipo                              | Padrão     | Descrição                                                                                                                                                                                                               |
+| ------------ | --------------------------------- | ---------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `modelValue` | `boolean`                         | `false`    | Indica se a janela está aberta. Use com `v-model`. Quando o usuário fecha a janela, passa a ser `false` somente ao fim da animação de fechamento.                                                                       |
+| `title`      | `string`                          |            | Título da janela, em texto simples (HTML não é interpretado), em uma única linha: títulos longos são cortados com reticências. Também é o nome acessível da janela; sem título, o nome acessível é o conteúdo.          |
+| `actions`    | [`DialogButtonAction[]`](#action) |            | Botões exibidos no rodapé da janela, alinhados à direita, nesta ordem. Sem ações, o rodapé não é exibido. Enquanto alguma ação está `loading`, o usuário não consegue fechar a janela; o `v-model` ainda pode fechá-la. |
+| `size`       | `"small" \| "medium" \| "large"`  | `"medium"` | Largura máxima da janela: `small` (400px), `medium` (560px) ou `large` (800px).                                                                                                                                         |
+| `dataTestid` | `string`                          |            | Id do componente para uso em testes automatizados.                                                                                                                                                                      |
 
 ### `Action`
 
@@ -24,9 +24,9 @@ Estende [`UButtonProps`](./button#props) com as seguintes propriedades adicionai
 
 ## Eventos
 
-| Evento              | Retorno   | Descrição                                                                                                                                                   |
-| ------------------- | --------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `update:modelValue` | `boolean` | Retorna `false` quando o usuário fecha a janela pela tecla `Esc`, por um clique fora dela ou pelo botão "voltar", somente ao fim da animação de fechamento. |
+| Evento              | Retorno   | Descrição                                                                                                                                                                                                                                                                           |
+| ------------------- | --------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `update:modelValue` | `boolean` | Retorna `false` quando o usuário fecha a janela pela tecla `Esc`, por um clique fora dela ou pelo botão "voltar", somente ao fim da animação de fechamento. `Esc`, um clique fora ou o "voltar" feitos enquanto alguma ação está `loading` não fecham a janela nem emitem o evento. |
 
 ## Slots
 
