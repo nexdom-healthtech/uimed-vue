@@ -8,8 +8,9 @@ import type {
   DialogSize,
 } from "@/components/dialogs/dialog/types.ts";
 import { vueTestUtilsPluginUimed } from "@/unit-test.ts";
-import { mount, type VueWrapper } from "@vue/test-utils";
-import { h, nextTick, ref, type VNode } from "vue";
+import { flushPromises, mount, type VueWrapper } from "@vue/test-utils";
+import { h, nextTick, type VNode } from "vue";
+import { createMemoryHistory, createRouter, type Router } from "vue-router";
 import { VCard, VCardActions, VCardItem, VCardText, VCardTitle, VDialog } from "vuetify/components";
 
 const title = "Editar paciente";
@@ -29,8 +30,14 @@ interface MountOptions {
   };
   slot?: () => VNode | VNode[] | string;
   host?: DialogHostContext;
+  router?: Router;
   stubTransitions?: boolean;
 }
+
+const loadingActions: DialogButtonAction[] = [
+  { label: "Cancelar", variant: "ghost", disabled: true },
+  { label: "Salvar", loading: true },
+];
 
 describe("Dialog", () => {
   const wrappers: VueWrapper[] = [];
@@ -44,6 +51,7 @@ describe("Dialog", () => {
     props = {},
     slot = () => content,
     host,
+    router,
     stubTransitions = true,
   }: MountOptions = {}) {
     const wrapper = mount(Dialog, {
@@ -60,7 +68,7 @@ describe("Dialog", () => {
       attrs: { class: "random-class", style: "color: red" },
       attachTo: document.body,
       global: {
-        plugins: [vueTestUtilsPluginUimed()],
+        plugins: router ? [vueTestUtilsPluginUimed(), router] : [vueTestUtilsPluginUimed()],
         provide: host ? { [dialogHostKey]: host } : {},
         stubs: { transition: stubTransitions },
         // Each mount is a separate app, whose ids would repeat without their own prefix
@@ -267,16 +275,6 @@ describe("Dialog", () => {
       expect(findVDialog(wrapper).props("closeOnBack")).toBe(true);
     });
 
-    it("should always be dismissible out of a dialog host, even while an action loads", async () => {
-      const wrapper = mountDialog({ props: { actions: [{ label: "Salvar", loading: true }] } });
-
-      expect(findVDialog(wrapper).props("persistent")).toBeFalsy();
-      pressEscape();
-      await nextTick();
-
-      expect(findVDialog(wrapper).props("modelValue")).toBe(false);
-    });
-
     it("should not emit anything when the model closes it", async () => {
       const wrapper = mountDialog();
 
@@ -333,21 +331,70 @@ describe("Dialog", () => {
     });
   });
 
-  describe("dialog host", () => {
-    it("should block dismissals while the host requires it", async () => {
-      const persistent = ref(true);
-      const wrapper = mountDialog({ host: createHost({ persistent: () => persistent.value }) });
+  describe("while an action loads", () => {
+    it.each([
+      ["Esc", async () => pressEscape()],
+      ["a click outside", clickOutside],
+    ])("should not close by %s, nor emit anything, until the loading ends", async (_, close) => {
+      // A click outside lands on the scrim, which a stubbed transition would wrap
+      const wrapper = mountDialog({ props: { actions: loadingActions }, stubTransitions: false });
 
-      expect(findVDialog(wrapper).props("persistent")).toBe(true);
-      pressEscape();
+      await close();
       await nextTick();
       expect(findVDialog(wrapper).props("modelValue")).toBe(true);
+      expect(wrapper.emitted("update:modelValue")).toBeUndefined();
 
-      persistent.value = false;
+      await wrapper.setProps({ actions: [{ label: "Salvar", loading: false }] });
+      await close();
       await nextTick();
-      expect(findVDialog(wrapper).props("persistent")).toBe(false);
+      expect(findVDialog(wrapper).props("modelValue")).toBe(false);
+      leave(wrapper);
+      expect(wrapper.emitted("update:modelValue")).toEqual([[false]]);
     });
 
+    it("should not close on the browser's back button until the loading ends", async () => {
+      const router = await createRouterAt("/patient");
+      const wrapper = mountDialog({ props: { actions: loadingActions }, router });
+      await nextTick();
+
+      await goBack(router);
+      expect(router.currentRoute.value.path).toBe("/patient");
+      expect(findVDialog(wrapper).props("modelValue")).toBe(true);
+
+      await wrapper.setProps({ actions: [{ label: "Salvar" }] });
+      await goBack(router);
+      expect(router.currentRoute.value.path).toBe("/patient");
+      expect(findVDialog(wrapper).props("modelValue")).toBe(false);
+      expect(wrapper.emitted("update:modelValue")).toBeUndefined();
+    });
+
+    it("should still close when the model closes it", async () => {
+      const wrapper = mountDialog({ props: { actions: loadingActions } });
+
+      await wrapper.setProps({ modelValue: false });
+      expect(findVDialog(wrapper).props("modelValue")).toBe(false);
+      leave(wrapper);
+      await nextTick();
+
+      expect(wrapper.emitted("update:modelValue")).toBeUndefined();
+    });
+
+    it("should finish closing when an action starts loading while it leaves", async () => {
+      const wrapper = mountDialog({ props: { actions: [{ label: "Salvar" }] } });
+
+      pressEscape();
+      await nextTick();
+      await wrapper.setProps({ actions: loadingActions });
+      expect(findVDialog(wrapper).props("modelValue")).toBe(false);
+      leave(wrapper);
+      await nextTick();
+
+      expect(wrapper.emitted("update:modelValue")).toEqual([[false]]);
+      expect(findVDialog(wrapper).props("modelValue")).toBe(false);
+    });
+  });
+
+  describe("dialog host", () => {
     it("should notify the host once it leaves, whatever closed it", async () => {
       const host = createHost();
       const wrapper = mountDialog({ host });
@@ -461,7 +508,7 @@ function leave(wrapper: VueWrapper) {
 }
 
 function createHost(context: Partial<DialogHostContext> = {}) {
-  return { role: () => undefined, persistent: () => false, afterLeave: vi.fn(), ...context };
+  return { role: () => undefined, afterLeave: vi.fn(), ...context };
 }
 
 function focusNewElement<T extends HTMLElement | SVGElement>(element: T) {
@@ -473,4 +520,39 @@ function focusNewElement<T extends HTMLElement | SVGElement>(element: T) {
 
 function pressEscape() {
   window.dispatchEvent(new KeyboardEvent("keydown", { key: "Escape" }));
+}
+
+async function clickOutside() {
+  const scrim = document.querySelector(".v-overlay__scrim");
+  expect(scrim).toBeTruthy();
+  scrim?.dispatchEvent(new MouseEvent("mousedown", { bubbles: true }));
+  scrim?.dispatchEvent(new MouseEvent("click", { bubbles: true }));
+  await vi.runAllTimersAsync();
+}
+
+/** Creates a router whose history goes from "/" to the given path. */
+async function createRouterAt(path: string) {
+  const page = { render: () => null };
+  const router = createRouter({
+    history: createMemoryHistory(),
+    routes: [
+      { path: "/", component: page },
+      { path, component: page },
+    ],
+  });
+  await router.push("/");
+  await router.push(path);
+  return router;
+}
+
+/**
+ * Goes back in the history as the browser's back button does: the router starts the navigation,
+ * and the window receives `popstate` right after.
+ */
+async function goBack(router: Router) {
+  router.back();
+  // In a browser, the router reaches its guards before the window receives `popstate`
+  await flushPromises();
+  window.dispatchEvent(new PopStateEvent("popstate", { state: {} }));
+  await vi.runAllTimersAsync();
 }

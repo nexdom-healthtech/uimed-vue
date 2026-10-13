@@ -47,7 +47,7 @@ const actions: DialogAction[] = [{ label: "Fechar", onClick: () => (open.value =
 
 ### Fechando a janela
 
-Além das ações, o usuário sempre pode fechar a janela pela tecla `Esc` ou clicando fora dela, inclusive enquanto uma ação apresenta um indicador de carregamento.
+Além das ações, o usuário pode fechar a janela pela tecla `Esc` ou clicando fora dela.
 
 O botão "voltar" do navegador também fecha a janela, sem sair da página, em aplicações que usam o [Vue Router](https://router.vuejs.org/). A exceção é quando o "voltar" leva a uma página aberta com `router.replace`, como a página pela qual o usuário entrou na aplicação: nesse caso, a navegação acontece e a janela continua aberta.
 
@@ -56,6 +56,12 @@ Quando o usuário fecha a janela por um desses meios, ela começa a sumir na hor
 - atribuir `true` ao `v-model` durante essa animação não tem efeito, porque ele ainda é `true`: a janela termina de fechar e o `v-model` passa a ser `false` em seguida;
 - se o `@update:model-value` recusar a atualização, mantendo o valor `true`, a janela continua fechada com o `v-model` em `true`;
 - se a janela for removida da página antes do fim da animação (por um `v-if`, por exemplo), o `v-model` continua `true`.
+
+Enquanto alguma ação apresenta um indicador de carregamento (`loading`), o usuário não consegue fechar a janela por nenhum desses meios: ela faz uma breve animação, continua aberta e o `v-model` não muda. Exceto no caso do `router.replace` acima, o "voltar" também não sai da página nesse meio tempo. Ações apenas desabilitadas (`disabled`) não impedem o fechamento. A aplicação ainda pode fechar a janela a qualquer momento, atribuindo `false` ao `v-model`.
+
+::: warning Limitação
+Em uma página que usa [useUnsavedChanges](../composables/use-unsaved-changes) e tem alterações não salvas, o "voltar" é verificado pela página antes da janela, inclusive durante o carregamento: o diálogo "Alterações não salvas" aparece sobre a janela. "Continuar editando" mantém o usuário na página, com a janela aberta, e "Sair sem salvar" sai da página, mesmo que a ação ainda esteja em carregamento.
+:::
 
 <demo col>
 <u-button data-testid="btn-closing" @click="closingOpen = true">Abrir janela</u-button>
@@ -94,7 +100,7 @@ O título é o nome acessível da janela, anunciado por leitores de tela ao abri
 
 Para enviar um formulário pelas ações, use uma ação do tipo `submit` com a prop `form` apontando para o `id` do [formulário](./form). O evento `submit` do formulário só é disparado quando não há pendências de validação.
 
-Enquanto os dados são salvos, a ação principal pode apresentar um indicador de carregamento (`loading`) e as demais podem ficar desabilitadas (`disabled`). O usuário ainda pode fechar a janela nesse meio tempo, pela tecla `Esc`, por um clique fora dela ou pelo botão "voltar", sem interromper o salvamento.
+Enquanto os dados são salvos, a ação principal pode apresentar um indicador de carregamento (`loading`) e as demais podem ficar desabilitadas (`disabled`). Nesse meio tempo, a janela não fecha pela tecla `Esc`, por um clique fora dela nem pelo botão "voltar": o usuário acompanha o salvamento até o fim, e o exemplo fecha a janela depois de salvar.
 
 O exemplo copia o nome para o rascunho ao abrir a janela, e não ao fechá-la: ao cancelar, a ação passa o `v-model` para `false` enquanto a janela ainda está sumindo, e trocar o texto nesse momento seria visível.
 

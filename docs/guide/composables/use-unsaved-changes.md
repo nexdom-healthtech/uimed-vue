@@ -129,6 +129,7 @@ const { hasChanges } = useUnsavedChanges(
 - O diálogo depende do [Componente base](../components/main): sem ele, o diálogo não aparece e a navegação fica pendente.
 - A navegação só é verificada quando `useUnsavedChanges` é chamada em uma página renderizada pelo `<RouterView>` (ou em um componente dentro dela). Em outros lugares, ou em aplicações sem Vue Router, apenas `hasChanges` e o aviso do navegador funcionam.
 - Mudanças apenas nos parâmetros (`params`) ou na consulta (`query`) da mesma rota não são verificadas.
+- Uma [janela modal](../components/dialog) com uma ação em carregamento (`loading`) não fecha pelo botão "voltar" do navegador, mas a verificação desta composable acontece antes: com alterações, o "voltar" apresenta o diálogo "Alterações não salvas" sobre a janela, e "Sair sem salvar" sai da página mesmo com a ação ainda em carregamento.
 
 ## Ver também
 

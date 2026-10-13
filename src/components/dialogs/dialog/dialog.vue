@@ -1,7 +1,7 @@
 <template>
   <v-dialog
     v-model="isActive"
-    :persistent="host?.persistent()"
+    :persistent="isLoading"
     :max-width="maxWidth"
     :role
     :aria-label="title"
@@ -57,6 +57,7 @@ import Button from "@/components/button/button.vue";
 import { dialogHostKey } from "@/components/dialogs/dialog/dialog-host-key.ts";
 import type { DialogProps, DialogSize } from "@/components/dialogs/dialog/types.ts";
 import { useDialogFocus } from "@/composables/dialogs/use-dialog-focus.ts";
+import { useDialogLoading } from "@/composables/dialogs/use-dialog-loading.ts";
 import {
   computed,
   inject,
@@ -87,6 +88,9 @@ const role = computed(() => host?.role() ?? "dialog");
  */
 const isActive = ref(model.value);
 watch(model, (value) => (isActive.value = value));
+
+// The user can't close the dialog while an action loads, but `v-model` still can
+const { isLoading } = useDialogLoading(() => props.actions);
 
 const { focusFirstElement } = useDialogFocus(
   () => isActive.value,
