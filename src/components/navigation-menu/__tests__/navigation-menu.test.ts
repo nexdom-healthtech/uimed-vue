@@ -127,7 +127,9 @@ describe("NavigationMenu", () => {
         await wrapper.setProps({ items: parentItems });
 
         const header = findVListGroups(wrapper)[0].findComponent(VListItem);
-        expect(header.attributes("role")).toBe("button");
+        expect(header.element.tagName).toBe("BUTTON");
+        expect(header.attributes("role")).toBeUndefined();
+        expect(header.attributes("type")).toBe("button");
         expect(header.attributes("aria-expanded")).toBe("false");
 
         await header.trigger("click");
