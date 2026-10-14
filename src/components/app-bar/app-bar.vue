@@ -114,13 +114,15 @@
                 <template v-if="isParentOption(option)">
                   <v-list-group>
                     <!-- Vuetify makes the group's header a list item, but it's a button that expands
-                    the group -->
+                    the group: rendered as one, without Vuetify's role, so the native role applies -->
                     <template #activator="{ props, isOpen }">
                       <v-list-item
                         v-bind="props"
                         :title="option.description"
                         :aria-expanded="isOpen"
-                        role="button"
+                        :role="undefined"
+                        tag="button"
+                        type="button"
                       />
                     </template>
 
