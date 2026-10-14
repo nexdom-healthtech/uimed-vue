@@ -21,10 +21,8 @@ describe("useDialogFocus", () => {
     let focusFirstElement = () => {};
     const wrapper = mount({
       setup() {
-        ({ focusFirstElement } = useDialogFocus(
-          () => active.value,
-          () => card,
-        ));
+        // A ref and a getter, the two forms the composable accepts
+        ({ focusFirstElement } = useDialogFocus(active, () => card));
         return () => null;
       },
     });
