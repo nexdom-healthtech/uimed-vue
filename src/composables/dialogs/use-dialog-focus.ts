@@ -1,4 +1,4 @@
-import { onMounted, watch } from "vue";
+import { onMounted, toValue, watch, type MaybeRefOrGetter } from "vue";
 
 interface DialogFocus {
   isOpen: () => boolean;
@@ -29,15 +29,15 @@ const focusable = [
  * @returns `focusFirstElement`, to call once the dialog finishes entering.
  */
 export function useDialogFocus(
-  isActive: () => boolean,
-  card: () => Element | null | undefined,
+  isActive: MaybeRefOrGetter<boolean>,
+  card: MaybeRefOrGetter<Element | null | undefined>,
 ): { focusFirstElement: () => void } {
   /** Focus state of this dialog, shared with the dialogs opened from it. */
-  const focusState: DialogFocus = { isOpen: isActive, origin: null };
+  const focusState: DialogFocus = { isOpen: () => toValue(isActive), origin: null };
 
   // On mount instead of an immediate watcher, since the DOM doesn't exist during server-side rendering
-  onMounted(() => onActiveChange(isActive()));
-  watch(isActive, onActiveChange);
+  onMounted(() => onActiveChange(toValue(isActive)));
+  watch(() => toValue(isActive), onActiveChange);
 
   function onActiveChange(active: boolean) {
     if (active) {
@@ -46,7 +46,7 @@ export function useDialogFocus(
     }
 
     // Registered once closed, while its card exists, for the dialogs opened from it
-    const element = card();
+    const element = toValue(card);
     if (element) closedDialogs.set(element, focusState);
 
     const target = findFocusTarget(focusState.origin);
@@ -57,7 +57,7 @@ export function useDialogFocus(
   }
 
   function focusFirstElement() {
-    card()?.querySelector<HTMLElement>(focusable)?.focus();
+    toValue(card)?.querySelector<HTMLElement>(focusable)?.focus();
   }
 
   return { focusFirstElement };

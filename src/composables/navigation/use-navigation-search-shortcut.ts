@@ -4,11 +4,12 @@ import {
   onMounted,
   onUnmounted,
   ref,
+  toValue,
   watch,
   type ComponentPublicInstance,
   type ComputedRef,
+  type MaybeRefOrGetter,
   type Ref,
-  type ShallowRef,
 } from "vue";
 
 /**
@@ -45,7 +46,7 @@ export interface UseNavigationSearchShortcutOptions {
   /** Open state of the navigation menu (its `v-model`). */
   open: Ref<boolean>;
   /** Search field, focused (and its text selected) when the shortcut is pressed. */
-  field: Readonly<ShallowRef<ComponentPublicInstance | null>>;
+  field: MaybeRefOrGetter<ComponentPublicInstance | null>;
 }
 
 export interface NavigationSearchShortcut extends NavigationShortcutKeys {
@@ -133,7 +134,7 @@ export function useNavigationSearchShortcut(
   }
 
   function findInput(): HTMLInputElement {
-    return field.value!.$el.querySelector("input");
+    return toValue(field)!.$el.querySelector("input");
   }
 
   function close() {
