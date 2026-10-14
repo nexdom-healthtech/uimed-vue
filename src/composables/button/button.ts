@@ -12,7 +12,7 @@ type VuetifyVariant = NonNullable<VBtnProps["variant"]>;
 
 const buttonVariantToVuetifyVariant: Record<ButtonVariant, VuetifyVariant> = {
   primary: "elevated",
-  secondary: "flat",
+  secondary: "outlined",
   ghost: "text",
 };
 
@@ -57,8 +57,8 @@ export function useButtonType(
 }
 
 /**
- * Maps the button's color to Vuetify's. A ghost button has no fill, so its color is the text's,
- * which takes the color's text shade to keep WCAG AA's contrast.
+ * Maps the button's color to Vuetify's. Secondary (outlined) and ghost buttons have no fill, so
+ * their color is the text's, which takes the color's text shade to keep WCAG AA's contrast.
  */
 export function useButtonColor(
   color: MaybeRefOrGetter<ButtonProps["color"]>,
@@ -67,7 +67,10 @@ export function useButtonColor(
   const fillColor = useVuetifyColor(color);
   const textColor = useVuetifyTextColor(color);
 
-  return computed(() => (toValue(variant) === "ghost" ? textColor.value : fillColor.value));
+  return computed(() => {
+    const unfilled = toValue(variant) === "secondary" || toValue(variant) === "ghost";
+    return unfilled ? textColor.value : fillColor.value;
+  });
 }
 
 /**

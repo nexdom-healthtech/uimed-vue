@@ -105,3 +105,21 @@ async function expectNoA11yViolationsInColorScheme(page: Page, colorScheme: "lig
 
   expect(violations, `violations in the ${colorScheme} color scheme`).toEqual([]);
 }
+
+/**
+ * Text shades of the theme colors set by `createUimed()` (`src/index.ts`), as computed styles
+ * report them. Buttons without a fill (secondary and ghost) take them as their color.
+ */
+export const themeTextRgb = {
+  primary: "rgb(0, 122, 74)",
+  danger: "rgb(201, 42, 30)",
+} as const;
+
+/** Expects a button outlined by a solid border in `borderColor`, without a fill. */
+export async function expectOutlinedButton(button: Locator, borderColor: string) {
+  await expect(button).toContainClass("v-btn--variant-outlined");
+  await expect(button).toHaveCSS("background-color", "rgba(0, 0, 0, 0)");
+  await expect(button).toHaveCSS("border-top-style", "solid");
+  await expect(button).not.toHaveCSS("border-top-width", "0px");
+  await expect(button).toHaveCSS("border-top-color", borderColor);
+}

@@ -9,7 +9,7 @@ import { colorToVuetifyColor, colorToVuetifyTextColor } from "@/composables/colo
 
 const variants: [ButtonVariant, string][] = [
   ["primary", "elevated"],
-  ["secondary", "flat"],
+  ["secondary", "outlined"],
   ["ghost", "text"],
 ];
 const colors = Object.entries(colorToVuetifyColor) as [ColorVariant, VuetifyColor][];
@@ -91,19 +91,21 @@ describe("Button", () => {
         expect(findVBtn(wrapper).props("color")).toBe("primary");
       });
 
-      it.each(textColors)(
-        'should forward `color="%s"` to Vuetify\'s `%s` text color in the ghost variant',
-        async (color, vuetifyTextColor) => {
-          const wrapper = mountButton();
-          await wrapper.setProps({ color, variant: "ghost" });
-          expect(findVBtn(wrapper).props("color")).toBe(vuetifyTextColor);
-        },
-      );
+      describe.each(["secondary", "ghost"] as const)("in the %s variant", (variant) => {
+        it.each(textColors)(
+          'should forward `color="%s"` to Vuetify\'s `%s` text color',
+          async (color, vuetifyTextColor) => {
+            const wrapper = mountButton();
+            await wrapper.setProps({ color, variant });
+            expect(findVBtn(wrapper).props("color")).toBe(vuetifyTextColor);
+          },
+        );
 
-      it("should have `primary`'s text color by default in the ghost variant", async () => {
-        const wrapper = mountButton();
-        await wrapper.setProps({ variant: "ghost" });
-        expect(findVBtn(wrapper).props("color")).toBe("primary-text");
+        it("should have `primary`'s text color by default", async () => {
+          const wrapper = mountButton();
+          await wrapper.setProps({ variant });
+          expect(findVBtn(wrapper).props("color")).toBe("primary-text");
+        });
       });
     });
 

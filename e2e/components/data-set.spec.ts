@@ -2,8 +2,10 @@ import { test, expect, type Locator, type Page } from "@playwright/test";
 import {
   expectLoadingAnnouncement,
   expectNoA11yViolations,
+  expectOutlinedButton,
   gotoPage,
   selectOption,
+  themeTextRgb,
 } from "@e2e/utils.ts";
 
 test.describe("data-set", () => {
@@ -186,6 +188,19 @@ test.describe("data-set", () => {
       }
       await expect(page.getByTestId("demo-data-set-actions-last")).toHaveText(
         "Última ação: nenhuma",
+      );
+    });
+
+    test("outlines the secondary actions in their colors", async ({ page }) => {
+      const firstCard = page.getByTestId("demo-data-set-actions-item-1");
+
+      await expectOutlinedButton(
+        firstCard.getByRole("button", { name: "Editar" }),
+        themeTextRgb.primary,
+      );
+      await expectOutlinedButton(
+        firstCard.getByRole("button", { name: "Excluir" }),
+        themeTextRgb.danger,
       );
     });
 
