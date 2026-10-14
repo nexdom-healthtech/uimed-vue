@@ -189,6 +189,7 @@ test.describe("button", () => {
         await expectNoA11yViolations(page);
       });
     }
+  });
 
   test.describe("UI consistency", () => {
     test("matches last screenshot", async ({ page }) => {
