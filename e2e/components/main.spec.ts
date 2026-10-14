@@ -692,15 +692,6 @@ test.describe("main", () => {
       await expect(page).toHaveScreenshot({ fullPage: true });
     });
 
-    test("matches last screenshot", async ({ page }) => {
-      const userButton = getUserButton(page);
-      await userButton.click();
-
-      const userMenu = getUserMenu(page);
-      await userMenu.getByRole("button", { name: "Bibliotecas" }).click();
-      await expect(page).toHaveScreenshot({ fullPage: true });
-    });
-
     test("matches last screenshot with the notifications menu open", async ({ page }) => {
       await chooseUserMenuOption(page);
       await openNotificationsMenu(page);
@@ -751,7 +742,7 @@ test.describe("main", () => {
 
 async function chooseUserMenuOption(page: Page) {
   await getUserButton(page).click();
-  await getUserMenu(page).getByRole("listitem").first().click();
+  await getUserMenu(page).getByRole("button", { name: "Bibliotecas" }).click();
 }
 
 async function openNotificationsMenu(page: Page) {
