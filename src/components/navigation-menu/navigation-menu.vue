@@ -30,14 +30,16 @@
           <template v-if="isParentItem(item)">
             <v-list-group>
               <!-- Vuetify makes the group's header a list item, but it's a button that expands the
-              group -->
+              group: rendered as one, without Vuetify's role, so the native role applies -->
               <template #activator="{ props: activatorProps, isOpen }">
                 <v-list-item
                   v-bind="activatorProps"
                   :title="item.description"
                   :prepend-icon="item.icon && icons[item.icon]"
                   :aria-expanded="isOpen"
-                  role="button"
+                  :role="undefined"
+                  tag="button"
+                  type="button"
                 />
               </template>
 
