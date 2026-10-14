@@ -28,55 +28,66 @@ test.describe("use-toast", () => {
   });
 
   test.describe("accessibility", () => {
-    // Holds the toasts' timeout, so they don't close while the assertions run. Each step runs the
-    // clock just enough to finish the toasts' transitions. It pauses a second ahead of the page's
-    // clock, since pausing at the test runner's time fails when the page's clock is already past it
-    test.beforeEach(async ({ page }) => {
-      const now = await page.evaluate(() => Date.now());
-      await page.clock.pauseAt(now + 1000);
-    });
+    test.describe("timer bars", () => {
+      // Holds the toasts' timeout, so they don't close while the assertions run. Each step runs the
+      // clock just enough to finish the toasts' transitions. It pauses a second ahead of the page's
+      // clock, since pausing at the test runner's time fails when the page's clock is already past it
+      test.beforeEach(async ({ page }) => {
+        const now = await page.evaluate(() => Date.now());
+        await page.clock.pauseAt(now + 1000);
+      });
 
-    test("hides the timer bars of queued toasts and keeps their messages announced", async ({
-      page,
-    }) => {
-      const toasts = getOverlayContainer(page);
+      test("hides the timer bars of queued toasts and keeps their messages announced", async ({
+        page,
+      }) => {
+        const toasts = getOverlayContainer(page);
 
-      for (const [index, { testId }] of buttons.entries()) {
-        await page.getByTestId(testId).click();
-        await page.clock.runFor(500);
+        for (const [index, { testId }] of buttons.entries()) {
+          await page.getByTestId(testId).click();
+          await page.clock.runFor(500);
 
-        // Up to 3 toasts stay visible, and each new one replaces the oldest
-        const visibleToasts = buttons.slice(Math.max(0, index - 2), index + 1);
-        await expectDecorativeTimerBars(page, visibleToasts.length);
+          // Up to 3 toasts stay visible, and each new one replaces the oldest
+          const visibleToasts = buttons.slice(Math.max(0, index - 2), index + 1);
+          await expectDecorativeTimerBars(page, visibleToasts.length);
 
-        for (const { message } of visibleToasts) {
-          await expect(toasts.getByRole("status").filter({ hasText: message })).toHaveText(message);
+          for (const { message } of visibleToasts) {
+            await expect(toasts.getByRole("status").filter({ hasText: message })).toHaveText(
+              message,
+            );
+          }
         }
-      }
+      });
+
+      test("hides the timer bar recreated when the pointer leaves the toast", async ({ page }) => {
+        await page.getByTestId("btn-positive").click();
+        await page.clock.runFor(500);
+        await expectDecorativeTimerBars(page, 1);
+
+        const overlay = await getOverlay(page);
+        await overlay.hover();
+        await expect(getTimerBars(page)).toHaveCount(0);
+
+        await page.mouse.move(0, 0);
+        await page.clock.runFor(500);
+        await expectDecorativeTimerBars(page, 1);
+        await expect(getOverlayContainer(page).getByRole("status")).toHaveText(
+          "Mensagem positiva.",
+        );
+      });
     });
 
-    test("hides the timer bar recreated when the pointer leaves the toast", async ({ page }) => {
-      await page.getByTestId("btn-positive").click();
-      await page.clock.runFor(500);
-      await expectDecorativeTimerBars(page, 1);
-
-      const overlay = await getOverlay(page);
-      await overlay.hover();
-      await expect(getTimerBars(page)).toHaveCount(0);
-
-      await page.mouse.move(0, 0);
-      await page.clock.runFor(500);
-      await expectDecorativeTimerBars(page, 1);
-      await expect(getOverlayContainer(page).getByRole("status")).toHaveText("Mensagem positiva.");
-    });
-
+    // Runs with the page clock running, since axe and the docs' color scheme switch rely on the
+    // page's timers. Only the hovered toast holds its timeout, so each one is closed before the next
     test("has no violations with a toast of each color open", async ({ page }) => {
       for (const { testId } of buttons) {
         await page.getByTestId(testId).click();
-        // Hovering pauses the toast's timer, so it doesn't close during the check
-        await (await getOverlay(page)).hover();
+        const overlay = await getOverlay(page);
+        await overlay.hover();
 
         await expectNoA11yViolations(page);
+
+        await getOverlayContainer(page).getByRole("button", { name: "Fechar" }).click();
+        await expect(overlay).toBeHidden();
       }
     });
   });
