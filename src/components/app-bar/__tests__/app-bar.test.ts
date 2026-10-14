@@ -644,7 +644,9 @@ describe("AppBar", () => {
               expect(groupOptions.exists()).toBeTruthy();
 
               const header = groupOptions.findComponent(VListItem);
-              expect(header.attributes("role")).toBe("button");
+              expect(header.element.tagName).toBe("BUTTON");
+              expect(header.attributes("role")).toBeUndefined();
+              expect(header.attributes("type")).toBe("button");
               expect(header.attributes("aria-expanded")).toBe("false");
 
               await header.trigger("click");
