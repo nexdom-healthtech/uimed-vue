@@ -1,5 +1,11 @@
 import { test, expect, type Locator, type Page } from "@playwright/test";
-import { expectNoA11yViolations, gotoPage, selectOption } from "@e2e/utils.ts";
+import {
+  expectNoA11yViolations,
+  expectOutlinedButton,
+  gotoPage,
+  selectOption,
+  themeTextRgb,
+} from "@e2e/utils.ts";
 
 const actionDuration = 1500;
 const externalUrl = "https://nexdom-healthtech.github.io/shared/";
@@ -19,6 +25,28 @@ test.describe("button", () => {
 
       await selectOption(page, "btn-playground-variant", "ghost");
       await expect(previewButton).toContainClass("v-btn--variant-text");
+    });
+
+    test("outlines the secondary variant in the button's color, without a fill", async ({
+      page,
+    }) => {
+      const previewButton = getPreviewButton(page);
+
+      await selectOption(page, "btn-playground-variant", "secondary");
+      await expectOutlinedButton(previewButton, themeTextRgb.primary);
+    });
+
+    test("keeps the secondary variant outlined while disabled", async ({ page }) => {
+      const previewButton = getPreviewButton(page);
+
+      await selectOption(page, "btn-playground-variant", "secondary");
+      await page.getByTestId("btn-playground-disabled").locator("input").click();
+
+      await expect(previewButton).toBeDisabled();
+      await expect(previewButton).toContainClass("v-btn--variant-outlined");
+      await expect(previewButton).toHaveCSS("background-color", "rgba(0, 0, 0, 0)");
+      await expect(previewButton).toHaveCSS("border-top-style", "solid");
+      await expect(previewButton).not.toHaveCSS("border-top-width", "0px");
     });
 
     test("updates label text when playground-label changes", async ({ page }) => {
@@ -174,20 +202,28 @@ test.describe("button", () => {
       await expectNoA11yViolations(page);
     });
 
-    // A ghost button has no fill, so its color is the text's, against the background
-    for (const color of colors) {
-      test(`has no violations in the ghost variant of the ${color} color`, async ({ page }) => {
-        await selectOption(page, "btn-playground-variant", "ghost");
-        // Opening the variant's menu scrolls the color field under the docs' header, which would
-        // take the click
-        await page
-          .getByTestId("btn-playground-color")
-          .evaluate((field) => field.scrollIntoView({ block: "center" }));
-        await selectOption(page, "btn-playground-color", color);
-        await expect(getPreviewButton(page)).toContainClass("v-btn--variant-text");
+    // Secondary (outlined) and ghost buttons have no fill, so their color is the text's, against
+    // the background
+    for (const [variant, variantClass] of [
+      ["secondary", "v-btn--variant-outlined"],
+      ["ghost", "v-btn--variant-text"],
+    ] as const) {
+      for (const color of colors) {
+        test(`has no violations in the ${variant} variant of the ${color} color`, async ({
+          page,
+        }) => {
+          await selectOption(page, "btn-playground-variant", variant);
+          // Opening the variant's menu scrolls the color field under the docs' header, which would
+          // take the click
+          await page
+            .getByTestId("btn-playground-color")
+            .evaluate((field) => field.scrollIntoView({ block: "center" }));
+          await selectOption(page, "btn-playground-color", color);
+          await expect(getPreviewButton(page)).toContainClass(variantClass);
 
-        await expectNoA11yViolations(page);
-      });
+          await expectNoA11yViolations(page);
+        });
+      }
     }
   });
 
