@@ -945,8 +945,12 @@ async function expectTextNotClipped(element: Locator) {
     };
   });
 
-  expect(text.top).toBeGreaterThanOrEqual(box.top);
-  expect(text.bottom).toBeLessThanOrEqual(box.bottom);
+  // Both boxes sit at fractional positions, whose rounding can put the text a few hundred-thousandths
+  // of a pixel past the box (e.g. 432.78802 against 432.78799) depending on where the menu opens,
+  // while a clipped line overflows by whole pixels
+  const tolerance = 0.01;
+  expect(text.top).toBeGreaterThanOrEqual(box.top - tolerance);
+  expect(text.bottom).toBeLessThanOrEqual(box.bottom + tolerance);
 }
 
 function getAppBar(page: Page) {
