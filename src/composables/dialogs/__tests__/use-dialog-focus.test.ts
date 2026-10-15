@@ -82,6 +82,31 @@ describe("useDialogFocus", () => {
       expect(document.activeElement).toBe(card.lastElementChild);
     });
 
+    it("should not focus the close button while there's another focusable element", () => {
+      const card = createCard([
+        createElement("button", { "data-u-dialog-close": "" }),
+        createElement("p"),
+        createElement("button", { "data-test": "action" }),
+      ]);
+      const { focusFirstElement } = mountDialog({ card });
+
+      focusFirstElement();
+
+      expect(document.activeElement).toBe(card.querySelector("[data-test=action]"));
+    });
+
+    it("should focus the close button when it's the only focusable element", () => {
+      const card = createCard([
+        createElement("button", { "data-u-dialog-close": "" }),
+        createElement("button", { disabled: "" }),
+      ]);
+      const { focusFirstElement } = mountDialog({ card });
+
+      focusFirstElement();
+
+      expect(document.activeElement).toBe(card.firstElementChild);
+    });
+
     it("should not focus elements outside the card", () => {
       const outside = createElement("button");
       document.body.append(outside);

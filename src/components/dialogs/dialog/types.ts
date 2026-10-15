@@ -3,7 +3,8 @@ import type { ButtonProps } from "@/components/button/types.ts";
 export type DialogSize = "small" | "medium" | "large";
 
 /**
- * Props exposed by the {@link Dialog} component.
+ * Props exposed by the {@link Dialog} component. Every dialog displays a "Fechar" button at the top
+ * right of its title, which closes it as `Esc` and a click outside do.
  */
 export type DialogProps = {
   /**
@@ -16,8 +17,9 @@ export type DialogProps = {
    * Buttons displayed at the bottom of the dialog, right-aligned, in the given order.
    * Place the main action last. When undefined or empty, no actions area is rendered.
    * Clicking an action doesn't close the dialog: set `v-model` to `false` in `onClick`.
-   * While any action is `loading`, the user can't close the dialog with `Esc`, a click outside or
-   * the browser's back button, but setting `v-model` to `false` still closes it.
+   * While any action is `loading`, the user can't close the dialog with the "Fechar" button at its
+   * top right, `Esc`, a click outside or the browser's back button, but setting `v-model` to
+   * `false` still closes it.
    */
   actions?: DialogButtonAction[];
 
