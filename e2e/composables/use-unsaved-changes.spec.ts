@@ -1,5 +1,5 @@
 import { expectNoA11yViolations, gotoPage } from "@e2e/utils.ts";
-import { test, expect, type Page } from "@playwright/test";
+import { test, expect, type Locator, type Page } from "@playwright/test";
 
 test.describe("use-unsaved-changes", () => {
   test.beforeEach(async ({ page }) => {
@@ -33,10 +33,7 @@ test.describe("use-unsaved-changes", () => {
       await expect(dialog).toHaveAccessibleDescription(
         "Existem alterações que ainda não foram salvas. Deseja sair sem salvar?",
       );
-      await expect(dialog.getByRole("button")).toHaveText([
-        "Continuar editando",
-        "Sair sem salvar",
-      ]);
+      await expect(getActions(dialog)).toHaveText(["Continuar editando", "Sair sem salvar"]);
       await expect(dialog.getByRole("button", { name: "Continuar editando" })).toBeFocused();
       await expect(getForm(page)).toBeVisible();
     });
@@ -59,6 +56,18 @@ test.describe("use-unsaved-changes", () => {
       const opener = page.getByRole("button", { name: "Ir para a lista", exact: true });
       await opener.click();
       await getDialog(page).getByRole("button", { name: "Continuar editando" }).click();
+
+      await expectToStay(page);
+      await expect(opener).toBeFocused();
+    });
+
+    test("stays with the changes when closed by its close button", async ({ page }) => {
+      const opener = page.getByRole("button", { name: "Ir para a lista", exact: true });
+      await opener.click();
+      const dialog = getDialog(page);
+      await expect(dialog.getByRole("button", { name: "Continuar editando" })).toBeFocused();
+
+      await getClose(dialog).click();
 
       await expectToStay(page);
       await expect(opener).toBeFocused();
@@ -215,4 +224,13 @@ async function expectToStay(page: Page) {
   await expect(getList(page)).toHaveCount(0);
   await expect(getNameField(page)).toHaveValue("Joana Souza");
   await expect(page.getByTestId("has-changes")).toHaveText("Alterações não salvas: sim");
+}
+
+/** The "Fechar" button at the top right of the dialog, apart from its actions. */
+function getClose(dialog: Locator) {
+  return dialog.locator(".v-card-title").getByRole("button", { name: "Fechar" });
+}
+
+function getActions(dialog: Locator) {
+  return dialog.locator(".v-card-actions").getByRole("button");
 }
