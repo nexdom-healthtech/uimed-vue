@@ -30,6 +30,12 @@ const focusable = [
 const focusableExceptClose = `:is(${focusable}):not([data-u-dialog-close])`;
 
 /**
+ * Focusable elements that aren't disabled through `aria-disabled`, such as the close button while an
+ * action loads, which keyboard navigation skips. Without one, the focus stays on the dialog itself.
+ */
+const focusableEnabled = `:is(${focusable}):not([aria-disabled="true"])`;
+
+/**
  * Moves the focus into a dialog once it opens and back to where it was when it closes, including
  * when dialogs are opened from others. Internal to the dialog components.
  * @param isActive - Whether the dialog is displayed. It turns `false` as soon as the dialog starts
@@ -69,7 +75,7 @@ export function useDialogFocus(
     const element = toValue(card);
     const target =
       element?.querySelector<HTMLElement>(focusableExceptClose) ??
-      element?.querySelector<HTMLElement>(focusable);
+      element?.querySelector<HTMLElement>(focusableEnabled);
     target?.focus();
   }
 

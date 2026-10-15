@@ -107,6 +107,19 @@ describe("useDialogFocus", () => {
       expect(document.activeElement).toBe(card.firstElementChild);
     });
 
+    it("should not focus the close button while it's disabled", () => {
+      const card = createCard([
+        createElement("button", { "data-u-dialog-close": "", "aria-disabled": "true" }),
+        createElement("button", { disabled: "" }),
+      ]);
+      const { focusFirstElement } = mountDialog({ card });
+      const focused = document.activeElement;
+
+      focusFirstElement();
+
+      expect(document.activeElement).toBe(focused);
+    });
+
     it("should not focus elements outside the card", () => {
       const outside = createElement("button");
       document.body.append(outside);

@@ -616,6 +616,14 @@ describe("Dialog", () => {
 
     expect(document.activeElement).toBe(findClose(wrapper).element);
   });
+
+  it("should not move the focus to the close button while it's disabled by a loading action", () => {
+    const wrapper = mountDialog({ props: { title, actions: loadingActions } });
+
+    enter(wrapper);
+
+    expect(document.activeElement).not.toBe(findClose(wrapper).element);
+  });
 });
 function findVDialog(wrapper: VueWrapper) {
   return wrapper.findComponent(VDialog);
