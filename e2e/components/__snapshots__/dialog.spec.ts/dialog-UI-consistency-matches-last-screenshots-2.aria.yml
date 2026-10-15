@@ -1,5 +1,6 @@
 - dialog "Editar paciente":
     - text: ""
+    - button "Fechar"
     - textbox "Nome": Maria da Silva
     - text: Nome
     - alert

@@ -1,3 +1,5 @@
 - dialog "Cadastro enviado":
-    - text: Cadastro enviado Seu cadastro foi enviado para análise.
+    - text: ""
+    - button "Fechar"
+    - text: Seu cadastro foi enviado para análise.
     - button "Fechar"
