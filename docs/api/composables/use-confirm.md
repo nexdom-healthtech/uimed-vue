@@ -56,7 +56,7 @@ Os diálogos de `confirm` compartilham a fila de diálogos do [`useDialog`](./us
 
 - a ação falha;
 - o usuário clica no botão de cancelamento;
-- o usuário pressiona a tecla `Esc` ou clica fora do diálogo;
+- o usuário clica no botão "Fechar" no canto superior direito, pressiona a tecla `Esc` ou clica fora do diálogo;
 - o usuário usa o botão "voltar" do navegador, em aplicações que usam o [Vue Router](https://router.vuejs.org/), exceto quando ele leva a uma página aberta com `router.replace` (como a página pela qual o usuário entrou na aplicação).
 
 ### Acessibilidade

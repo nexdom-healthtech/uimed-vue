@@ -79,7 +79,8 @@ export default function useDialog() {
  * Displays a dialog. Dialogs are displayed one at a time, in the order they were requested.
  * @param {DialogOptions} options - Options for the dialog.
  * @returns the `value` of the clicked action, or `undefined` when the dialog is closed by the
- * default action, the `Esc` key, a click outside it or the browser's back button.
+ * default action, the "Fechar" button at its top right, the `Esc` key, a click outside it or the
+ * browser's back button.
  *
  * @example
  * ```ts
