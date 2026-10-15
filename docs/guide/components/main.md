@@ -143,6 +143,42 @@ function toggleNotifications(open: boolean) {
 </script>
 ```
 
+#### Usuário sem imagem
+
+O avatar do usuário mostra a imagem informada em `img`. Sem `img`, ele mostra as iniciais do `title`: a primeira letra do primeiro e do último nome, como "RP" para "Rafael Perini". Sem `img` nem `title`, ele mostra um ícone genérico. A regra vale tanto para o botão do menu superior quanto para o menu do usuário aberto.
+
+O avatar é decorativo: leitores de tela não leem as iniciais e continuam anunciando o botão como "Menu do usuário".
+
+<demo contained data-testid="demo-root-user-initials">
+<u-main :appBar="userInitialsAppBar" data-testid="root-demo-user-initials">
+  <h2>O conteúdo da página vai aqui...</h2>
+</u-main>
+</demo>
+
+```vue
+<template>
+  <u-main :appBar>
+    <h2>O conteúdo da página vai aqui...</h2>
+  </u-main>
+</template>
+
+<script lang="ts" setup>
+import type { ComponentProps } from "vue-component-type-helpers";
+import { UMain } from "@nexdom/uimed-vue/components";
+
+type MainProps = ComponentProps<typeof UMain>;
+
+const appBar: NonNullable<MainProps["appBar"]> = {
+  title: "Menu superior",
+  user: {
+    title: "Rafael Perini",
+    subtitle: "UIMed-Vue Co-Creator",
+    options: [{ description: "Sair", action: () => window.alert("Saindo...") }],
+  },
+};
+</script>
+```
+
 ### Menu de navegação
 
 A prop `navigation-menu` define as configurações para apresentação do menu lateral de navegação.
@@ -654,6 +690,16 @@ O conteúdo da página ocupa toda a altura visível abaixo do menu superior (e a
     user: {
       title: "Rafael Perini",
       subtitle: "UIMed-Vue Co-Creator",
+    },
+  };
+
+  const userInitialsAppBar: NonNullable<MainProps["appBar"]> = {
+    title: "Menu superior",
+    dataTestid: "demo-root-user-initials-app-bar",
+    user: {
+      title: "Rafael Perini",
+      subtitle: "UIMed-Vue Co-Creator",
+      options: [{ description: "Sair", action: () => window.alert("Saindo...") }],
     },
   };
 
