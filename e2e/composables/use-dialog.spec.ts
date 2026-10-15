@@ -1,5 +1,5 @@
 import { expectNoA11yViolations, gotoPage } from "@e2e/utils.ts";
-import { test, expect, type Page } from "@playwright/test";
+import { test, expect, type Locator, type Page } from "@playwright/test";
 
 test.describe("use-dialog", () => {
   test.beforeEach(async ({ page }) => {
@@ -14,14 +14,17 @@ test.describe("use-dialog", () => {
       await expect(dialog).toBeVisible();
       await expect(dialog).toHaveAccessibleName("Cadastro enviado");
       await expect(dialog).toHaveAccessibleDescription("Seu cadastro foi enviado para análise.");
-      await expect(dialog.getByRole("button", { name: "Fechar" })).toBeFocused();
+      await expect(getAction(dialog, "Fechar")).toBeFocused();
+      // Besides the default "Fechar" action, the dialog has its "Fechar" button at the top right
+      await expect(getActions(dialog)).toHaveText(["Fechar"]);
+      await expect(getClose(dialog)).toBeVisible();
     });
 
     test("stays open after the click that opened it", async ({ page }) => {
       await page.getByTestId("btn-simple").click();
 
       const dialog = getDialog(page);
-      await expect(dialog.getByRole("button", { name: "Fechar" })).toBeFocused();
+      await expect(getAction(dialog, "Fechar")).toBeFocused();
       await expect(dialog).toBeVisible();
     });
 
@@ -30,7 +33,19 @@ test.describe("use-dialog", () => {
       await opener.click();
 
       const dialog = getDialog(page);
-      await dialog.getByRole("button", { name: "Fechar" }).click();
+      await getAction(dialog, "Fechar").click();
+
+      await expect(dialog).toBeHidden();
+      await expect(opener).toBeFocused();
+    });
+
+    test("closes on its close button and returns the focus", async ({ page }) => {
+      const opener = page.getByTestId("btn-simple");
+      await opener.click();
+
+      const dialog = getDialog(page);
+      await expect(getAction(dialog, "Fechar")).toBeFocused();
+      await getClose(dialog).click();
 
       await expect(dialog).toBeHidden();
       await expect(opener).toBeFocused();
@@ -39,11 +54,14 @@ test.describe("use-dialog", () => {
     test("keeps the focus inside the dialog", async ({ page }) => {
       await page.getByTestId("btn-simple").click();
 
-      const close = getDialog(page).getByRole("button", { name: "Fechar" });
-      await expect(close).toBeFocused();
+      const dialog = getDialog(page);
+      const action = getAction(dialog, "Fechar");
+      await expect(action).toBeFocused();
 
       await page.keyboard.press("Tab");
-      await expect(close).toBeFocused();
+      await expect(getClose(dialog)).toBeFocused();
+      await page.keyboard.press("Tab");
+      await expect(action).toBeFocused();
     });
   });
 
@@ -55,7 +73,7 @@ test.describe("use-dialog", () => {
       await page.getByTestId("btn-actions").click();
 
       const dialog = getDialog(page);
-      await expect(dialog.getByRole("button")).toHaveText(["Sair", "Continuar conectado"]);
+      await expect(getActions(dialog)).toHaveText(["Sair", "Continuar conectado"]);
       await expect(dialog.getByRole("button", { name: "Sair" })).toBeFocused();
 
       await dialog.getByRole("button", { name: "Continuar conectado" }).click();
@@ -83,6 +101,19 @@ test.describe("use-dialog", () => {
       await expect(page.getByTestId("dialog-answer")).toHaveText("Resposta: nenhuma");
     });
 
+    test("closes on its close button and resolves undefined", async ({ page }) => {
+      await answerContinue(page);
+
+      await page.getByTestId("btn-actions").click();
+      const dialog = getDialog(page);
+      await expect(dialog.getByRole("button", { name: "Sair" })).toBeFocused();
+
+      await getClose(dialog).click();
+
+      await expect(dialog).toBeHidden();
+      await expect(page.getByTestId("dialog-answer")).toHaveText("Resposta: nenhuma");
+    });
+
     test("closes on a click outside it and resolves undefined", async ({ page }) => {
       await answerContinue(page);
 
@@ -105,11 +136,11 @@ test.describe("use-dialog", () => {
       await expect(dialog).toHaveCount(1);
       await expect(dialog).toHaveAccessibleName("Primeiro diálogo");
 
-      await dialog.getByRole("button", { name: "Fechar" }).click();
+      await getAction(dialog, "Fechar").click();
       await expect(dialog).toHaveAccessibleName("Segundo diálogo");
-      await expect(dialog.getByRole("button", { name: "Fechar" })).toBeFocused();
+      await expect(getAction(dialog, "Fechar")).toBeFocused();
 
-      await dialog.getByRole("button", { name: "Fechar" }).click();
+      await getAction(dialog, "Fechar").click();
       await expect(dialog).toBeHidden();
     });
   });
@@ -118,13 +149,14 @@ test.describe("use-dialog", () => {
     for (const [way, close] of [
       ["Esc", (page: Page) => page.keyboard.press("Escape")],
       ["a click outside it", (page: Page) => page.mouse.click(5, 5)],
+      ["its close button", (page: Page) => getClose(getDialog(page)).click()],
     ] as const) {
       test(`displays the next dialog once the first one is closed by ${way}`, async ({ page }) => {
         const opener = page.getByTestId("btn-queue");
         await opener.click();
 
         const dialog = getDialog(page);
-        const closeButton = dialog.getByRole("button", { name: "Fechar" });
+        const closeButton = getAction(dialog, "Fechar");
         await expect(dialog).toHaveAccessibleName("Primeiro diálogo");
         await expect(closeButton).toBeFocused();
 
@@ -150,7 +182,7 @@ test.describe("use-dialog", () => {
 
       for (const testId of ["btn-simple", "btn-actions"]) {
         await page.getByTestId(testId).click();
-        await expect(dialog.getByRole("button").first()).toBeFocused();
+        await expect(getActions(dialog).first()).toBeFocused();
 
         await expectNoA11yViolations(page);
 
@@ -166,7 +198,7 @@ test.describe("use-dialog", () => {
 
       for (const testId of ["btn-simple", "btn-actions"]) {
         await page.getByTestId(testId).click();
-        await expect(dialog.getByRole("button").first()).toBeFocused();
+        await expect(getActions(dialog).first()).toBeFocused();
 
         await expect(dialog).toMatchAriaSnapshot();
         await expect(page).toHaveScreenshot();
@@ -186,4 +218,17 @@ async function answerContinue(page: Page) {
   await page.getByTestId("btn-actions").click();
   await getDialog(page).getByRole("button", { name: "Continuar conectado" }).click();
   await expect(page.getByTestId("dialog-answer")).toHaveText("Resposta: continuar");
+}
+
+/** The "Fechar" button at the top right of the dialog, apart from its actions. */
+function getClose(dialog: Locator) {
+  return dialog.locator(".v-card-title").getByRole("button", { name: "Fechar" });
+}
+
+function getActions(dialog: Locator) {
+  return dialog.locator(".v-card-actions").getByRole("button");
+}
+
+function getAction(dialog: Locator, name: string) {
+  return dialog.locator(".v-card-actions").getByRole("button", { name });
 }
