@@ -1,0 +1,4 @@
+- heading "Menu superior" [level=1]
+- button "Menu do usuário"
+- main:
+    - heading "O conteúdo da página vai aqui..." [level=2]

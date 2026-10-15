@@ -33,12 +33,12 @@ Responsável por carregar o menu superior, o menu de navegação lateral, o roda
 
 #### `User`
 
-| Prop       | Tipo                         | Padrão | Descrição                                                                                                                 |
-| ---------- | ---------------------------- | ------ | ------------------------------------------------------------------------------------------------------------------------- |
-| `title`    | `string`                     |        | Título para o menu do usuário. Geralmente o nome completo do mesmo.                                                       |
-| `subtitle` | `string`                     |        | Subtítulo para o menu do usuário, como e-mail ou _username_.                                                              |
-| `img`      | `string`                     |        | URL da imagem para identificar o usuário. **Será apresentada uma imagem genérica em caso de omissão desta prop.**         |
-| `options`  | `(ParentOption \| Option)[]` |        | Lista de ações ([`ParentOption`](#parentoption)) e/ou opções ([`Option`](#option)) para apresentar com o menu do usuário. |
+| Prop       | Tipo                         | Padrão | Descrição                                                                                                                                                 |
+| ---------- | ---------------------------- | ------ | --------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `title`    | `string`                     |        | Título para o menu do usuário. Geralmente o nome completo do mesmo. Sem `img`, o avatar mostra as suas iniciais (por exemplo, "RP" para "Rafael Perini"). |
+| `subtitle` | `string`                     |        | Subtítulo para o menu do usuário, como e-mail ou _username_.                                                                                              |
+| `img`      | `string`                     |        | URL da imagem para identificar o usuário. Quando omitida, o avatar mostra as iniciais do `title`; sem `title`, um ícone genérico.                         |
+| `options`  | `(ParentOption \| Option)[]` |        | Lista de ações ([`ParentOption`](#parentoption)) e/ou opções ([`Option`](#option)) para apresentar com o menu do usuário.                                 |
 
 ##### `ParentOption`
 

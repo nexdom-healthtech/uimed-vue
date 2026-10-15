@@ -94,13 +94,15 @@
               aria-label="Menu do usuário"
               icon
             >
-              <v-avatar v-bind="userAvatarProps" color="primary" />
+              <!-- Decorative: the button already has an accessible name -->
+              <v-avatar v-bind="userAvatarProps" color="primary" aria-hidden="true" />
             </v-btn>
           </template>
 
           <v-card :title="user?.title" :subtitle="user?.subtitle" :data-testid="userMenuDataTestid">
             <template #prepend>
-              <v-avatar v-bind="userAvatarProps" color="primary" />
+              <!-- Decorative: the user's name, when given, is already the card's title -->
+              <v-avatar v-bind="userAvatarProps" color="primary" aria-hidden="true" />
             </template>
 
             <v-divider />
@@ -166,6 +168,7 @@ import {
 import useRouteProps, { routeToListItemProps } from "@/composables/navigation/use-route-props.ts";
 import { useNavigationShortcutKeys } from "@/composables/navigation/use-navigation-search-shortcut.ts";
 import { computed, watch } from "vue";
+import { toInitials } from "@nexdom/shared/utils";
 import {
   VAppBar,
   VAppBarTitle,
@@ -230,9 +233,13 @@ watch(
 );
 
 const showUser = computed(() => !!props.user);
-const userAvatarProps = computed(() =>
-  props.user!.img ? { image: props.user!.img } : { icon: "mdi-account-outline" },
-);
+const userInitials = computed(() => toInitials(props.user!.title ?? ""));
+// The picture comes first, then the initials of the user's name, and the generic icon last
+const userAvatarProps = computed(() => {
+  if (props.user!.img) return { image: props.user!.img };
+  if (userInitials.value) return { text: userInitials.value };
+  return { icon: "mdi-account-outline" };
+});
 
 function isParentOption(option: ParentOptionOrOption): option is ParentOption {
   return "items" in option;

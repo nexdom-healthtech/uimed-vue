@@ -523,7 +523,8 @@ describe("AppBar", () => {
         const vAvatar = findVAvatar(wrapper);
         expect(vAvatar.exists()).toBeTruthy();
         expect(vAvatar.props("color")).toBe("primary");
-        expect(vAvatar.props("icon")).toBe("mdi-account-outline");
+        expect(vAvatar.props("text")).toBe("B");
+        expect(vAvatar.props("icon")).toBeUndefined();
       });
 
       it("should open user menu when button is clicked", async () => {
@@ -568,8 +569,97 @@ describe("AppBar", () => {
           expect(cardText).toContain(user.subtitle);
 
           const vCardAvatar = findVCardAvatar(vCard);
-          expect(vCardAvatar.props("icon")).toBe("mdi-account-outline");
+          expect(vCardAvatar.props("text")).toBe("B");
+          expect(vCardAvatar.props("icon")).toBeUndefined();
           expect(vCardAvatar.props("image")).toBeUndefined();
+        });
+      });
+
+      describe("avatar", () => {
+        async function findAvatars(userProps: AppBarUserProps) {
+          await wrapper.setProps({ user: userProps });
+          await findVBtn(wrapper).trigger("click");
+
+          return [findVAvatar(wrapper), findVCardAvatar(findVCard(wrapper))];
+        }
+
+        it.each([
+          ["Rafael Perini", "RP"],
+          ["Maria da Silva Souza", "MS"],
+          ["élio ávila", "ÉÁ"],
+          ["  Ana  ", "A"],
+        ])("should show the initials of %j without a picture", async (title, initials) => {
+          const avatars = await findAvatars({ title });
+
+          for (const vAvatar of avatars) {
+            expect(vAvatar.props("text")).toBe(initials);
+            expect(vAvatar.props("icon")).toBeUndefined();
+            expect(vAvatar.props("image")).toBeUndefined();
+            expect(vAvatar.text()).toBe(initials);
+          }
+        });
+
+        it.each([
+          ["no title", {}],
+          ["an empty title", { title: "" }],
+          ["a blank title", { title: "   " }],
+        ])("should show a generic icon with %s", async (_, userProps: AppBarUserProps) => {
+          const avatars = await findAvatars(userProps);
+
+          for (const vAvatar of avatars) {
+            expect(vAvatar.props("icon")).toBe("mdi-account-outline");
+            expect(vAvatar.props("text")).toBeUndefined();
+            expect(vAvatar.props("image")).toBeUndefined();
+          }
+        });
+
+        it("should prefer the picture to the initials", async () => {
+          const avatars = await findAvatars({ title: "Rafael Perini", img: "/picture.png" });
+
+          for (const vAvatar of avatars) {
+            expect(vAvatar.props("image")).toBe("/picture.png");
+            expect(vAvatar.props("text")).toBeUndefined();
+            expect(vAvatar.props("icon")).toBeUndefined();
+          }
+        });
+
+        it.each([
+          ["initials", { title: "Rafael Perini" }],
+          ["icon", {}],
+          ["picture", { img: "/picture.png" }],
+        ])(
+          "should keep the primary color and hide the %s from screen readers",
+          async (_, userProps: AppBarUserProps) => {
+            const avatars = await findAvatars(userProps);
+
+            for (const vAvatar of avatars) {
+              expect(vAvatar.exists()).toBeTruthy();
+              expect(vAvatar.props("color")).toBe("primary");
+              expect(vAvatar.attributes("aria-hidden")).toBe("true");
+            }
+            expect(findVBtn(wrapper).attributes("aria-label")).toBe("Menu do usuário");
+          },
+        );
+
+        it("should follow changes to the user", async () => {
+          let avatars = await findAvatars({ title: "Rafael Perini" });
+          avatars.forEach((vAvatar) => expect(vAvatar.props("text")).toBe("RP"));
+
+          await wrapper.setProps({ user: { title: "Beetlejuice" } });
+          avatars = [findVAvatar(wrapper), findVCardAvatar(findVCard(wrapper))];
+          avatars.forEach((vAvatar) => expect(vAvatar.props("text")).toBe("B"));
+
+          await wrapper.setProps({ user: { title: "Beetlejuice", img: "/picture.png" } });
+          avatars.forEach((vAvatar) => {
+            expect(vAvatar.props("image")).toBe("/picture.png");
+            expect(vAvatar.props("text")).toBeUndefined();
+          });
+
+          await wrapper.setProps({ user: {} });
+          avatars.forEach((vAvatar) => {
+            expect(vAvatar.props("icon")).toBe("mdi-account-outline");
+            expect(vAvatar.props("image")).toBeUndefined();
+          });
         });
       });
 

@@ -118,6 +118,49 @@ test.describe("main", () => {
           expect(dialog.type()).toBe("alert");
           expect(dialog.message()).toBe("Saindo...");
         });
+
+        test("shows the picture instead of the initials", async ({ page }) => {
+          const avatar = getUserButton(page).locator(".v-avatar");
+
+          await expect(avatar.locator(".v-img")).toBeVisible();
+          await expect(avatar).toHaveText("");
+        });
+      });
+
+      test.describe("user without picture", () => {
+        test("shows the user's initials in the button and in the menu", async ({ page }) => {
+          const userButton = getUserInitialsButton(page);
+          await expect(userButton.locator(".v-avatar")).toBeVisible();
+          await expect(userButton.locator(".v-avatar")).toHaveText("RP");
+
+          await userButton.click();
+
+          const userMenu = getUserInitialsMenu(page);
+          await expect(userMenu).toBeVisible();
+          await expect(userMenu.locator(".v-avatar")).toBeVisible();
+          await expect(userMenu.locator(".v-avatar")).toHaveText("RP");
+        });
+
+        test("keeps the button's name and hides the initials from screen readers", async ({
+          page,
+        }) => {
+          const userButton = getUserInitialsButton(page);
+          await expect(userButton).toHaveAccessibleName("Menu do usuário");
+          await expect(userButton.locator(".v-avatar")).toHaveAttribute("aria-hidden", "true");
+
+          await userButton.click();
+
+          const userMenu = getUserInitialsMenu(page);
+          await expect(userMenu.locator(".v-avatar")).toHaveText("RP");
+          await expect(userMenu.locator(".v-avatar")).toHaveAttribute("aria-hidden", "true");
+          expect(await userMenu.ariaSnapshot()).not.toContain("RP");
+        });
+
+        test("matches the accessible snapshot of the user without picture demo", async ({
+          page,
+        }) => {
+          await expect(getUserInitialsDemo(page)).toMatchAriaSnapshot();
+        });
       });
     });
 
@@ -731,6 +774,12 @@ test.describe("main", () => {
       await expect(getNavigationToggleDrawer(page)).toContainClass("v-navigation-drawer--active");
       await expectNoA11yViolations(page);
     });
+
+    test("has no violations with the menu of the user without picture open", async ({ page }) => {
+      await getUserInitialsButton(page).click();
+      await expect(getUserInitialsMenu(page)).toBeVisible();
+      await expectNoA11yViolations(page);
+    });
   });
 
   test.describe("UI consistency", () => {
@@ -926,6 +975,18 @@ function getUserButton(page: Page) {
 
 function getUserMenu(page: Page) {
   return page.getByTestId("demo-root-app-bar-user-menu");
+}
+
+function getUserInitialsDemo(page: Page) {
+  return page.getByTestId("demo-root-user-initials");
+}
+
+function getUserInitialsButton(page: Page) {
+  return page.getByTestId("demo-root-user-initials-app-bar-user");
+}
+
+function getUserInitialsMenu(page: Page) {
+  return page.getByTestId("demo-root-user-initials-app-bar-user-menu");
 }
 
 function getPlaygroundAppBar(page: Page) {
