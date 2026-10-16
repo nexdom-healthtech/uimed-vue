@@ -1,3 +1,5 @@
+import type { SectionAction } from "@/components/sections/section/types.ts";
+
 /**
  * Number of records shown side by side on each row of a {@link DataSet}.
  */
@@ -35,7 +37,18 @@ export type DataSetProps<T extends object> = {
   itemsPerPage?: number;
 
   /**
-   * Shows a search field above the records, bound to `v-model:search`.
+   * List of actions about the whole list, such as creating a record, displayed
+   * as buttons at the start of the bar above the records, before the search
+   * field. Same shape as `USection`'s actions. On extra small
+   * screens, each action takes a line of its own and the full width. When
+   * undefined or empty, and `searchable` is false, no bar is rendered.
+   */
+  actions?: SectionAction[];
+
+  /**
+   * Shows a search field at the end of the bar above the records, bound to
+   * `v-model:search`. It's 240px wide, the same as a card's minimum width. On
+   * extra small screens, it takes a line of its own and the full width.
    * @default false
    */
   searchable?: boolean;

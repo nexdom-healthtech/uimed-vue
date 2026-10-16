@@ -32,9 +32,10 @@ const dataSetColumnsToColumnCols: Record<DataSetColumns, ColumnCols> = {
 /**
  * Minimum width, in pixels, of each record's card. Fewer records are placed
  * side by side when the data set isn't wide enough to keep its cards at least
- * this wide.
+ * this wide. The search field above the records is this wide too, so
+ * it fits wherever a card does.
  */
-const minDataSetItemWidth = 240;
+export const minDataSetItemWidth = 240;
 
 /**
  * Space, in pixels, between two cards of the same row: the default gutter of

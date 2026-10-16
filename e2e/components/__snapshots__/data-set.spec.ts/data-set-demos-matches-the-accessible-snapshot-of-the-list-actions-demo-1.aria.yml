@@ -1,0 +1,9 @@
+- button "Novo paciente"
+- button "Exportar"
+- text: Pesquisar
+- textbox "Pesquisar"
+- list:
+    - listitem: Ana Souza Plano Ouro
+    - listitem: Bruno Lima Plano Prata
+    - listitem: Carla Dias Plano Bronze
+    - listitem: Daniel Rocha Plano Ouro
