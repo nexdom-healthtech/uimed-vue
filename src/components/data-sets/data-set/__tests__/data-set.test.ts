@@ -1,6 +1,7 @@
 import { VDataIterator, VEmptyState, VPagination, VSkeletonLoader } from "vuetify/components";
 import { mount, renderToString } from "@vue/test-utils";
 import { h, toRaw } from "vue";
+import DataSetBar from "@/components/data-sets/data-set-bar.vue";
 import DataSet from "@/components/data-sets/data-set/data-set.vue";
 import Column from "@/components/grid/column/column.vue";
 import Row from "@/components/grid/row/row.vue";
@@ -372,10 +373,77 @@ describe("DataSet", () => {
         expect(textField.props("label")).toBe("Pesquisar");
       });
 
-      it("should render the search field above the grid", () => {
+      it("should render the search field on the line above the grid", () => {
         const wrapper = mountDataSet({ searchable: true });
-        const iteratorElement = findVDataIterator(wrapper).element;
-        expect(iteratorElement.firstElementChild).toBe(findTextField(wrapper).element);
+        const lines = findLines(wrapper);
+        expect(findDataSetBar(wrapper).props("searchable")).toBe(true);
+        expect(lines).toHaveLength(2);
+        expect(lines[0].findComponent(TextField).exists()).toBeTruthy();
+        expect(lines[1].element.firstElementChild).toBe(findVDataIterator(wrapper).element);
+      });
+
+      it("should keep the search field and its focus when the search stops matching records", async () => {
+        const wrapper = mountDataSet({ searchable: true }, undefined, document.body);
+        const input = findTextField(wrapper).find("input");
+        input.element.focus();
+
+        await input.setValue("nobody");
+        expect(findVEmptyState(wrapper).exists()).toBeTruthy();
+        expect(findTextField(wrapper).find("input").element).toBe(input.element);
+        expect(document.activeElement).toBe(input.element);
+
+        await input.setValue("");
+        expect(findRenderedItems(wrapper)).toHaveLength(3);
+        expect(findTextField(wrapper).find("input").element).toBe(input.element);
+        expect(document.activeElement).toBe(input.element);
+        wrapper.unmount();
+      });
+    });
+
+    describe("actions", () => {
+      it("should not render the bar by default", () => {
+        const wrapper = mountDataSet();
+        const lines = findLines(wrapper);
+        expect(findDataSetBar(wrapper).props("actions")).toBeUndefined();
+        expect(findDataSetBar(wrapper).props("searchable")).toBeFalsy();
+        expect(lines).toHaveLength(1);
+        expect(lines[0].element.firstElementChild).toBe(findVDataIterator(wrapper).element);
+      });
+
+      it("should render the actions on the lines above the grid, before the search field", () => {
+        const actions = [{ label: "Novo paciente" }, { label: "Importar" }];
+        const wrapper = mountDataSet({ actions, searchable: true });
+        const lines = findLines(wrapper);
+        expect(findDataSetBar(wrapper).props("actions")).toEqual(actions);
+        expect(lines).toHaveLength(4);
+        expect(lines.slice(0, 2).map((line) => line.text())).toEqual(["Novo paciente", "Importar"]);
+        expect(lines[2].findComponent(TextField).exists()).toBeTruthy();
+        expect(lines[3].element.firstElementChild).toBe(findVDataIterator(wrapper).element);
+      });
+
+      it("should center the actions with the search field", () => {
+        const wrapper = mountDataSet({ actions: [{ label: "Novo paciente" }] });
+        expect(findLayoutRow(wrapper).props("alignY")).toBe("center");
+        expect(findLayoutRow(wrapper).props("list")).toBeFalsy();
+      });
+
+      it("should put the records on a full-width line of their own, below the bar", () => {
+        const wrapper = mountDataSet({ actions: [{ label: "Novo paciente" }] });
+        const recordsColumn = findLayoutRow(wrapper).findAllComponents(Column).at(1);
+        expect(recordsColumn?.props("cols")).toBe("12");
+        expect(recordsColumn?.props("listItem")).toBeFalsy();
+        expect(recordsColumn?.element.firstElementChild).toBe(findVDataIterator(wrapper).element);
+      });
+
+      it("should keep the bar out of the list of records", () => {
+        const wrapper = mountDataSet({ actions: [{ label: "Novo paciente" }], searchable: true });
+        expect(findVDataIterator(wrapper).findComponent(DataSetBar).exists()).toBeFalsy();
+        expect(findListItems(wrapper)).toHaveLength(3);
+      });
+
+      it("should hide the bar while loading", () => {
+        const wrapper = mountDataSet({ actions: [{ label: "Novo paciente" }], loading: true });
+        expect(findDataSetBar(wrapper).exists()).toBeFalsy();
       });
     });
 
@@ -532,15 +600,16 @@ describe("DataSet", () => {
         await wrapper.setProps({ loading: true });
         expect(findVDataIterator(wrapper).exists()).toBeFalsy();
         expect(findTextField(wrapper).exists()).toBeFalsy();
-        expect(findRow(wrapper).exists()).toBeFalsy();
+        expect(findLayoutRow(wrapper).exists()).toBeFalsy();
         expect(findRenderedItems(wrapper)).toHaveLength(0);
       });
     });
 
     describe("dataTestid", () => {
-      it("should forward to the v-data-iterator", () => {
+      it("should forward to the row that lays out the bar and the records", () => {
         const wrapper = mountDataSet();
-        expect(findVDataIterator(wrapper).attributes("data-testid")).toBe(testId);
+        expect(findLayoutRow(wrapper).attributes("data-testid")).toBe(testId);
+        expect(findVDataIterator(wrapper).attributes("data-testid")).toBeUndefined();
       });
 
       it("should not apply to the skeleton loader", () => {
@@ -550,7 +619,7 @@ describe("DataSet", () => {
 
       it("should not set data-testid when undefined", () => {
         const wrapper = mountDataSet({ dataTestid: undefined });
-        expect(findVDataIterator(wrapper).attributes("data-testid")).toBeUndefined();
+        expect(findLayoutRow(wrapper).attributes("data-testid")).toBeUndefined();
       });
     });
   });
@@ -571,8 +640,10 @@ function renderItem({ item, index }: { item: Patient; index: number }) {
 function mountDataSet(
   props: Record<string, unknown> = {},
   slots: Record<string, unknown> = { default: renderItem },
+  attachTo?: HTMLElement,
 ) {
   return mount(DataSet, {
+    attachTo,
     props: {
       items: patients,
       dataTestid: testId,
@@ -608,8 +679,24 @@ function findVDataIterator(wrapper: ReturnType<typeof mountDataSet>) {
   return wrapper.findComponent(VDataIterator);
 }
 
-function findRow(wrapper: ReturnType<typeof mountDataSet>) {
+/**
+ * Finds the row that lays out the bar above the records and, on a line of its
+ * own, the records.
+ */
+function findLayoutRow(wrapper: ReturnType<typeof mountDataSet>) {
   return wrapper.findComponent(Row);
+}
+
+function findLines(wrapper: ReturnType<typeof mountDataSet>) {
+  return findLayoutRow(wrapper).findAll(":scope > .v-col");
+}
+
+function findDataSetBar(wrapper: ReturnType<typeof mountDataSet>) {
+  return wrapper.findComponent(DataSetBar);
+}
+
+function findRow(wrapper: ReturnType<typeof mountDataSet>) {
+  return findVDataIterator(wrapper).findComponent(Row);
 }
 
 function findList(wrapper: ReturnType<typeof mountDataSet>) {
@@ -621,7 +708,7 @@ function findListItems(wrapper: ReturnType<typeof mountDataSet>) {
 }
 
 function findColumns(wrapper: ReturnType<typeof mountDataSet>) {
-  return wrapper.findAllComponents(Column);
+  return findVDataIterator(wrapper).findAllComponents(Column);
 }
 
 function findVPagination(wrapper: ReturnType<typeof mountDataSet>) {

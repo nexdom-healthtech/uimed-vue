@@ -1,53 +1,66 @@
 <template>
   <skeleton-loader :loading="props.loading" type="card" full-width>
-    <v-data-iterator
-      ref="iterator"
-      v-model:page="page"
-      :items="props.items"
-      :items-per-page="props.itemsPerPage"
-      :search
-      :filter-keys="filterKeys"
-      :data-testid="props.dataTestid"
-    >
-      <template #header>
-        <TextField v-if="props.searchable" v-model="search" type="search" label="Pesquisar" />
-      </template>
+    <!-- The bar's columns share a row with the records, which go on a line of their own, so the
+         grid spaces them as it spaces its lines -->
+    <Row align-y="center" :data-testid="props.dataTestid">
+      <DataSetBar v-model="search" :actions="props.actions" :searchable="props.searchable" />
+      <Column>
+        <v-data-iterator
+          ref="iterator"
+          v-model:page="page"
+          :items="props.items"
+          :items-per-page="props.itemsPerPage"
+          :search
+          :filter-keys="filterKeys"
+        >
+          <template #default="{ items: pageItems }">
+            <!-- Stretched, so the items of the same line (e.g. full-height cards) share its height -->
+            <Row list align-y="stretch">
+              <Column
+                v-for="(pageItem, index) in pageItems"
+                :key="index"
+                :cols="columnCols"
+                list-item
+              >
+                <slot :item="pageItem.raw" :index />
+              </Column>
+            </Row>
+          </template>
 
-      <template #default="{ items: pageItems }">
-        <!-- Stretched, so the items of the same line (e.g. full-height cards) share its height -->
-        <Row list align-y="stretch">
-          <Column v-for="(pageItem, index) in pageItems" :key="index" :cols="columnCols" list-item>
-            <slot :item="pageItem.raw" :index />
-          </Column>
-        </Row>
-      </template>
+          <template #no-data>
+            <v-empty-state :text="props.noDataText" />
+          </template>
 
-      <template #no-data>
-        <v-empty-state :text="props.noDataText" />
-      </template>
-
-      <template #footer="{ pageCount }">
-        <v-pagination
-          v-if="pageCount > 1"
-          v-model="page"
-          :length="pageCount"
-          :total-visible="getDataSetTotalVisible(pageCount)"
-        />
-      </template>
-    </v-data-iterator>
+          <template #footer="{ pageCount }">
+            <v-pagination
+              v-if="pageCount > 1"
+              v-model="page"
+              :length="pageCount"
+              :total-visible="getDataSetTotalVisible(pageCount)"
+            />
+          </template>
+        </v-data-iterator>
+      </Column>
+    </Row>
   </skeleton-loader>
 </template>
 
 <script lang="ts">
 /**
  * Data set component to list records as a responsive grid of cards, with
- * client-side pagination and an optional search field. Each record of the
- * current page is rendered by the default slot, usually with `UDataSetItem`.
+ * client-side pagination, and an optional bar above the records with actions
+ * about the list and a search field. Each record of the current page is
+ * rendered by the default slot, usually with `UDataSetItem`.
  *
  * @example
  * ```vue
  * <template>
- *   <u-data-set :items="patients" :columns="4" searchable>
+ *   <u-data-set
+ *     :items="patients"
+ *     :columns="4"
+ *     :actions="[{ label: 'Novo paciente', onClick: create }]"
+ *     searchable
+ *   >
  *     <template #default="{ item }">
  *       <u-data-set-item :title="item.name" :subtitle="item.plan" />
  *     </template>
@@ -65,9 +78,9 @@ export default {
 <script setup lang="ts" generic="T extends object">
 import { useTemplateRef, type ComponentPublicInstance } from "vue";
 import { VDataIterator, VEmptyState, VPagination } from "vuetify/components";
+import DataSetBar from "@/components/data-sets/data-set-bar.vue";
 import Column from "@/components/grid/column/column.vue";
 import Row from "@/components/grid/row/row.vue";
-import TextField from "@/components/inputs/text-field/text-field.vue";
 import SkeletonLoader from "@/components/skeleton-loader/skeleton-loader.vue";
 import type { DataSetProps, DataSetSlots } from "@/components/data-sets/data-set/types.ts";
 import {
