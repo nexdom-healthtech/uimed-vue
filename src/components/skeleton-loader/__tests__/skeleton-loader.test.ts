@@ -64,6 +64,21 @@ describe("SkeletonLoader", () => {
       });
     });
 
+    describe("fullHeight alignment", () => {
+      it("should align the rows of bones with align-content-space-between when fullHeight", () => {
+        const wrapper = mountSkeletonLoader({ loading: true, fullHeight: true });
+        expect(findVSkeletonLoader(wrapper).classes()).toContain("align-content-space-between");
+      });
+
+      it.each([
+        ["by default", {}],
+        ["with fullWidth only", { fullWidth: true }],
+      ])("should not align the rows of bones %s", (_, props) => {
+        const wrapper = mountSkeletonLoader({ loading: true, ...props });
+        expect(findVSkeletonLoader(wrapper).classes()).not.toContain("align-content-space-between");
+      });
+    });
+
     describe("color", () => {
       it("should forward to v-skeleton-loader", () => {
         const wrapper = mountSkeletonLoader({ color: "primary" });
