@@ -608,7 +608,7 @@ describe("AppBar", () => {
           const avatars = await findAvatars(userProps);
 
           for (const vAvatar of avatars) {
-            expect(vAvatar.props("icon")).toBe("mdi-account-outline");
+            expect(vAvatar.props("icon")).toBe(mdiAccountOutline);
             expect(vAvatar.props("text")).toBeUndefined();
             expect(vAvatar.props("image")).toBeUndefined();
           }
@@ -658,7 +658,7 @@ describe("AppBar", () => {
 
           await wrapper.setProps({ user: {} });
           avatars.forEach((vAvatar) => {
-            expect(vAvatar.props("icon")).toBe("mdi-account-outline");
+            expect(vAvatar.props("icon")).toBe(mdiAccountOutline);
             expect(vAvatar.props("image")).toBeUndefined();
           });
         });
