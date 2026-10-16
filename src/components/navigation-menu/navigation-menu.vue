@@ -30,7 +30,9 @@
           <template v-if="isParentItem(item)">
             <v-list-group>
               <!-- Vuetify makes the group's header a list item, but it's a button that expands the
-              group: rendered as one, without Vuetify's role, so the native role applies -->
+              group: rendered as one, without Vuetify's role, so the native role applies. A native
+              button only takes its content's width and centers its text, so `w-100` and
+              `text-start` make it as wide as the other items and aligned with them -->
               <template #activator="{ props: activatorProps, isOpen }">
                 <v-list-item
                   v-bind="activatorProps"
@@ -40,6 +42,7 @@
                   :role="undefined"
                   tag="button"
                   type="button"
+                  class="w-100 text-start"
                 />
               </template>
 
