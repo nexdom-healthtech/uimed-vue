@@ -1,5 +1,5 @@
 import { expectNoA11yViolations, gotoPage, pauseClock } from "@e2e/utils.ts";
-import { test, expect, type Page } from "@playwright/test";
+import { test, expect, type Locator, type Page } from "@playwright/test";
 
 const actionDuration = 1500;
 
@@ -19,8 +19,9 @@ test.describe("use-confirm", () => {
       await expect(dialog).toHaveAccessibleDescription(
         "Deseja salvar as alterações feitas no cadastro?",
       );
-      await expect(dialog.getByRole("button")).toHaveText(["Cancelar", "Confirmar"]);
+      await expect(getActions(dialog)).toHaveText(["Cancelar", "Confirmar"]);
       await expect(dialog.getByRole("button", { name: "Cancelar" })).toBeFocused();
+      await expect(getClose(dialog)).toBeEnabled();
     });
 
     test("blocks the dialog while the action runs, then resolves its value", async ({ page }) => {
@@ -36,6 +37,7 @@ test.describe("use-confirm", () => {
 
       await expect(confirm.locator(".v-btn__loader")).toBeAttached();
       await expect(cancel).toBeDisabled();
+      await expect(getClose(dialog)).toBeDisabled();
       await expect(opener.locator(".v-btn__loader")).toBeAttached();
 
       await page.keyboard.press("Escape");
@@ -61,6 +63,22 @@ test.describe("use-confirm", () => {
       await expect(dialog).toBeHidden();
       await expect(opener.locator(".v-btn__loader")).not.toBeAttached();
       await expect(page.getByTestId("confirm-result")).toHaveText("Resultado: false");
+    });
+
+    test("resolves false without running the action when closed by its close button", async ({
+      page,
+    }) => {
+      const opener = page.getByTestId("btn-confirm");
+      await opener.click();
+
+      const dialog = getDialog(page);
+      await expect(dialog.getByRole("button", { name: "Cancelar" })).toBeFocused();
+      await getClose(dialog).click();
+
+      await expect(dialog).toBeHidden();
+      await expect(opener.locator(".v-btn__loader")).not.toBeAttached();
+      await expect(page.getByTestId("confirm-result")).toHaveText("Resultado: false");
+      await expect(opener).toBeFocused();
     });
 
     test("resolves false when closed by Esc", async ({ page }) => {
@@ -112,7 +130,7 @@ test.describe("use-confirm", () => {
 
       const dialog = getDialog(page);
       await expect(dialog).toHaveAccessibleName("Excluir paciente");
-      await expect(dialog.getByRole("button")).toHaveText(["Manter", "Excluir"]);
+      await expect(getActions(dialog)).toHaveText(["Manter", "Excluir"]);
 
       await dialog.getByRole("button", { name: "Excluir" }).click();
       await page.clock.fastForward(actionDuration);
@@ -167,4 +185,13 @@ test.describe("use-confirm", () => {
 
 function getDialog(page: Page) {
   return page.getByRole("alertdialog");
+}
+
+/** The "Fechar" button at the top right of the dialog, apart from its actions. */
+function getClose(dialog: Locator) {
+  return dialog.locator(".v-card-title").getByRole("button", { name: "Fechar" });
+}
+
+function getActions(dialog: Locator) {
+  return dialog.locator(".v-card-actions").getByRole("button");
 }

@@ -56,14 +56,15 @@ Os diálogos são apresentados um de cada vez, na ordem em que foram solicitados
 
 `dialog` resolve o `value` da ação clicada, ou `undefined` quando o diálogo é fechado:
 
-- pelo botão padrão "Fechar";
+- pela ação padrão "Fechar";
+- pelo botão "Fechar" no canto superior direito;
 - pela tecla `Esc`;
 - por um clique fora do diálogo;
 - pelo botão "voltar" do navegador, em aplicações que usam o [Vue Router](https://router.vuejs.org/), exceto quando ele leva a uma página aberta com `router.replace` (como a página pela qual o usuário entrou na aplicação).
 
 ### Acessibilidade
 
-O foco inicia na primeira ação, fica restrito ao diálogo enquanto ele estiver aberto e volta ao elemento de origem quando ele fecha. O diálogo é identificado pelo título (ou pela mensagem, quando não houver título) e descrito pela mensagem.
+O foco inicia na primeira ação (nunca no botão "Fechar" do canto superior direito), fica restrito ao diálogo enquanto ele estiver aberto e volta ao elemento de origem quando ele fecha. O diálogo é identificado pelo título (ou pela mensagem, quando não houver título) e descrito pela mensagem.
 
 ## Exemplo
 

@@ -10,7 +10,10 @@ interface DialogFocus {
 /** Focus state of the closed dialogs, by their card, for the dialogs opened from them. */
 const closedDialogs = new WeakMap<Element, DialogFocus>();
 
-/** Elements that can get the focus when the dialog opens. The first one in the dialog gets it. */
+/**
+ * Elements that can get the focus when the dialog opens. The first one in the dialog gets it, unless
+ * it's the close button.
+ */
 const focusable = [
   "button:not([disabled])",
   "[href]",
@@ -19,6 +22,18 @@ const focusable = [
   "textarea:not([disabled])",
   '[tabindex]:not([tabindex="-1"])',
 ].join(", ");
+
+/**
+ * Focusable elements other than the dialog's close button, marked with `data-u-dialog-close`,
+ * which only gets the focus when it's the only one.
+ */
+const focusableExceptClose = `:is(${focusable}):not([data-u-dialog-close])`;
+
+/**
+ * Focusable elements that aren't disabled through `aria-disabled`, such as the close button while an
+ * action loads, which keyboard navigation skips. Without one, the focus stays on the dialog itself.
+ */
+const focusableEnabled = `:is(${focusable}):not([aria-disabled="true"])`;
 
 /**
  * Moves the focus into a dialog once it opens and back to where it was when it closes, including
@@ -57,7 +72,11 @@ export function useDialogFocus(
   }
 
   function focusFirstElement() {
-    toValue(card)?.querySelector<HTMLElement>(focusable)?.focus();
+    const element = toValue(card);
+    const target =
+      element?.querySelector<HTMLElement>(focusableExceptClose) ??
+      element?.querySelector<HTMLElement>(focusableEnabled);
+    target?.focus();
   }
 
   return { focusFirstElement };

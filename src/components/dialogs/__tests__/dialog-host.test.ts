@@ -6,7 +6,7 @@ import { owners, requests } from "@/composables/dialogs/use-dialog.ts";
 import { vueTestUtilsPluginUimed } from "@/unit-test.ts";
 import { flushPromises, mount, type VueWrapper } from "@vue/test-utils";
 import { nextTick } from "vue";
-import { VCardActions, VCardText, VCardTitle, VDialog } from "vuetify/components";
+import { VCardActions, VCardText, VCardTitle, VDialog, VIconBtn } from "vuetify/components";
 
 const title = "Excluir paciente";
 const message = "Esta ação não pode ser desfeita.";
@@ -90,7 +90,7 @@ describe("DialogHost", () => {
       await nextTick();
 
       const messageId = findMessage()?.id;
-      expect(wrapper.findComponent(VCardTitle).exists()).toBeFalsy();
+      expect(wrapper.findComponent(VCardTitle).text()).toBe("");
       expect(findOverlay()?.getAttribute("aria-labelledby")).toBe(messageId);
       expect(findOverlay()?.getAttribute("aria-describedby")).toBe(messageId);
     });
@@ -215,6 +215,24 @@ describe("DialogHost", () => {
       expect(wrapper.findComponent(VDialog).props("modelValue")).toBe(false);
     });
 
+    it("should resolve undefined once the dialog closed by its close button leaves", async () => {
+      const wrapper = mountDialog();
+      const onResolve = vi.fn();
+
+      void dialog({ message, actions: [{ text: "Sair", value: "leave" }] }).then(onResolve);
+      await nextTick();
+      await clickClose(wrapper);
+
+      expect(wrapper.findComponent(VDialog).props("modelValue")).toBe(false);
+      expect(onResolve).not.toHaveBeenCalled();
+
+      await afterLeave(wrapper);
+      await flushPromises();
+
+      expect(onResolve).toHaveBeenCalledWith(undefined);
+      expect(requests.value).toHaveLength(0);
+    });
+
     it("should ignore dismissals while there's no dialog on display", async () => {
       const wrapper = mountDialog();
 
@@ -277,6 +295,24 @@ describe("DialogHost", () => {
       expect(requests.value).toHaveLength(0);
     });
 
+    it("should display the next dialog once the one closed by its close button leaves", async () => {
+      const wrapper = mountDialog();
+
+      const first = dialog({ message: "First" });
+      void dialog({ message: "Second" });
+      await nextTick();
+      await clickClose(wrapper);
+      expect(wrapper.findComponent(VDialog).props("modelValue")).toBe(false);
+      expect(wrapper.findComponent(VCardText).text()).toBe("First");
+
+      await afterLeave(wrapper);
+      await flushPromises();
+
+      await expect(first).resolves.toBeUndefined();
+      expect(wrapper.findComponent(VDialog).props("modelValue")).toBe(true);
+      expect(wrapper.findComponent(VCardText).text()).toBe("Second");
+    });
+
     it("should display dialogs only in the first mounted instance", async () => {
       const first = mountDialog();
       const second = mountDialog();
@@ -298,6 +334,40 @@ describe("DialogHost", () => {
   });
 
   describe("confirm", () => {
+    it("should resolve false without running the action when closed by its close button", async () => {
+      const wrapper = mountDialog();
+      const { confirm } = useConfirm();
+      const action = vi.fn();
+
+      const result = confirm({ message }, action);
+      await nextTick();
+      await clickClose(wrapper);
+      await afterLeave(wrapper);
+
+      await expect(result).resolves.toBe(false);
+      expect(action).not.toHaveBeenCalled();
+    });
+
+    it("should disable the close button while the confirmed action runs", async () => {
+      const wrapper = mountDialog();
+      const { confirm } = useConfirm();
+      let finish: () => void = () => {};
+      const action = vi.fn(() => new Promise<void>((resolve) => (finish = resolve)));
+
+      void confirm({ message }, action);
+      await nextTick();
+      expect(findClose(wrapper).props("disabled")).toBe(false);
+      await clickButton(wrapper, 1);
+
+      expect(findClose(wrapper).props("disabled")).toBe(true);
+      await clickClose(wrapper);
+      expect(wrapper.findComponent(VDialog).props("modelValue")).toBe(true);
+
+      finish();
+      await flushPromises();
+      expect(wrapper.findComponent(VDialog).props("modelValue")).toBe(false);
+    });
+
     it("should block the dialog while the confirmed action runs", async () => {
       const wrapper = mountDialog();
       const { confirm } = useConfirm();
@@ -351,6 +421,15 @@ describe("DialogHost", () => {
 
 function findButtons(wrapper: VueWrapper) {
   return wrapper.findAllComponents(Button);
+}
+
+function findClose(wrapper: VueWrapper) {
+  return wrapper.findComponent(VIconBtn);
+}
+
+async function clickClose(wrapper: VueWrapper) {
+  await findClose(wrapper).trigger("click");
+  await flushPromises();
 }
 
 async function clickButton(wrapper: VueWrapper, index: number) {

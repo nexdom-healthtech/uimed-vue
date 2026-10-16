@@ -78,7 +78,7 @@ const actions = computed<ComponentProps<typeof USection>["actions"]>(() => [
 Com alterações, sair da página pelo Vue Router apresenta o diálogo "Alterações não salvas", com o foco inicial em "Continuar editando":
 
 - "Sair sem salvar" continua a navegação;
-- "Continuar editando", a tecla `Esc` ou um clique fora do diálogo cancelam a navegação, e o usuário continua na página com as suas alterações.
+- "Continuar editando", o botão "Fechar" no canto superior direito, a tecla `Esc` ou um clique fora do diálogo cancelam a navegação, e o usuário continua na página com as suas alterações.
 
 Sem alterações, a navegação acontece sem diálogo. Em aplicações com Vue Router e histórico do navegador (`createWebHistory` ou `createWebHashHistory`), o botão "voltar" do navegador também passa pela mesma verificação: ao cancelar, o endereço volta a ser o da página atual.
 

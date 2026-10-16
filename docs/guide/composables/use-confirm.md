@@ -133,11 +133,11 @@ async function fail() {
 
 ### Fechando o diálogo
 
-Além do botão de cancelamento, o usuário pode fechar o diálogo pela tecla `Esc` ou clicando fora dele. Nesses casos, `confirm` devolve `false` ao fim da animação de fechamento.
+Além do botão de cancelamento, o usuário pode fechar o diálogo pelo botão "Fechar" no canto superior direito, pela tecla `Esc` ou clicando fora dele. Nesses casos, `confirm` devolve `false` ao fim da animação de fechamento.
 
 O botão "voltar" do navegador também fecha o diálogo, sem sair da página, em aplicações que usam o [Vue Router](https://router.vuejs.org/). A exceção é quando o "voltar" leva a uma página aberta com `router.replace`, como a página pela qual o usuário entrou na aplicação: nesse caso, a navegação acontece e o diálogo continua aberto.
 
-Enquanto a ação estiver em execução, o diálogo não fecha por nenhum desses meios e, exceto no caso do `router.replace` acima, o "voltar" também não sai da página.
+Enquanto a ação estiver em execução, o diálogo não fecha por nenhum desses meios (o botão "Fechar" fica desabilitado) e, exceto no caso do `router.replace` acima, o "voltar" também não sai da página.
 
 ## Ver também
 

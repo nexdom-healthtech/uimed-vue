@@ -2,6 +2,7 @@ import { expectNoA11yViolations, gotoPage, pauseClock, selectOption } from "@e2e
 import { test, expect, type Locator, type Page } from "@playwright/test";
 
 const actionDuration = 1500;
+const longTitle = "Um título longo o bastante para não caber em uma única linha da janela";
 
 test.describe("dialog", () => {
   test.beforeEach(async ({ page }) => {
@@ -18,8 +19,10 @@ test.describe("dialog", () => {
       await expect(dialog).toHaveAccessibleName("Consulta agendada");
       await expect(dialog).toHaveAccessibleDescription("");
       await expect(dialog).toContainText("A consulta de Maria da Silva foi agendada");
-      await expect(dialog.getByRole("button")).toHaveText(["Fechar"]);
-      await expect(dialog.getByRole("button", { name: "Fechar" })).toBeFocused();
+      await expect(getActions(dialog)).toHaveText(["Fechar"]);
+      await expect(getAction(dialog, "Fechar")).toBeFocused();
+      await expect(getClose(dialog)).toBeVisible();
+      await expect(getClose(dialog)).toBeEnabled();
     });
 
     test("closes by its action and returns the focus to the opener", async ({ page }) => {
@@ -27,7 +30,34 @@ test.describe("dialog", () => {
       await opener.click();
 
       const dialog = getDialog(page);
-      await dialog.getByRole("button", { name: "Fechar" }).click();
+      await getAction(dialog, "Fechar").click();
+
+      await expect(dialog).toBeHidden();
+      await expect(opener).toBeFocused();
+    });
+
+    test("closes by its close button and returns the focus to the opener", async ({ page }) => {
+      const opener = page.getByTestId("btn-basic");
+      await opener.click();
+
+      const dialog = getDialog(page);
+      await expect(getAction(dialog, "Fechar")).toBeFocused();
+      await getClose(dialog).click();
+
+      await expect(dialog).toBeHidden();
+      await expect(opener).toBeFocused();
+    });
+
+    test("closes by its close button from the keyboard", async ({ page }) => {
+      const opener = page.getByTestId("btn-basic");
+      await opener.click();
+
+      const dialog = getDialog(page);
+      await expect(getAction(dialog, "Fechar")).toBeFocused();
+      // The close button comes first in the dialog, so the focus wraps around to it
+      await page.keyboard.press("Tab");
+      await expect(getClose(dialog)).toBeFocused();
+      await page.keyboard.press("Enter");
 
       await expect(dialog).toBeHidden();
       await expect(opener).toBeFocused();
@@ -38,7 +68,7 @@ test.describe("dialog", () => {
       await opener.click();
 
       const dialog = getDialog(page);
-      await expect(dialog.getByRole("button", { name: "Fechar" })).toBeFocused();
+      await expect(getAction(dialog, "Fechar")).toBeFocused();
       await page.keyboard.press("Escape");
 
       await expect(dialog).toBeHidden();
@@ -50,9 +80,9 @@ test.describe("dialog", () => {
       await opener.click();
 
       const dialog = getDialog(page);
-      await expect(dialog.getByRole("button", { name: "Fechar" })).toBeFocused();
+      await expect(getAction(dialog, "Fechar")).toBeFocused();
       await dialog.getByText("A consulta de Maria da Silva").click();
-      await expect(dialog.getByRole("button", { name: "Fechar" })).not.toBeFocused();
+      await expect(getAction(dialog, "Fechar")).not.toBeFocused();
       await page.keyboard.press("Escape");
 
       await expect(dialog).toBeHidden();
@@ -63,7 +93,7 @@ test.describe("dialog", () => {
       await page.getByTestId("btn-basic").click();
 
       const dialog = getDialog(page);
-      await expect(dialog.getByRole("button", { name: "Fechar" })).toBeFocused();
+      await expect(getAction(dialog, "Fechar")).toBeFocused();
       await page.mouse.click(5, 5);
 
       await expect(dialog).toBeHidden();
@@ -74,6 +104,7 @@ test.describe("dialog", () => {
     for (const [way, close] of [
       ["Esc", (page: Page) => page.keyboard.press("Escape")],
       ["a click outside it", (page: Page) => page.mouse.click(5, 5)],
+      ["its close button", (page: Page) => getClose(getDialog(page)).click()],
     ] as const) {
       test(`updates v-model only once it finishes leaving, after ${way}`, async ({ page }) => {
         const opener = page.getByTestId("btn-closing");
@@ -81,8 +112,8 @@ test.describe("dialog", () => {
         await opener.click();
 
         const dialog = getDialog(page);
-        // Without focusable elements, the dialog itself gets the focus
-        await expect(dialog.locator(".v-overlay__content")).toBeFocused();
+        // Without other focusable elements, the close button gets the focus
+        await expect(getClose(dialog)).toBeFocused();
         await expect(state).toHaveText("v-model: true");
 
         // Holds the leave transition, which only ends once the clock resumes
@@ -106,15 +137,15 @@ test.describe("dialog", () => {
       await opener.click();
 
       const dialog = getDialog(page);
-      await expect(dialog.locator(".v-overlay__content")).toBeFocused();
-      await page.keyboard.press("Escape");
+      await expect(getClose(dialog)).toBeFocused();
+      await getClose(dialog).click();
       await expect(dialog).toBeHidden();
       await expect(state).toHaveText("v-model: false");
 
       await opener.click();
 
       await expect(dialog).toHaveAccessibleName("Fechando a janela");
-      await expect(dialog.locator(".v-overlay__content")).toBeFocused();
+      await expect(getClose(dialog)).toBeFocused();
       await expect(state).toHaveText("v-model: true");
     });
   });
@@ -132,7 +163,11 @@ test.describe("dialog", () => {
       await page.keyboard.press("Tab");
       await expect(dialog.getByRole("button", { name: "Salvar" })).toBeFocused();
       await page.keyboard.press("Tab");
+      await expect(getClose(dialog)).toBeFocused();
+      await page.keyboard.press("Tab");
       await expect(field).toBeFocused();
+      await page.keyboard.press("Shift+Tab");
+      await expect(getClose(dialog)).toBeFocused();
       await page.keyboard.press("Shift+Tab");
       await expect(dialog.getByRole("button", { name: "Salvar" })).toBeFocused();
     });
@@ -154,7 +189,43 @@ test.describe("dialog", () => {
 
       await expect(save.locator(".v-btn__loader")).toBeAttached();
       await expect(cancel).toBeDisabled();
+      await expect(getClose(dialog)).toBeDisabled();
       await expect(dialog).toBeVisible();
+
+      await page.clock.fastForward(actionDuration);
+      await page.clock.resume();
+
+      await expect(dialog).toBeHidden();
+      await expect(page.getByTestId("form-result")).toHaveText("Nome: João Pereira");
+      await expect(opener).toBeFocused();
+    });
+
+    test("keeps its close button disabled while saving, even when activated by the keyboard", async ({
+      page,
+    }) => {
+      const opener = page.getByTestId("btn-form");
+      await opener.click();
+
+      const dialog = getDialog(page);
+      const field = dialog.getByRole("textbox", { name: "Nome" });
+      const close = getClose(dialog);
+      await expect(field).toBeFocused();
+      await field.fill("João Pereira");
+      await pauseClock(page);
+      // Submits the form from the close button, which keeps the focus while the action loads
+      await close.focus();
+      await dialog
+        .getByRole("button", { name: "Salvar" })
+        .evaluate((button: HTMLElement) => button.click());
+      await expect(close).toBeDisabled();
+      await expect(close).toBeFocused();
+
+      await page.keyboard.press("Enter");
+      await page.keyboard.press("Space");
+      await page.clock.runFor(500);
+
+      await expect(dialog).toHaveClass(/v-overlay--active/);
+      await expect(page.getByTestId("form-result")).toHaveText("Nome: Maria da Silva");
 
       await page.clock.fastForward(actionDuration);
       await page.clock.resume();
@@ -207,6 +278,7 @@ test.describe("dialog", () => {
 
       await expect(dialog.getByRole("alert")).toBeVisible();
       await expect(dialog.getByRole("button", { name: "Cancelar" })).toBeEnabled();
+      await expect(getClose(dialog)).toBeEnabled();
       await expect(dialog).toBeVisible();
       await expect(page.getByTestId("form-result")).toHaveText("Nome: Maria da Silva");
     });
@@ -239,7 +311,7 @@ test.describe("dialog", () => {
         await expect(dialog).toHaveAccessibleName(`Tamanho ${size}`);
         // The focus moves into the dialog once it finishes entering, which scales it, but the last
         // frame of the scale may still be on its way
-        await expect(dialog.getByRole("button", { name: "Fechar" })).toBeFocused();
+        await expect(getAction(dialog, "Fechar")).toBeFocused();
         await expect.poll(() => getWidth(dialog)).toBe(width);
       });
     }
@@ -345,14 +417,13 @@ test.describe("dialog", () => {
     });
 
     test("keeps long titles in a single line", async ({ page }) => {
-      const longTitle = "Um título longo o bastante para não caber em uma única linha da janela";
       await page.getByTestId("dialog-playground-title").locator("input").fill(longTitle);
       await selectOption(page, "dialog-playground-size", "small");
       await page.getByTestId("dialog-playground-open").click();
 
       const dialog = getDialog(page);
       await expect(dialog).toHaveAccessibleName(longTitle);
-      const title = dialog.locator(".v-card-title");
+      const title = dialog.getByText(longTitle);
       await expect(title).toHaveCSS("white-space", "nowrap");
       await expect(title).toHaveCSS("text-overflow", "ellipsis");
       const { scrollWidth, clientWidth } = await title.evaluate((element) => ({
@@ -360,6 +431,13 @@ test.describe("dialog", () => {
         clientWidth: element.clientWidth,
       }));
       expect(scrollWidth).toBeGreaterThan(clientWidth);
+
+      // The title ends before the close button, which stays whole inside the card
+      const titleBox = await getBox(title);
+      const closeBox = await getBox(getClose(dialog));
+      const cardBox = await getBox(dialog.locator(".v-card"));
+      expect(titleBox.x + titleBox.width).toBeLessThanOrEqual(closeBox.x);
+      expect(closeBox.x + closeBox.width).toBeLessThan(cardBox.x + cardBox.width);
     });
 
     test("updates the size", async ({ page }) => {
@@ -378,11 +456,11 @@ test.describe("dialog", () => {
 
       const dialog = getDialog(page);
       await expect(dialog).toBeVisible();
-      await expect(dialog.getByRole("button")).toHaveCount(0);
+      await expect(dialog.getByRole("button")).toHaveCount(1);
       await expect(dialog.locator(".v-card-actions")).not.toBeAttached();
 
-      // Without focusable elements, the dialog itself gets the focus, which still returns
-      await expect(dialog.locator(".v-overlay__content")).toBeFocused();
+      // Without other focusable elements, the close button gets the focus, which still returns
+      await expect(getClose(dialog)).toBeFocused();
       await page.keyboard.press("Escape");
       await expect(dialog).toBeHidden();
       await expect(opener).toBeFocused();
@@ -396,7 +474,8 @@ test.describe("dialog", () => {
 
     test("has no violations with a dialog open", async ({ page }) => {
       for (const [testId, focused] of [
-        ["btn-basic", getDialog(page).getByRole("button", { name: "Fechar" })],
+        ["btn-basic", getAction(getDialog(page), "Fechar")],
+        ["btn-closing", getClose(getDialog(page))],
         ["btn-form", getDialog(page).getByRole("textbox", { name: "Nome" })],
       ] as const) {
         await page.getByTestId(testId).click();
@@ -414,7 +493,7 @@ test.describe("dialog", () => {
     test("matches last screenshots", async ({ page }) => {
       await page.getByTestId("btn-basic").click();
       const dialog = getDialog(page);
-      await expect(dialog.getByRole("button", { name: "Fechar" })).toBeFocused();
+      await expect(getAction(dialog, "Fechar")).toBeFocused();
       await expect(dialog).toMatchAriaSnapshot();
       await expect(page).toHaveScreenshot();
       await page.keyboard.press("Escape");
@@ -430,12 +509,40 @@ test.describe("dialog", () => {
       await page.getByTestId("btn-long").click();
       await expect(dialog.getByRole("button", { name: "Aceitar" })).toBeInViewport();
       await expect(page).toHaveScreenshot();
+      await page.keyboard.press("Escape");
+      await expect(dialog).toBeHidden();
+
+      // A long title is cut before the close button
+      await page.getByTestId("dialog-playground-title").locator("input").fill(longTitle);
+      await selectOption(page, "dialog-playground-size", "small");
+      await page.getByTestId("dialog-playground-open").click();
+      await expect(dialog.getByRole("button", { name: "Cancelar" })).toBeFocused();
+      await expect(page).toHaveScreenshot();
     });
   });
 });
 
 function getDialog(page: Page) {
   return page.getByRole("dialog");
+}
+
+/** The "Fechar" button at the top right of the dialog, apart from its actions. */
+function getClose(dialog: Locator) {
+  return dialog.locator(".v-card-title").getByRole("button", { name: "Fechar" });
+}
+
+function getActions(dialog: Locator) {
+  return dialog.locator(".v-card-actions").getByRole("button");
+}
+
+function getAction(dialog: Locator, name: string) {
+  return dialog.locator(".v-card-actions").getByRole("button", { name });
+}
+
+async function getBox(locator: Locator) {
+  const box = await locator.boundingBox();
+  expect(box).not.toBeNull();
+  return box ?? { x: 0, y: 0, width: 0, height: 0 };
 }
 
 async function getWidth(dialog: Locator) {

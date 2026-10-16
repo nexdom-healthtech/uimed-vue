@@ -11,7 +11,15 @@ import { vueTestUtilsPluginUimed } from "@/unit-test.ts";
 import { flushPromises, mount, type VueWrapper } from "@vue/test-utils";
 import { h, nextTick, type VNode } from "vue";
 import { createMemoryHistory, createRouter, type Router } from "vue-router";
-import { VCard, VCardActions, VCardItem, VCardText, VCardTitle, VDialog } from "vuetify/components";
+import {
+  VCard,
+  VCardActions,
+  VCardItem,
+  VCardText,
+  VCardTitle,
+  VDialog,
+  VIconBtn,
+} from "vuetify/components";
 
 const title = "Editar paciente";
 const content = "Conteúdo da janela";
@@ -123,10 +131,11 @@ describe("Dialog", () => {
 
     // Only the content scrolls when it's a direct child of the card
     const card = wrapper.findComponent(VCard);
-    expect(card.props("title")).toBe(title);
+    expect(card.props("title")).toBeUndefined();
     [VCardItem, VCardText, VCardActions].forEach((part) =>
       expect(wrapper.findComponent(part).element.parentElement).toBe(card.element),
     );
+    expect(wrapper.findComponent(VCardItem).findComponent(VCardTitle).exists()).toBeTruthy();
     expect(wrapper.findComponent(VCardText).text()).toBe(content);
     expect(wrapper.findComponent(VCardActions).findComponent(Button).text()).toBe("Fechar");
   });
@@ -134,8 +143,11 @@ describe("Dialog", () => {
   it("should not add spacing classes to the card's parts", () => {
     const wrapper = mountDialog({ props: { title, actions: [{ label: "Fechar" }] } });
 
-    const parts = [VCardItem, VCardText, VCardActions].map((part) => wrapper.findComponent(part));
+    const parts = [VCardItem, VCardTitle, VCardText, VCardActions, VIconBtn].map((part) =>
+      wrapper.findComponent(part),
+    );
     parts.forEach((part) => expect(part.classes().join(" ")).not.toMatch(/\b[pm][atrblxy]?-/));
+    expect(findTitleText(wrapper).classes().join(" ")).not.toMatch(/\b[pm][atrblxy]?-/);
   });
 
   describe("title", () => {
@@ -144,14 +156,120 @@ describe("Dialog", () => {
       const wrapper = mountDialog({ props: { title: html } });
 
       expect(wrapper.findComponent(VCardTitle).text()).toBe(html);
+      expect(findTitleText(wrapper).text()).toBe(html);
       expect(document.querySelector("b")).toBeNull();
     });
 
-    it.each([undefined, ""])("should not display a title area when the title is %o", (title) => {
+    it("should place the title and the close button in a single line, at its ends", () => {
       const wrapper = mountDialog({ props: { title } });
 
-      expect(wrapper.findComponent(VCardItem).exists()).toBeFalsy();
-      expect(wrapper.findComponent(VCardTitle).exists()).toBeFalsy();
+      const titleArea = wrapper.findComponent(VCardTitle);
+      expect(titleArea.classes()).toEqual(
+        expect.arrayContaining(["d-flex", "justify-space-between", "align-center"]),
+      );
+      const children = [...titleArea.element.children];
+      expect(children).toEqual([findTitleText(wrapper).element, findClose(wrapper).element]);
+      // Long titles end with an ellipsis instead of pushing the close button away
+      expect(findTitleText(wrapper).classes()).toEqual(["text-truncate"]);
+    });
+
+    it.each([undefined, ""])(
+      "should keep an empty title area with the close button when the title is %o",
+      (title) => {
+        const wrapper = mountDialog({ props: { title } });
+
+        expect(wrapper.findComponent(VCardItem).exists()).toBeTruthy();
+        expect(findTitleText(wrapper).text()).toBe("");
+        expect(findClose(wrapper).exists()).toBeTruthy();
+      },
+    );
+  });
+
+  describe("close button", () => {
+    it.each([title, undefined])(
+      'should display a "Fechar" icon button when the title is %o',
+      (title) => {
+        const wrapper = mountDialog({ props: { title } });
+
+        const close = findClose(wrapper);
+        expect(close.props()).toMatchObject({
+          icon: "$close",
+          variant: "text",
+          size: "small",
+          disabled: false,
+        });
+        expect(close.element.tagName).toBe("BUTTON");
+        expect(close.attributes()).toMatchObject({
+          type: "button",
+          "aria-label": "Fechar",
+          "aria-disabled": "false",
+          "data-u-dialog-close": "",
+        });
+      },
+    );
+
+    it("should close at once, but update the model only once the dialog leaves", async () => {
+      const wrapper = mountDialog({ props: { title } });
+
+      await findClose(wrapper).trigger("click");
+
+      expect(findVDialog(wrapper).props("modelValue")).toBe(false);
+      expect(wrapper.emitted("update:modelValue")).toBeUndefined();
+
+      leave(wrapper);
+      await nextTick();
+
+      expect(wrapper.emitted("update:modelValue")).toEqual([[false]]);
+      expect(findVDialog(wrapper).props("modelValue")).toBe(false);
+    });
+
+    it("should update the model only once when clicked again while the dialog leaves", async () => {
+      const wrapper = mountDialog({ props: { title } });
+
+      const close = findClose(wrapper);
+      await close.trigger("click");
+      await close.trigger("click");
+      leave(wrapper);
+      await nextTick();
+
+      expect(wrapper.emitted("update:modelValue")).toEqual([[false]]);
+    });
+
+    it("should notify the host once the dialog leaves", async () => {
+      const host = createHost();
+      const wrapper = mountDialog({ host });
+
+      await findClose(wrapper).trigger("click");
+      expect(host.afterLeave).not.toHaveBeenCalled();
+      leave(wrapper);
+
+      expect(host.afterLeave).toHaveBeenCalledTimes(1);
+    });
+
+    it("should be disabled while an action loads, and not close even when activated", async () => {
+      const wrapper = mountDialog({ props: { actions: loadingActions } });
+
+      const close = findClose(wrapper);
+      expect(close.props("disabled")).toBe(true);
+      expect(close.attributes("aria-disabled")).toBe("true");
+
+      // A key press still activates the button when it had the focus before the loading started
+      await close.trigger("click");
+      expect(findVDialog(wrapper).props("modelValue")).toBe(true);
+
+      await wrapper.setProps({ actions: [{ label: "Salvar" }] });
+      expect(close.props("disabled")).toBe(false);
+      await close.trigger("click");
+      expect(findVDialog(wrapper).props("modelValue")).toBe(false);
+    });
+
+    it("should stay enabled while an action is only disabled", () => {
+      const wrapper = mountDialog({
+        props: { actions: [{ label: "Salvar", disabled: true }] },
+      });
+
+      expect(findClose(wrapper).props("disabled")).toBe(false);
+      expect(findClose(wrapper).attributes("aria-disabled")).toBe("false");
     });
   });
 
@@ -482,9 +600,41 @@ describe("Dialog", () => {
     expect(wrapper.emitted("update:modelValue")).toBeUndefined();
     expect(document.activeElement).toBe(origin);
   });
+
+  it("should not move the focus to the close button while the dialog has another focusable element", () => {
+    const wrapper = mountDialog({ props: { title, actions: [{ label: "Salvar" }] } });
+
+    enter(wrapper);
+
+    expect(document.activeElement).toBe(findButtons(wrapper)[0]?.element);
+  });
+
+  it("should move the focus to the close button when it's the only focusable element", () => {
+    const wrapper = mountDialog({ props: { title } });
+
+    enter(wrapper);
+
+    expect(document.activeElement).toBe(findClose(wrapper).element);
+  });
+
+  it("should not move the focus to the close button while it's disabled by a loading action", () => {
+    const wrapper = mountDialog({ props: { title, actions: loadingActions } });
+
+    enter(wrapper);
+
+    expect(document.activeElement).not.toBe(findClose(wrapper).element);
+  });
 });
 function findVDialog(wrapper: VueWrapper) {
   return wrapper.findComponent(VDialog);
+}
+
+function findClose(wrapper: VueWrapper) {
+  return wrapper.findComponent(VIconBtn);
+}
+
+function findTitleText(wrapper: VueWrapper) {
+  return wrapper.findComponent(VCardTitle).find("span");
 }
 
 function findButtons(wrapper: VueWrapper) {

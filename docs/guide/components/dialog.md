@@ -13,7 +13,7 @@ A janela abre e fecha pelo `v-model`. Para apresentar apenas uma mensagem ou ped
 
 ## Uso
 
-A prop `title` define o título da janela, em texto simples e em uma única linha (títulos longos são cortados com reticências), e o conteúdo vai no slot padrão. A prop `actions` define os botões exibidos no rodapé, alinhados à direita, nesta ordem. Coloque a ação principal por último.
+A prop `title` define o título da janela, em texto simples e em uma única linha (títulos longos são cortados com reticências), e o conteúdo vai no slot padrão. Toda janela apresenta, no canto superior direito, um botão "Fechar" com o ícone "x", inclusive as janelas sem título. A prop `actions` define os botões exibidos no rodapé, alinhados à direita, nesta ordem. Coloque a ação principal por último.
 
 Clicar em uma ação **não fecha** a janela: feche-a no `onClick`, alterando o `v-model` para `false`.
 
@@ -47,7 +47,7 @@ const actions: DialogAction[] = [{ label: "Fechar", onClick: () => (open.value =
 
 ### Fechando a janela
 
-Além das ações, o usuário pode fechar a janela pela tecla `Esc` ou clicando fora dela.
+Além das ações, o usuário pode fechar a janela pelo botão "Fechar" no canto superior direito, pela tecla `Esc` ou clicando fora dela.
 
 O botão "voltar" do navegador também fecha a janela, sem sair da página, em aplicações que usam o [Vue Router](https://router.vuejs.org/). A exceção é quando o "voltar" leva a uma página aberta com `router.replace`, como a página pela qual o usuário entrou na aplicação: nesse caso, a navegação acontece e a janela continua aberta.
 
@@ -57,7 +57,7 @@ Quando o usuário fecha a janela por um desses meios, ela começa a sumir na hor
 - se o `@update:model-value` recusar a atualização, mantendo o valor `true`, a janela continua fechada com o `v-model` em `true`;
 - se a janela for removida da página antes do fim da animação (por um `v-if`, por exemplo), o `v-model` continua `true`.
 
-Enquanto alguma ação apresenta um indicador de carregamento (`loading`), o usuário não consegue fechar a janela por nenhum desses meios: ela faz uma breve animação, continua aberta e o `v-model` não muda. Exceto no caso do `router.replace` acima, o "voltar" também não sai da página nesse meio tempo. Ações apenas desabilitadas (`disabled`) não impedem o fechamento. A aplicação ainda pode fechar a janela a qualquer momento, atribuindo `false` ao `v-model`.
+Enquanto alguma ação apresenta um indicador de carregamento (`loading`), o usuário não consegue fechar a janela por nenhum desses meios: o botão "Fechar" fica desabilitado e, pela tecla `Esc` ou por um clique fora, a janela faz uma breve animação, continua aberta e o `v-model` não muda. Exceto no caso do `router.replace` acima, o "voltar" também não sai da página nesse meio tempo. Ações apenas desabilitadas (`disabled`) não impedem o fechamento nem desabilitam o botão "Fechar". A aplicação ainda pode fechar a janela a qualquer momento, atribuindo `false` ao `v-model`.
 
 ::: warning Limitação
 Em uma página que usa [useUnsavedChanges](../composables/use-unsaved-changes) e tem alterações não salvas, o "voltar" é verificado pela página antes da janela, inclusive durante o carregamento: o diálogo "Alterações não salvas" aparece sobre a janela. "Continuar editando" mantém o usuário na página, com a janela aberta, e "Sair sem salvar" sai da página, mesmo que a ação ainda esteja em carregamento.
@@ -67,7 +67,7 @@ Em uma página que usa [useUnsavedChanges](../composables/use-unsaved-changes) e
 <u-button data-testid="btn-closing" @click="closingOpen = true">Abrir janela</u-button>
 <p data-testid="closing-state">v-model: {{ closingOpen }}</p>
 <u-dialog v-model="closingOpen" title="Fechando a janela" data-testid="dialog-closing">
-Feche esta janela pela tecla <code>Esc</code> ou clicando fora dela.
+Feche esta janela pelo botão "Fechar", pela tecla <code>Esc</code> ou clicando fora dela.
 </u-dialog>
 </demo>
 
@@ -76,7 +76,7 @@ Feche esta janela pela tecla <code>Esc</code> ou clicando fora dela.
   <u-button @click="open = true">Abrir janela</u-button>
   <p>v-model: {{ open }}</p>
   <u-dialog v-model="open" title="Fechando a janela">
-    Feche esta janela pela tecla <code>Esc</code> ou clicando fora dela.
+    Feche esta janela pelo botão "Fechar", pela tecla <code>Esc</code> ou clicando fora dela.
   </u-dialog>
 </template>
 
@@ -90,7 +90,7 @@ const open = ref(false);
 
 ### Foco
 
-Ao abrir, a janela coloca o foco no primeiro elemento focável do conteúdo, como um campo de formulário, ou, se não houver, na primeira ação. Enquanto a janela está aberta, a tecla `Tab` circula apenas entre os elementos dela. Ao fechar, o foco volta ao elemento que estava focado antes de a janela abrir, como o botão que a abriu.
+Ao abrir, a janela coloca o foco no primeiro elemento focável do conteúdo, como um campo de formulário, ou, se não houver, na primeira ação. O botão "Fechar" só recebe o foco inicial quando é o único elemento focável da janela. Enquanto a janela está aberta, a tecla `Tab` circula apenas entre os elementos dela. Ao fechar, o foco volta ao elemento que estava focado antes de a janela abrir, como o botão que a abriu.
 
 O título é o nome acessível da janela, anunciado por leitores de tela ao abri-la. Sem título, o conteúdo é anunciado no lugar.
 
@@ -100,7 +100,7 @@ O título é o nome acessível da janela, anunciado por leitores de tela ao abri
 
 Para enviar um formulário pelas ações, use uma ação do tipo `submit` com a prop `form` apontando para o `id` do [formulário](./form). O evento `submit` do formulário só é disparado quando não há pendências de validação.
 
-Enquanto os dados são salvos, a ação principal pode apresentar um indicador de carregamento (`loading`) e as demais podem ficar desabilitadas (`disabled`). Nesse meio tempo, a janela não fecha pela tecla `Esc`, por um clique fora dela nem pelo botão "voltar": o usuário acompanha o salvamento até o fim, e o exemplo fecha a janela depois de salvar.
+Enquanto os dados são salvos, a ação principal pode apresentar um indicador de carregamento (`loading`) e as demais podem ficar desabilitadas (`disabled`). Nesse meio tempo, a janela não fecha pelo botão "Fechar", que fica desabilitado, pela tecla `Esc`, por um clique fora dela nem pelo botão "voltar": o usuário acompanha o salvamento até o fim, e o exemplo fecha a janela depois de salvar.
 
 O exemplo copia o nome para o rascunho ao abrir a janela, e não ao fechá-la: ao cancelar, a ação passa o `v-model` para `false` enquanto a janela ainda está sumindo, e trocar o texto nesse momento seria visível.
 
@@ -225,7 +225,7 @@ function openSize(value: DialogSize) {
 
 ### Conteúdo longo
 
-Quando o conteúdo não cabe na tela, apenas ele rola: o título e as ações continuam visíveis.
+Quando o conteúdo não cabe na tela, apenas ele rola: o título, o botão "Fechar" e as ações continuam visíveis.
 
 <demo>
 <u-button data-testid="btn-long" @click="longOpen = true">Ler termos</u-button>

@@ -50,7 +50,7 @@ Para marcar o formulário como salvo, atribua a `previous` uma cópia do valor a
 Quando o componente é renderizado por um `<RouterView>` do [Vue Router](https://router.vuejs.org/) (diretamente ou dentro de uma página), sair da página com alterações apresenta um diálogo de [confirmação](./use-confirm):
 
 - "Sair sem salvar" continua a navegação;
-- "Continuar editando", a tecla `Esc` ou um clique fora do diálogo cancelam a navegação.
+- "Continuar editando", o botão "Fechar" no canto superior direito, a tecla `Esc` ou um clique fora do diálogo cancelam a navegação.
 
 `hasChanges` é lido no momento da navegação, então uma navegação feita logo depois de atualizar `previous` acontece sem diálogo. Enquanto o diálogo estiver aberto, novas navegações reaproveitam a mesma resposta, que vale para a navegação mais recente. Em aplicações com Vue Router e histórico do navegador (`createWebHistory` ou `createWebHashHistory`), o botão "voltar" do navegador passa pela mesma verificação e, com o diálogo aberto, não o fecha (ao contrário do [`useConfirm`](./use-confirm)): a resposta passa a valer para o "voltar". Cada chamada de `useUnsavedChanges` com alterações apresenta o seu diálogo.
 
