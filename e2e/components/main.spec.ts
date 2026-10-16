@@ -3,6 +3,7 @@ import {
   expectNoA11yViolations,
   gotoPage,
   selectOption,
+  waitForAnimations,
 } from "@e2e/utils.ts";
 import { icons } from "@/consts/icons.ts";
 import { test, expect, type Locator, type Page } from "@playwright/test";
@@ -125,6 +126,13 @@ test.describe("main", () => {
           await expect(avatar.locator(".v-img")).toBeVisible();
           await expect(avatar).toHaveText("");
         });
+
+        test("centers the avatar above the name and subtitle in the user menu", async ({
+          page,
+        }) => {
+          await getUserButton(page).click();
+          await expectCenteredUserMenuAvatar(page, getUserButton(page), getUserMenu(page));
+        });
       });
 
       test.describe("user without picture", () => {
@@ -160,6 +168,17 @@ test.describe("main", () => {
           page,
         }) => {
           await expect(getUserInitialsDemo(page)).toMatchAriaSnapshot();
+        });
+
+        test("centers the avatar above the name and subtitle in the user menu", async ({
+          page,
+        }) => {
+          await getUserInitialsButton(page).click();
+          await expectCenteredUserMenuAvatar(
+            page,
+            getUserInitialsButton(page),
+            getUserInitialsMenu(page),
+          );
         });
       });
     });
@@ -870,6 +889,33 @@ async function getBox(locator: Locator) {
   const box = await locator.boundingBox();
   if (!box) throw new Error("The element should be visible");
   return box;
+}
+
+/**
+ * Asserts the open user menu shows the avatar bigger than the button's, centered at the top, with
+ * the user's name and subtitle centered below it.
+ */
+async function expectCenteredUserMenuAvatar(page: Page, userButton: Locator, userMenu: Locator) {
+  await expect(userMenu).toBeVisible();
+  // The menu grows from the button while it opens, so its boxes are only final afterwards
+  await waitForAnimations(page);
+
+  const title = userMenu.locator(".v-card-title");
+  const subtitle = userMenu.locator(".v-card-subtitle");
+  await expect(title).toHaveCSS("text-align", "center");
+  await expect(subtitle).toHaveCSS("text-align", "center");
+
+  const [card, avatar, titleBox, buttonAvatar] = await Promise.all([
+    getBox(userMenu),
+    getBox(userMenu.locator(".v-avatar")),
+    getBox(title),
+    getBox(userButton.locator(".v-avatar")),
+  ]);
+
+  expect(Math.abs(avatar.x + avatar.width / 2 - (card.x + card.width / 2))).toBeLessThanOrEqual(1);
+  expect(avatar.y + avatar.height).toBeLessThanOrEqual(titleBox.y);
+  expect([avatar.width, avatar.height]).toEqual([56, 56]);
+  expect([buttonAvatar.width, buttonAvatar.height]).toEqual([40, 40]);
 }
 
 function getBackgroundDemo(page: Page) {

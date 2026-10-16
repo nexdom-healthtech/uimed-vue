@@ -41,7 +41,7 @@ export async function expectLoadingAnnouncement(skeletons: Locator, count: numbe
  * Waits for the page's animations to finish, except the ones that never end (e.g. loading
  * indicators). Vuetify animates overlays with both CSS transitions and the Web Animations API.
  */
-async function waitForAnimations(page: Page) {
+export async function waitForAnimations(page: Page) {
   await page.evaluate(() =>
     Promise.all(
       document

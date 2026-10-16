@@ -52,6 +52,8 @@ Para ocultar o menu superior, basta omitir essa prop.
 
 As ações do menu superior têm nomes fixos para leitores de tela: "Menu de navegação" (que também informa se o menu de navegação está expandido ou recolhido), "Ajuda", "Notificações" e "Menu do usuário". Quando há notificações não lidas, o botão de notificações inclui a quantidade no nome, por exemplo "Notificações (2 não lidas)" ou "Notificações (1 não lida)".
 
+No menu do usuário aberto, o avatar aparece maior e centralizado, com o nome (`title`) e o `subtitle` do usuário abaixo dele.
+
 <demo contained>
 <u-main :appBar @update:notifications-open="toggleNotifications">
   <h2>O conteúdo da página vai aqui...</h2>
