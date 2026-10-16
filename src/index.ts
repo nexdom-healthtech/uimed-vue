@@ -1,9 +1,9 @@
-import "@mdi/font/css/materialdesignicons.css";
-
 import "vuetify/styles";
 import "./styles/fonts/fonts.css";
 import { createVuetify } from "vuetify";
 import { type Plugin } from "vue";
+import { mdi } from "vuetify/iconsets/mdi-svg";
+import { icons } from "@/consts/icons.ts";
 import { localeOptions } from "@/consts/locale.ts";
 
 /**
@@ -12,6 +12,8 @@ import { localeOptions } from "@/consts/locale.ts";
  */
 export function createUimed(): Plugin {
   return createVuetify({
+    // Draws the icons as SVGs, also the ones the components draw by alias
+    icons: { defaultSet: "mdi", aliases: icons, sets: { mdi } },
     locale: localeOptions,
     theme: {
       defaultTheme: "light",

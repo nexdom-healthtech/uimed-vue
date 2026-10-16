@@ -1,3 +1,4 @@
+import { mdiAccountOutline, mdiBellOutline, mdiHelpCircleOutline } from "@mdi/js";
 import {
   VAppBar,
   VAppBarNavIcon,
@@ -81,7 +82,7 @@ describe("AppBar", () => {
 
         vBtn = findVBtn(wrapper);
         expect(vBtn.exists()).toBeTruthy();
-        expect(vBtn.props("icon")).toBe("mdi-help-circle-outline");
+        expect(vBtn.props("icon")).toBe(mdiHelpCircleOutline);
         expect(vBtn.attributes("data-testid")).toBe(`${testId}-help`);
       });
 
@@ -122,7 +123,7 @@ describe("AppBar", () => {
         expect(vBtn.attributes("data-testid")).toBe(`${testId}-notifications`);
 
         const vBtnIcon = vBtn.findComponent(VIcon);
-        expect(vBtnIcon.props("icon")).toBe("mdi-bell-outline");
+        expect(vBtnIcon.props("icon")).toBe(mdiBellOutline);
       });
 
       it("should show the button even when notifications is an empty array", async () => {

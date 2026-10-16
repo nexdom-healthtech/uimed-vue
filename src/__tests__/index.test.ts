@@ -1,5 +1,7 @@
+import { icons } from "@/consts/icons.ts";
 import { createUimed } from "@/index.ts";
 import { createVuetify, type ThemeDefinition } from "vuetify";
+import { mdi } from "vuetify/iconsets/mdi-svg";
 import { pt } from "vuetify/locale";
 
 // The first test checks that `createUimed` sets this theme, so the contrast tests can read it
@@ -68,6 +70,7 @@ describe("index", () => {
 
       expect(createVuetify).toHaveBeenCalledOnce();
       expect(createVuetify).toHaveBeenCalledWith({
+        icons: { defaultSet: "mdi", aliases: icons, sets: { mdi } },
         locale: { locale: "pt-BR", messages: { "pt-BR": pt } },
         theme: { defaultTheme: "light", themes: { light } },
       });

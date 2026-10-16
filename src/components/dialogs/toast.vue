@@ -13,7 +13,7 @@
       <v-icon-btn
         v-bind="props"
         aria-label="Fechar"
-        icon="$close"
+        :icon="icons.close"
         size="small"
         variant="text"
       ></v-icon-btn>
@@ -30,6 +30,7 @@ export default {
 <script setup lang="ts">
 import useDecorativeTimer from "@/composables/dialogs/use-decorative-timer.ts";
 import { messages } from "@/composables/dialogs/use-toast.ts";
+import { icons } from "@/consts/icons.ts";
 import { VSnackbarQueue, VIconBtn } from "vuetify/components";
 
 const decorativeTimer = useDecorativeTimer();

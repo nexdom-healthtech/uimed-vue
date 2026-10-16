@@ -1,4 +1,5 @@
 import { email, phone, required, url } from "@/composables/inputs/rules.ts";
+import { mdiEye, mdiEyeOff, mdiMagnify } from "@mdi/js";
 import TextField from "@/components/inputs/text-field/text-field.vue";
 import type { TextFieldType, TextFieldVariant } from "@/components/inputs/text-field/types.ts";
 import { vueTestUtilsPluginUimed } from "@/unit-test.ts";
@@ -112,7 +113,9 @@ describe("TextField", () => {
         await wrapper.setProps({ type: "search" });
 
         expect(vTextField.props("type")).toBe("text");
-        expect(wrapper.find(".v-field__append-inner .mdi-magnify").exists()).toBe(true);
+        expect(wrapper.find(".v-field__append-inner .v-icon path").attributes("d")).toBe(
+          mdiMagnify,
+        );
         expect(vTextField.props("clearable")).toBeTruthy();
       });
 
@@ -137,7 +140,7 @@ describe("TextField", () => {
           await wrapper.setProps({ type: "search" });
 
           const icon = wrapper.find(".v-field__append-inner .v-icon");
-          expect(icon.classes()).toContain("mdi-magnify");
+          expect(icon.find("path").attributes("d")).toBe(mdiMagnify);
           expect(icon.attributes("aria-hidden")).toBe("true");
           expect(icon.attributes("role")).toBeUndefined();
           expect(icon.attributes("tabindex")).toBeUndefined();
@@ -156,7 +159,7 @@ describe("TextField", () => {
           expect(toggle.attributes("aria-pressed")).toBe("false");
           expect(toggle.attributes("aria-hidden")).toBe("false");
           expect(toggle.attributes("tabindex")).toBe("0");
-          expect(toggle.classes()).toContain("mdi-eye");
+          expect(toggle.find("path").attributes("d")).toBe(mdiEye);
         });
 
         it.each(["Enter", " "])('should toggle the password on "%s"', async (key) => {
@@ -179,13 +182,13 @@ describe("TextField", () => {
           expect(wrapper.find("input").attributes("type")).toBe("text");
           expect(findPasswordToggle(wrapper).attributes("aria-pressed")).toBe("true");
           expect(findPasswordToggle(wrapper).attributes("aria-label")).toBe("Mostrar senha");
-          expect(findPasswordToggle(wrapper).classes()).toContain("mdi-eye-off");
+          expect(findPasswordToggle(wrapper).find("path").attributes("d")).toBe(mdiEyeOff);
 
           await findPasswordToggle(wrapper).trigger("click");
 
           expect(wrapper.find("input").attributes("type")).toBe("password");
           expect(findPasswordToggle(wrapper).attributes("aria-pressed")).toBe("false");
-          expect(findPasswordToggle(wrapper).classes()).toContain("mdi-eye");
+          expect(findPasswordToggle(wrapper).find("path").attributes("d")).toBe(mdiEye);
           expect(wrapper.props("modelValue")).toBe("segredo");
         });
 

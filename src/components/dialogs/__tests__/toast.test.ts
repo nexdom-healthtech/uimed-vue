@@ -1,5 +1,6 @@
 import Toast from "@/components/dialogs/toast.vue";
 import { useToast } from "@/composables/index.ts";
+import { icons } from "@/consts/icons.ts";
 import { vueTestUtilsPluginUimed } from "@/unit-test.ts";
 import { mount } from "@vue/test-utils";
 import { VSnackbarQueue } from "vuetify/components";
@@ -39,6 +40,22 @@ describe("Toast", () => {
 
       expect(snackbar.props("modelValue")).toHaveLength(1);
       expect(snackbar.props("modelValue")?.[0]).toEqual(expect.objectContaining({ text: message }));
+    });
+  });
+
+  describe("close button", () => {
+    const { toast } = useToast();
+
+    // Lets the toasts of previous tests time out, so only the new ones stay active
+    beforeEach(() => vi.advanceTimersByTimeAsync(6000));
+
+    it("should draw the close icon on the labeled close button", async () => {
+      toast({ message });
+      await vi.advanceTimersByTimeAsync(100);
+
+      const [content] = findSingleContent();
+      const button = content?.querySelector("button[aria-label='Fechar']");
+      expect(button?.querySelector(".v-icon path")?.getAttribute("d")).toBe(icons.close);
     });
   });
 

@@ -184,9 +184,9 @@ test.describe("main", () => {
         await expect(items).toHaveText(["Início", "Documentação", "Configurações"]);
 
         await expect(itemIcons).toHaveCount(3);
-        await expect(itemIcons.nth(0)).toContainClass(icons.home);
-        await expect(itemIcons.nth(1)).toContainClass(icons.folder);
-        await expect(itemIcons.nth(2)).toContainClass(icons.cog);
+        await expect(itemIcons.nth(0).locator("path")).toHaveAttribute("d", icons.home);
+        await expect(itemIcons.nth(1).locator("path")).toHaveAttribute("d", icons.folder);
+        await expect(itemIcons.nth(2).locator("path")).toHaveAttribute("d", icons.cog);
         for (const icon of await itemIcons.all()) {
           await expect(icon).toBeVisible();
           await expect(icon).toHaveAttribute("aria-hidden", "true");
@@ -737,7 +737,7 @@ test.describe("main", () => {
   });
 
   test.describe("fonts", () => {
-    test("loads the icon and text fonts with font-display swap", async ({ page }) => {
+    test("loads the text font with font-display swap, and no icon font", async ({ page }) => {
       await expect(getHelpButton(page)).toBeVisible();
 
       const fonts = await page.evaluate(() =>
@@ -746,10 +746,11 @@ test.describe("main", () => {
           display: font.display,
         })),
       );
-      const families = ["Material Design Icons", "Unimed Slab"];
-      const faces = fonts.filter(({ family }) => families.includes(family));
+      const families = new Set(fonts.map(({ family }) => family));
+      const faces = fonts.filter(({ family }) => family === "Unimed Slab");
 
-      expect(new Set(faces.map(({ family }) => family))).toEqual(new Set(families));
+      expect(families).not.toContain("Material Design Icons");
+      expect(faces).not.toHaveLength(0);
       expect(faces.every(({ display }) => display === "swap")).toBe(true);
     });
   });

@@ -30,7 +30,7 @@
           v-bind="routeProps"
           :data-testid="helpBtnDataTestid"
           aria-label="Ajuda"
-          icon="mdi-help-circle-outline"
+          :icon="icons.help"
         />
         <v-menu
           v-if="showNotifications"
@@ -50,7 +50,7 @@
                 :label="unreadLabel"
                 color="error"
               >
-                <v-icon icon="mdi-bell-outline" />
+                <v-icon :icon="icons.notifications" />
               </v-badge>
             </v-btn>
           </template>
@@ -189,6 +189,7 @@ import {
   VListItemAction,
 } from "vuetify/components";
 import SkeletonLoader from "@/components/skeleton-loader/skeleton-loader.vue";
+import { icons } from "@/consts/icons.ts";
 
 type Props = AppBarProps & {
   navigation?: boolean;
@@ -238,7 +239,7 @@ const userInitials = computed(() => toInitials(props.user!.title ?? ""));
 const userAvatarProps = computed(() => {
   if (props.user!.img) return { image: props.user!.img };
   if (userInitials.value) return { text: userInitials.value };
-  return { icon: "mdi-account-outline" };
+  return { icon: icons["account-alternative"] };
 });
 
 function isParentOption(option: ParentOptionOrOption): option is ParentOption {

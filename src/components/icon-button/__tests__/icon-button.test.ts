@@ -1,4 +1,5 @@
 import { VIcon, VIconBtn } from "vuetify/components";
+import { mdiHomeOutline, mdiHospitalBuilding } from "@mdi/js";
 import { mount } from "@vue/test-utils";
 import IconButton from "@/components/icon-button/icon-button.vue";
 import type { IconButtonProps } from "@/components/icon-button/types.ts";
@@ -44,7 +45,7 @@ describe("IconButton", () => {
         const wrapper = mountIconButton({ icon: "hospital" });
 
         expect(findVIconBtn(wrapper).props("icon")).toBe(icons.hospital);
-        expect(findVIcon(wrapper).classes()).toContain("mdi-hospital-building");
+        expect(findVIcon(wrapper).find("path").attributes("d")).toBe(mdiHospitalBuilding);
       });
 
       it("should follow changes of the icon", async () => {
@@ -52,7 +53,7 @@ describe("IconButton", () => {
 
         await wrapper.setProps({ icon: "home-alternative" });
 
-        expect(findVIcon(wrapper).classes()).toContain("mdi-home-outline");
+        expect(findVIcon(wrapper).find("path").attributes("d")).toBe(mdiHomeOutline);
       });
 
       it("should hide the icon from assistive technologies", () => {

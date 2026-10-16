@@ -2,6 +2,7 @@ import type { TextFieldProps, TextFieldType } from "@/components/inputs/text-fie
 import { email, phone, url } from "@/composables/inputs/rules.ts";
 import type { Rule } from "@/composables/inputs/types.ts";
 import { useRules } from "@/composables/inputs/fields.ts";
+import { icons } from "@/consts/icons.ts";
 import {
   computed,
   readonly,
@@ -99,11 +100,11 @@ export function useTextFieldAppendIcon(
   }
 
   const iconProps = computed<AppendIconProps | undefined>(() => {
-    if (toValue(type) === "search") return { icon: "mdi-magnify" };
+    if (toValue(type) === "search") return { icon: icons.search };
     if (!isPasswordField.value) return undefined;
 
     return {
-      icon: isPasswordVisible.value ? "mdi-eye-off" : "mdi-eye",
+      icon: isPasswordVisible.value ? icons["hide-password"] : icons["show-password"],
       "aria-label": "Mostrar senha",
       "aria-pressed": isPasswordVisible.value,
       onClick: toggle,
