@@ -3,7 +3,7 @@
     :loading="props.loading"
     :type="props.type"
     :color="props.color"
-    :class="[widthClass, heightClass]"
+    :class="[widthClass, heightClass, alignContentClass]"
     v-bind="loadingAttrs"
   >
     <slot />
@@ -42,6 +42,13 @@ const props = defineProps<SkeletonLoaderProps>();
 const { t } = useLocale();
 const widthClass = useFullWidth(() => props.fullWidth);
 const heightClass = useFullHeight(() => props.fullHeight);
+// A full height skeleton has room left over around its rows of bones. By default the rows
+// would share that room and drift to the middle, so `align-content-space-between` keeps the
+// first row at the top and the last one at the bottom, where a full height section puts its
+// actions (#191). No prop of the skeleton covers it, hence the utility class.
+const alignContentClass = computed(() =>
+  props.fullHeight ? "align-content-space-between" : undefined,
+);
 
 // The base skeleton sets `ariaLabel`/`ariaLive` in camelCase, which the server
 // renderer writes as the invalid `arialabel`/`arialive` attributes (#109). Unset
