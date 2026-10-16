@@ -1,6 +1,5 @@
 - text: Pesquisar
 - textbox "Pesquisar"
-- alert
 - list:
     - listitem: Ana Souza Plano Ouro
     - listitem: Bruno Lima Plano Prata

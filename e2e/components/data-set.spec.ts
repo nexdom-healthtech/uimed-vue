@@ -150,6 +150,144 @@ test.describe("data-set", () => {
       await expect(dataSet.getByText("Nenhum registro encontrado.")).toBeVisible();
     });
 
+    test("keeps the search field at the end of the bar, as wide as a card", async ({ page }) => {
+      const dataSet = page.getByTestId("demo-data-set-search");
+      const [dataSetBox, fieldBox] = await Promise.all([
+        dataSet.boundingBox(),
+        getSearchField(dataSet).boundingBox(),
+      ]);
+
+      expect(fieldBox?.width).toBe(240);
+      expect(dataSetBox?.width).toBeGreaterThan(2 * 240);
+      expect(getRight(fieldBox)).toBeCloseTo(getRight(dataSetBox), 0);
+    });
+
+    test("renders the list actions at the start of the bar, on the line of the search field", async ({
+      page,
+    }) => {
+      const dataSet = page.getByTestId("demo-data-set-list-actions");
+      const buttons = getListActionButtons(dataSet);
+      await expect(buttons).toHaveText(["Novo paciente", "Exportar"]);
+
+      const [dataSetBox, newBox, exportBox, fieldBox] = await Promise.all([
+        dataSet.boundingBox(),
+        buttons.nth(0).boundingBox(),
+        buttons.nth(1).boundingBox(),
+        getSearchField(dataSet).boundingBox(),
+      ]);
+      expect(newBox?.x).toBeCloseTo(dataSetBox?.x ?? 0, 0);
+      expect(exportBox?.x).toBeGreaterThan(getRight(newBox));
+      expect(fieldBox?.x).toBeGreaterThan(getRight(exportBox));
+      expect(getRight(fieldBox)).toBeCloseTo(getRight(dataSetBox), 0);
+      for (const box of [newBox, exportBox]) {
+        expect(getMiddle(box)).toBeCloseTo(getMiddle(fieldBox), 0);
+      }
+    });
+
+    test("keeps the list actions out of the list of records", async ({ page }) => {
+      const dataSet = page.getByTestId("demo-data-set-list-actions");
+
+      await expect(dataSet.getByRole("list").getByRole("listitem")).toHaveCount(4);
+      await expect(dataSet.getByRole("list").getByRole("button")).toHaveCount(0);
+    });
+
+    test("spaces the bar from the cards as the cards are spaced from each other", async ({
+      page,
+    }) => {
+      const dataSet = page.getByTestId("demo-data-set-list-actions");
+      const cards = page.getByTestId("demo-data-set-list-actions-item");
+      const [fieldBox, firstCard, thirdCard] = await Promise.all([
+        getSearchField(dataSet).boundingBox(),
+        cards.nth(0).boundingBox(),
+        cards.nth(2).boundingBox(),
+      ]);
+      const cardsGap = (thirdCard?.y ?? 0) - getBottom(firstCard);
+
+      expect(cardsGap).toBeGreaterThan(0);
+      expect((firstCard?.y ?? 0) - getBottom(fieldBox)).toBeCloseTo(cardsGap, 0);
+    });
+
+    test("calls the clicked list action", async ({ page }) => {
+      const dataSet = page.getByTestId("demo-data-set-list-actions");
+      const lastAction = page.getByTestId("demo-data-set-list-actions-last");
+      await expect(lastAction).toHaveText("Última ação: nenhuma");
+
+      await dataSet.getByRole("button", { name: "Exportar" }).click();
+      await expect(lastAction).toHaveText("Última ação: Exportar");
+
+      await dataSet.getByRole("button", { name: "Novo paciente" }).click();
+      await expect(lastAction).toHaveText("Última ação: Novo paciente");
+    });
+
+    test("keeps the list actions with the search field", async ({ page }) => {
+      const dataSet = page.getByTestId("demo-data-set-list-actions");
+
+      await dataSet.getByRole("textbox", { name: "Pesquisar" }).fill("Zeca");
+
+      await expect(page.getByTestId("demo-data-set-list-actions-item")).toHaveCount(0);
+      await expect(dataSet.getByText("Nenhum registro encontrado.")).toBeVisible();
+      await expect(getListActionButtons(dataSet)).toHaveText(["Novo paciente", "Exportar"]);
+    });
+
+    test("keeps the focus on the search field while the search stops and starts matching records", async ({
+      page,
+    }) => {
+      const dataSet = page.getByTestId("demo-data-set-list-actions");
+      const textbox = dataSet.getByRole("textbox", { name: "Pesquisar" });
+      const cards = page.getByTestId("demo-data-set-list-actions-item");
+
+      await textbox.focus();
+      await page.keyboard.type("Xy");
+      await expect(cards).toHaveCount(0);
+      await expect(textbox).toBeFocused();
+
+      await page.keyboard.press("Backspace");
+      await page.keyboard.press("Backspace");
+      await page.keyboard.type("Ana");
+      await expect(cards).toHaveCount(1);
+      await expect(textbox).toBeFocused();
+      await expect(textbox).toHaveValue("Ana");
+    });
+
+    test("reaches the list actions before the search field with the keyboard", async ({ page }) => {
+      const dataSet = page.getByTestId("demo-data-set-list-actions");
+      const buttons = getListActionButtons(dataSet);
+
+      await buttons.nth(0).focus();
+      await page.keyboard.press("Tab");
+      await expect(buttons.nth(1)).toBeFocused();
+      await page.keyboard.press("Tab");
+      await expect(dataSet.getByRole("textbox", { name: "Pesquisar" })).toBeFocused();
+
+      await page.keyboard.press("Shift+Tab");
+      await page.keyboard.press("Enter");
+      await expect(page.getByTestId("demo-data-set-list-actions-last")).toHaveText(
+        "Última ação: Exportar",
+      );
+    });
+
+    test("stacks the list actions and the search field on extra small screens", async ({
+      page,
+    }) => {
+      await page.setViewportSize({ width: 400, height: 800 });
+      const dataSet = page.getByTestId("demo-data-set-list-actions");
+      const buttons = getListActionButtons(dataSet);
+      await expect(buttons).toHaveCount(2);
+
+      const boxes = await Promise.all([
+        buttons.nth(0).boundingBox(),
+        buttons.nth(1).boundingBox(),
+        getSearchField(dataSet).boundingBox(),
+      ]);
+      const dataSetBox = await dataSet.boundingBox();
+      for (const box of boxes) {
+        expect(box?.x).toBeCloseTo(dataSetBox?.x ?? 0, 0);
+        expect(box?.width).toBeCloseTo(dataSetBox?.width ?? 0, 0);
+      }
+      expect(boxes[1]?.y).toBeGreaterThan(getBottom(boxes[0]));
+      expect(boxes[2]?.y).toBeGreaterThan(getBottom(boxes[1]));
+    });
+
     test("renders the custom empty message", async ({ page }) => {
       await expect(page.getByTestId("demo-data-set-no-data")).toHaveText(
         "Nenhum paciente agendado para hoje.",
@@ -246,6 +384,10 @@ test.describe("data-set", () => {
       }
     });
 
+    test("matches the accessible snapshot of the list actions demo", async ({ page }) => {
+      await expect(page.getByTestId("demo-data-set-list-actions")).toMatchAriaSnapshot();
+    });
+
     test("matches the accessible snapshot of the actions demo", async ({ page }) => {
       await expect(page.getByTestId("demo-data-set-actions")).toMatchAriaSnapshot();
     });
@@ -266,6 +408,32 @@ test.describe("data-set", () => {
 
       await page.getByTestId("data-set-playground-searchable").locator("input").click();
       await expect(preview.getByRole("textbox", { name: "Pesquisar" })).toHaveCount(0);
+    });
+
+    test("shows the list actions when playground-actions is toggled", async ({ page }) => {
+      const preview = getPreview(page);
+      await expect(preview.getByRole("textbox", { name: "Pesquisar" })).toBeVisible();
+      await expect(preview.getByRole("button", { name: "Novo paciente" })).toHaveCount(0);
+
+      await page.getByTestId("data-set-playground-actions").locator("input").click();
+      await expect(preview.getByRole("button", { name: "Novo paciente" })).toBeVisible();
+
+      await page.getByTestId("data-set-playground-searchable").locator("input").click();
+      await expect(preview.getByRole("textbox", { name: "Pesquisar" })).toHaveCount(0);
+      await expect(preview.getByRole("button", { name: "Novo paciente" })).toBeVisible();
+
+      await page.getByTestId("data-set-playground-actions").locator("input").click();
+      await expect(preview.getByRole("button", { name: "Novo paciente" })).toHaveCount(0);
+    });
+
+    test("hides the list actions while loading", async ({ page }) => {
+      const previewArea = page.locator(".playground-preview");
+      await page.getByTestId("data-set-playground-actions").locator("input").click();
+      await expect(previewArea.getByRole("button", { name: "Novo paciente" })).toBeVisible();
+
+      await page.getByTestId("data-set-playground-loading").locator("input").click();
+      await expect(previewArea.getByRole("button", { name: "Novo paciente" })).toHaveCount(0);
+      await expect(previewArea.getByRole("alert", { name: "Carregando..." })).toBeVisible();
     });
 
     test("shows a skeleton loader when playground-loading is toggled", async ({ page }) => {
@@ -365,6 +533,37 @@ function getPreview(page: Page) {
 
 function getPreviewCards(page: Page) {
   return page.getByTestId("data-set-preview-item");
+}
+
+/**
+ * Gets the buttons of the list actions of the demo, by their names, so neither
+ * the page controls nor the clear icon of the search field are picked.
+ */
+function getListActionButtons(dataSet: Locator) {
+  return dataSet.getByRole("button", { name: /^(Novo paciente|Exportar)$/ });
+}
+
+/**
+ * Gets the whole search field (its outline, label and icons), instead of its
+ * inner text box, since the alignment checks measure the field as it's seen. No
+ * role covers the whole field, so it's found by its class.
+ */
+function getSearchField(dataSet: Locator) {
+  return dataSet.locator(".v-text-field");
+}
+
+type Box = Awaited<ReturnType<Locator["boundingBox"]>>;
+
+function getRight(box: Box) {
+  return (box?.x ?? 0) + (box?.width ?? 0);
+}
+
+function getBottom(box: Box) {
+  return (box?.y ?? 0) + (box?.height ?? 0);
+}
+
+function getMiddle(box: Box) {
+  return (box?.y ?? 0) + (box?.height ?? 0) / 2;
 }
 
 /**
