@@ -15,6 +15,10 @@ export type TextFieldProps = {
   /**
    * Applies a distinct behavior to the field.
    * One of `text`, `phone`, `email`, `url`, `password` or `search`.
+   *
+   * With `password`, the field hides its value and shows a "Mostrar senha"
+   * button that toggles between showing and hiding it. The value hides again
+   * when the button is pressed again or the type changes.
    * @default "text"
    */
   type?: TextFieldType;
@@ -26,7 +30,9 @@ export type TextFieldProps = {
   disabled?: boolean;
 
   /**
-   * Displays a loading indicator on the input.
+   * Displays a loading indicator on the input. The field keeps its label as
+   * accessible name and is marked as busy, and assistive technologies ignore
+   * the indicator.
    * @default false
    */
   loading?: boolean;

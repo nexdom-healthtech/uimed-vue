@@ -1,21 +1,25 @@
+import { mdiAccountOutline, mdiBellOutline, mdiHelpCircleOutline } from "@mdi/js";
 import {
   VAppBar,
   VAppBarNavIcon,
+  VAppBarTitle,
   VAvatar,
   VBadge,
   VBtn,
   VCard,
   VIcon,
+  VImg,
   VListGroup,
+  VList,
   VListItem,
   VMenu,
+  VSkeletonLoader,
 } from "vuetify/components";
 import AppBar from "@/components/app-bar/app-bar.vue";
-import { mount } from "@vue/test-utils";
+import { mount, renderToString } from "@vue/test-utils";
 import { vueTestUtilsPluginUimed } from "@/unit-test.ts";
 import useRouteProps, { isExternalRoute } from "@/composables/navigation/use-route-props.ts";
 import type { AppBarUserProps, Option, ParentOption } from "@/components/app-bar/types.ts";
-import { formatDateTime, navigatePeriod } from "@nexdom/shared/utils";
 
 const testId = "app-bar-test-component";
 const styleValue = "random-style";
@@ -32,7 +36,7 @@ describe("AppBar", () => {
   });
 
   it("should contain primary component", () => {
-    expect(wrapper.findComponent(VAppBar).exists()).toBeTruthy();
+    expect(findVAppBar(wrapper).exists()).toBeTruthy();
   });
 
   it('should inherit "data-testid" attribute', () => {
@@ -47,11 +51,23 @@ describe("AppBar", () => {
   describe("props", () => {
     describe("title", () => {
       it("should forward title to the app bar", async () => {
+        let vAppBarTitle = findVAppBarTitle(wrapper);
+        expect(vAppBarTitle.exists()).toBeFalsy();
+
         const title = "AI Chat";
         await wrapper.setProps({ title });
 
-        const vAppBar = findVAppBar(wrapper);
-        expect(vAppBar.props("title")).toBe(title);
+        vAppBarTitle = findVAppBarTitle(wrapper);
+        expect(vAppBarTitle.exists()).toBeTruthy();
+        expect(vAppBarTitle.text()).toBe(title);
+      });
+
+      it("should expose the title as a level 1 heading", async () => {
+        await wrapper.setProps({ title: "AI Chat" });
+
+        const vAppBarTitle = findVAppBarTitle(wrapper);
+        expect(vAppBarTitle.attributes("role")).toBe("heading");
+        expect(vAppBarTitle.attributes("aria-level")).toBe("1");
       });
     });
 
@@ -66,8 +82,14 @@ describe("AppBar", () => {
 
         vBtn = findVBtn(wrapper);
         expect(vBtn.exists()).toBeTruthy();
-        expect(vBtn.props("icon")).toBe("mdi-help-circle-outline");
+        expect(vBtn.props("icon")).toBe(mdiHelpCircleOutline);
         expect(vBtn.attributes("data-testid")).toBe(`${testId}-help`);
+      });
+
+      it("should name the help button for screen readers", async () => {
+        await wrapper.setProps({ help });
+
+        expect(findVBtn(wrapper).attributes("aria-label")).toBe("Ajuda");
       });
 
       it("should use route props composable and propagate it's result", async () => {
@@ -101,7 +123,7 @@ describe("AppBar", () => {
         expect(vBtn.attributes("data-testid")).toBe(`${testId}-notifications`);
 
         const vBtnIcon = vBtn.findComponent(VIcon);
-        expect(vBtnIcon.props("icon")).toBe("mdi-bell-outline");
+        expect(vBtnIcon.props("icon")).toBe(mdiBellOutline);
       });
 
       it("should show the button even when notifications is an empty array", async () => {
@@ -109,6 +131,52 @@ describe("AppBar", () => {
 
         const vBtn = findVBtn(wrapper);
         expect(vBtn.exists()).toBeTruthy();
+      });
+
+      describe("accessible name", () => {
+        it.each([
+          {
+            case: "no notifications",
+            unread: 0,
+            read: 0,
+            name: "Notificações",
+            label: "0 não lidas",
+          },
+          {
+            case: "only read ones",
+            unread: 0,
+            read: 2,
+            name: "Notificações",
+            label: "0 não lidas",
+          },
+          {
+            case: "one unread",
+            unread: 1,
+            read: 2,
+            name: "Notificações (1 não lida)",
+            label: "1 não lida",
+          },
+          {
+            case: "several unread",
+            unread: 2,
+            read: 1,
+            name: "Notificações (2 não lidas)",
+            label: "2 não lidas",
+          },
+        ])(
+          "should name the button and the badge with $case",
+          async ({ unread, read, name, label }) => {
+            await wrapper.setProps({
+              notifications: [
+                ...Array.from({ length: unread }, () => ({ title: "Unread", read: false })),
+                ...Array.from({ length: read }, () => ({ title: "Read", read: true })),
+              ],
+            });
+
+            expect(findVBtn(wrapper).attributes("aria-label")).toBe(name);
+            expect(findVBadge(wrapper).props("label")).toBe(label);
+          },
+        );
       });
 
       it("should open notifications menu when button is clicked", async () => {
@@ -196,12 +264,29 @@ describe("AppBar", () => {
           const vCardNotifications = findVCardNotifications(vCard);
 
           vCardNotifications.forEach((vCardNotification, index) => {
-            expect(vCardNotification.props("activeClass")).toBe("text-primary");
+            expect(vCardNotification.props("activeClass")).toBe("text-primary-text");
             expect(vCardNotification.props("active")).toBe(!notifications[index].read);
           });
         });
 
-        it("should not present notification date/time when none is provided", async () => {
+        // The subtitle's lower opacity would take the unread notifications' green below WCAG AA's
+        // contrast
+        it("should keep the theme's text color in the notification subtitles", async () => {
+          await wrapper.setProps({ notifications });
+
+          const vBtn = findVBtn(wrapper);
+          await vBtn.trigger("click");
+
+          const vCard = findVCard(wrapper);
+          const vCardNotifications = findVCardNotifications(vCard);
+
+          vCardNotifications.forEach((vCardNotification, index) => {
+            const subtitle = vCardNotification.find(".v-list-item-subtitle .text-high-emphasis");
+            expect(subtitle.text()).toBe(notifications[index].subtitle);
+          });
+        });
+
+        it("should not present the notification `when` if none is provided", async () => {
           await wrapper.setProps({ notifications });
 
           const vBtn = findVBtn(wrapper);
@@ -211,33 +296,33 @@ describe("AppBar", () => {
           const vCardNotifications = findVCardNotifications(vCard);
 
           vCardNotifications.forEach((vCardNotification) => {
-            expect(findNotificationDate(vCardNotification).exists()).toBeFalsy();
+            expect(findNotificationWhen(vCardNotification).exists()).toBeFalsy();
           });
         });
 
-        it("should handle notification date/time presentation", async () => {
-          const date = new Date();
-          const dates = [
-            { provide: date, expect: formatDateTime(date, "HH:mm") },
-            { provide: navigatePeriod(date, { days: -1 }), expect: "Ontem" },
-            {
-              provide: navigatePeriod(date, { days: -2 }),
-              expect: formatDateTime(navigatePeriod(date, { days: -2 }), "DD/MM/YYYY"),
-            },
-            {
-              provide: navigatePeriod(date, { months: -1 }),
-              expect: formatDateTime(navigatePeriod(date, { months: -1 }), "DD/MM/YYYY"),
-            },
-            {
-              provide: navigatePeriod(date, { years: -1 }),
-              expect: formatDateTime(navigatePeriod(date, { years: -1 }), "DD/MM/YYYY"),
-            },
-          ];
-          expect(dates).toHaveLength(notifications.length);
+        it("should not present the notification `when` if it is empty", async () => {
+          await wrapper.setProps({
+            notifications: notifications.map((notification) => ({ ...notification, when: "" })),
+          });
+
+          const vBtn = findVBtn(wrapper);
+          await vBtn.trigger("click");
+
+          const vCard = findVCard(wrapper);
+          const vCardNotifications = findVCardNotifications(vCard);
+
+          vCardNotifications.forEach((vCardNotification) => {
+            expect(findNotificationWhen(vCardNotification).exists()).toBeFalsy();
+          });
+        });
+
+        it("should present the notification `when` as provided", async () => {
+          const whens = ["10:30", "Ontem", "28/09/2026", "Há 5 minutos", "01/01/2025"];
+          expect(whens).toHaveLength(notifications.length);
 
           const updateNotifications = notifications.map((notification, index) => ({
             ...notification,
-            date: dates[index].provide,
+            when: whens[index],
           }));
           await wrapper.setProps({ notifications: updateNotifications });
 
@@ -249,8 +334,7 @@ describe("AppBar", () => {
           expect(vCardNotifications).toHaveLength(notifications.length);
 
           vCardNotifications.forEach((vCardNotification, index) => {
-            expect(vCardNotification.exists()).toBeTruthy();
-            expect(findNotificationDate(vCardNotification).text()).toBe(dates[index].expect);
+            expect(findNotificationWhen(vCardNotification).text()).toBe(whens[index]);
           });
         });
 
@@ -283,6 +367,27 @@ describe("AppBar", () => {
         expect(vAppBarNavIcon.attributes("data-testid")).toBe(`${testId}-navigation`);
       });
 
+      it("should name the nav icon for screen readers", async () => {
+        await wrapper.setProps({ navigation });
+
+        expect(findVAppBarNavIcon(wrapper).attributes("aria-label")).toBe("Menu de navegação");
+      });
+
+      it("should expose whether the navigation menu is expanded", async () => {
+        await wrapper.setProps({ navigation, navigationOpen: false });
+        expect(findVAppBarNavIcon(wrapper).attributes("aria-expanded")).toBe("false");
+
+        await wrapper.setProps({ navigationOpen: true });
+        expect(findVAppBarNavIcon(wrapper).attributes("aria-expanded")).toBe("true");
+      });
+
+      it("should announce the shortcut that also opens the navigation menu", async () => {
+        await wrapper.setProps({ navigation });
+
+        const vAppBarNavIcon = findVAppBarNavIcon(wrapper);
+        expect(vAppBarNavIcon.attributes("aria-keyshortcuts")).toBe("Control+K");
+      });
+
       it("should emit update:navigationOpen with inverted value when icon is clicked", async () => {
         await wrapper.setProps({ navigationOpen: true, navigation });
 
@@ -302,6 +407,105 @@ describe("AppBar", () => {
       });
     });
 
+    describe("logo", () => {
+      it("should render an image", async () => {
+        const logo = "/logo.svg";
+
+        let vImg = findVImg(wrapper);
+        expect(vImg.exists()).toBeFalsy();
+
+        await wrapper.setProps({ logo });
+
+        vImg = findVImg(wrapper);
+        expect(vImg.exists()).toBeTruthy();
+        expect(vImg.props("cover")).toBeTruthy();
+        expect(vImg.props("src")).toBe(logo);
+        expect(vImg.props("alt")).toBe("");
+        expect(vImg.props("height")).toBe("100%");
+        expect(vImg.props("width")).toBe("fit-content");
+        expect(vImg.props("class")).toContain("py-2 ml-5 mr-n3");
+      });
+    });
+
+    describe("loading", () => {
+      const loadedProps = {
+        title: "AI Chat",
+        logo: "/logo.svg",
+        navigation: true,
+        help: "/help",
+        notifications: [],
+        user: { title: "Beetlejuice" },
+      };
+
+      it("should not show the skeleton loader by default", async () => {
+        await wrapper.setProps(loadedProps);
+
+        const vSkeletonLoader = findVSkeletonLoader(wrapper);
+        expect(vSkeletonLoader.props("loading")).toBe(false);
+        expect(vSkeletonLoader.find(".v-skeleton-loader").exists()).toBeFalsy();
+        expect(findActionBtns(wrapper)).toHaveLength(3);
+      });
+
+      it("should show an avatar skeleton loader while loading", async () => {
+        await wrapper.setProps({ ...loadedProps, loading: true });
+
+        const vSkeletonLoader = findVSkeletonLoader(wrapper);
+        expect(vSkeletonLoader.props("loading")).toBe(true);
+        expect(vSkeletonLoader.props("type")).toBe("avatar");
+        expect(vSkeletonLoader.find(".v-skeleton-loader__avatar").exists()).toBeTruthy();
+      });
+
+      it("should announce the loading with valid ARIA attributes when rendered on the server", async () => {
+        const html = await renderAppBar({ ...loadedProps, loading: true });
+        expect(html).toContain('aria-label="Carregando..."');
+        expect(html).toContain('aria-live="polite"');
+        expect(html).not.toContain("arialabel");
+        expect(html).not.toContain("arialive");
+      });
+
+      it("should hide the help, notifications and user buttons while loading", async () => {
+        await wrapper.setProps({ ...loadedProps, loading: true });
+
+        expect(findActionBtns(wrapper)).toHaveLength(0);
+        expect(findVMenu(wrapper).exists()).toBeFalsy();
+      });
+
+      it("should keep the navigation icon, logo and title while loading", async () => {
+        await wrapper.setProps({ ...loadedProps, loading: true });
+
+        expect(findVAppBarNavIcon(wrapper).exists()).toBeTruthy();
+        expect(findVImg(wrapper).exists()).toBeTruthy();
+        expect(findVAppBarTitle(wrapper).text()).toBe(loadedProps.title);
+      });
+
+      it("should mark the app bar as busy only while loading", async () => {
+        expect(wrapper.attributes("aria-busy")).toBeUndefined();
+
+        await wrapper.setProps({ loading: true });
+        expect(wrapper.attributes("aria-busy")).toBe("true");
+
+        await wrapper.setProps({ loading: false });
+        expect(wrapper.attributes("aria-busy")).toBeUndefined();
+      });
+
+      it("should close the notifications menu when loading starts", async () => {
+        await wrapper.setProps({ ...loadedProps, notificationsOpen: true });
+
+        await wrapper.setProps({ loading: true });
+
+        expect(wrapper.emitted("update:notificationsOpen")).toEqual([[false]]);
+      });
+
+      it("should not touch the notifications menu when loading ends", async () => {
+        await wrapper.setProps({ ...loadedProps, loading: true });
+        await wrapper.setProps({ notificationsOpen: true });
+
+        await wrapper.setProps({ loading: false });
+
+        expect(wrapper.emitted("update:notificationsOpen")).toBeUndefined();
+      });
+    });
+
     describe("user", () => {
       const user = { title: "Beetlejuice", subtitle: "beetle3x@gmail.com" };
 
@@ -315,11 +519,13 @@ describe("AppBar", () => {
         expect(vBtn.exists()).toBeTruthy();
         expect(vBtn.props("icon")).toBeTruthy();
         expect(vBtn.attributes("data-testid")).toBe(`${testId}-user`);
+        expect(vBtn.attributes("aria-label")).toBe("Menu do usuário");
 
         const vAvatar = findVAvatar(wrapper);
         expect(vAvatar.exists()).toBeTruthy();
         expect(vAvatar.props("color")).toBe("primary");
-        expect(vAvatar.props("icon")).toBe("mdi-account-outline");
+        expect(vAvatar.props("text")).toBe("B");
+        expect(vAvatar.props("icon")).toBeUndefined();
       });
 
       it("should open user menu when button is clicked", async () => {
@@ -335,6 +541,17 @@ describe("AppBar", () => {
         await vBtn.trigger("click");
         expect(vMenu.emitted("update:modelValue")).toBeTruthy();
         expect(vMenu.emitted("update:modelValue")?.[0]).toBeTruthy();
+      });
+
+      // Vuetify's `list` role only allows list items, but the options are links and separators
+      it("should present the user options as a group", async () => {
+        await wrapper.setProps({ user });
+
+        const vBtn = findVBtn(wrapper);
+        await vBtn.trigger("click");
+
+        const vList = findVCard(wrapper).findComponent(VList);
+        expect(vList.attributes("role")).toBe("group");
       });
 
       describe("title and subtitle", () => {
@@ -353,8 +570,97 @@ describe("AppBar", () => {
           expect(cardText).toContain(user.subtitle);
 
           const vCardAvatar = findVCardAvatar(vCard);
-          expect(vCardAvatar.props("icon")).toBe("mdi-account-outline");
+          expect(vCardAvatar.props("text")).toBe("B");
+          expect(vCardAvatar.props("icon")).toBeUndefined();
           expect(vCardAvatar.props("image")).toBeUndefined();
+        });
+      });
+
+      describe("avatar", () => {
+        async function findAvatars(userProps: AppBarUserProps) {
+          await wrapper.setProps({ user: userProps });
+          await findVBtn(wrapper).trigger("click");
+
+          return [findVAvatar(wrapper), findVCardAvatar(findVCard(wrapper))];
+        }
+
+        it.each([
+          ["Rafael Perini", "RP"],
+          ["Maria da Silva Souza", "MS"],
+          ["élio ávila", "ÉÁ"],
+          ["  Ana  ", "A"],
+        ])("should show the initials of %j without a picture", async (title, initials) => {
+          const avatars = await findAvatars({ title });
+
+          for (const vAvatar of avatars) {
+            expect(vAvatar.props("text")).toBe(initials);
+            expect(vAvatar.props("icon")).toBeUndefined();
+            expect(vAvatar.props("image")).toBeUndefined();
+            expect(vAvatar.text()).toBe(initials);
+          }
+        });
+
+        it.each([
+          ["no title", {}],
+          ["an empty title", { title: "" }],
+          ["a blank title", { title: "   " }],
+        ])("should show a generic icon with %s", async (_, userProps: AppBarUserProps) => {
+          const avatars = await findAvatars(userProps);
+
+          for (const vAvatar of avatars) {
+            expect(vAvatar.props("icon")).toBe(mdiAccountOutline);
+            expect(vAvatar.props("text")).toBeUndefined();
+            expect(vAvatar.props("image")).toBeUndefined();
+          }
+        });
+
+        it("should prefer the picture to the initials", async () => {
+          const avatars = await findAvatars({ title: "Rafael Perini", img: "/picture.png" });
+
+          for (const vAvatar of avatars) {
+            expect(vAvatar.props("image")).toBe("/picture.png");
+            expect(vAvatar.props("text")).toBeUndefined();
+            expect(vAvatar.props("icon")).toBeUndefined();
+          }
+        });
+
+        it.each([
+          ["initials", { title: "Rafael Perini" }],
+          ["icon", {}],
+          ["picture", { img: "/picture.png" }],
+        ])(
+          "should keep the primary color and hide the %s from screen readers",
+          async (_, userProps: AppBarUserProps) => {
+            const avatars = await findAvatars(userProps);
+
+            for (const vAvatar of avatars) {
+              expect(vAvatar.exists()).toBeTruthy();
+              expect(vAvatar.props("color")).toBe("primary");
+              expect(vAvatar.attributes("aria-hidden")).toBe("true");
+            }
+            expect(findVBtn(wrapper).attributes("aria-label")).toBe("Menu do usuário");
+          },
+        );
+
+        it("should follow changes to the user", async () => {
+          let avatars = await findAvatars({ title: "Rafael Perini" });
+          avatars.forEach((vAvatar) => expect(vAvatar.props("text")).toBe("RP"));
+
+          await wrapper.setProps({ user: { title: "Beetlejuice" } });
+          avatars = [findVAvatar(wrapper), findVCardAvatar(findVCard(wrapper))];
+          avatars.forEach((vAvatar) => expect(vAvatar.props("text")).toBe("B"));
+
+          await wrapper.setProps({ user: { title: "Beetlejuice", img: "/picture.png" } });
+          avatars.forEach((vAvatar) => {
+            expect(vAvatar.props("image")).toBe("/picture.png");
+            expect(vAvatar.props("text")).toBeUndefined();
+          });
+
+          await wrapper.setProps({ user: {} });
+          avatars.forEach((vAvatar) => {
+            expect(vAvatar.props("icon")).toBe(mdiAccountOutline);
+            expect(vAvatar.props("image")).toBeUndefined();
+          });
         });
       });
 
@@ -428,10 +734,17 @@ describe("AppBar", () => {
             vCardOptionGroups.map(async (groupOptions, index) => {
               expect(groupOptions.exists()).toBeTruthy();
 
-              await groupOptions.trigger("click");
+              const header = groupOptions.findComponent(VListItem);
+              expect(header.element.tagName).toBe("BUTTON");
+              expect(header.attributes("role")).toBeUndefined();
+              expect(header.attributes("type")).toBe("button");
+              expect(header.attributes("aria-expanded")).toBe("false");
+
+              await header.trigger("click");
 
               const [groupOption, ...groupItems] = groupOptions.findAllComponents(VListItem);
               expect(groupOption.props("title")).toBe(options[index].description);
+              expect(groupOption.attributes("aria-expanded")).toBe("true");
 
               await validateUserOptions(options[index].items, groupItems);
             }),
@@ -449,26 +762,45 @@ function mountAppBar() {
       style: styleValue,
       class: classValue,
     },
-    global: {
-      stubs: {
-        VAppBar: {
-          props: ["title"],
-          template: `
-            <div v-bind="$props">
-              <slot name="prepend" />
-              <slot />
-              <slot name="append" />
-            </div>
-          `,
-        },
-      },
-      plugins: [vueTestUtilsPluginUimed()],
-    },
+    global: getGlobalMountingOptions(),
   });
+}
+
+function renderAppBar(props: Record<string, unknown>) {
+  return renderToString(AppBar, {
+    props,
+    global: getGlobalMountingOptions(),
+  });
+}
+
+function getGlobalMountingOptions() {
+  return {
+    stubs: {
+      VAppBar: {
+        props: ["title"],
+        template: `
+          <div v-bind="$props">
+            <slot name="prepend" />
+            <slot />
+            <slot name="append" />
+          </div>
+        `,
+      },
+    },
+    plugins: [vueTestUtilsPluginUimed()],
+  };
 }
 
 function findVAppBar(wrapper: ReturnType<typeof mountAppBar>) {
   return wrapper.findComponent(VAppBar);
+}
+
+function findVImg(wrapper: ReturnType<typeof mountAppBar>) {
+  return wrapper.findComponent(VImg);
+}
+
+function findVAppBarTitle(wrapper: ReturnType<typeof mountAppBar>) {
+  return wrapper.findComponent(VAppBarTitle);
 }
 
 function findVAppBarNavIcon(wrapper: ReturnType<typeof mountAppBar>) {
@@ -477,6 +809,16 @@ function findVAppBarNavIcon(wrapper: ReturnType<typeof mountAppBar>) {
 
 function findVBtn(wrapper: ReturnType<typeof mountAppBar>) {
   return wrapper.findComponent(VBtn);
+}
+
+function findActionBtns(wrapper: ReturnType<typeof mountAppBar>) {
+  return wrapper
+    .findAllComponents(VBtn)
+    .filter((vBtn) => !vBtn.attributes("data-testid")?.endsWith("-navigation"));
+}
+
+function findVSkeletonLoader(wrapper: ReturnType<typeof mountAppBar>) {
+  return wrapper.findComponent(VSkeletonLoader);
 }
 
 function findVMenu(wrapper: ReturnType<typeof mountAppBar>) {
@@ -499,10 +841,10 @@ function findVCardNotifications(vCard: ReturnType<typeof findVCard>) {
   return vCard.findAllComponents(VListItem);
 }
 
-function findNotificationDate(
+function findNotificationWhen(
   vCardNotification: ReturnType<typeof findVCardNotifications>[number],
 ) {
-  return vCardNotification.find(".opacity-60");
+  return vCardNotification.find(".text-medium-emphasis");
 }
 
 function findVCardAvatar(vCard: ReturnType<typeof findVCard>) {
@@ -529,6 +871,7 @@ async function validateUserOptions(
       expect(option.props("title")).toBe(options[index].description);
 
       const route = options[index].route;
+      expect(option.attributes("role")).toBe(route ? "link" : "button");
       expect(option.props(isExternalRoute(route) ? "href" : "to")).toBe(route);
       expect(option.props(isExternalRoute(route) ? "to" : "href")).toBeUndefined();
 

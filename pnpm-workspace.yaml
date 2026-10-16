@@ -1,0 +1,17 @@
+overrides:
+  vite@*: npm:@voidzero-dev/vite-plus-core@1.0.0
+  vitest@*: 5.0.1
+# Works around a Vitest 5 mutation-testing regression in @stryker-mutator/vitest-runner@10.0.0:
+# https://github.com/stryker-mutator/stryker-js/issues/6210 (fixed by
+# https://github.com/stryker-mutator/stryker-js/pull/6214, not yet released).
+# Once a @stryker-mutator/vitest-runner release contains that fix, bump the
+# devDependency to it and delete this entry and patches/@stryker-mutator__vitest-runner.patch.
+patchedDependencies:
+  "@stryker-mutator/vitest-runner": patches/@stryker-mutator__vitest-runner.patch
+peerDependencyRules:
+  allowAny:
+    - vite
+    - vitest
+  allowedVersions:
+    vite: "*"
+    vitest: "*"

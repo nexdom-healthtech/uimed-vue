@@ -1,5 +1,5 @@
 import { test, expect, type Page } from "@playwright/test";
-import { gotoPage, selectOption } from "@e2e/utils.ts";
+import { expectNoA11yViolations, gotoPage, selectOption } from "@e2e/utils.ts";
 
 test.describe("text-field", () => {
   test.beforeEach(async ({ page }) => {
@@ -59,9 +59,14 @@ test.describe("text-field", () => {
     test("presents loading when playground-loading is toggled", async ({ page }) => {
       const previewTextField = getPreviewTextField(page);
       await expect(previewTextField.locator(".v-progress-linear--active")).not.toBeAttached();
+      await expect(previewTextField.locator("input")).not.toHaveAttribute("aria-busy");
 
       await page.getByTestId("text-field-playground-loading").locator("input").click();
       await expect(previewTextField.locator(".v-progress-linear--active")).toBeAttached();
+      await expect(previewTextField.locator(".v-progress-linear--active")).toBeVisible();
+      await expect(previewTextField.getByRole("progressbar")).toHaveCount(0);
+      await expect(previewTextField.locator("input")).toHaveAttribute("aria-busy", "true");
+      await expect(previewTextField.locator("input")).toHaveAccessibleName("Label");
     });
 
     test("turns clearable when playground-clearable is toggled", async ({ page }) => {
@@ -101,6 +106,88 @@ test.describe("text-field", () => {
       const demo = page.getByTestId("demo-update-event");
 
       await expect(demo).toMatchAriaSnapshot();
+    });
+  });
+
+  test.describe("password demo", () => {
+    test("shows and hides the password on click, keeping the focus on the field", async ({
+      page,
+    }) => {
+      const passwordTextField = page.getByTestId("text-field-demo-password");
+      const input = passwordTextField.locator("input");
+      const toggle = passwordTextField.getByRole("button", { name: "Mostrar senha" });
+
+      await expect(input).toHaveAttribute("type", "password");
+      await expect(toggle).toHaveAttribute("aria-pressed", "false");
+
+      await input.fill("senha-de-exemplo");
+      await toggle.click();
+
+      await expect(input).toHaveAttribute("type", "text");
+      await expect(input).toHaveValue("senha-de-exemplo");
+      await expect(toggle).toHaveAttribute("aria-pressed", "true");
+      await expect(input).toBeFocused();
+
+      await toggle.click();
+
+      await expect(input).toHaveAttribute("type", "password");
+      await expect(toggle).toHaveAttribute("aria-pressed", "false");
+      await expect(input).toBeFocused();
+    });
+
+    test("reaches the toggle with Tab and toggles it with Space and Enter", async ({ page }) => {
+      const passwordTextField = page.getByTestId("text-field-demo-password");
+      const input = passwordTextField.locator("input");
+      const toggle = passwordTextField.getByRole("button", { name: "Mostrar senha" });
+
+      await input.focus();
+      await page.keyboard.press("Tab");
+      await expect(toggle).toBeFocused();
+
+      await page.keyboard.press("Space");
+      await expect(input).toHaveAttribute("type", "text");
+      await expect(toggle).toHaveAttribute("aria-pressed", "true");
+      await expect(toggle).toBeFocused();
+
+      await page.keyboard.press("Enter");
+      await expect(input).toHaveAttribute("type", "password");
+      await expect(toggle).toHaveAttribute("aria-pressed", "false");
+      await expect(toggle).toBeFocused();
+    });
+
+    test("matches the accessible snapshot of the password demo", async ({ page }) => {
+      const passwordTextField = page.getByTestId("text-field-demo-password");
+
+      await expect(passwordTextField).toMatchAriaSnapshot();
+    });
+  });
+
+  test.describe("search demo", () => {
+    test("skips the search icon with Tab, leaving the field", async ({ page }) => {
+      const searchTextField = page.getByTestId("text-field-demo-search");
+      const input = searchTextField.locator("input");
+      const icon = searchTextField.locator(".v-field__append-inner .v-icon");
+
+      await input.fill("consulta");
+      await expect(icon).toHaveAttribute("aria-hidden", "true");
+      await expect(icon).not.toHaveAttribute("tabindex");
+
+      await page.keyboard.press("Tab");
+
+      await expect(input).not.toBeFocused();
+      await expect(searchTextField.locator(":focus")).toHaveCount(0);
+    });
+
+    test("matches the accessible snapshot of the search demo", async ({ page }) => {
+      const searchTextField = page.getByTestId("text-field-demo-search");
+
+      await expect(searchTextField).toMatchAriaSnapshot();
+    });
+  });
+
+  test.describe("accessibility", () => {
+    test("has no violations", async ({ page }) => {
+      await expectNoA11yViolations(page);
     });
   });
 

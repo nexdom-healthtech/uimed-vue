@@ -1,5 +1,5 @@
 <template>
-  <v-container :data-testid="props.dataTestid" fluid>
+  <v-container :class="heightClass" :data-testid="props.dataTestid" fluid>
     <slot />
   </v-container>
 </template>
@@ -10,9 +10,11 @@
  *
  * @example
  * ```vue
- * <container>
- *   <!-- uimed-components -->
- * </container>
+ * <template>
+ *  <u-container>
+ *     <!-- uimed-components -->
+ *  </u-container>
+ * <template>
  * ```
  *
  * @see {@link https://nexdom-healthtech.github.io/uimed-vue/guide/components/layout | Container Guide}
@@ -25,6 +27,9 @@ export default {
 <script setup lang="ts">
 import { type ContainerProps } from "@/components/grid/container/types.ts";
 import { VContainer } from "vuetify/components";
+import { useFullHeight } from "@/composables/dimensions/dimensions.ts";
 
 const props = defineProps<ContainerProps>();
+
+const heightClass = useFullHeight(() => props.fullHeight);
 </script>

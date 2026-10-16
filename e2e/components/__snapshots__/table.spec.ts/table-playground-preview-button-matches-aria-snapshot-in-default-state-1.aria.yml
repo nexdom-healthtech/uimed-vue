@@ -1,0 +1,15 @@
+- table:
+    - rowgroup:
+        - row "Nome Idade Cidade":
+            - columnheader "Nome"
+            - columnheader "Idade"
+            - columnheader "Cidade"
+    - rowgroup:
+        - row /Ana \d+ São Paulo/:
+            - cell "Ana"
+            - cell /\d+/
+            - cell "São Paulo"
+        - row /Bruno \d+ Rio de Janeiro/:
+            - cell "Bruno"
+            - cell /\d+/
+            - cell "Rio de Janeiro"

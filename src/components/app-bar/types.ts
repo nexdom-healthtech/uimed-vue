@@ -50,14 +50,16 @@ interface AppBarNotification {
   read?: boolean;
 
   /**
-   * Date the notification was generated.
+   * Free text telling when the notification was generated, shown as is (e.g.
+   * `"10:30"`, `"Ontem"` or `"28/09/2026"`). Hidden when omitted or empty.
    */
-  date?: Date;
+  when?: string;
 }
 
 export interface AppBarUserProps {
   /**
-   * Major identifier, like the user full name.
+   * Major identifier, like the user full name. Without an `img`, the
+   * avatar shows its initials (e.g. `"RP"` for `"Rafael Perini"`).
    */
   title?: string;
 
@@ -67,7 +69,8 @@ export interface AppBarUserProps {
   subtitle?: string;
 
   /**
-   * URL leading to a user picture.
+   * URL leading to a user picture. When omitted, the avatar shows the initials
+   * of the `title`, or a generic icon when there's no title either.
    */
   img?: string;
 

@@ -19,13 +19,25 @@ São recursos que permitem a elaboração e reutilização de interface gráfica
 
 Os componentes a seguir possuem exemplos práticos de utilização dentro desta documentação.
 
-| Recurso                                      | Descrição                              |
-| -------------------------------------------- | -------------------------------------- |
-| [Botões](./components/btn)                   | Componente de botão.                   |
-| [Campos de texto](./components/text-field)   | Componente para campo de texto.        |
-| [Componente base](./components/root)         | Componente raiz.                       |
-| [Componentes de layout](./components/layout) | Componentes para seguir o grid system. |
-| [Formulários](./components/frm)              | Componente de formulário.              |
+| Recurso                                                                | Descrição                                              |
+| ---------------------------------------------------------------------- | ------------------------------------------------------ |
+| [Botões](./components/button)                                          | Componente de botão.                                   |
+| [Botões de ícone](./components/icon-button)                            | Componente de botão que exibe apenas um ícone.         |
+| [Campos com máscara](./components/mask-field)                          | Componente para campo de texto com máscara.            |
+| [Campos com preenchimento automático](./components/autocomplete-field) | Componente para autocomplete/combobox.                 |
+| [Caixas de seleção](./components/checkbox)                             | Componente para caixa de seleção.                      |
+| [Campos de data e hora](./components/date-time-field)                  | Componente para campo de data e/ou hora.               |
+| [Campos de texto](./components/text-field)                             | Componente para campo de texto.                        |
+| [Componente base](./components/main)                                   | Componente raiz.                                       |
+| [Componentes de layout](./components/layout)                           | Componentes para seguir o grid system.                 |
+| [Agrupador de Conteúdo](./components/section)                          | Componente para agrupar conteúdo.                      |
+| [Conteúdo Expansível](./components/details)                            | Componente para expandir e recolher conteúdo.          |
+| [Formulários](./components/form)                                       | Componente de formulário.                              |
+| [Imagens](./components/img)                                            | Componente para apresentação de imagens.               |
+| [Janelas modais](./components/dialog)                                  | Componente para apresentar conteúdo em janelas modais. |
+| [Links](./components/link)                                             | Componente para links de texto.                        |
+| [Listagens](./components/data-set)                                     | Componente para listagem de dados.                     |
+| [Tabelas](./components/table)                                          | Componente para apresentação de dados em tabelas.      |
 
 ### Composables
 
@@ -33,7 +45,10 @@ São funções que possibilitam a reutilização de recursos entre diversos comp
 
 As composables a seguir possuem exemplos práticos de utilização dentro desta documentação.
 
-| Recurso                                      | Descrição                                                                          |
-| -------------------------------------------- | ---------------------------------------------------------------------------------- |
-| [Toasts](./composables/use-toast)            | Composables para apresentar mensagens `toast`.                                     |
-| [RunOrToast](./composables/use-run-or-toast) | Composables para executar métodos e apresentar mensagens `toast` em caso de falha. |
+| Recurso                                                    | Descrição                                                                          |
+| ---------------------------------------------------------- | ---------------------------------------------------------------------------------- |
+| [Toasts](./composables/use-toast)                          | Composables para apresentar mensagens `toast`.                                     |
+| [RunOrToast](./composables/use-run-or-toast)               | Composables para executar métodos e apresentar mensagens `toast` em caso de falha. |
+| [Diálogos](./composables/use-dialog)                       | Composables para apresentar diálogos.                                              |
+| [Confirmações](./composables/use-confirm)                  | Composables para executar ações após a confirmação do usuário.                     |
+| [Alterações não salvas](./composables/use-unsaved-changes) | Composables para evitar a perda de alterações não salvas ao sair da página.        |

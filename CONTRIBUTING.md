@@ -1,6 +1,9 @@
 # @nexdom/uimed-vue
 
-After clone this project, **open it inside its devContainer** using [VSCode](https://code.visualstudio.com/download).
+After cloning this project, **open it inside its devContainer** using [VSCode](https://code.visualstudio.com/download).
+
+> [!Tip]
+> On Windows, prefer the "Dev Containers: Clone Repository in Container Volume" command over opening a folder cloned on the host. Host folders mounted into the container are much slower (enough to make mutation tests time out), and clones made with `core.autocrlf=true` before `.gitattributes` was added check files out with CRLF, which fails `vpr check`.
 
 Then, follow the next instructions according to your needs.
 
@@ -47,12 +50,10 @@ vp run check
 
 _This script might require `build` first._
 
-- Run the unit tests:
+- Run the unit tests with coverage (the same command CI runs):
 
 ```bash
-vpr test
-# Or
-vp run test
+vp test --coverage
 ```
 
 - Run mutation tests:
@@ -89,7 +90,7 @@ vp --help
 
 #### Components
 
-Since `@nexdom/uimed-vue` is a frameworks, we shall not expose any trace of its internal implementations.
+Since `@nexdom/uimed-vue` is a framework, we shall not expose any trace of its internal implementations.
 
 To do so, **the following code is recommended for every component**, since it restricts a component use to the exposed API only:
 
@@ -109,6 +110,47 @@ export default {
 </script>
 ```
 
+Every component exported publicly from `src/components/index.ts` **must be re-exported with a `U` prefix** on its identifier, while the component's internal file, folder, and component name stay unprefixed. For example, a component internally named `Button` in `src/components/button/button.vue` should be exported as `export { default as UButton } from ...` from the index file. This convention applies to all future public components.
+
+A prop or option that points to a navigation destination is typed `RouteLocationRaw` (from `vue-router`) and named `route` (e.g. the items of `UNavigationMenu`), unless the name says which destination it is (e.g. `help` in `UAppBar`). Don't split it into `to`/`href` props: convert it with `useRouteProps`/`routeToProps` (`src/composables/navigation/use-route-props.ts`), which binds strings starting with `http` as `href` and anything else as the router's `to`.
+
+#### Shared composables
+
+Some props recur across components, and each of them has an internal composable that maps it to Vuetify. **Reuse these composables instead of mapping the prop again**, so every component behaves the same way:
+
+| Props                     | Composable                      | File                                          |
+| ------------------------- | ------------------------------- | --------------------------------------------- |
+| `fullWidth`, `fullHeight` | `useFullWidth`, `useFullHeight` | `src/composables/dimensions/dimensions.ts`    |
+| `alignX`, `alignY`        | `useAlignX`, `useAlignY`        | `src/composables/alignment/alignment.ts`      |
+| `color`                   | `useVuetifyColor`               | `src/composables/colors/use-vuetify-color.ts` |
+
+For example, a component with a `fullWidth` prop applies the class `useFullWidth` returns:
+
+```vue
+<template>
+  <v-btn :class="widthClass">
+    <slot />
+  </v-btn>
+</template>
+
+<script setup lang="ts">
+import { useFullWidth } from "@/composables/dimensions/dimensions.ts";
+
+const props = defineProps<{ fullWidth?: boolean }>();
+const widthClass = useFullWidth(() => props.fullWidth);
+</script>
+```
+
+A new prop that does the same as one of these takes its name and type (e.g. `AlignX` from `src/composables/alignment/types.ts`). When a second component needs a mapping that only one component has, move it into a shared composable first. These composables are internal: they aren't exported from `src/composables/index.ts`.
+
+#### Icons
+
+Icons are drawn as inline SVGs with the paths of [`@mdi/js`](https://pictogrammers.com/library/mdi/), which exports one constant per icon, so the apps' bundles only take the icons the library uses. There's no icon font, so `mdi-*` classes draw nothing.
+
+Every icon is in the internal `icons` object in `src/consts/icons.ts`, which maps each name to its path, and every name is public: components accept any of them (e.g. `icon="home"`). To add an icon, add it to that map and to the list on the "Ícones" guide page (`docs/guide/icons.md`), in the same order, and check that `@mdi/js` exports it. The unit test of `src/consts/icons.ts` checks every path, and the page's E2E test fails when the page and the map list different icons.
+
+The components use the same map for the icons they draw on their own (e.g. `icons.help` on the app bar's help button). The map is also the set of aliases of Vuetify's components, which draw some icons by name (e.g. `$clear` in clearable fields), so those names match Vuetify's aliases exactly (e.g. `checkboxOn`), and the map only has the aliases the library's components render. When a component starts rendering a new one, add it to the map and add the component's state to `src/consts/__tests__/icon-aliases.test.ts`. A missing alias draws an empty icon, without a warning.
+
 ### Workarounds
 
 - [Instrumenting Vue compiler macro arguments (defineModel/defineOptions/defineProps) produces code the SFC compiler hoists out of the helper's scope](https://github.com/stryker-mutator/stryker-js/issues/6178)
@@ -117,21 +159,32 @@ export default {
 - [oxlint: better vue support](https://github.com/oxc-project/oxc/issues/15761)
   - This issue led us to use `vue-tsc` for `typeCheck`, disabling `vite`'s `typeCheck` config.
   - When the mentioned issue get solved, we should remove `vue-tsc` and enable Vite+ `typeCheck` again.
+- Vuetify's skeleton loader sets its loading announcement as camelCase `ariaLabel`/`ariaLive`. On the client they're set as DOM properties, which the browser reflects as the hyphenated attributes, but the server renderer writes them as the invalid `arialabel`/`arialive` attributes, and hydration doesn't fix them
+  - To fix it, our components use the internal `SkeletonLoader` (`src/components/skeleton-loader/`), which unsets those keys and passes the hyphenated `aria-label`/`aria-live` instead.
+  - When Vuetify sets the hyphenated attributes itself, we should remove `SkeletonLoader` and use Vuetify's skeleton loader again. A failing `SkeletonLoader` unit test after a Vuetify update is the sign: unsetting the camelCase keys would then remove the attributes on the client.
 
 ## Documentation
 
-The success of this projects also depends on the quality of its documentation.
+The success of this project also depends on the quality of its documentation.
 
 To help you dealing with that, we prepared a `docs` folder, which will be used to generate documentation pages based on markdown files (thanks to `Vitepress`).
 
 > [!Tip]
-> Unlike the `src`, `docs` it written in English, but aimed for Brazilian users, mostly, so it's content should be written in Portuguese.
+> Unlike `src`, the `docs` content is written in Portuguese, since it's aimed mostly at Brazilian users. File and folder names stay in English.
 
 But, that's not everything. Since the best documentation is the one you don't have to open, we ask you to use [JSDoc](https://jsdoc.app/about-getting-started) on the methods you intend to expose from the API. That can be easily accomplished by just typing `/**` and `enter` at the row before your `method` or `attribute`.
 
 JSDoc handles markdown pretty well, so you can easily provide rich format documentations, like code examples, right inside your comments.
 
-Tho check how your markdown pages are going, just...
+When adding a new component or composable, remember to update every place that lists them:
+
+- Its guide page, at `docs/guide/components/<name>.md` (or `docs/guide/composables/<name>.md`).
+- Its API page, at `docs/api/components/<name>.md` (or `docs/api/composables/<name>.md`).
+- The sidebars (`/guide/` and `/api/`) at `docs/.vitepress/config.ts`.
+- The guide index table, at `docs/guide/index.md`.
+- The API index list, at `docs/api/index.md`.
+
+To check how your markdown pages are going, just...
 
 - Run docs page:
 
@@ -158,7 +211,7 @@ The majority of new features, bug fixes and minor updates (like documentations o
 
 Short-lived branches, as mentioned before, originate from branch `main`, and will, as soon as possible, go back to `main` through a Pull Request. As soon as the PR is merged, the origin branch must be deleted.
 
-The diagram bellow illustrates that workflow:
+The diagram below illustrates that workflow:
 
 ```mermaid
 gitGraph:
@@ -198,11 +251,11 @@ Here, what you'll do is create a branch `beta`, from `main`, if it's not already
 
 As soon as all changes inside beta are actually production ready, which must not linger, merge `beta` into `main` using a PR.
 
-_Just like any other branch, as soon as the PR from `beta` to `main` is merged, the branch `beta` must be deleted (at least until new a `beta` is needed)._
+_Just like any other branch, as soon as the PR from `beta` to `main` is merged, the branch `beta` must be deleted (at least until a new `beta` is needed)._
 
-_Sometimes merging `beta` straight into `main` won't be possible duo some merge conflicts and the protection rule that prevents pushes (including rebases or merge resolving commits) into `main`, `beta` and `alpha`. To solve it, create an intermediary branch, from `beta`, rebase it with `main` and use it to create your PR. Remember to delete both branches, `beta` and the temporary branch, after merge._
+_Sometimes merging `beta` straight into `main` won't be possible due to some merge conflicts and the protection rule that prevents pushes (including rebases or merge resolving commits) into `main`, `beta` and `alpha`. To solve it, create an intermediary branch, from `beta`, rebase it with `main` and use it to create your PR. Remember to delete both branches, `beta` and the temporary branch, after merge._
 
-The `beta` branch flow should looks something like this:
+The `beta` branch flow should look something like this:
 
 ```mermaid
 gitGraph:
@@ -247,9 +300,9 @@ gitGraph:
 
 Sometimes, when you don't even have enough resources to test something, like when you've just created a new project/library from a template, or started to prototype a new feature, you need `alpha`.
 
-Create `alpha` from `main` and work on it just like you would on `beta`. The moment your changes become stable enough for starting test phase, promote tem to `beta` by creating a new branch `beta` from `main`, if it's not already there, and push `alpha` into `beta`using a Pull Request.
+Create `alpha` from `main` and work on it just like you would on `beta`. The moment your changes become stable enough for starting test phase, promote them to `beta` by creating a new branch `beta` from `main`, if it's not already there, and push `alpha` into `beta` using a Pull Request.
 
-For that moment on, everything should comply according to [When to use `beta`?](#when-to-use-beta) specifications.
+From that moment on, everything should comply according to [When to use `beta`?](#when-to-use-beta) specifications.
 
 The whole flow will look like this:
 
@@ -296,7 +349,7 @@ vpr build
 vp run build
 ```
 
-- Build docs:
+- Build docs (`docs:build` is a task defined in `vite.config.ts`, not a `package.json` script, so it runs with `vpr`/`vp run`, which also builds the library first):
 
 ```bash
 vpr docs:build

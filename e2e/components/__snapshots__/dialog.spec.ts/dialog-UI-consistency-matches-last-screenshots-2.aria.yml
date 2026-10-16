@@ -1,0 +1,7 @@
+- dialog "Editar paciente":
+    - text: ""
+    - textbox "Nome": Maria da Silva
+    - text: Nome
+    - alert
+    - button "Cancelar"
+    - button "Salvar"

@@ -1,0 +1,4 @@
+- alertdialog "Excluir paciente":
+    - text: Excluir paciente Esta ação não pode ser desfeita.
+    - button "Manter"
+    - button "Excluir"

@@ -98,7 +98,9 @@ export default defineConfig({
           items: [
             { text: "O que é UIMed-Vue?", link: "/guide/" },
             { text: "Iniciando", link: "/guide/getting-started" },
+            { text: "Ícones", link: "/guide/icons" },
             { text: "Testes Unitários", link: "/guide/unit-testing" },
+            { text: "Migrando da v1 para v2", link: "/guide/migration-v1-to-v2" },
           ],
         },
         {
@@ -108,20 +110,42 @@ export default defineConfig({
             {
               text: "Conteúdo",
               items: [
-                { text: "Componente base", link: "/guide/components/root" },
+                { text: "Componente base", link: "/guide/components/main" },
                 { text: "Componentes de layout", link: "/guide/components/layout" },
+                { text: "Agrupador de Conteúdo", link: "/guide/components/section" },
+                { text: "Conteúdo Expansível", link: "/guide/components/details" },
+                { text: "Janelas modais", link: "/guide/components/dialog" },
+                { text: "Imagens", link: "/guide/components/img" },
               ],
             },
             {
               text: "Campos e formulários",
               items: [
+                { text: "Caixas de seleção", link: "/guide/components/checkbox" },
+                { text: "Campos com máscara", link: "/guide/components/mask-field" },
+                {
+                  text: "Campos com preenchimento automático",
+                  link: "/guide/components/autocomplete-field",
+                },
+                { text: "Campos de data e hora", link: "/guide/components/date-time-field" },
                 { text: "Campos de texto", link: "/guide/components/text-field" },
-                { text: "Formulários", link: "/guide/components/frm" },
+                { text: "Formulários", link: "/guide/components/form" },
               ],
             },
             {
               text: "Ações",
-              items: [{ text: "Botões", link: "/guide/components/btn" }],
+              items: [
+                { text: "Botões", link: "/guide/components/button" },
+                { text: "Botões de ícone", link: "/guide/components/icon-button" },
+                { text: "Links", link: "/guide/components/link" },
+              ],
+            },
+            {
+              text: "Dados",
+              items: [
+                { text: "Listagem", link: "/guide/components/data-set" },
+                { text: "Tabela", link: "/guide/components/table" },
+              ],
             },
           ],
         },
@@ -134,6 +158,17 @@ export default defineConfig({
               items: [
                 { text: "Toasts", link: "/guide/composables/use-toast" },
                 { text: "Run or toast", link: "/guide/composables/use-run-or-toast" },
+                { text: "Diálogos", link: "/guide/composables/use-dialog" },
+                { text: "Confirmações", link: "/guide/composables/use-confirm" },
+              ],
+            },
+            {
+              text: "Navegação",
+              items: [
+                {
+                  text: "Alterações não salvas",
+                  link: "/guide/composables/use-unsaved-changes",
+                },
               ],
             },
           ],
@@ -144,40 +179,45 @@ export default defineConfig({
           text: "Componentes",
           collapsed: false,
           items: [
+            { text: "UAutocompleteField", link: "/api/components/autocomplete-field" },
+            { text: "UButton", link: "/api/components/button" },
+            { text: "UCheckbox", link: "/api/components/checkbox" },
+            { text: "UDateTimeField", link: "/api/components/date-time-field" },
             {
-              text: "Btn",
-              link: "/api/components/btn",
-            },
-            {
-              text: "Frm",
-              link: "/api/components/frm",
-            },
-            {
-              text: "Grid",
+              text: "Content Area",
               collapsed: false,
               items: [
-                {
-                  text: "Container",
-                  link: "/api/components/grid/container",
-                },
-                {
-                  text: "Row",
-                  link: "/api/components/grid/row",
-                },
-                {
-                  text: "Column",
-                  link: "/api/components/grid/column",
-                },
+                { text: "USection", link: "/api/components/sections/section" },
+                { text: "USectionContent", link: "/api/components/sections/section-content" },
               ],
             },
             {
-              text: "Root",
-              link: "/api/components/root",
+              text: "Data Set",
+              collapsed: false,
+              items: [
+                { text: "UDataSet", link: "/api/components/data-sets/data-set" },
+                { text: "UDataSetItem", link: "/api/components/data-sets/data-set-item" },
+              ],
             },
+            { text: "UDetails", link: "/api/components/details" },
+            { text: "UDialog", link: "/api/components/dialog" },
+            { text: "UForm", link: "/api/components/form" },
             {
-              text: "TextField",
-              link: "/api/components/text-field",
+              text: "UGrid",
+              collapsed: false,
+              items: [
+                { text: "UContainer", link: "/api/components/grid/container" },
+                { text: "URow", link: "/api/components/grid/row" },
+                { text: "UColumn", link: "/api/components/grid/column" },
+              ],
             },
+            { text: "UIconButton", link: "/api/components/icon-button" },
+            { text: "UImg", link: "/api/components/img" },
+            { text: "ULink", link: "/api/components/link" },
+            { text: "UMain", link: "/api/components/main" },
+            { text: "UMaskField", link: "/api/components/mask-field" },
+            { text: "UTable", link: "/api/components/table" },
+            { text: "UTextField", link: "/api/components/text-field" },
           ],
         },
         {
@@ -191,6 +231,18 @@ export default defineConfig({
             {
               text: "useRunOrToast",
               link: "/api/composables/use-run-or-toast",
+            },
+            {
+              text: "useDialog",
+              link: "/api/composables/use-dialog",
+            },
+            {
+              text: "useConfirm",
+              link: "/api/composables/use-confirm",
+            },
+            {
+              text: "useUnsavedChanges",
+              link: "/api/composables/use-unsaved-changes",
             },
           ],
         },

@@ -1,0 +1,266 @@
+import { test, expect, type Locator, type Page } from "@playwright/test";
+import {
+  expectNoA11yViolations,
+  expectOutlinedButton,
+  gotoPage,
+  selectOption,
+  themeTextRgb,
+} from "@e2e/utils.ts";
+
+const actionDuration = 1500;
+const externalUrl = "https://nexdom-healthtech.github.io/shared/";
+
+const colors = ["primary", "secondary", "positive", "informative", "caution", "danger"];
+
+test.describe("button", () => {
+  test.beforeEach(async ({ page }) => {
+    await page.clock.install({ time: new Date() });
+    await gotoPage(page, "guide/components/button");
+  });
+
+  test.describe("playground", () => {
+    test("updates variant when playground-variant changes", async ({ page }) => {
+      const previewButton = getPreviewButton(page);
+      await expect(previewButton).toContainClass("v-btn--variant-elevated");
+
+      await selectOption(page, "btn-playground-variant", "ghost");
+      await expect(previewButton).toContainClass("v-btn--variant-text");
+    });
+
+    test("outlines the secondary variant in the button's color, without a fill", async ({
+      page,
+    }) => {
+      const previewButton = getPreviewButton(page);
+
+      await selectOption(page, "btn-playground-variant", "secondary");
+      await expectOutlinedButton(previewButton, themeTextRgb.primary);
+    });
+
+    test("keeps the secondary variant outlined while disabled", async ({ page }) => {
+      const previewButton = getPreviewButton(page);
+
+      await selectOption(page, "btn-playground-variant", "secondary");
+      await page.getByTestId("btn-playground-disabled").locator("input").click();
+
+      await expect(previewButton).toBeDisabled();
+      await expect(previewButton).toContainClass("v-btn--variant-outlined");
+      await expect(previewButton).toHaveCSS("background-color", "rgba(0, 0, 0, 0)");
+      await expect(previewButton).toHaveCSS("border-top-style", "solid");
+      await expect(previewButton).not.toHaveCSS("border-top-width", "0px");
+    });
+
+    test("updates label text when playground-label changes", async ({ page }) => {
+      const text = "Confirmar";
+      await page.getByTestId("btn-playground-label").locator("input").fill(text);
+
+      const previewButton = getPreviewButton(page);
+      await expect(previewButton).toContainText(text);
+    });
+
+    test("updates color when playground-color changes", async ({ page }) => {
+      const previewButton = getPreviewButton(page);
+      await expect(previewButton).toContainClass("bg-primary");
+
+      await selectOption(page, "btn-playground-color", "danger");
+      await expect(previewButton).toContainClass("bg-error");
+    });
+
+    test("presents loading when playground-loading is toggled", async ({ page }) => {
+      const previewButton = getPreviewButton(page);
+      await expect(previewButton.locator(".v-btn__loader")).not.toBeAttached();
+
+      await page.getByTestId("btn-playground-loading").locator("input").click();
+      await expect(previewButton.locator(".v-btn__loader")).toBeAttached();
+      await expect(previewButton.locator("[role='progressbar']")).toBeVisible();
+      await expect(previewButton).toHaveAttribute("aria-busy", "true");
+      await expect(previewButton).toHaveAccessibleName("Me clique");
+      await expect(previewButton.getByRole("progressbar")).toHaveCount(0);
+    });
+
+    test("fills the preview's width when playground-full-width is toggled", async ({ page }) => {
+      const previewButton = getPreviewButton(page);
+      expect(await getWidthRatio(previewButton)).toBeLessThan(0.5);
+
+      await page.getByTestId("btn-playground-full-width").locator("input").click();
+      await expect.poll(() => getWidthRatio(previewButton)).toBeCloseTo(1, 2);
+    });
+
+    test("disables when playground-disabled is toggled", async ({ page }) => {
+      const previewButton = getPreviewButton(page);
+      await expect(previewButton).toBeEnabled();
+
+      await page.getByTestId("btn-playground-disabled").locator("input").click();
+      await expect(previewButton).toBeDisabled();
+      await expect(previewButton).toMatchAriaSnapshot();
+    });
+
+    test("matches the accessible snapshot of the preview button in its default state", async ({
+      page,
+    }) => {
+      const previewButton = getPreviewButton(page);
+      await expect(previewButton).toMatchAriaSnapshot();
+    });
+  });
+
+  test.describe("events demo", () => {
+    test("increments the click counter", async ({ page }) => {
+      const counterText = page.getByTestId("btn-demo-click-count");
+      const clickButton = page.getByTestId("btn-demo-click");
+
+      await expect(counterText).toContainText("0 clique(s)");
+
+      await clickButton.click();
+      await clickButton.click();
+
+      await expect(counterText).toContainText("2 clique(s)");
+    });
+
+    test("matches the accessible snapshot of the click demo", async ({ page }) => {
+      const demo = page.getByTestId("demo-click-event");
+
+      await expect(demo).toMatchAriaSnapshot();
+    });
+  });
+
+  test.describe("loading demo", () => {
+    test("disables the button and ignores new activations while loading", async ({ page }) => {
+      const counterText = page.getByTestId("btn-demo-loading-count");
+      const loadingButton = page.getByTestId("btn-demo-loading");
+      const loader = loadingButton.locator(".v-btn__loader");
+
+      await expect(counterText).toHaveText("0 salvamento(s)");
+
+      await pauseClock(page);
+      await loadingButton.focus();
+      await page.keyboard.press("Enter");
+
+      await expect(loader).toBeAttached();
+      await expect(loadingButton).toBeDisabled();
+      await expect(loadingButton).not.toBeFocused();
+      await expect(counterText).toHaveText("1 salvamento(s)");
+
+      // The keyboard, unlike the mouse, still activates a focused button that only shows the
+      // loading indicator, so these would count as new saves if the button kept its focus
+      await page.keyboard.press("Enter");
+      await page.keyboard.press("Space");
+      await expect(counterText).toHaveText("1 salvamento(s)");
+
+      await page.clock.fastForward(actionDuration);
+
+      await expect(loader).not.toBeAttached();
+      await expect(loadingButton).toBeEnabled();
+
+      await loadingButton.focus();
+      await page.keyboard.press("Enter");
+      await expect(counterText).toHaveText("2 salvamento(s)");
+    });
+
+    test("matches the accessible snapshot of the loading demo while loading", async ({ page }) => {
+      await pauseClock(page);
+      await page.getByTestId("btn-demo-loading").click();
+
+      const demo = page.getByTestId("demo-loading");
+      await expect(demo).toMatchAriaSnapshot();
+    });
+  });
+
+  test.describe("route demo", () => {
+    test("exposes the button as a link to the URL, in the same tab", async ({ page }) => {
+      const routeButton = getRouteButton(page);
+
+      await expect(routeButton).toHaveAttribute("href", externalUrl);
+      await expect(routeButton).not.toHaveAttribute("target");
+      await expect(routeButton).not.toHaveAttribute("type");
+    });
+
+    test("navigates to the URL through the browser when clicked", async ({ page, context }) => {
+      await mockExternalPage(page);
+
+      await getRouteButton(page).click();
+
+      await expect(page).toHaveURL(externalUrl);
+      await expect(page.getByRole("heading", { name: "Shared" })).toBeVisible();
+      expect(context.pages()).toHaveLength(1);
+    });
+
+    test("navigates to the URL by keyboard", async ({ page }) => {
+      await mockExternalPage(page);
+
+      await getRouteButton(page).focus();
+      await page.keyboard.press("Enter");
+
+      await expect(page).toHaveURL(externalUrl);
+    });
+
+    test("matches the accessible snapshot of the route demo", async ({ page }) => {
+      await expect(page.getByTestId("demo-route")).toMatchAriaSnapshot();
+    });
+  });
+
+  test.describe("accessibility", () => {
+    test("has no violations", async ({ page }) => {
+      await expectNoA11yViolations(page);
+    });
+
+    // Secondary (outlined) and ghost buttons have no fill, so their color is the text's, against
+    // the background
+    for (const [variant, variantClass] of [
+      ["secondary", "v-btn--variant-outlined"],
+      ["ghost", "v-btn--variant-text"],
+    ] as const) {
+      for (const color of colors) {
+        test(`has no violations in the ${variant} variant of the ${color} color`, async ({
+          page,
+        }) => {
+          await selectOption(page, "btn-playground-variant", variant);
+          // Opening the variant's menu scrolls the color field under the docs' header, which would
+          // take the click
+          await page
+            .getByTestId("btn-playground-color")
+            .evaluate((field) => field.scrollIntoView({ block: "center" }));
+          await selectOption(page, "btn-playground-color", color);
+          await expect(getPreviewButton(page)).toContainClass(variantClass);
+
+          await expectNoA11yViolations(page);
+        });
+      }
+    }
+  });
+
+  test.describe("UI consistency", () => {
+    test("matches last screenshot", async ({ page }) => {
+      await expect(page).toHaveScreenshot({ fullPage: true });
+    });
+  });
+});
+
+function getPreviewButton(page: Page) {
+  return page.getByTestId("btn-preview");
+}
+
+function getRouteButton(page: Page) {
+  return page.getByRole("link", { name: "Documentação do Shared", exact: true });
+}
+
+/** Serves the demo's external URL locally, so the tests don't depend on the network. */
+async function mockExternalPage(page: Page) {
+  await page.route(`${externalUrl}**`, (route) =>
+    route.fulfill({ contentType: "text/html", body: "<h1>Shared</h1>" }),
+  );
+}
+
+// How much of its parent's content box (without the padding) the button takes in width
+function getWidthRatio(button: Locator) {
+  return button.evaluate((element) => {
+    const parent = element.parentElement as HTMLElement;
+    const style = getComputedStyle(parent);
+    const available =
+      parent.clientWidth - parseFloat(style.paddingLeft) - parseFloat(style.paddingRight);
+    return element.getBoundingClientRect().width / available;
+  });
+}
+
+/** Keeps the demo actions running until the test fast-forwards the clock. */
+async function pauseClock(page: Page) {
+  await page.clock.pauseAt(new Date(Date.now() + 1000));
+}

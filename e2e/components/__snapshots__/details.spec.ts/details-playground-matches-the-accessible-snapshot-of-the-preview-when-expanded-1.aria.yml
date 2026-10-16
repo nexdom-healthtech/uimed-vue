@@ -1,0 +1,2 @@
+- button "Título do conteúdo expansível" [expanded]
+- text: Teste o componente Details com diferentes combinações de props

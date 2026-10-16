@@ -10,10 +10,15 @@ import { computed } from "vue";
 interface Props {
   col?: boolean;
   contained?: boolean;
+  itemsCenter?: boolean;
 }
 
 const props = defineProps<Props>();
-const classes = computed(() => ({ "demo-col": props.col, "demo-contained": props.contained }));
+const classes = computed(() => ({
+  "demo-col": props.col,
+  "demo-contained": props.contained,
+  "demo-items-center": props.itemsCenter,
+}));
 </script>
 
 <style lang="scss" scoped>
@@ -21,6 +26,26 @@ const classes = computed(() => ({ "demo-col": props.col, "demo-contained": props
   display: flex;
   flex-wrap: wrap;
   gap: 0.5rem;
+  // Apps render the components inside `UMain`, which sets the theme's text color. The demos
+  // don't, so they'd inherit the docs' text color instead
+  color: color-mix(
+    in srgb,
+    rgb(var(--v-theme-on-background)) calc(var(--v-high-emphasis-opacity) * 100%),
+    transparent
+  );
+
+  // The library only has a light theme, so in the docs' dark mode the demos keep the app's
+  // background, or the theme's text would be dark on the docs' dark background
+  .dark & {
+    overflow: hidden;
+    background: rgb(var(--v-theme-background));
+    border-radius: 8px;
+    padding: 1rem;
+  }
+
+  &-items-center {
+    align-items: center;
+  }
 
   &-contained {
     contain: layout;

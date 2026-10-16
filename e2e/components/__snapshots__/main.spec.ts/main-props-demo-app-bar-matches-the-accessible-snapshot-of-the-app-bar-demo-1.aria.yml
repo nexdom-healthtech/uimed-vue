@@ -1,0 +1,6 @@
+- heading "Menu superior" [level=1]
+- link "Ajuda":
+    - /url: https://www.google.com
+- button "Notificações (2 não lidas)":
+    - status "2 não lidas"
+- button "Menu do usuário"

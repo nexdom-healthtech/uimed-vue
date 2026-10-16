@@ -12,7 +12,7 @@ interface ToastOptions {
   color?: FeedbackColorVariant;
 }
 
-function toast(options: ToastOptions): () => void;
+function toast(options: ToastOptions): void;
 
 function useToast(): {
   toast: typeof toast;
@@ -21,20 +21,25 @@ function useToast(): {
 
 ## Detalhes
 
-Retorna uma função (`toast`) para exibir novas mensagens _toast_.
+Retorna uma função (`toast`) para exibir novas mensagens _toast_. As mensagens são apresentadas pelo [`UMain`](../components/main), que precisa estar montado na página.
 
-Se nenhuma cor (`color`) for informada, o toast assume e mensagem como `"informative"`.
+### `ToastOptions`
+
+| Opção     | Tipo                                                         | Padrão          | Descrição                   |
+| --------- | ------------------------------------------------------------ | --------------- | --------------------------- |
+| `message` | `string`                                                     |                 | Texto apresentado no toast. |
+| `color`   | `"positive"` \| `"informative"` \| `"caution"` \| `"danger"` | `"informative"` | Cor do toast.               |
 
 ## Exemplo
 
 ```vue
 <template>
-  <root>
+  <u-main>
     <!-- ... -->
-  </root>
+  </u-main>
 </template>
 <script lang="ts" setup>
-import { Root } from "@nexdom/uimed-vue/components";
+import { UMain } from "@nexdom/uimed-vue/components";
 import { useToast } from "@nexdom/uimed-vue/composables";
 
 const { toast } = useToast();

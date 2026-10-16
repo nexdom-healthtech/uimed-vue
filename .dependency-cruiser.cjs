@@ -100,20 +100,60 @@ module.exports = {
       severity: "error",
       from: {
         path: ["src"],
-        pathNot: ["__tests__"],
+        pathNot: ["src/(plugins|unit-test).ts", "__tests__"],
       },
       to: {
         dependencyTypesNot: ["local", "npm-peer"],
       },
     },
     {
-      name: "components-and-composables",
-      comment: `The root folders from this project must be components or composables only.`,
+      name: "use-peer-deps-or-core",
+      comment: `Since this project is a library, you should prefer to use peer or Node.js core dependencies.`,
       severity: "error",
       from: {
-        pathNot: ["src/(__tests__|index|plugins|unit-test|components|composables)"],
+        path: ["src/(plugins|unit-test).ts"],
+        pathNot: ["__tests__"],
+      },
+      to: {
+        dependencyTypesNot: ["local", "core", "npm-peer"],
+      },
+    },
+    {
+      name: "components-and-composables",
+      comment: `The root folders from this project must be components, composables, consts or utils only.`,
+      severity: "error",
+      from: {
+        pathNot: ["src/(__tests__|index|plugins|unit-test|components|composables|consts|utils)"],
       },
       to: {},
+    },
+    {
+      name: "components-composables-own-folder",
+      comment:
+        "Components and composables must live in their own folder (src/components/<name>/ or " +
+        "src/composables/<name>/), not directly at the components/composables root.",
+      severity: "error",
+      from: {
+        path: "^src/(?:components|composables)/[^/]+[.](?:vue|ts)$",
+        pathNot: "^src/(?:components|composables)/index[.]ts$",
+      },
+      to: {},
+    },
+  ],
+  required: [
+    {
+      name: "composables-use-vue",
+      comment:
+        "Composables (src/composables/<group>/use-*.ts) must depend on vue or vue-router, directly " +
+        "or through other modules. Pure helpers that don't use Vue belong in src/utils/.",
+      severity: "error",
+      module: {
+        path: "^src/composables/[^/]+/use-[^/]+[.]ts$",
+      },
+      to: {
+        path: "(^|/)node_modules/(?:vue|vue-router)/",
+        reachable: true,
+      },
     },
   ],
   options: {

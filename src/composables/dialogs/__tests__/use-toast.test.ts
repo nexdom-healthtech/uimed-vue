@@ -1,10 +1,13 @@
-import { colorToVuetifyColor } from "@/composables/colors/constants.ts";
-import type { FeedbackColorVariant, VuetifyColor } from "@/composables/colors/types.ts";
+import { feedbackColorToVuetifyColor } from "@/composables/colors/constants.ts";
+import type { FeedbackColorVariant, FeedbackVuetifyColor } from "@/composables/colors/types.ts";
 import type { ToastMessage } from "@/composables/dialogs/types.ts";
 import useToast, { messages } from "@/composables/dialogs/use-toast.ts";
+import { icons } from "@/consts/icons.ts";
 
-const { primary: _, secondary: __, ...toastColorToVuetifyColor } = colorToVuetifyColor;
-const colors = Object.entries(toastColorToVuetifyColor) as [FeedbackColorVariant, VuetifyColor][];
+const colors = Object.entries(feedbackColorToVuetifyColor) as [
+  FeedbackColorVariant,
+  FeedbackVuetifyColor,
+][];
 
 describe("useToast", () => {
   const { toast } = useToast();
@@ -30,7 +33,8 @@ describe("useToast", () => {
           const toastMessage: ToastMessage = {
             text: message,
             color: vuetifyColor,
-            prependIcon: `$${vuetifyColor}`,
+            prependIcon: icons[vuetifyColor],
+            timerColor: `rgb(var(--v-theme-on-${vuetifyColor}))`,
           };
 
           toast({ message, color });

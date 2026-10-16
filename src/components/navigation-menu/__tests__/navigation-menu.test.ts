@@ -1,7 +1,15 @@
-import { VNavigationDrawer, VListItem, VListGroup } from "vuetify/components";
+import { mdiAccountOutline, mdiCogOutline, mdiHome, mdiHospitalBuilding } from "@mdi/js";
+import {
+  VNavigationDrawer,
+  VList,
+  VListItem,
+  VListGroup,
+  VSkeletonLoader,
+} from "vuetify/components";
 import NavigationMenu from "@/components/navigation-menu/navigation-menu.vue";
 import TextField from "@/components/inputs/text-field/text-field.vue";
-import { mount } from "@vue/test-utils";
+import { owners } from "@/composables/navigation/use-navigation-search-shortcut.ts";
+import { flushPromises, mount, renderToString } from "@vue/test-utils";
 import { vueTestUtilsPluginUimed } from "@/unit-test.ts";
 import type {
   NavigationMenuItem,
@@ -25,6 +33,10 @@ describe("NavigationMenu", () => {
     expect(vNavigationDrawer.exists()).toBeTruthy();
     expect(vNavigationDrawer.props("temporary")).toBeTruthy();
     expect(vNavigationDrawer.props("absolute")).toBeTruthy();
+  });
+
+  it("should use the primary color", () => {
+    expect(findVNavigationDrawer(wrapper).props("color")).toBe("primary");
   });
 
   it('should inherit "data-testid" attribute', () => {
@@ -54,6 +66,11 @@ describe("NavigationMenu", () => {
       it("should not render any items when items prop is omitted", () => {
         const vListItems = findVListItems(wrapper);
         expect(vListItems).toHaveLength(0);
+      });
+
+      // Vuetify's `list` role only allows list items, but the items are links
+      it("should present the items as a group", () => {
+        expect(wrapper.findComponent(VList).attributes("role")).toBe("group");
       });
 
       it("should render plain items with correct title", async () => {
@@ -107,6 +124,26 @@ describe("NavigationMenu", () => {
         expect(groupActivator.props("title")).toBe(parentItem.description);
       });
 
+      it("should present a group's header as a button that tells whether it's expanded", async () => {
+        await wrapper.setProps({ items: parentItems });
+
+        const header = findVListGroups(wrapper)[0].findComponent(VListItem);
+        expect(header.element.tagName).toBe("BUTTON");
+        expect(header.attributes("role")).toBeUndefined();
+        expect(header.attributes("type")).toBe("button");
+        expect(header.attributes("aria-expanded")).toBe("false");
+
+        await header.trigger("click");
+        expect(header.attributes("aria-expanded")).toBe("true");
+      });
+
+      it("should present items with a route as links and the others as buttons", async () => {
+        await wrapper.setProps({ items });
+
+        const roles = findVListItems(wrapper).map((vListItem) => vListItem.attributes("role"));
+        expect(roles).toEqual(items.map(({ route }) => (route ? "link" : "button")));
+      });
+
       it("should render grouped items' children correctly", async () => {
         await wrapper.setProps({ items: parentItems });
 
@@ -158,6 +195,66 @@ describe("NavigationMenu", () => {
       });
     });
 
+    describe("icon", () => {
+      const homeItem: NavigationMenuItem = { description: "Home", route: "/", icon: "home" };
+      const hospitalItem: NavigationMenuItem = { description: "Units", icon: "hospital" };
+      const iconParentItem: NavigationMenuParentItem = {
+        description: "Settings",
+        icon: "cogAlternative",
+        items: [{ description: "Profile", icon: "accountAlternative" }, parentItemFirstChild],
+      };
+
+      it("should show the icon of a plain item before its description", async () => {
+        await wrapper.setProps({ items: [homeItem, hospitalItem] });
+
+        const [homeListItem, hospitalListItem] = findVListItems(wrapper);
+        expect(homeListItem.props("prependIcon")).toBe(mdiHome);
+        expect(hospitalListItem.props("prependIcon")).toBe(mdiHospitalBuilding);
+      });
+
+      it("should show the icon of a group before its description", async () => {
+        await wrapper.setProps({ items: [iconParentItem] });
+
+        const groupActivator = findVListGroups(wrapper)[0].findComponent(VListItem);
+        expect(groupActivator.props("prependIcon")).toBe(mdiCogOutline);
+      });
+
+      it("should show the icon of an item inside a group before its description", async () => {
+        await wrapper.setProps({ items: [iconParentItem] });
+
+        const [vListGroup] = findVListGroups(wrapper);
+        await vListGroup.trigger("click");
+
+        const [, profileItem, firstChildItem] = vListGroup.findAllComponents(VListItem);
+        expect(profileItem.props("prependIcon")).toBe(mdiAccountOutline);
+        expect(firstChildItem.props("prependIcon")).toBeUndefined();
+      });
+
+      it("should show no icon when the item or group has none", async () => {
+        await wrapper.setProps({ items: [firstItem, parentItem] });
+
+        const [vListGroup] = findVListGroups(wrapper);
+        await vListGroup.trigger("click");
+
+        const vListItems = findVListItems(wrapper);
+        expect(vListItems).toHaveLength(4); // plain item + group activator + 2 children
+        for (const vListItem of vListItems) {
+          expect(vListItem.props("prependIcon")).toBeUndefined();
+        }
+        expect(wrapper.find(".v-list-item__prepend").exists()).toBeFalsy();
+      });
+
+      it("should keep the icon out of the item's accessible name", async () => {
+        await wrapper.setProps({ items: [homeItem] });
+
+        const [vListItem] = findVListItems(wrapper);
+        expect(vListItem.find(".v-list-item__prepend .v-icon").attributes("aria-hidden")).toBe(
+          "true",
+        );
+        expect(vListItem.text()).toBe(homeItem.description);
+      });
+    });
+
     describe("model", () => {
       it("should forward v-model value to navigation drawer", async () => {
         const vNavigationDrawer = findVNavigationDrawer(wrapper);
@@ -186,7 +283,7 @@ describe("NavigationMenu", () => {
               VNavigationDrawer: {
                 props: ["modelValue"],
                 emits: ["update:modelValue"],
-                template: `<div v-bind="$props"><slot /></div>`,
+                template: `<div v-bind="$props"><slot name="prepend" /><slot /></div>`,
               },
             },
             plugins: [vueTestUtilsPluginUimed()],
@@ -195,6 +292,68 @@ describe("NavigationMenu", () => {
 
         const vNavigationDrawer = findVNavigationDrawer(newWrapper);
         expect(vNavigationDrawer.props("modelValue")).toBe(false);
+      });
+    });
+
+    describe("loading", () => {
+      it("should render the items instead of the skeleton loader by default", async () => {
+        await wrapper.setProps({ items });
+
+        const vSkeletonLoader = findVSkeletonLoader(wrapper);
+        expect(vSkeletonLoader.props("loading")).toBe(false);
+        expect(vSkeletonLoader.find(".v-skeleton-loader").exists()).toBeFalsy();
+        expect(findVListItems(wrapper)).toHaveLength(items.length);
+      });
+
+      it("should show list item skeletons in place of the items while loading", async () => {
+        await wrapper.setProps({ items, loading: true });
+
+        const vSkeletonLoader = findVSkeletonLoader(wrapper);
+        expect(vSkeletonLoader.props("loading")).toBe(true);
+        expect(vSkeletonLoader.props("type")).toBe("list-item@6");
+        // Matches the menu's primary background, so the skeleton doesn't draw a light box over it
+        expect(vSkeletonLoader.props("color")).toBe("primary");
+        expect(vSkeletonLoader.findAll(".v-skeleton-loader__list-item")).toHaveLength(6);
+        expect(findVListItems(wrapper)).toHaveLength(0);
+      });
+
+      it("should announce the loading with valid ARIA attributes when rendered on the server", async () => {
+        const html = await renderNavigationMenu({ items, loading: true });
+        expect(html).toContain('aria-label="Carregando..."');
+        expect(html).toContain('aria-live="polite"');
+        expect(html).not.toContain("arialabel");
+        expect(html).not.toContain("arialive");
+      });
+
+      it("should disable the search field only while loading", async () => {
+        expect(findTextField(wrapper).props("disabled")).toBe(false);
+
+        await wrapper.setProps({ loading: true });
+        expect(findTextField(wrapper).props("disabled")).toBe(true);
+      });
+
+      it("should keep the search and show the filtered items when loading ends", async () => {
+        await wrapper.setProps({ items });
+        await findTextField(wrapper).setValue(thirdItem.description);
+
+        await wrapper.setProps({ loading: true });
+        expect(findTextField(wrapper).props("modelValue")).toBe(thirdItem.description);
+
+        await wrapper.setProps({ loading: false });
+
+        const vListItems = findVListItems(wrapper);
+        expect(vListItems).toHaveLength(1);
+        expect(vListItems[0].props("title")).toBe(thirdItem.description);
+      });
+
+      it("should mark the navigation drawer as busy only while loading", async () => {
+        expect(wrapper.attributes("aria-busy")).toBeUndefined();
+
+        await wrapper.setProps({ loading: true });
+        expect(wrapper.attributes("aria-busy")).toBe("true");
+
+        await wrapper.setProps({ loading: false });
+        expect(wrapper.attributes("aria-busy")).toBeUndefined();
       });
     });
 
@@ -207,6 +366,13 @@ describe("NavigationMenu", () => {
       it("should render the search field with correct data-testid", () => {
         const textField = findTextField(wrapper);
         expect(textField.props("dataTestid")).toBe(`${testId}-search`);
+      });
+
+      it("should show the shortcut in the placeholder instead of a label", () => {
+        const textField = findTextField(wrapper);
+        expect(textField.props("placeholder")).toBe("Buscar (Ctrl+K)");
+        expect(textField.props("label")).toBeUndefined();
+        expect(textField.find("input").attributes("aria-label")).toBe("Buscar");
       });
 
       it("should filter plain items by description", async () => {
@@ -303,31 +469,91 @@ describe("NavigationMenu", () => {
       });
     });
   });
+
+  describe("shortcut", () => {
+    let attached: ReturnType<typeof mountNavigationMenu>;
+
+    beforeEach(() => {
+      // Menus mounted by previous tests would answer the shortcut first
+      owners.value = [];
+      attached = mountAttached();
+    });
+
+    afterEach(() => attached.unmount());
+
+    function mountAttached() {
+      return mountNavigationMenu({ attachTo: document.body });
+    }
+
+    async function pressShortcut() {
+      window.dispatchEvent(new KeyboardEvent("keydown", { key: "k", ctrlKey: true }));
+      await flushPromises();
+    }
+
+    it("should open the menu and focus the search with Ctrl+K", async () => {
+      await pressShortcut();
+
+      expect(attached.emitted("update:modelValue")?.[0]).toEqual([true]);
+      expect(document.activeElement).toBe(findTextField(attached).find("input").element);
+    });
+
+    it("should open the menu without focusing the search while loading", async () => {
+      await attached.setProps({ loading: true });
+
+      await pressShortcut();
+
+      expect(attached.emitted("update:modelValue")?.[0]).toEqual([true]);
+      expect(document.activeElement).toBe(document.body);
+    });
+
+    it("should close the menu with Escape", async () => {
+      await attached.setProps({ modelValue: true });
+
+      await findTextField(attached).find("input").trigger("keydown", { key: "Escape" });
+
+      expect(attached.emitted("update:modelValue")?.[0]).toEqual([false]);
+    });
+  });
 });
 
-function mountNavigationMenu() {
+function mountNavigationMenu(options: { attachTo?: HTMLElement } = {}) {
   return mount(NavigationMenu, {
+    ...options,
     attrs: {
       "data-testid": testId,
       style: styleValue,
       class: classValue,
     },
-    global: {
-      stubs: {
-        VNavigationDrawer: {
-          props: { modelValue: String, temporary: Boolean, absolute: Boolean },
-          emits: ["update:modelValue"],
-          template: `
-            <div v-bind="{ 'data-testid': $attrs['data-testid'] }">
+    global: getGlobalMountingOptions(),
+  });
+}
+
+function renderNavigationMenu(props: Record<string, unknown>) {
+  return renderToString(NavigationMenu, {
+    props,
+    global: getGlobalMountingOptions(),
+  });
+}
+
+function getGlobalMountingOptions() {
+  return {
+    stubs: {
+      VNavigationDrawer: {
+        props: { modelValue: String, color: String, temporary: Boolean, absolute: Boolean },
+        emits: ["update:modelValue"],
+        // The inner element stands for the drawer's own, which holds the focus while it's open
+        template: `
+          <div v-bind="{ 'data-testid': $attrs['data-testid'] }">
+            <div class="v-navigation-drawer">
               <slot name="prepend" />
               <slot />
             </div>
-          `,
-        },
+          </div>
+        `,
       },
-      plugins: [vueTestUtilsPluginUimed()],
     },
-  });
+    plugins: [vueTestUtilsPluginUimed()],
+  };
 }
 
 function findVNavigationDrawer(wrapper: ReturnType<typeof mountNavigationMenu>) {
@@ -340,6 +566,10 @@ function findTextField(wrapper: ReturnType<typeof mountNavigationMenu>) {
 
 function findVListItems(wrapper: ReturnType<typeof mountNavigationMenu>) {
   return wrapper.findAllComponents(VListItem);
+}
+
+function findVSkeletonLoader(wrapper: ReturnType<typeof mountNavigationMenu>) {
+  return wrapper.findComponent(VSkeletonLoader);
 }
 
 function findVListGroups(wrapper: ReturnType<typeof mountNavigationMenu>) {

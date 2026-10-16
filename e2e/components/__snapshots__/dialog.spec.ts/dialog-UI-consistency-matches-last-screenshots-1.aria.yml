@@ -1,0 +1,3 @@
+- dialog "Consulta agendada":
+    - text: /Consulta agendada A consulta de Maria da Silva foi agendada para \d+\/\d+, às \d+[hmsp]+, com a Dra\. Ana Souza\./
+    - button "Fechar"

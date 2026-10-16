@@ -1,5 +1,5 @@
 import { vitestServerPluginUimed } from "./src/plugins.ts";
-import path from "path";
+import { resolve } from "node:path";
 import { defineConfig } from "vite-plus";
 import vue from "@vitejs/plugin-vue";
 
@@ -9,6 +9,11 @@ export default defineConfig({
   },
   run: {
     tasks: {
+      check: {
+        command: "vp check && vpx vue-tsc",
+        dependsOn: ["build"],
+        cache: false,
+      },
       docs: {
         command: "vpr docs:dev",
         dependsOn: ["build"],
@@ -35,6 +40,8 @@ export default defineConfig({
       components: "src/components/index.ts",
       composables: "src/composables/index.ts",
     },
+    copy: "src/styles",
+    deps: { neverBundle: [/\.css$/, /^node:/] },
     platform: "neutral",
     plugins: [vue()],
     dts: {
@@ -53,12 +60,13 @@ export default defineConfig({
   fmt: {},
   resolve: {
     alias: {
-      "@": path.resolve(__dirname, "./src"),
-      "@e2e": path.resolve(__dirname, "./e2e"),
+      "@": resolve(import.meta.dirname, "./src"),
+      "@e2e": resolve(import.meta.dirname, "./e2e"),
     },
   },
   plugins: [vue()],
   test: {
+    pool: "vmThreads",
     globals: true,
     clearMocks: true,
     environment: "jsdom",

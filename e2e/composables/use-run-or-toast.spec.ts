@@ -1,4 +1,4 @@
-import { gotoPage } from "@e2e/utils.ts";
+import { expectNoA11yViolations, gotoPage, pauseClock } from "@e2e/utils.ts";
 import { test, expect, type Page } from "@playwright/test";
 
 const testId = "btn-danger";
@@ -24,6 +24,34 @@ test.describe("use-run-or-toast", () => {
       await expect(toasts).toBeVisible();
       await expect(toasts).toContainText(message);
     });
+
+    test("hides the toast timer bar and keeps its message announced", async ({ page }) => {
+      // Holds the toast's timeout, so it doesn't close while the assertions run. It pauses a second
+      // ahead of the page's clock, since pausing at the test runner's time fails when the page's
+      // clock is already past it
+      const now = await page.evaluate(() => Date.now());
+      await page.clock.pauseAt(now + 1000);
+
+      await page.getByTestId(testId).click();
+      await page.clock.runFor(1500);
+
+      const toasts = getOverlayContainer(page);
+      const timerBar = toasts.locator(".v-snackbar__timer [role='progressbar']");
+      await expect(timerBar).toBeVisible();
+      await expect(timerBar).toHaveAttribute("aria-hidden", "true");
+      await expect(toasts.getByRole("progressbar")).toHaveCount(0);
+      await expect(toasts.getByRole("status")).toHaveText(message);
+    });
+  });
+
+  test.describe("accessibility", () => {
+    test("has no violations with the toast open", async ({ page }) => {
+      await page.getByTestId(testId).click();
+      await page.clock.fastForward(1500);
+      await expect(getOverlayContainer(page)).toContainText(message);
+
+      await expectNoA11yViolations(page);
+    });
   });
 
   test.describe("UI consistency", () => {
@@ -31,7 +59,7 @@ test.describe("use-run-or-toast", () => {
       const toastButton = page.getByTestId(testId);
       await toastButton.click();
 
-      await page.clock.pauseAt(new Date());
+      await pauseClock(page);
 
       await expect(toastButton).toMatchAriaSnapshot();
       await expect(page).toHaveScreenshot();

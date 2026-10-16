@@ -1,0 +1,4 @@
+- dialog "Sessão expirando":
+    - text: Sessão expirando Sua sessão irá expirar em breve. Deseja continuar conectado?
+    - button "Sair"
+    - button "Continuar conectado"

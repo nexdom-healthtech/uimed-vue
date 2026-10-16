@@ -1,0 +1,13 @@
+- button "Menu de navegação"
+- heading "Menu superior" [level=1]
+- navigation:
+    - textbox "Buscar":
+        - /placeholder: Buscar (Ctrl+K)
+    - alert
+    - separator
+    - group:
+        - link "Início"
+        - button "Documentação"
+        - button "Configurações"
+- main:
+    - heading "O conteúdo da página vai aqui..." [level=2]

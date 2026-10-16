@@ -1,0 +1,4 @@
+- listbox "Selecione países":
+    - option "Brasil"
+    - option "Portugal"
+    - option "Moçambique"

@@ -28,10 +28,22 @@ const apis = [
     {
         group: "Componentes",
         methods: [
-            { text: "Btn", link: "./components/btn" },
-            { text: "Frm", link: "./components/frm" },
+            { text: "AutocompleteField", link: "./components/autocomplete-field" },
+            { text: "Button", link: "./components/button" },
+            { text: "Checkbox", link: "./components/checkbox" },
+            { text: "Content Area", link: "./components/sections/section" },
+            { text: "Data Set", link: "./components/data-sets/data-set" },
+            { text: "DateTimeField", link: "./components/date-time-field" },
+            { text: "Details", link: "./components/details" },
+            { text: "Dialog", link: "./components/dialog" },
+            { text: "Form", link: "./components/form" },
             { text: "Grid", link: './components/grid/container' },
-            { text: "Root", link: './components/root' },
+            { text: "IconButton", link: "./components/icon-button" },
+            { text: "Img", link: "./components/img" },
+            { text: "Link", link: "./components/link" },
+            { text: "Main", link: './components/main' },
+            { text: "MaskField", link: "./components/mask-field" },
+            { text: "Table", link: "./components/table" },
             { text: "TextField", link: "./components/text-field" }
         ]
     },
@@ -40,6 +52,9 @@ const apis = [
         methods: [
             { text: "useToast", link: "./composables/use-toast" },
             { text: "useRunOrToast", link: "./composables/use-run-or-toast" },
+            { text: "useDialog", link: "./composables/use-dialog" },
+            { text: "useConfirm", link: "./composables/use-confirm" },
+            { text: "useUnsavedChanges", link: "./composables/use-unsaved-changes" },
         ]
     },
 ];

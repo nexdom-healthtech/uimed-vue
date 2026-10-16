@@ -1,5 +1,5 @@
 import useToast from "@/composables/dialogs/use-toast.ts";
-import useRunOrToast from "@/composables/dialogs/use-run-or-toast..ts";
+import useRunOrToast from "@/composables/dialogs/use-run-or-toast.ts";
 
 vi.mock(import("@/composables/dialogs/use-toast.ts"), () => ({
   default: vi.fn().mockReturnValue({ toast: vi.fn() }),

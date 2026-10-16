@@ -1,0 +1,6 @@
+- textbox "Celular":
+    - /placeholder: (00) 00000-0000
+    - text: /\(\d+\) \d+-\d+/
+- text: Celular
+- alert
+- paragraph: "/0 alteração\\(ões\\): \"\\d+\"/"

@@ -41,7 +41,7 @@ Add Vite config:
 
 ```ts
 // vite.config.ts
-import { vitePluginUimed } from "@nexdom/uimed-vue/plugins.ts";
+import { vitePluginUimed } from "@nexdom/uimed-vue/plugins";
 
 /// ...
 
@@ -50,7 +50,7 @@ plugins: [vue(), vitePluginUimed()];
 // ...
 ```
 
-Use Uimed inside the Vue app:
+Use UIMed inside the Vue app:
 
 ```ts
 // main.js or main.ts

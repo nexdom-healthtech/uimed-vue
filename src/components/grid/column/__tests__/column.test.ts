@@ -43,11 +43,38 @@ describe("Column", () => {
         expect(vCol.props("sm")).toBe("8");
       });
     });
+
+    describe("listItem", () => {
+      it("should render a div without list classes by default", () => {
+        const column = mountCol();
+        expect(findVCol(column).props("tag")).toBe("div");
+        expect(column.element.tagName).toBe("DIV");
+        expect(column.classes()).not.toContain("d-block");
+      });
+
+      it("should render a list item without its bullet when true", () => {
+        const column = mountCol({ listItem: true });
+        expect(findVCol(column).props("tag")).toBe("li");
+        expect(column.element.tagName).toBe("LI");
+        expect(column.classes()).toContain("d-block");
+        expect(column.classes()).toEqual(
+          expect.arrayContaining(["v-col", "v-col--cols-12", "v-col--cols-sm-12"]),
+        );
+      });
+
+      it("should go back to a div when false", async () => {
+        const column = mountCol({ listItem: true });
+        await column.setProps({ listItem: false });
+        expect(column.element.tagName).toBe("DIV");
+        expect(column.classes()).not.toContain("d-block");
+      });
+    });
   });
 });
 
-function mountCol() {
+function mountCol(props: Record<string, unknown> = {}) {
   return mount(Column, {
+    props,
     attrs: {
       "data-testid": testId,
       style: styleValue,

@@ -1,4 +1,5 @@
-import { type Page } from "@playwright/test";
+import { AxeBuilder } from "@axe-core/playwright";
+import { expect, type Locator, type Page } from "@playwright/test";
 
 export async function gotoPage(page: Page, url: string) {
   await page.goto(url);
@@ -8,4 +9,117 @@ export async function gotoPage(page: Page, url: string) {
 export async function selectOption(page: Page, testId: string, option: string) {
   await page.getByTestId(testId).locator("input:visible").click({ force: true });
   await page.getByRole("option", { name: option, exact: true }).click();
+}
+
+/**
+ * Pauses the page clock slightly ahead of the page's own time. The page clock can run ahead of the
+ * test runner's, so pausing at the runner's time (e.g. `new Date()`) may fail with "Cannot
+ * fast-forward to the past". Timers due within the margin still run before the pause.
+ */
+export async function pauseClock(page: Page, marginMs = 1000) {
+  const pageNow = await page.evaluate(() => Date.now());
+  await page.clock.pauseAt(new Date(pageNow + marginMs));
+}
+
+/**
+ * Expects `count` skeletons, each announcing the loading with valid ARIA
+ * attributes. The docs demos are rendered on the server and hydration doesn't
+ * touch these attributes, so this checks the served HTML.
+ */
+export async function expectLoadingAnnouncement(skeletons: Locator, count: number) {
+  await expect(skeletons).toHaveCount(count);
+
+  for (const skeleton of await skeletons.all()) {
+    await expect(skeleton).toHaveAttribute("aria-label", "Carregando...");
+    await expect(skeleton).toHaveAttribute("aria-live", "polite");
+    await expect(skeleton).not.toHaveAttribute("arialabel");
+    await expect(skeleton).not.toHaveAttribute("arialive");
+  }
+}
+
+/**
+ * Waits for the page's animations to finish, except the ones that never end (e.g. loading
+ * indicators). Vuetify animates overlays with both CSS transitions and the Web Animations API.
+ */
+async function waitForAnimations(page: Page) {
+  await page.evaluate(() =>
+    Promise.all(
+      document
+        .getAnimations()
+        .filter((animation) => animation.effect?.getTiming().iterations !== Infinity)
+        .map((animation) => animation.finished.catch(() => undefined)),
+    ),
+  );
+}
+
+/**
+ * Checks the page's demos and overlays (e.g. toasts and dialogs, which render outside the demos)
+ * against WCAG 2.2 AA and axe's best practices, failing on any violation. The docs' own content is
+ * left out, since it isn't part of the library.
+ *
+ * The check runs in both of the docs' color schemes, since the demos sit on the docs' background,
+ * which turns dark in dark mode while the components keep their light theme.
+ */
+export async function expectNoA11yViolations(page: Page) {
+  for (const colorScheme of ["light", "dark"] as const) {
+    await page.emulateMedia({ colorScheme });
+    // The docs follow the system's color scheme, switching the `dark` class on `html`
+    const html = expect(page.locator("html"));
+    await (colorScheme === "dark" ? html : html.not).toHaveClass(/\bdark\b/);
+    await expectNoA11yViolationsInColorScheme(page, colorScheme);
+  }
+
+  await page.emulateMedia({ colorScheme: "light" });
+}
+
+async function expectNoA11yViolationsInColorScheme(page: Page, colorScheme: "light" | "dark") {
+  // Elements still fading in or out would be measured with partial contrast
+  await waitForAnimations(page);
+
+  // Axe can't tell the background of text covered by another element, and skips its contrast. So
+  // it'd skip every button and field, whose text sits under Vuetify's decorative layers: the
+  // overlay and underlay that tint them on hover, focus and press, and the fields' outline. During
+  // the check, the tints are hidden and the outline goes behind the field, since it holds the
+  // field's label, which hiding would take from the field's accessible name
+  const decorativeLayers = await page.addStyleTag({
+    content: `
+      [class$="__overlay"], [class*="__overlay "], [class$="__underlay"], [class*="__underlay "] {
+        display: none !important;
+      }
+      .v-field__outline { z-index: -1 !important; }
+    `,
+  });
+
+  const { violations } = await new AxeBuilder({ page })
+    .include(".demo")
+    .include(".playground")
+    .include(".v-overlay-container")
+    .withTags(["wcag2a", "wcag2aa", "wcag21a", "wcag21aa", "wcag22aa", "best-practice"])
+    // The docs show several demos per page, inside their own `main` landmark, so these rules fail
+    // on the page's layout: e.g. each `UMain` demo adds a `main` inside the docs' one, and each
+    // `UDataSet` demo adds a pagination landmark with the same name
+    .disableRules(["landmark-main-is-top-level", "landmark-no-duplicate-main", "landmark-unique"])
+    .analyze();
+
+  await decorativeLayers.evaluate((element) => element.parentNode?.removeChild(element));
+
+  expect(violations, `violations in the ${colorScheme} color scheme`).toEqual([]);
+}
+
+/**
+ * Text shades of the theme colors set by `createUimed()` (`src/index.ts`), as computed styles
+ * report them. Buttons without a fill (secondary and ghost) take them as their color.
+ */
+export const themeTextRgb = {
+  primary: "rgb(0, 122, 74)",
+  danger: "rgb(201, 42, 30)",
+} as const;
+
+/** Expects a button outlined by a solid border in `borderColor`, without a fill. */
+export async function expectOutlinedButton(button: Locator, borderColor: string) {
+  await expect(button).toContainClass("v-btn--variant-outlined");
+  await expect(button).toHaveCSS("background-color", "rgba(0, 0, 0, 0)");
+  await expect(button).toHaveCSS("border-top-style", "solid");
+  await expect(button).not.toHaveCSS("border-top-width", "0px");
+  await expect(button).toHaveCSS("border-top-color", borderColor);
 }

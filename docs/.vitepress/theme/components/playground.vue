@@ -4,49 +4,84 @@
       <slot />
     </div>
     <div class="playground-controls">
-      <template v-for="[index, action] in Object.entries(actions)">
-        <row v-if="action.type === 'button'">
-          <column>
-            <btn :data-testid="action.dataTestid" @click="action.action">{{ action.label }}</btn>
-          </column>
-        </row>
-        <text-field
-          v-else
-          :model-value="action.value"
+      <template v-for="[index, action] in Object.entries(actions)" :key="index">
+        <u-row v-if="action.type === 'button'">
+          <u-column>
+            <u-button :data-testid="action.dataTestid" @click="action.action">{{
+              action.label
+            }}</u-button>
+          </u-column>
+        </u-row>
+        <u-checkbox
+          v-else-if="action.type === 'checkbox'"
+          v-model="action.value"
           :label="action.label"
           :data-testid="action.dataTestid"
-          @update:model-value="updateActions(index, $event)"
+        />
+        <u-autocomplete-field
+          v-else-if="action.type === 'combobox'"
+          v-model="action.value"
+          :label="action.label"
+          :items="action.items"
+          :data-testid="action.dataTestid"
+          strict
+        />
+        <u-text-field
+          v-else
+          v-model="action.value"
+          :label="action.label"
+          :data-testid="action.dataTestid"
         />
       </template>
-      <slot name="actions" />
     </div>
   </div>
 </template>
 
 <script lang="ts" setup>
-import { TextField, Btn, Row, Column } from "../../../../dist/components.js";
+import {
+  UTextField,
+  UButton,
+  URow,
+  UColumn,
+  UCheckbox,
+  UAutocompleteField,
+} from "../../../../dist/components.js";
 
-interface Input {
-  type: "text";
-  value: string;
-  label: string;
+interface BaseAction {
   dataTestid: string;
 }
 
-interface Button {
+interface BaseInputAction extends BaseAction {
+  label: string;
+}
+
+interface Input extends BaseInputAction {
+  type: "text";
+  value: string;
+}
+
+interface Combobox extends BaseInputAction {
+  type: "combobox";
+  value: string;
+  items: (string | { label: string; value: string })[];
+}
+
+interface Checkbox extends BaseInputAction {
+  type: "checkbox";
+  value: boolean;
+}
+
+interface Button extends BaseAction {
   type: "button";
   label: string;
-  dataTestid: string;
   action: () => void;
 }
 
-const actions = defineModel<Record<string, Input | Button>>("actions", { default: () => ({}) });
+type Action = Input | Combobox | Button | Checkbox;
 
-function updateActions(index: keyof typeof actions.value, newValue: string) {
-  const action = actions.value[index];
-  const newAction = { ...action, value: newValue };
-  actions.value = { ...actions.value, [index]: newAction };
-}
+const actions = defineModel<Record<string, Action>>("actions", {
+  default: () => ({}),
+});
 </script>
 
 <style lang="scss" scoped>
@@ -54,6 +89,21 @@ function updateActions(index: keyof typeof actions.value, newValue: string) {
   display: flex;
   flex-wrap: wrap;
   gap: 1rem;
+  // Apps render the components inside `UMain`, which sets the theme's text color. The demos
+  // don't, so they'd inherit the docs' text color instead
+  color: color-mix(
+    in srgb,
+    rgb(var(--v-theme-on-background)) calc(var(--v-high-emphasis-opacity) * 100%),
+    transparent
+  );
+
+  // The library only has a light theme, so in the docs' dark mode the demos keep the app's
+  // background, or the theme's text would be dark on the docs' dark background
+  .dark & {
+    background: rgb(var(--v-theme-background));
+    border-radius: 8px;
+    padding: 1rem;
+  }
 
   &-preview {
     flex: 1;

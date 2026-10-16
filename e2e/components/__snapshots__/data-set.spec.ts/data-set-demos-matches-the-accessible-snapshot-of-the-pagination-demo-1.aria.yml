@@ -1,0 +1,19 @@
+- list:
+    - listitem: /Ana Souza Cardiologia Consulta em \d+\/\d+\/\d+/
+    - listitem: /Bruno Lima Dermatologia Consulta em \d+\/\d+\/\d+/
+    - listitem: /Carla Dias Pediatria Consulta em \d+\/\d+\/\d+/
+    - listitem: /Daniel Rocha Ortopedia Consulta em \d+\/\d+\/\d+/
+    - listitem: /Eduarda Alves Cardiologia Consulta em \d+\/\d+\/\d+/
+    - listitem: /Felipe Costa Neurologia Consulta em \d+\/\d+\/\d+/
+- navigation "Navegação de paginação":
+    - list:
+        - listitem:
+            - button "Página anterior" [disabled]
+        - listitem:
+            - button "Página atual, página 1"
+        - listitem:
+            - button "Ir à página 2"
+        - listitem:
+            - button "Ir à página 3"
+        - listitem:
+            - button "Próxima página"

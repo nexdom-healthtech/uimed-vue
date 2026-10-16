@@ -1,0 +1,19 @@
+- text: Pesquisar
+- textbox "Pesquisar"
+- alert
+- list:
+    - listitem: Ana Souza Plano Ouro
+    - listitem: Bruno Lima Plano Prata
+    - listitem: Carla Dias Plano Bronze
+- navigation "Navegação de paginação":
+    - list:
+        - listitem:
+            - button "Página anterior" [disabled]
+        - listitem:
+            - button "Página atual, página 1"
+        - listitem:
+            - button "Ir à página 2"
+        - listitem:
+            - button "Ir à página 3"
+        - listitem:
+            - button "Próxima página"
