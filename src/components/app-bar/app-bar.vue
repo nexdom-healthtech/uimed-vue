@@ -99,11 +99,25 @@
             </v-btn>
           </template>
 
-          <v-card :title="user?.title" :subtitle="user?.subtitle" :data-testid="userMenuDataTestid">
-            <template #prepend>
-              <!-- Decorative: the user's name, when given, is already the card's title -->
-              <v-avatar v-bind="userAvatarProps" color="primary" aria-hidden="true" />
-            </template>
+          <v-card :data-testid="userMenuDataTestid">
+            <!-- The card's header puts the avatar beside the title, and no prop stacks or centers
+            them: the avatar and the user's info get an item each, centered by a class, as USection
+            and UFooter center their text. The options below stay aligned to the start -->
+            <v-card-item class="text-center">
+              <!-- Decorative: the user's name, when given, is already the title below -->
+              <v-avatar
+                v-bind="userAvatarProps"
+                size="x-large"
+                color="primary"
+                aria-hidden="true"
+              />
+            </v-card-item>
+            <v-card-item
+              v-if="hasUserInfo"
+              :title="user?.title"
+              :subtitle="user?.subtitle"
+              class="text-center"
+            />
 
             <v-divider />
 
@@ -116,7 +130,10 @@
                 <template v-if="isParentOption(option)">
                   <v-list-group>
                     <!-- Vuetify makes the group's header a list item, but it's a button that expands
-                    the group: rendered as one, without Vuetify's role, so the native role applies -->
+                    the group: rendered as one, without Vuetify's role, so the native role applies.
+                    A native button only takes its content's width and centers its text, so
+                    `w-100` and `text-start` make it as wide as the other options and aligned with
+                    them -->
                     <template #activator="{ props, isOpen }">
                       <v-list-item
                         v-bind="props"
@@ -125,6 +142,7 @@
                         :role="undefined"
                         tag="button"
                         type="button"
+                        class="w-100 text-start"
                       />
                     </template>
 
@@ -176,6 +194,7 @@ import {
   VBtn,
   VMenu,
   VCard,
+  VCardItem,
   VCardText,
   VAvatar,
   VBadge,
@@ -241,6 +260,8 @@ const userAvatarProps = computed(() => {
   if (userInitials.value) return { text: userInitials.value };
   return { icon: icons.accountAlternative };
 });
+// Without a name or a subtitle, the menu shows only the avatar, without an empty line below it
+const hasUserInfo = computed(() => !!props.user!.title || !!props.user!.subtitle);
 
 function isParentOption(option: ParentOptionOrOption): option is ParentOption {
   return "items" in option;

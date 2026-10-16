@@ -7,6 +7,7 @@ import {
   VBadge,
   VBtn,
   VCard,
+  VCardItem,
   VIcon,
   VImg,
   VListGroup,
@@ -574,6 +575,81 @@ describe("AppBar", () => {
           expect(vCardAvatar.props("icon")).toBeUndefined();
           expect(vCardAvatar.props("image")).toBeUndefined();
         });
+
+        it("should center the avatar at the top of the menu", async () => {
+          await wrapper.setProps({ user });
+          await findVBtn(wrapper).trigger("click");
+
+          const [avatarItem] = findVCardItems(findVCard(wrapper));
+          expect(avatarItem.findComponent(VAvatar).exists()).toBeTruthy();
+          expect(avatarItem.classes()).toContain("text-center");
+          expect(avatarItem.props("title")).toBeUndefined();
+          expect(avatarItem.props("subtitle")).toBeUndefined();
+        });
+
+        it("should present the title and subtitle centered below the avatar", async () => {
+          await wrapper.setProps({ user });
+          await findVBtn(wrapper).trigger("click");
+
+          const vCard = findVCard(wrapper);
+          const vCardItems = findVCardItems(vCard);
+          expect(vCardItems).toHaveLength(2);
+
+          const [avatarItem, infoItem] = vCardItems;
+          expect(infoItem.props("title")).toBe(user.title);
+          expect(infoItem.props("subtitle")).toBe(user.subtitle);
+          expect(infoItem.classes()).toContain("text-center");
+          expect(infoItem.findComponent(VAvatar).exists()).toBeFalsy();
+          expect(isBefore(avatarItem, infoItem)).toBeTruthy();
+          expect(isBefore(infoItem, vCard.findComponent(VList))).toBeTruthy();
+        });
+
+        it("should not pass the user info to the card itself", async () => {
+          await wrapper.setProps({ user });
+          await findVBtn(wrapper).trigger("click");
+
+          const vCard = findVCard(wrapper);
+          expect(vCard.props("title")).toBeUndefined();
+          expect(vCard.props("subtitle")).toBeUndefined();
+        });
+
+        it("should keep the options aligned to the start", async () => {
+          await wrapper.setProps({ user: { ...user, options: [{ description: "Sair" }] } });
+          await findVBtn(wrapper).trigger("click");
+
+          const vCard = findVCard(wrapper);
+          expect(vCard.classes()).not.toContain("text-center");
+          expect(vCard.findComponent(VList).classes()).not.toContain("text-center");
+          expect(findVCardOptions(vCard)[0].classes()).not.toContain("text-center");
+        });
+
+        it.each([
+          ["no title nor subtitle", {}],
+          ["only a picture", { img: "/picture.png" }],
+        ])("should show only the avatar with %s", async (_, userProps: AppBarUserProps) => {
+          await wrapper.setProps({ user: userProps });
+          await findVBtn(wrapper).trigger("click");
+
+          const vCardItems = findVCardItems(findVCard(wrapper));
+          expect(vCardItems).toHaveLength(1);
+          expect(vCardItems[0].findComponent(VAvatar).exists()).toBeTruthy();
+        });
+
+        it.each([
+          ["only a title", { title: "Beetlejuice" }],
+          ["only a subtitle", { subtitle: "beetle3x@gmail.com" }],
+        ])(
+          "should show the user info below the avatar with %s",
+          async (_, userProps: AppBarUserProps) => {
+            await wrapper.setProps({ user: userProps });
+            await findVBtn(wrapper).trigger("click");
+
+            const vCardItems = findVCardItems(findVCard(wrapper));
+            expect(vCardItems).toHaveLength(2);
+            expect(vCardItems[1].props("title")).toBe(userProps.title);
+            expect(vCardItems[1].props("subtitle")).toBe(userProps.subtitle);
+          },
+        );
       });
 
       describe("avatar", () => {
@@ -641,6 +717,13 @@ describe("AppBar", () => {
             expect(findVBtn(wrapper).attributes("aria-label")).toBe("Menu do usuário");
           },
         );
+
+        it("should make the avatar bigger in the menu than in the button", async () => {
+          const [buttonAvatar, menuAvatar] = await findAvatars({ title: "Rafael Perini" });
+
+          expect(buttonAvatar.props("size")).toBe("default");
+          expect(menuAvatar.props("size")).toBe("x-large");
+        });
 
         it("should follow changes to the user", async () => {
           let avatars = await findAvatars({ title: "Rafael Perini" });
@@ -739,6 +822,9 @@ describe("AppBar", () => {
               expect(header.attributes("role")).toBeUndefined();
               expect(header.attributes("type")).toBe("button");
               expect(header.attributes("aria-expanded")).toBe("false");
+              // A native button only takes its content's width and centers its text, unlike the
+              // other options
+              expect(header.classes()).toEqual(expect.arrayContaining(["w-100", "text-start"]));
 
               await header.trigger("click");
 
@@ -849,6 +935,16 @@ function findNotificationWhen(
 
 function findVCardAvatar(vCard: ReturnType<typeof findVCard>) {
   return vCard.findComponent(VAvatar);
+}
+
+function findVCardItems(vCard: ReturnType<typeof findVCard>) {
+  return vCard.findAllComponents(VCardItem);
+}
+
+function isBefore(first: { element: Node }, second: { element: Node }) {
+  return !!(
+    first.element.compareDocumentPosition(second.element) & Node.DOCUMENT_POSITION_FOLLOWING
+  );
 }
 
 function findVCardOptionGroups(vCard: ReturnType<typeof findVCard>) {
