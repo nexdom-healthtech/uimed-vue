@@ -119,6 +119,33 @@ test.describe("section", () => {
       await expect(previewArea.getByRole("alert", { name: "Carregando..." })).toBeVisible();
     });
 
+    for (const withActions of [true, false]) {
+      test(`keeps the skeleton's bones at its top${withActions ? " and bottom" : ""} when loading with full height ${withActions ? "and" : "but no"} actions`, async ({
+        page,
+      }) => {
+        const props = ["fullHeight", "fullWidth", "loading"];
+        if (!withActions) props.push("actions");
+        for (const prop of props) {
+          await page.getByTestId(`content-set-playground-${prop}`).locator("input").click();
+        }
+
+        const skeleton = page.locator(".playground-preview .v-skeleton-loader");
+        const bones = skeleton.locator("> .v-skeleton-loader__bone");
+        await expect(bones).toHaveCount(withActions ? 2 : 1);
+        await expect.poll(() => getFillRatio(skeleton, "height")).toBeCloseTo(1, 2);
+
+        const skeletonBox = await getBox(skeleton);
+        const firstBoneBox = await getBox(bones.first());
+        expect(Math.abs(firstBoneBox.y - skeletonBox.y)).toBeLessThanOrEqual(1);
+        if (withActions) {
+          const lastBoneBox = await getBox(bones.last());
+          expect(
+            Math.abs(lastBoneBox.y + lastBoneBox.height - (skeletonBox.y + skeletonBox.height)),
+          ).toBeLessThanOrEqual(1);
+        }
+      });
+    }
+
     test("hides actions when playground-action is toggled", async ({ page }) => {
       const previewCard = getPreviewCard(page);
       await expect(previewCard.locator(".v-card-actions")).toBeAttached();

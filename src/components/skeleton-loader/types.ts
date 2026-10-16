@@ -24,7 +24,9 @@ export type SkeletonLoaderProps = {
   fullWidth?: boolean;
 
   /**
-   * Makes the skeleton occupy 100% of its parent's height.
+   * Makes the skeleton occupy 100% of its parent's height. Its first row of
+   * bones stays at the top and the last one at the bottom; with a single row,
+   * it stays at the top.
    */
   fullHeight?: boolean;
 
