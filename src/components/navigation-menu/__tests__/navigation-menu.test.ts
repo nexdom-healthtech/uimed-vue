@@ -132,6 +132,9 @@ describe("NavigationMenu", () => {
         expect(header.attributes("role")).toBeUndefined();
         expect(header.attributes("type")).toBe("button");
         expect(header.attributes("aria-expanded")).toBe("false");
+        // A native button only takes its content's width and centers its text, unlike the other
+        // items
+        expect(header.classes()).toEqual(expect.arrayContaining(["w-100", "text-start"]));
 
         await header.trigger("click");
         expect(header.attributes("aria-expanded")).toBe("true");
