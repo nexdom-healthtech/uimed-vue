@@ -57,11 +57,11 @@ test.describe("icons", () => {
       await expect(getCount(page)).toHaveText("1 ícone");
 
       await getSearch(page).fill("Clipboard");
-      await expect(getNames(page)).toHaveText(["clipboard-text", "clipboard-text-alternative"]);
+      await expect(getNames(page)).toHaveText(["clipboardText", "clipboardTextAlternative"]);
       await expect(getCount(page)).toHaveText("2 ícones");
 
       await getSearch(page).fill("flásk");
-      await expect(getNames(page)).toHaveText(["flask", "flask-alternative"]);
+      await expect(getNames(page)).toHaveText(["flask", "flaskAlternative"]);
     });
 
     test("ignores spaces around the search", async ({ page }) => {
@@ -94,12 +94,12 @@ test.describe("icons", () => {
       test.use({ permissions: ["clipboard-read", "clipboard-write"] });
 
       test("copies the name of the clicked icon and confirms it", async ({ page }) => {
-        await getCopyButton(page, "home-alternative").click();
+        await getCopyButton(page, "homeAlternative").click();
 
         await expect
           .poll(() => page.evaluate(() => navigator.clipboard.readText()))
-          .toBe("home-alternative");
-        await expect(getToast(page, "success")).toHaveText(/Nome "home-alternative" copiado\./);
+          .toBe("homeAlternative");
+        await expect(getToast(page, "success")).toHaveText(/Nome "homeAlternative" copiado\./);
       });
 
       test("copies by keyboard", async ({ page }) => {

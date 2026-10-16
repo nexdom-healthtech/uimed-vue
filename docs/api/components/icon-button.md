@@ -24,7 +24,7 @@ Não há slots.
 
 ```vue
 <template>
-  <u-icon-button icon="file-document" label="Abrir guia" color="secondary" @click="onClick" />
+  <u-icon-button icon="fileDocument" label="Abrir guia" color="secondary" @click="onClick" />
 </template>
 
 <script lang="ts" setup>

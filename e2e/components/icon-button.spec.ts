@@ -21,7 +21,7 @@ test.describe("icon-button", () => {
       }
       await expect(buttons.nth(2).locator(".v-icon path")).toHaveAttribute(
         "d",
-        icons["cog-alternative"],
+        icons.cogAlternative,
       );
       await expect(buttons.nth(2).locator(".v-icon")).toHaveAttribute("aria-hidden", "true");
     });

@@ -5,7 +5,7 @@ import * as mdiIcons from "@mdi/js";
 const mdiIconPaths = Object.entries(mdiIcons);
 const mdiPaths = Object.values(mdiIcons);
 const mappedIcons = Object.entries(icons);
-const alternativeSuffix = "-alternative";
+const alternativeSuffix = "Alternative";
 // Names that share a drawing with another one, since the underlying components draw both by alias
 const sharedDrawings = [
   ["clear", "error"],

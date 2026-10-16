@@ -56,7 +56,7 @@ import {
  * alias missing here draws an empty icon. The unit tests of `src/consts/icons.ts` check each
  * component that renders one.
  *
- * - The first names describe the icon's drawing. A name ending in `-alternative` is an alternative
+ * - The first names describe the icon's drawing. A name ending in `Alternative` is an alternative
  *   version of the same drawing (currently, outlined).
  * - The others describe what the components use the icon for.
  *
@@ -64,27 +64,27 @@ import {
  */
 export const icons = {
   home: mdiHome,
-  "home-alternative": mdiHomeOutline,
+  homeAlternative: mdiHomeOutline,
   account: mdiAccount,
-  "account-alternative": mdiAccountOutline,
-  "account-group": mdiAccountGroup,
-  "account-group-alternative": mdiAccountGroupOutline,
+  accountAlternative: mdiAccountOutline,
+  accountGroup: mdiAccountGroup,
+  accountGroupAlternative: mdiAccountGroupOutline,
   calendar: mdiCalendar,
-  "calendar-alternative": mdiCalendarOutline,
-  "clipboard-text": mdiClipboardText,
-  "clipboard-text-alternative": mdiClipboardTextOutline,
-  "file-document": mdiFileDocument,
-  "file-document-alternative": mdiFileDocumentOutline,
+  calendarAlternative: mdiCalendarOutline,
+  clipboardText: mdiClipboardText,
+  clipboardTextAlternative: mdiClipboardTextOutline,
+  fileDocument: mdiFileDocument,
+  fileDocumentAlternative: mdiFileDocumentOutline,
   flask: mdiFlask,
-  "flask-alternative": mdiFlaskOutline,
+  flaskAlternative: mdiFlaskOutline,
   folder: mdiFolder,
-  "folder-alternative": mdiFolderOutline,
-  "chart-box": mdiChartBox,
-  "chart-box-alternative": mdiChartBoxOutline,
+  folderAlternative: mdiFolderOutline,
+  chartBox: mdiChartBox,
+  chartBoxAlternative: mdiChartBoxOutline,
   wallet: mdiWallet,
-  "wallet-alternative": mdiWalletOutline,
+  walletAlternative: mdiWalletOutline,
   cog: mdiCog,
-  "cog-alternative": mdiCogOutline,
+  cogAlternative: mdiCogOutline,
   stethoscope: mdiStethoscope,
   pill: mdiPill,
   hospital: mdiHospitalBuilding,
@@ -93,8 +93,8 @@ export const icons = {
   notifications: mdiBellOutline,
   menu: mdiMenu,
   search: mdiMagnify,
-  "show-password": mdiEye,
-  "hide-password": mdiEyeOff,
+  showPassword: mdiEye,
+  hidePassword: mdiEyeOff,
   close: mdiClose,
   // Same drawing as `error`: both are aliases of the underlying components
   clear: mdiCloseCircle,

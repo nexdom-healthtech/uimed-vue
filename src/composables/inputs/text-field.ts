@@ -104,7 +104,7 @@ export function useTextFieldAppendIcon(
     if (!isPasswordField.value) return undefined;
 
     return {
-      icon: isPasswordVisible.value ? icons["hide-password"] : icons["show-password"],
+      icon: isPasswordVisible.value ? icons.hidePassword : icons.showPassword,
       "aria-label": "Mostrar senha",
       "aria-pressed": isPasswordVisible.value,
       onClick: toggle,

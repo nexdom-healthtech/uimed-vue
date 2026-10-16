@@ -57,11 +57,11 @@ Utilize ícones em todos os itens de um mesmo nível do menu, ou em nenhum deles
 
 ## Ícones disponíveis
 
-A lista começa pelos ícones de conteúdo, como `home` e `calendar`, cujos nomes descrevem o desenho do ícone, e não onde ele deve ser usado. Quase todos eles têm uma versão alternativa do mesmo desenho (atualmente, contornada), com o sufixo `-alternative` no nome. Prefira usar a mesma versão (a original ou a alternativa) em todos os itens do menu.
+A lista começa pelos ícones de conteúdo, como `home` e `calendar`, cujos nomes descrevem o desenho do ícone, e não onde ele deve ser usado. Quase todos eles têm uma versão alternativa do mesmo desenho (atualmente, contornada), com o sufixo `Alternative` no nome. Prefira usar a mesma versão (a original ou a alternativa) em todos os itens do menu.
 
 Em seguida vêm os ícones que os próprios componentes exibem, cujos nomes descrevem a função com que os componentes os usam:
 
-- Ações, como `help`, `search`, `show-password` e `close`.
+- Ações, como `help`, `search`, `showPassword` e `close`.
 - Expansão de menus e grupos, como `dropdown`, `expand` e `collapse`, e navegação entre páginas, com `prev` e `next`.
 - Marcações da caixa de seleção: `checkboxOn` e `checkboxOff`.
 - Retorno ao usuário, nas cores das mensagens: `success`, `info`, `warning` e `error`.
@@ -77,7 +77,7 @@ Busque um ícone pelo nome, sem diferenciar maiúsculas, minúsculas ou acentos,
 <u-row v-if="filteredIcons.length" list data-testid="icons-list">
 <u-column v-for="icon in filteredIcons" :key="icon" cols="3" list-item>
 <u-icon-button :label="`Copiar o nome ${icon}`" :icon @click="copy(icon)" />
-<div><code>{{ icon }}</code></div>
+<div><code><template v-for="(word, index) in getWords(icon)" :key="index"><wbr v-if="index" />{{ word }}</template></code></div>
 </u-column>
 </u-row>
 </u-main>
@@ -99,27 +99,27 @@ Consulte o [botão de ícone](./components/icon-button) e o [Componente base](./
   // (`src/consts/icons.ts`). An icon added to the map must also be added here
   const icons: Array<Icon> = [
     "home",
-    "home-alternative",
+    "homeAlternative",
     "account",
-    "account-alternative",
-    "account-group",
-    "account-group-alternative",
+    "accountAlternative",
+    "accountGroup",
+    "accountGroupAlternative",
     "calendar",
-    "calendar-alternative",
-    "clipboard-text",
-    "clipboard-text-alternative",
-    "file-document",
-    "file-document-alternative",
+    "calendarAlternative",
+    "clipboardText",
+    "clipboardTextAlternative",
+    "fileDocument",
+    "fileDocumentAlternative",
     "flask",
-    "flask-alternative",
+    "flaskAlternative",
     "folder",
-    "folder-alternative",
-    "chart-box",
-    "chart-box-alternative",
+    "folderAlternative",
+    "chartBox",
+    "chartBoxAlternative",
     "wallet",
-    "wallet-alternative",
+    "walletAlternative",
     "cog",
-    "cog-alternative",
+    "cogAlternative",
     "stethoscope",
     "pill",
     "hospital",
@@ -127,8 +127,8 @@ Consulte o [botão de ícone](./components/icon-button) e o [Componente base](./
     "notifications",
     "menu",
     "search",
-    "show-password",
-    "hide-password",
+    "showPassword",
+    "hidePassword",
     "close",
     "clear",
     "dropdown",
@@ -153,6 +153,11 @@ Consulte o [botão de ícone](./components/icon-button) e o [Componente base](./
     const query = normalize(search.value.trim())
     return icons.filter((icon) => normalize(icon).includes(query))
   })
+
+  // Words of a camelCase name, so that a long name breaks between them instead of overflowing
+  function getWords(icon: Icon) {
+    return icon.split(/(?=[A-Z])/)
+  }
 
   const countText = computed(() => {
     const count = filteredIcons.value.length

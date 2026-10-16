@@ -51,7 +51,7 @@ describe("IconButton", () => {
       it("should follow changes of the icon", async () => {
         const wrapper = mountIconButton({ icon: "home" });
 
-        await wrapper.setProps({ icon: "home-alternative" });
+        await wrapper.setProps({ icon: "homeAlternative" });
 
         expect(findVIcon(wrapper).find("path").attributes("d")).toBe(mdiHomeOutline);
       });
