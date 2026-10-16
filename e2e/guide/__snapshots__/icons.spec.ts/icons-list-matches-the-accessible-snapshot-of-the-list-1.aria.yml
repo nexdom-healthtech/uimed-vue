@@ -3,68 +3,68 @@
         - button "Copiar o nome home"
         - code: home
     - listitem:
-        - button "Copiar o nome home-alternative"
-        - code: home-alternative
+        - button "Copiar o nome homeAlternative"
+        - code: homeAlternative
     - listitem:
         - button "Copiar o nome account"
         - code: account
     - listitem:
-        - button "Copiar o nome account-alternative"
-        - code: account-alternative
+        - button "Copiar o nome accountAlternative"
+        - code: accountAlternative
     - listitem:
-        - button "Copiar o nome account-group"
-        - code: account-group
+        - button "Copiar o nome accountGroup"
+        - code: accountGroup
     - listitem:
-        - button "Copiar o nome account-group-alternative"
-        - code: account-group-alternative
+        - button "Copiar o nome accountGroupAlternative"
+        - code: accountGroupAlternative
     - listitem:
         - button "Copiar o nome calendar"
         - code: calendar
     - listitem:
-        - button "Copiar o nome calendar-alternative"
-        - code: calendar-alternative
+        - button "Copiar o nome calendarAlternative"
+        - code: calendarAlternative
     - listitem:
-        - button "Copiar o nome clipboard-text"
-        - code: clipboard-text
+        - button "Copiar o nome clipboardText"
+        - code: clipboardText
     - listitem:
-        - button "Copiar o nome clipboard-text-alternative"
-        - code: clipboard-text-alternative
+        - button "Copiar o nome clipboardTextAlternative"
+        - code: clipboardTextAlternative
     - listitem:
-        - button "Copiar o nome file-document"
-        - code: file-document
+        - button "Copiar o nome fileDocument"
+        - code: fileDocument
     - listitem:
-        - button "Copiar o nome file-document-alternative"
-        - code: file-document-alternative
+        - button "Copiar o nome fileDocumentAlternative"
+        - code: fileDocumentAlternative
     - listitem:
         - button "Copiar o nome flask"
         - code: flask
     - listitem:
-        - button "Copiar o nome flask-alternative"
-        - code: flask-alternative
+        - button "Copiar o nome flaskAlternative"
+        - code: flaskAlternative
     - listitem:
         - button "Copiar o nome folder"
         - code: folder
     - listitem:
-        - button "Copiar o nome folder-alternative"
-        - code: folder-alternative
+        - button "Copiar o nome folderAlternative"
+        - code: folderAlternative
     - listitem:
-        - button "Copiar o nome chart-box"
-        - code: chart-box
+        - button "Copiar o nome chartBox"
+        - code: chartBox
     - listitem:
-        - button "Copiar o nome chart-box-alternative"
-        - code: chart-box-alternative
+        - button "Copiar o nome chartBoxAlternative"
+        - code: chartBoxAlternative
     - listitem:
         - button "Copiar o nome wallet"
         - code: wallet
     - listitem:
-        - button "Copiar o nome wallet-alternative"
-        - code: wallet-alternative
+        - button "Copiar o nome walletAlternative"
+        - code: walletAlternative
     - listitem:
         - button "Copiar o nome cog"
         - code: cog
     - listitem:
-        - button "Copiar o nome cog-alternative"
-        - code: cog-alternative
+        - button "Copiar o nome cogAlternative"
+        - code: cogAlternative
     - listitem:
         - button "Copiar o nome stethoscope"
         - code: stethoscope

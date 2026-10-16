@@ -239,7 +239,7 @@ const userInitials = computed(() => toInitials(props.user!.title ?? ""));
 const userAvatarProps = computed(() => {
   if (props.user!.img) return { image: props.user!.img };
   if (userInitials.value) return { text: userInitials.value };
-  return { icon: icons["account-alternative"] };
+  return { icon: icons.accountAlternative };
 });
 
 function isParentOption(option: ParentOptionOrOption): option is ParentOption {

@@ -19,14 +19,14 @@ A prop `icon`, obrigatória, recebe o nome de um dos ícones listados em [Ícone
 <demo data-testid="demo-icon">
 <u-icon-button icon="home" label="Início" />
 <u-icon-button icon="calendar" label="Agenda" />
-<u-icon-button icon="cog-alternative" label="Configurações" />
+<u-icon-button icon="cogAlternative" label="Configurações" />
 </demo>
 
 ```vue
 <template>
   <u-icon-button icon="home" label="Início" />
   <u-icon-button icon="calendar" label="Agenda" />
-  <u-icon-button icon="cog-alternative" label="Configurações" />
+  <u-icon-button icon="cogAlternative" label="Configurações" />
 </template>
 
 <script lang="ts" setup>
@@ -42,7 +42,7 @@ A prop `color` aceita um dos valores da paleta do componente: `primary`, `second
 <u-icon-button icon="account" label="Perfil" color="primary" />
 <u-icon-button icon="cog" label="Configurações" color="secondary" />
 <u-icon-button icon="calendar" label="Agenda" color="positive" />
-<u-icon-button icon="file-document" label="Documentos" color="informative" />
+<u-icon-button icon="fileDocument" label="Documentos" color="informative" />
 <u-icon-button icon="folder" label="Cadastros" color="caution" />
 <u-icon-button icon="wallet" label="Financeiro" color="danger" />
 </demo>
@@ -52,7 +52,7 @@ A prop `color` aceita um dos valores da paleta do componente: `primary`, `second
   <u-icon-button icon="account" label="Perfil" color="primary" />
   <u-icon-button icon="cog" label="Configurações" color="secondary" />
   <u-icon-button icon="calendar" label="Agenda" color="positive" />
-  <u-icon-button icon="file-document" label="Documentos" color="informative" />
+  <u-icon-button icon="fileDocument" label="Documentos" color="informative" />
   <u-icon-button icon="folder" label="Cadastros" color="caution" />
   <u-icon-button icon="wallet" label="Financeiro" color="danger" />
 </template>
@@ -69,13 +69,13 @@ import { UIconButton } from "@nexdom/uimed-vue/components";
 O evento `click` é emitido ao clicar no botão, repassando o `MouseEvent` nativo.
 
 <demo data-testid="demo-click-event" items-center>
-<u-icon-button icon="account-group" label="Adicionar paciente" data-testid="icon-btn-demo-click" @click="onClick" />
+<u-icon-button icon="accountGroup" label="Adicionar paciente" data-testid="icon-btn-demo-click" @click="onClick" />
 <span data-testid="icon-btn-demo-click-count">{{ clicks }} paciente(s)</span>
 </demo>
 
 ```vue
 <template>
-  <u-icon-button icon="account-group" label="Adicionar paciente" @click="onClick" />
+  <u-icon-button icon="accountGroup" label="Adicionar paciente" @click="onClick" />
   <span>{{ clicks }} paciente(s)</span>
 </template>
 
@@ -115,7 +115,7 @@ Consulte a referência de [API do UIconButton](../../api/components/icon-button)
   }
 
   type Props = ComponentProps<typeof UIconButton>
-  const playgroundIconOptions: Array<Props["icon"]> = ["home", "home-alternative", "calendar", "account-group", "cog", "hospital"]
+  const playgroundIconOptions: Array<Props["icon"]> = ["home", "homeAlternative", "calendar", "accountGroup", "cog", "hospital"]
   const playgroundColorOptions: Array<Props["color"]> = ["primary", "secondary", "positive", "informative", "caution", "danger"]
 
   const playgroundActions = ref({
