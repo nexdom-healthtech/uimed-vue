@@ -1,8 +1,8 @@
 import { gotoPage } from "@e2e/utils.ts";
 import { icons } from "@/consts/icons.ts";
-import { test, expect, type Locator, type Page } from "@playwright/test";
+import { test, expect, type Page } from "@playwright/test";
 
-// The names and classes of the library's map of icons, whose names the page lists in its own copy
+// The names and SVG paths of the library's map of icons, whose names the page lists in its own copy
 const mappedIcons = Object.entries(icons);
 const names = mappedIcons.map(([name]) => name);
 
@@ -28,20 +28,20 @@ test.describe("icons", () => {
       await expect(getCount(page)).toHaveAttribute("aria-live", "polite");
     });
 
-    test("draws each icon with the icon font, hidden from screen readers", async ({ page }) => {
-      await page.evaluate(() => document.fonts.ready);
+    test("draws each icon as an SVG with its path, hidden from screen readers", async ({
+      page,
+    }) => {
       const items = await getItems(page).all();
       expect(items).toHaveLength(names.length);
 
       for (const [index, item] of items.entries()) {
         const icon = item.locator(".v-icon");
+        const svg = icon.locator("svg");
 
-        await expect(icon).toContainClass(mappedIcons[index][1]);
         await expect(icon).toHaveAttribute("aria-hidden", "true");
-        expect(await getGlyph(icon)).toEqual({
-          content: expect.not.stringMatching(/^(none|normal|"")$/),
-          fontFamily: expect.stringContaining("Material Design Icons"),
-        });
+        await expect(svg).toBeVisible();
+        await expect(svg).toHaveAttribute("aria-hidden", "true");
+        await expect(svg.locator("path")).toHaveAttribute("d", mappedIcons[index][1]);
       }
     });
 
@@ -183,15 +183,4 @@ function getCopyButton(page: Page, icon: string) {
 /** The toast of the given color, which also holds its close button */
 function getToast(page: Page, color: "success" | "error") {
   return page.locator(`.v-overlay-container .v-snackbar__wrapper.bg-${color}`);
-}
-
-/**
- * The glyph the icon font draws for the icon: its class sets the `::before` content, which is
- * missing when the class isn't in the icon font's stylesheet
- */
-function getGlyph(icon: Locator) {
-  return icon.evaluate((element) => {
-    const { content, fontFamily } = getComputedStyle(element, "::before");
-    return { content, fontFamily };
-  });
 }

@@ -26,7 +26,7 @@ importers:
       '@commitlint/config-conventional':
         specifier: ^21.2.0
         version: 21.2.2
-      '@mdi/font':
+      '@mdi/js':
         specifier: ^7.4.47
         version: 7.4.47
       '@nexdom/shared':
@@ -663,8 +663,8 @@ packages:
   '@jridgewell/trace-mapping@0.3.31':
     resolution: {integrity: sha512-zzNR+SdQSDJzc8joaeP8QQoCQr8NuYx2dIIytl1QeBEZHJ9uW6hebsrYgbz8hJwUQao3TWCMtmfV8Nu1twOLAw==}
 
-  '@mdi/font@7.4.47':
-    resolution: {integrity: sha512-43MtGpd585SNzHZPcYowu/84Vz2a2g31TvPMTm9uTiCSWzaheQySUcSyUH/46fPnuPQWof2yd0pGBtzee/IQWw==}
+  '@mdi/js@7.4.47':
+    resolution: {integrity: sha512-KPnNOtm5i2pMabqZxpUz7iQf+mfrYZyKCZ8QNz85czgEt7cuHcGorWfdzUMWYA0SD+a6Hn4FmJ+YhzzzjkTZrQ==}
 
   '@nexdom/shared@2.3.0':
     resolution: {integrity: sha512-Fb4aX1L3mXmL0yBd4kx+JXNO3TL/Kr5TNHcp+K4gI5zo0/W1EdZCbapbNhdcZHAczdBgZUsgBkBoK65wdOv2pA==}
@@ -4438,7 +4438,7 @@ snapshots:
       '@jridgewell/resolve-uri': 3.1.2
       '@jridgewell/sourcemap-codec': 1.6.0
 
-  '@mdi/font@7.4.47': {}
+  '@mdi/js@7.4.47': {}
 
   '@nexdom/shared@2.3.0(type-fest@5.9.0)':
     dependencies:

@@ -145,7 +145,11 @@ A new prop that does the same as one of these takes its name and type (e.g. `Ali
 
 #### Icons
 
-Components accept icons by name (e.g. `icon="home"`), and the internal `icons` object in `src/consts/icons.ts` maps each name to its icon font class. To add an icon, add it to that map and to the list on the "Ícones" guide page (`docs/guide/icons.md`), and check that its class exists in the installed icon font. The unit test of `src/consts/icons.ts` checks every class, and the page's E2E test fails when the page and the map list different icons.
+Icons are drawn as inline SVGs with the paths of [`@mdi/js`](https://pictogrammers.com/library/mdi/), which exports one constant per icon, so the apps' bundles only take the icons the library uses. There's no icon font, so `mdi-*` classes draw nothing.
+
+Every icon is in the internal `icons` object in `src/consts/icons.ts`, which maps each name to its path, and every name is public: components accept any of them (e.g. `icon="home"`). To add an icon, add it to that map and to the list on the "Ícones" guide page (`docs/guide/icons.md`), in the same order, and check that `@mdi/js` exports it. The unit test of `src/consts/icons.ts` checks every path, and the page's E2E test fails when the page and the map list different icons.
+
+The components use the same map for the icons they draw on their own (e.g. `icons.help` on the app bar's help button). The map is also the set of aliases of Vuetify's components, which draw some icons by name (e.g. `$clear` in clearable fields), so those names match Vuetify's aliases exactly (e.g. `checkboxOn`), and the map only has the aliases the library's components render. When a component starts rendering a new one, add it to the map and add the component's state to `src/consts/__tests__/icon-aliases.test.ts`. A missing alias draws an empty icon, without a warning.
 
 ### Workarounds
 

@@ -22,11 +22,11 @@ pnpm add @nexdom/uimed-vue
 yarn add @nexdom/uimed-vue
 ```
 
-Peer dependencies (`@mdi/font`, `@nexdom/shared`, `resize-observer-polyfill`, `sass-embedded`, `vite-plus`, `vue`, `vue-component-type-helpers`, `vue-router`, `vuetify`) must be installed alongside it — most package managers install these automatically, but confirm versions match what's declared in `package.json`'s `peerDependencies`.
+Peer dependencies (`@mdi/js`, `@nexdom/shared`, `resize-observer-polyfill`, `sass-embedded`, `vite-plus`, `vue`, `vue-component-type-helpers`, `vue-router`, `vuetify`) must be installed alongside it — most package managers install these automatically, but confirm versions match what's declared in `package.json`'s `peerDependencies`.
 
 ### Setup
 
-Add the Vite plugin, which compiles the components' styles with the library's font and Sass settings, and loads the icon font with `font-display`, so it doesn't block rendering while it loads. Without it, components lose the Unimed Slab font:
+Add the Vite plugin, which compiles the components' styles with the library's font and Sass settings. Without it, components lose the Unimed Slab font:
 
 ```ts
 // vite.config.ts
@@ -206,7 +206,10 @@ Use an existing composable (e.g. `use-toast`) as the reference, and deliver in t
 - Component layout: `src/components/<name>/<name>.vue`, `types.ts` for prop/option types, `__tests__/<name>.test.ts` for unit tests. Components that belong to a group live in the group's folder (e.g. the internal `src/components/dialogs/toast.vue`).
 - Composables live in a group folder: `src/composables/<group>/<name>.ts`, with `types.ts` and `__tests__/` in the group folder (e.g. `src/composables/dialogs/use-toast.ts`). A composable (`use-*.ts`) must depend on `vue` or `vue-router`, directly or through other modules (enforced by dependency-cruiser's `composables-use-vue` rule).
 - Library-wide configuration constants that aren't components or composables live in `src/consts/<name>.ts` (e.g. `src/consts/locale.ts`, the language set by `createUimed()` and `vueTestUtilsPluginUimed()`), with their types in `src/consts/types.ts`.
-- Components accept icons by name (the `Icon` type in `src/consts/types.ts`), mapped to icon font classes by the internal `icons` object in `src/consts/icons.ts`. To add an icon, add it to that map and to the list on the "Ícones" guide page (`docs/guide/icons.md`), and check that its class exists in the installed icon font: the unit test of `src/consts/icons.ts` checks every class, and the page's E2E spec fails when the page and the map list different icons.
+- Icons are drawn as inline SVGs with the paths of `@mdi/js`, imported one by one so the apps' bundles only take the icons used: there's no icon font, so never use `mdi-*` classes. Every icon is in the internal `icons` map of `src/consts/icons.ts`, and every name in it is public (the `Icon` type in `src/consts/types.ts`):
+  - To add an icon, add it to that map and to the list on the "Ícones" guide page (`docs/guide/icons.md`), in the same order, and check that `@mdi/js` exports it: the unit test of `src/consts/icons.ts` checks every path, and the page's E2E spec fails when the page and the map list different icons. Names are kebab-case, except where they must match a Vuetify alias (`checkboxOn`/`checkboxOff`). Reuse an existing name before adding one with the same drawing.
+  - Components use the map for their own icons too (`icons.help`, `icons.close`), never `$` aliases nor `mdi-*` strings.
+  - The map is also Vuetify's alias set (`createUimed()` and `vueTestUtilsPluginUimed()` pass it as `aliases`), since Vuetify's components draw some icons by alias on their own (e.g. `$clear` in clearable fields, `$prev`/`$next` in the pagination). It only has the aliases the library's components render, so a component that renders a new one (a new Vuetify component or prop) needs it added to the map, named exactly as the alias; without it, the icon is drawn empty, without a warning. Add each state that renders an alias to `src/consts/__tests__/icon-aliases.test.ts`, which fails on icons drawn without a path of `@mdi/js`.
 - Pure helpers that don't use Vue live in `src/utils/<name>.ts`, with tests in `src/utils/__tests__/`. Generic helpers that any TypeScript project could use (e.g. `isDeepEqual`) belong in `@nexdom/shared` instead.
 - Public components/composables are re-exported from `src/components/index.ts` and `src/composables/index.ts`. Prop types stay internal (`types.ts` is not re-exported); consumers derive them with `ComponentProps` (see [Usage](#usage)).
 - Every publicly exported component must use the `U` prefix on its export identifier (e.g., `UButton`, `UMain`), while internal file names and component names remain unprefixed.

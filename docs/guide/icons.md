@@ -6,6 +6,8 @@ outline: deep
 
 Os componentes que aceitam um ícone, como o [botão de ícone](./components/icon-button) e os itens e grupos do [menu de navegação](./components/main#menu-de-navegacao), recebem o nome de um dos ícones listados nesta página na propriedade `icon`.
 
+Os ícones são desenhados como imagens vetoriais (SVG) na própria página, sem carregar uma fonte de ícones. Por isso, classes de fontes de ícones (como `mdi-home`) não exibem ícones: use os nomes desta página.
+
 ## Uso
 
 Informe o nome do ícone em `icon`. No [botão de ícone](./components/icon-button), o ícone é todo o conteúdo do botão, e a propriedade `label` define o nome que os leitores de tela anunciam no lugar dele:
@@ -55,9 +57,16 @@ Utilize ícones em todos os itens de um mesmo nível do menu, ou em nenhum deles
 
 ## Ícones disponíveis
 
-Os nomes descrevem o desenho do ícone, e não onde ele deve ser usado.
+A lista começa pelos ícones de conteúdo, como `home` e `calendar`, cujos nomes descrevem o desenho do ícone, e não onde ele deve ser usado. Quase todos eles têm uma versão alternativa do mesmo desenho (atualmente, contornada), com o sufixo `-alternative` no nome. Prefira usar a mesma versão (a original ou a alternativa) em todos os itens do menu.
 
-Quase todos os ícones têm uma versão alternativa do mesmo desenho (atualmente, contornada), com o sufixo `-alternative` no nome. Prefira usar a mesma versão (a original ou a alternativa) em todos os itens do menu.
+Em seguida vêm os ícones que os próprios componentes exibem, cujos nomes descrevem a função com que os componentes os usam:
+
+- Ações, como `help`, `search`, `show-password` e `close`.
+- Expansão de menus e grupos, como `dropdown`, `expand` e `collapse`, e navegação entre páginas, com `prev` e `next`.
+- Marcações da caixa de seleção: `checkboxOn` e `checkboxOff`.
+- Retorno ao usuário, nas cores das mensagens: `success`, `info`, `warning` e `error`.
+
+Use-os com a mesma função, para que o significado de cada ícone seja o mesmo em toda a aplicação.
 
 Busque um ícone pelo nome, sem diferenciar maiúsculas, minúsculas ou acentos, e clique no ícone para copiar o seu nome.
 
@@ -114,6 +123,26 @@ Consulte o [botão de ícone](./components/icon-button) e o [Componente base](./
     "stethoscope",
     "pill",
     "hospital",
+    "help",
+    "notifications",
+    "menu",
+    "search",
+    "show-password",
+    "hide-password",
+    "close",
+    "clear",
+    "dropdown",
+    "subgroup",
+    "expand",
+    "collapse",
+    "prev",
+    "next",
+    "checkboxOn",
+    "checkboxOff",
+    "success",
+    "info",
+    "warning",
+    "error",
   ]
 
   const { toast } = useToast()

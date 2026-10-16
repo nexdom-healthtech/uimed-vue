@@ -1,4 +1,5 @@
 import type { TextFieldType } from "@/components/inputs/text-field/types.ts";
+import { mdiEye, mdiEyeOff, mdiMagnify } from "@mdi/js";
 import { useTextFieldAppendIcon, useTextFieldType } from "@/composables/inputs/text-field.ts";
 import { nextTick, ref } from "vue";
 
@@ -40,7 +41,7 @@ describe("text-field", () => {
 
     it("should render only a decorative magnifier for search", () => {
       expect(useTextFieldAppendIcon("search", false).iconProps.value).toEqual({
-        icon: "mdi-magnify",
+        icon: mdiMagnify,
       });
     });
 
@@ -49,7 +50,7 @@ describe("text-field", () => {
 
       expect(isPasswordVisible.value).toBe(false);
       expect(iconProps.value).toEqual({
-        icon: "mdi-eye",
+        icon: mdiEye,
         "aria-label": "Mostrar senha",
         "aria-pressed": false,
         onClick: expect.any(Function),
@@ -62,12 +63,12 @@ describe("text-field", () => {
 
       iconProps.value?.onClick?.();
       expect(isPasswordVisible.value).toBe(true);
-      expect(iconProps.value?.icon).toBe("mdi-eye-off");
+      expect(iconProps.value?.icon).toBe(mdiEyeOff);
       expect(iconProps.value?.["aria-pressed"]).toBe(true);
 
       iconProps.value?.onClick?.();
       expect(isPasswordVisible.value).toBe(false);
-      expect(iconProps.value?.icon).toBe("mdi-eye");
+      expect(iconProps.value?.icon).toBe(mdiEye);
       expect(iconProps.value?.["aria-pressed"]).toBe(false);
     });
 

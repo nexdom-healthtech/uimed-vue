@@ -1,11 +1,12 @@
 import type {
   ColorVariant,
   FeedbackColorVariant,
+  FeedbackVuetifyColor,
   VuetifyColor,
   VuetifyTextColor,
 } from "@/composables/colors/types.ts";
 
-export const feedbackColorToVuetifyColor: Record<FeedbackColorVariant, VuetifyColor> = {
+export const feedbackColorToVuetifyColor: Record<FeedbackColorVariant, FeedbackVuetifyColor> = {
   positive: "success",
   informative: "info",
   caution: "warning",

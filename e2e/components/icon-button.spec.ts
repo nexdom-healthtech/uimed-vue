@@ -19,7 +19,10 @@ test.describe("icon-button", () => {
         await expect(buttons.nth(index)).toHaveAccessibleName(name);
         await expect(buttons.nth(index)).toHaveAttribute("type", "button");
       }
-      await expect(buttons.nth(2).locator(".v-icon")).toContainClass(icons["cog-alternative"]);
+      await expect(buttons.nth(2).locator(".v-icon path")).toHaveAttribute(
+        "d",
+        icons["cog-alternative"],
+      );
       await expect(buttons.nth(2).locator(".v-icon")).toHaveAttribute("aria-hidden", "true");
     });
 
@@ -77,12 +80,11 @@ test.describe("icon-button", () => {
 
   test.describe("playground", () => {
     test("updates the icon when playground-icon changes", async ({ page }) => {
-      const icon = getPreviewButton(page).locator(".v-icon");
-      await expect(icon).toContainClass(icons.home);
+      const iconPath = getPreviewButton(page).locator(".v-icon path");
+      await expect(iconPath).toHaveAttribute("d", icons.home);
 
       await selectOption(page, "icon-btn-playground-icon", "hospital");
-      await expect(icon).toContainClass(icons.hospital);
-      await expect(icon).not.toContainClass(icons.home);
+      await expect(iconPath).toHaveAttribute("d", icons.hospital);
     });
 
     test("updates the color when playground-color changes", async ({ page }) => {

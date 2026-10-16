@@ -1,3 +1,4 @@
+import { mdiAccountOutline, mdiCogOutline, mdiHome, mdiHospitalBuilding } from "@mdi/js";
 import {
   VNavigationDrawer,
   VList,
@@ -207,15 +208,15 @@ describe("NavigationMenu", () => {
         await wrapper.setProps({ items: [homeItem, hospitalItem] });
 
         const [homeListItem, hospitalListItem] = findVListItems(wrapper);
-        expect(homeListItem.props("prependIcon")).toBe("mdi-home");
-        expect(hospitalListItem.props("prependIcon")).toBe("mdi-hospital-building");
+        expect(homeListItem.props("prependIcon")).toBe(mdiHome);
+        expect(hospitalListItem.props("prependIcon")).toBe(mdiHospitalBuilding);
       });
 
       it("should show the icon of a group before its description", async () => {
         await wrapper.setProps({ items: [iconParentItem] });
 
         const groupActivator = findVListGroups(wrapper)[0].findComponent(VListItem);
-        expect(groupActivator.props("prependIcon")).toBe("mdi-cog-outline");
+        expect(groupActivator.props("prependIcon")).toBe(mdiCogOutline);
       });
 
       it("should show the icon of an item inside a group before its description", async () => {
@@ -225,7 +226,7 @@ describe("NavigationMenu", () => {
         await vListGroup.trigger("click");
 
         const [, profileItem, firstChildItem] = vListGroup.findAllComponents(VListItem);
-        expect(profileItem.props("prependIcon")).toBe("mdi-account-outline");
+        expect(profileItem.props("prependIcon")).toBe(mdiAccountOutline);
         expect(firstChildItem.props("prependIcon")).toBeUndefined();
       });
 
@@ -247,7 +248,9 @@ describe("NavigationMenu", () => {
         await wrapper.setProps({ items: [homeItem] });
 
         const [vListItem] = findVListItems(wrapper);
-        expect(vListItem.find(".mdi-home").attributes("aria-hidden")).toBe("true");
+        expect(vListItem.find(".v-list-item__prepend .v-icon").attributes("aria-hidden")).toBe(
+          "true",
+        );
         expect(vListItem.text()).toBe(homeItem.description);
       });
     });
