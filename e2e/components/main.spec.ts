@@ -133,6 +133,19 @@ test.describe("main", () => {
           await getUserButton(page).click();
           await expectCenteredUserMenuAvatar(page, getUserButton(page), getUserMenu(page));
         });
+
+        test("makes the group's header as wide as the other options and aligns its text", async ({
+          page,
+        }) => {
+          await getUserButton(page).click();
+          const userMenu = getUserMenu(page);
+
+          await expectAlignedItems(
+            page,
+            userMenu.getByRole("button", { name: "Bibliotecas" }),
+            userMenu.getByRole("link", { name: "GitHub NEXDOM" }),
+          );
+        });
       });
 
       test.describe("user without picture", () => {
@@ -219,6 +232,18 @@ test.describe("main", () => {
         const items = demo.locator(".v-list-group__items .v-list-item").filter({ visible: true });
         await expect(items).toHaveText(["Componentes", "Composables"]);
         await expect(items.locator(".v-list-item__prepend")).toHaveCount(0);
+      });
+
+      test("makes the group's header as wide as the other items and aligns its text", async ({
+        page,
+      }) => {
+        const demo = getNavigationMenu(page);
+
+        await expectAlignedItems(
+          page,
+          demo.getByRole("button", { name: "Documentação" }),
+          demo.getByRole("link", { name: "Início" }),
+        );
       });
 
       test("triggers action callback", async ({ page }) => {
@@ -898,6 +923,29 @@ async function getBox(locator: Locator) {
   const box = await locator.boundingBox();
   if (!box) throw new Error("The element should be visible");
   return box;
+}
+
+/**
+ * Asserts two items of a menu have the same width and their titles' text starts at the same
+ * distance from the item's start, once the menu finishes opening. The text is measured with a
+ * `Range`, since a title's box can span the whole item while its text is centered in it.
+ */
+async function expectAlignedItems(page: Page, item: Locator, otherItem: Locator) {
+  await expect(item).toBeVisible();
+  await expect(otherItem).toBeVisible();
+  await waitForAnimations(page);
+
+  const measure = (locator: Locator) =>
+    locator.evaluate((element) => {
+      const title = element.querySelector(".v-list-item-title") as HTMLElement;
+      const range = document.createRange();
+      range.selectNodeContents(title);
+      const box = element.getBoundingClientRect();
+      return { width: box.width, textStart: range.getBoundingClientRect().left - box.left };
+    });
+  const [box, otherBox] = await Promise.all([measure(item), measure(otherItem)]);
+  expect(Math.abs(box.width - otherBox.width)).toBeLessThan(1);
+  expect(Math.abs(box.textStart - otherBox.textStart)).toBeLessThan(1);
 }
 
 /**
