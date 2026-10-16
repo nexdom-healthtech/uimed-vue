@@ -1,22 +1,23 @@
 # UDataSet
 
-Componente para listagem de registros em uma grade responsiva de cartões, com paginação e pesquisa.
+Componente para listagem de registros em uma grade responsiva de cartões, com paginação, pesquisa e ações sobre a listagem.
 Cada registro da página atual ocupa a sua própria coluna da grade e é apresentado pelo slot padrão, normalmente com o componente [`UDataSetItem`](./data-set-item).
 
 ## Props
 
-| Prop           | Tipo                    | Padrão                          | Descrição                                                                                                                                                                                                                    |
-| -------------- | ----------------------- | ------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `items`        | `T[]`                   | `[]`                            | Registros a serem listados.                                                                                                                                                                                                  |
-| `columns`      | `1 \| 2 \| 3 \| 4 \| 6` | `3`                             | Quantidade máxima de registros apresentados lado a lado em cada linha da grade. É reduzida quando não há espaço para cartões de pelo menos 240px de largura. Em telas muito pequenas, cada registro ocupa a largura inteira. |
-| `itemsPerPage` | `number`                | `10`                            | Quantidade máxima de registros por página. Os controles de paginação só são exibidos quando há mais de uma página.                                                                                                           |
-| `page`         | `number`                | `1`                             | Página atual. Utilize com `v-model:page`.                                                                                                                                                                                    |
-| `searchable`   | `boolean`               | `false`                         | Exibe um campo de pesquisa acima dos registros.                                                                                                                                                                              |
-| `search`       | `string`                | `""`                            | Texto pesquisado. Utilize com `v-model:search`. Filtra os registros mesmo quando o campo de pesquisa não é exibido.                                                                                                          |
-| `searchKeys`   | `string[]`              |                                 | Propriedades dos registros consideradas na pesquisa. Quando não informada ou vazia, todas as propriedades são consideradas.                                                                                                  |
-| `noDataText`   | `string`                | `"Nenhum registro encontrado."` | Mensagem exibida quando não há registros para listar.                                                                                                                                                                        |
-| `loading`      | `boolean`               | `false`                         | Coloca a listagem em estado de carregamento.                                                                                                                                                                                 |
-| `dataTestid`   | `string`                |                                 | Id do componente para uso em testes automatizados.                                                                                                                                                                           |
+| Prop           | Tipo                                     | Padrão                          | Descrição                                                                                                                                                                                                                    |
+| -------------- | ---------------------------------------- | ------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `items`        | `T[]`                                    | `[]`                            | Registros a serem listados.                                                                                                                                                                                                  |
+| `columns`      | `1 \| 2 \| 3 \| 4 \| 6`                  | `3`                             | Quantidade máxima de registros apresentados lado a lado em cada linha da grade. É reduzida quando não há espaço para cartões de pelo menos 240px de largura. Em telas muito pequenas, cada registro ocupa a largura inteira. |
+| `itemsPerPage` | `number`                                 | `10`                            | Quantidade máxima de registros por página. Os controles de paginação só são exibidos quando há mais de uma página.                                                                                                           |
+| `page`         | `number`                                 | `1`                             | Página atual. Utilize com `v-model:page`.                                                                                                                                                                                    |
+| `actions`      | [`action[]`](../sections/section#action) |                                 | Lista de ações sobre a listagem, como "Novo paciente", exibidas como botões à esquerda da barra acima dos registros. Em telas muito pequenas, cada ação ocupa uma linha inteira.                                             |
+| `searchable`   | `boolean`                                | `false`                         | Exibe um campo de pesquisa à direita da barra acima dos registros, com 240px de largura, a mesma largura mínima de um cartão. Em telas muito pequenas, ocupa a largura inteira.                                              |
+| `search`       | `string`                                 | `""`                            | Texto pesquisado. Utilize com `v-model:search`. Filtra os registros mesmo quando o campo de pesquisa não é exibido.                                                                                                          |
+| `searchKeys`   | `string[]`                               |                                 | Propriedades dos registros consideradas na pesquisa. Quando não informada ou vazia, todas as propriedades são consideradas.                                                                                                  |
+| `noDataText`   | `string`                                 | `"Nenhum registro encontrado."` | Mensagem exibida quando não há registros para listar.                                                                                                                                                                        |
+| `loading`      | `boolean`                                | `false`                         | Coloca a listagem em estado de carregamento.                                                                                                                                                                                 |
+| `dataTestid`   | `string`                                 |                                 | Id do componente para uso em testes automatizados.                                                                                                                                                                           |
 
 ## Eventos
 
@@ -35,7 +36,14 @@ Cada registro da página atual ocupa a sua própria coluna da grade e é apresen
 
 ```vue
 <template>
-  <u-data-set v-model:page="pagina" :items="pacientes" :columns="4" :items-per-page="8" searchable>
+  <u-data-set
+    v-model:page="pagina"
+    :items="pacientes"
+    :columns="4"
+    :items-per-page="8"
+    :actions="[{ label: 'Novo paciente', onClick: novoPaciente }]"
+    searchable
+  >
     <template #default="{ item }">
       <u-data-set-item :title="item.nome" :subtitle="`Plano ${item.plano}`" />
     </template>
@@ -51,5 +59,9 @@ const pacientes = [
   { id: 1, nome: "Ana Souza", plano: "Ouro" },
   { id: 2, nome: "Bruno Lima", plano: "Prata" },
 ];
+
+function novoPaciente() {
+  // ...
+}
 </script>
 ```

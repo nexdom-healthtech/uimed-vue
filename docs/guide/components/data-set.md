@@ -125,7 +125,7 @@ const consultas = [
 
 ### Pesquisa
 
-A prop `searchable` exibe um campo de pesquisa acima dos registros. Apenas os registros que contêm o texto pesquisado, sem diferenciar maiúsculas e minúsculas, são listados, e a listagem volta para a primeira página a cada nova pesquisa.
+A prop `searchable` exibe um campo de pesquisa na barra acima dos registros, alinhado à direita e com 240px de largura, a mesma largura mínima de um cartão. Em telas muito pequenas, como as de celulares, ele ocupa a largura inteira. Apenas os registros que contêm o texto pesquisado, sem diferenciar maiúsculas e minúsculas, são listados, e a listagem volta para a primeira página a cada nova pesquisa.
 
 Por padrão, todas as propriedades dos registros são consideradas. Utilize a prop `searchKeys` para restringir a pesquisa a algumas delas.
 
@@ -169,6 +169,69 @@ const pacientes = [
   { id: 2, nome: "Bruno Lima", plano: "Prata" },
   // ...
 ];
+</script>
+```
+
+### Ações da listagem
+
+A prop `actions` define as ações sobre a listagem como um todo, como "Novo paciente". Elas são exibidas como botões à esquerda da barra acima dos registros, na mesma linha do campo de pesquisa, e aceitam as mesmas opções das [ações do agrupador de conteúdo](./section#acoes). A barra só é exibida quando há ações ou pesquisa.
+
+Quando as ações e o campo de pesquisa não cabem na mesma linha, o campo de pesquisa passa para a linha seguinte, ainda à direita. Em telas muito pequenas, como as de celulares, cada ação e o campo de pesquisa ocupam uma linha inteira.
+
+<demo col>
+<u-data-set
+  :items="pacientes.slice(0, 4)"
+  :columns="2"
+  :actions="[
+    { label: 'Novo paciente', onClick: novoPaciente },
+    { label: 'Exportar', variant: 'secondary', onClick: exportar },
+  ]"
+  searchable
+  data-testid="demo-data-set-list-actions"
+>
+  <template #default="{ item }">
+    <u-data-set-item :title="item.nome" :subtitle="`Plano ${item.plano}`" data-testid="demo-data-set-list-actions-item" />
+  </template>
+</u-data-set>
+<span data-testid="demo-data-set-list-actions-last">Última ação: {{ ultimaAcaoDaListagem }}</span>
+</demo>
+
+```vue
+<template>
+  <u-data-set
+    :items="pacientes"
+    :columns="2"
+    :actions="[
+      { label: 'Novo paciente', onClick: novoPaciente },
+      { label: 'Exportar', variant: 'secondary', onClick: exportar },
+    ]"
+    searchable
+  >
+    <template #default="{ item }">
+      <u-data-set-item :title="item.nome" :subtitle="`Plano ${item.plano}`" />
+    </template>
+  </u-data-set>
+  Última ação: {{ ultimaAcao }}
+</template>
+
+<script lang="ts" setup>
+import { ref } from "vue";
+import { UDataSet, UDataSetItem } from "@nexdom/uimed-vue/components";
+
+const ultimaAcao = ref("nenhuma");
+const pacientes = [
+  { id: 1, nome: "Ana Souza", plano: "Ouro" },
+  { id: 2, nome: "Bruno Lima", plano: "Prata" },
+  // ...
+];
+
+function novoPaciente() {
+  ultimaAcao.value = "Novo paciente";
+}
+
+function exportar() {
+  ultimaAcao.value = "Exportar";
+}
 </script>
 ```
 
@@ -427,6 +490,7 @@ Experimente as combinações de props do componente.
   :items="pacientes"
   :columns="(Number(playgroundActions.columns.value) as Props['columns'])"
   :items-per-page="Number(playgroundActions.itemsPerPage.value)"
+  :actions="playgroundActions.actions.value ? acoesDoPlayground : undefined"
   :searchable="playgroundActions.searchable.value"
   :loading="playgroundActions.loading.value"
   :no-data-text="playgroundActions.noDataText.value"
@@ -489,6 +553,17 @@ Consulte a referência de [API do UDataSet](../../api/components/data-sets/data-
   const paginaAtual = ref(1);
   const pesquisa = ref("");
   const ultimaAcao = ref("nenhuma");
+  const ultimaAcaoDaListagem = ref("nenhuma");
+
+  function novoPaciente() {
+    ultimaAcaoDaListagem.value = "Novo paciente";
+  }
+
+  function exportar() {
+    ultimaAcaoDaListagem.value = "Exportar";
+  }
+
+  const acoesDoPlayground: Props["actions"] = [{ label: "Novo paciente" }];
 
   function editar(contato: (typeof contatos)[number]) {
     ultimaAcao.value = `Editar ${contato.nome}`;
@@ -502,6 +577,12 @@ Consulte a referência de [API do UDataSet](../../api/components/data-sets/data-
   const playgroundItemsPerPageOptions = ["3", "5", "10"];
 
   const playgroundActions = ref({
+    actions: {
+      type: "checkbox",
+      value: false,
+      label: "Ações",
+      dataTestid: "data-set-playground-actions"
+    },
     searchable: {
       type: "checkbox",
       value: true,
