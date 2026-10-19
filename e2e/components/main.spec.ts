@@ -193,6 +193,15 @@ test.describe("main", () => {
         }
       });
 
+      test("shows no icon on the items inside a group", async ({ page }) => {
+        const demo = getNavigationMenu(page);
+        await demo.getByRole("button", { name: "Documentação" }).click();
+
+        const items = demo.locator(".v-list-group__items .v-list-item").filter({ visible: true });
+        await expect(items).toHaveText(["Componentes", "Composables"]);
+        await expect(items.locator(".v-list-item__prepend")).toHaveCount(0);
+      });
+
       test("triggers action callback", async ({ page }) => {
         const demo = getNavigationMenu(page);
 
