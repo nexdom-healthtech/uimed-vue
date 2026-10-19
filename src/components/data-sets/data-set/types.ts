@@ -39,9 +39,13 @@ export type DataSetProps<T extends object> = {
   /**
    * List of actions about the whole list, such as creating a record, displayed
    * as buttons at the start of the bar above the records, before the search
-   * field. Same shape as `USection`'s actions. On extra small
-   * screens, each action takes a line of its own and the full width. When
-   * undefined or empty, and `searchable` is false, no bar is rendered.
+   * field. Same shape as `USection`'s actions.
+   *
+   * With the search field, the actions take the first half of the bar,
+   * wrapping within it, or a line of their own when the data set isn't wide
+   * enough for two records side by side. On extra small screens, each action
+   * takes a line of its own and the full width. When undefined or empty, and
+   * `searchable` is false, no bar is rendered.
    */
   actions?: SectionAction[];
 

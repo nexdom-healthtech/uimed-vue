@@ -3,6 +3,7 @@ import type { DataSetColumns } from "@/components/data-sets/data-set/types.ts";
 import {
   getDataSetFittingColumns,
   getDataSetTotalVisible,
+  useDataSetBarCols,
   useDataSetColumnCols,
   useDataSetFilterKeys,
   useDataSetFittingColumns,
@@ -106,6 +107,26 @@ describe("useDataSetFittingColumns", () => {
       () => 1100,
     );
     expect(fittingColumns.value).toBe(4);
+  });
+});
+
+describe("useDataSetBarCols", () => {
+  it.each([
+    [0, "6"],
+    [503, "12"],
+    [504, "6"],
+    [1100, "6"],
+  ] as const)("should give a data set %ipx wide halves of size %s", (width, cols) => {
+    expect(useDataSetBarCols(() => width).value).toBe(cols);
+  });
+
+  it("should react to width changes", () => {
+    const width = ref(1100);
+    const cols = useDataSetBarCols(width);
+    expect(cols.value).toBe("6");
+
+    width.value = 420;
+    expect(cols.value).toBe("12");
   });
 });
 

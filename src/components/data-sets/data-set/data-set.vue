@@ -1,9 +1,17 @@
 <template>
   <skeleton-loader :loading="props.loading" type="card" full-width>
-    <!-- The bar's columns share a row with the records, which go on a line of their own, so the
-         grid spaces them as it spaces its lines -->
-    <Row align-y="center" :data-testid="props.dataTestid">
-      <DataSetBar v-model="search" :actions="props.actions" :searchable="props.searchable" />
+    <!-- The bar and the records take a line each of the same row, so the grid spaces them as it
+         spaces its lines. The bar stays out of the iterator's header, where nothing would space
+         it from the records -->
+    <Row :data-testid="props.dataTestid">
+      <Column v-if="props.actions?.length || props.searchable">
+        <DataSetBar
+          v-model="search"
+          :actions="props.actions"
+          :searchable="props.searchable"
+          :cols="barColumnCols"
+        />
+      </Column>
       <Column>
         <v-data-iterator
           ref="iterator"
@@ -85,6 +93,7 @@ import SkeletonLoader from "@/components/skeleton-loader/skeleton-loader.vue";
 import type { DataSetProps, DataSetSlots } from "@/components/data-sets/data-set/types.ts";
 import {
   getDataSetTotalVisible,
+  useDataSetBarCols,
   useDataSetColumnCols,
   useDataSetFilterKeys,
   useDataSetFittingColumns,
@@ -106,6 +115,7 @@ const iterator = useTemplateRef<ComponentPublicInstance>("iterator");
 const width = useDataSetWidth(() => iterator.value?.$el);
 const fittingColumns = useDataSetFittingColumns(() => props.columns, width);
 const columnCols = useDataSetColumnCols(fittingColumns);
+const barColumnCols = useDataSetBarCols(width);
 const filterKeys = useDataSetFilterKeys(() => props.searchKeys);
 useDataSetSearchPageReset(search, page);
 </script>

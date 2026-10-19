@@ -184,6 +184,21 @@ test.describe("data-set", () => {
       }
     });
 
+    test("starts the half of the search field at the middle of the bar", async ({ page }) => {
+      const dataSet = page.getByTestId("demo-data-set-list-actions");
+      const [dataSetBox, exportBox, searchHalfBox] = await Promise.all([
+        dataSet.boundingBox(),
+        getListActionButtons(dataSet).nth(1).boundingBox(),
+        getSearchHalf(dataSet).boundingBox(),
+      ]);
+      const gap = 24;
+      const middle = (dataSetBox?.x ?? 0) + ((dataSetBox?.width ?? 0) + gap) / 2;
+
+      expect(getRight(exportBox)).toBeLessThan(middle - gap);
+      expect(searchHalfBox?.x).toBeCloseTo(middle, 0);
+      expect(getRight(searchHalfBox)).toBeCloseTo(getRight(dataSetBox), 0);
+    });
+
     test("keeps the list actions out of the list of records", async ({ page }) => {
       const dataSet = page.getByTestId("demo-data-set-list-actions");
 
@@ -426,6 +441,28 @@ test.describe("data-set", () => {
       await expect(preview.getByRole("button", { name: "Novo paciente" })).toHaveCount(0);
     });
 
+    test("puts the list actions and the search field on lines of their own when two cards don't fit", async ({
+      page,
+    }) => {
+      const preview = getPreview(page);
+      await page.getByTestId("data-set-playground-actions").locator("input").click();
+      const button = preview.getByRole("button", { name: "Novo paciente" });
+      await expect(button).toBeVisible();
+
+      const [previewBox, buttonBox, fieldBox, cardBox] = await Promise.all([
+        preview.boundingBox(),
+        button.boundingBox(),
+        getSearchField(preview).boundingBox(),
+        getPreviewCards(page).first().boundingBox(),
+      ]);
+      expect(previewBox?.width).toBeLessThan(2 * 240 + 24);
+      expect(cardBox?.width).toBeCloseTo(previewBox?.width ?? 0, 0);
+      expect(buttonBox?.x).toBeCloseTo(previewBox?.x ?? 0, 0);
+      expect(fieldBox?.y).toBeGreaterThan(getBottom(buttonBox));
+      expect(fieldBox?.width).toBe(240);
+      expect(getRight(fieldBox)).toBeCloseTo(getRight(previewBox), 0);
+    });
+
     test("hides the list actions while loading", async ({ page }) => {
       const previewArea = page.locator(".playground-preview");
       await page.getByTestId("data-set-playground-actions").locator("input").click();
@@ -550,6 +587,15 @@ function getListActionButtons(dataSet: Locator) {
  */
 function getSearchField(dataSet: Locator) {
   return dataSet.locator(".v-text-field");
+}
+
+/**
+ * Gets the column of the bar that holds the search field: the second column
+ * around the field, since the first one only wraps it to its own width. No role
+ * covers a column, so it's found by its class.
+ */
+function getSearchHalf(dataSet: Locator) {
+  return getSearchField(dataSet).locator("xpath=ancestor::div[contains(@class, 'v-col')][2]");
 }
 
 type Box = Awaited<ReturnType<Locator["boundingBox"]>>;
