@@ -123,15 +123,8 @@ test.describe("section", () => {
       test(`keeps the skeleton's bones at its top${withActions ? " and bottom" : ""} when loading with full height ${withActions ? "and" : "but no"} actions`, async ({
         page,
       }) => {
-        const props = ["fullHeight", "fullWidth", "loading"];
-        if (!withActions) props.push("actions");
-        for (const prop of props) {
-          await page.getByTestId(`content-set-playground-${prop}`).locator("input").click();
-        }
-
-        const skeleton = page.locator(".playground-preview .v-skeleton-loader");
+        const skeleton = await showFullHeightSkeleton(page, withActions);
         const bones = skeleton.locator("> .v-skeleton-loader__bone");
-        await expect(bones).toHaveCount(withActions ? 2 : 1);
         await expect.poll(() => getFillRatio(skeleton, "height")).toBeCloseTo(1, 2);
 
         const skeletonBox = await getBox(skeleton);
@@ -232,11 +225,33 @@ test.describe("section", () => {
     test("matches last screenshot", async ({ page }) => {
       await expect(page).toHaveScreenshot({ fullPage: true });
     });
+
+    test("matches last screenshot of the playground loading with full height", async ({ page }) => {
+      await showFullHeightSkeleton(page, true);
+      // The docs' fixed navigation bar would cover the top of the preview once it scrolls into view
+      await page.addStyleTag({ content: ".VPNav { visibility: hidden; }" });
+      // The bones are only a light gray on the skeleton's lighter background, which the default
+      // per-pixel threshold (0.2) counts as the same color, so moved bones would still pass
+      await expect(page.locator(".playground-preview")).toHaveScreenshot({ threshold: 0.05 });
+    });
   });
 });
 
 function getPreviewCard(page: Page) {
   return page.getByTestId("content-set-preview");
+}
+
+/** Shows the playground's skeleton with full height and width, with or without actions. */
+async function showFullHeightSkeleton(page: Page, withActions: boolean) {
+  const props = ["fullHeight", "fullWidth", "loading"];
+  if (!withActions) props.push("actions");
+  for (const prop of props) {
+    await page.getByTestId(`content-set-playground-${prop}`).locator("input").click();
+  }
+
+  const skeleton = page.locator(".playground-preview .v-skeleton-loader");
+  await expect(skeleton.locator("> .v-skeleton-loader__bone")).toHaveCount(withActions ? 2 : 1);
+  return skeleton;
 }
 
 // How much of its parent's content box (without the padding) the card takes in a dimension
