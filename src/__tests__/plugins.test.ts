@@ -3,10 +3,11 @@
 // into a dev server URL
 
 import { vitePluginUimed, vitestServerPluginUimed } from "@/plugins.ts";
-import { existsSync } from "node:fs";
+import { existsSync, readdirSync, readFileSync } from "node:fs";
 import { createRequire } from "node:module";
-import { dirname } from "node:path";
-import { initAsyncCompiler, type AsyncCompiler } from "sass-embedded";
+import { dirname, join } from "node:path";
+import { fileURLToPath, pathToFileURL } from "node:url";
+import { compileStringAsync, initAsyncCompiler, type AsyncCompiler } from "sass-embedded";
 import type { Plugin } from "vite-plus";
 
 vi.mock("node:fs", async (importOriginal) => {
@@ -81,6 +82,57 @@ describe("plugins", () => {
       const css = await load(plugin, `${vuetify}/lib/components/VList/VListItem.css`);
 
       expect(css).toMatch(/\.v-list-item-subtitle \{[^}]*line-height: normal;/);
+    });
+
+    describe("utility classes", () => {
+      // Vuetify's global styles and utility classes with its default settings, without the library's
+      let defaultStyles: string;
+      let defaultUtilities: Set<string>;
+
+      beforeAll(async () => {
+        [defaultStyles, defaultUtilities] = await Promise.all([
+          compileVuetify("main.sass"),
+          compileVuetify("utilities.scss", "colors.scss").then(classesOf),
+        ]);
+      });
+
+      it("should keep every utility class the components use", async () => {
+        const words = sourceFiles().flatMap((source) => source.match(/[a-z][\w-]*/g) ?? []);
+        const used = new Set(words.filter((word) => defaultUtilities.has(word)));
+        const classes = classesOf((await load(plugin, styles))!);
+
+        expect(used).toContain("d-flex");
+        expect([...used].filter((name) => !classes.has(name))).toEqual([]);
+      });
+
+      it.each([
+        ["bg-transparent", "the navigation drawer gives its list"],
+        ["rounded-0", "the list items outside navigation lists take"],
+      ])("should keep `%s`, which %s", async (name) => {
+        const classes = classesOf((await load(plugin, styles))!);
+
+        expect(classes).toContain(name);
+      });
+
+      it.each([
+        ["the color palettes", "bg-red"],
+        ["the color palettes' text colors", "text-red-lighten-1"],
+        ["the breakpoint variants", "d-sm-flex"],
+        ["the print variants", "d-print-none"],
+        ["the typography", "text-headline-large"],
+        ["the families the components don't use", "ga-2"],
+      ])("should leave out %s", async (_, name) => {
+        const classes = classesOf((await load(plugin, styles))!);
+
+        expect(defaultUtilities).toContain(name);
+        expect(classes).not.toContain(name);
+      });
+
+      it("should compile Vuetify's global styles to less than a fifth of their default size", async () => {
+        const css = (await load(plugin, styles))!;
+
+        expect(css.length).toBeLessThan(defaultStyles.length / 5);
+      });
     });
 
     it("should look for the Sass sources of Vuetify stylesheets with Windows separators", async () => {
@@ -173,4 +225,33 @@ function load(plugin: Plugin, id: string) {
 
 function closeBundle(plugin: Plugin) {
   return (plugin.closeBundle as () => Promise<void>)();
+}
+
+/** Compiles stylesheets of Vuetify's `lib/styles` folder with its default settings */
+async function compileVuetify(...files: Array<string>) {
+  const entry = files
+    .map((file) => `@use "${pathToFileURL(`${vuetify}/lib/styles/${file}`).href}";`)
+    .join("\n");
+  // Like the plugin, loads them from the folder where Vuetify is installed
+  const { css } = await compileStringAsync(entry, { loadPaths: [dirname(vuetify)] });
+
+  return css;
+}
+
+/** The classes a stylesheet defines, without Vuetify's `v-` ones that some of them are scoped to */
+function classesOf(css: string) {
+  // The names of the cascade layers are also separated by dots
+  const rules = css.replaceAll(/@layer [^{;]*/g, "");
+  const names = Array.from(rules.matchAll(/\.(-?[a-z][\w-]*)/gi), ([, name]) => name!);
+
+  return new Set(names.filter((name) => !name.startsWith("v-")));
+}
+
+/** The library's source files, without its tests */
+function sourceFiles() {
+  const src = fileURLToPath(new URL("..", import.meta.url));
+
+  return readdirSync(src, { recursive: true, encoding: "utf8" })
+    .filter((file) => /\.(?:vue|ts)$/.test(file) && !file.includes("__tests__"))
+    .map((file) => readFileSync(join(src, file), "utf8"));
 }

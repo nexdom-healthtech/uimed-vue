@@ -246,6 +246,14 @@ test.describe("main", () => {
         );
       });
 
+      test("shows its items over the menu's color, without a background of their own", async ({
+        page,
+      }) => {
+        const list = getNavigationMenu(page).locator(".v-list");
+
+        await expect(list).toHaveCSS("background-color", "rgba(0, 0, 0, 0)");
+      });
+
       test("triggers action callback", async ({ page }) => {
         const demo = getNavigationMenu(page);
 
