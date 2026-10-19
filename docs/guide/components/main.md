@@ -185,7 +185,7 @@ A prop `navigation-menu` define as configurações para apresentação do menu l
 
 Para ocultar o menu de navegação, basta omitir essa prop.
 
-Cada item ou grupo pode exibir um ícone antes da sua descrição, informado pelo nome na propriedade `icon`. Os nomes disponíveis estão em [Ícones](../icons). Utilize ícones em todos os itens de um mesmo nível do menu, ou em nenhum deles: itens sem ícone ao lado de itens com ícone ficam com os títulos desalinhados.
+Os itens e grupos do primeiro nível do menu podem exibir um ícone antes da sua descrição, informado pelo nome na propriedade `icon`. Os nomes disponíveis estão em [Ícones](../icons). Utilize ícones em todos eles, ou em nenhum: itens sem ícone ao lado de itens com ícone ficam com os títulos desalinhados. Os itens dentro de um grupo não aceitam ícones, para que o menu siga o mesmo padrão visual em todas as aplicações.
 
 O menu também conta com um campo de busca que filtra itens e grupos em tempo real, no formato _case-insensitive_.
 

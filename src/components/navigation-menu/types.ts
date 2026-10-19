@@ -34,10 +34,16 @@ export type NavigationMenuParentItem = {
   icon?: Icon;
 
   /**
-   * Child {@link NavigationMenuItem} list.
+   * Child {@link NavigationMenuChildItem} list. Unlike the first level items, they show no icon.
    */
-  items: Array<NavigationMenuItem>;
+  items: Array<NavigationMenuChildItem>;
 };
+
+/**
+ * Item inside a {@link NavigationMenuParentItem}. Only the first level items and groups show an
+ * icon, so every menu follows the same visual pattern.
+ */
+export type NavigationMenuChildItem = Omit<NavigationMenuItem, "icon">;
 
 export interface NavigationMenuItem {
   /**

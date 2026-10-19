@@ -1,4 +1,4 @@
-import { mdiAccountOutline, mdiCogOutline, mdiHome, mdiHospitalBuilding } from "@mdi/js";
+import { mdiCogOutline, mdiHome, mdiHospitalBuilding } from "@mdi/js";
 import {
   VNavigationDrawer,
   VList,
@@ -201,7 +201,7 @@ describe("NavigationMenu", () => {
       const iconParentItem: NavigationMenuParentItem = {
         description: "Settings",
         icon: "cogAlternative",
-        items: [{ description: "Profile", icon: "accountAlternative" }, parentItemFirstChild],
+        items: [parentItemFirstChild],
       };
 
       it("should show the icon of a plain item before its description", async () => {
@@ -219,15 +219,21 @@ describe("NavigationMenu", () => {
         expect(groupActivator.props("prependIcon")).toBe(mdiCogOutline);
       });
 
-      it("should show the icon of an item inside a group before its description", async () => {
-        await wrapper.setProps({ items: [iconParentItem] });
+      it("should show no icon on an item inside a group, even when one is given", async () => {
+        const parentItemWithIconChild: NavigationMenuParentItem = {
+          ...iconParentItem,
+          // @ts-expect-error: only the first level items and groups accept an icon
+          items: [{ description: "Profile", icon: "accountAlternative" }],
+        };
+        await wrapper.setProps({ items: [parentItemWithIconChild] });
 
         const [vListGroup] = findVListGroups(wrapper);
         await vListGroup.trigger("click");
 
-        const [, profileItem, firstChildItem] = vListGroup.findAllComponents(VListItem);
-        expect(profileItem.props("prependIcon")).toBe(mdiAccountOutline);
-        expect(firstChildItem.props("prependIcon")).toBeUndefined();
+        const [, profileItem] = vListGroup.findAllComponents(VListItem);
+        expect(profileItem.props("title")).toBe("Profile");
+        expect(profileItem.props("prependIcon")).toBeUndefined();
+        expect(profileItem.find(".v-list-item__prepend").exists()).toBeFalsy();
       });
 
       it("should show no icon when the item or group has none", async () => {
