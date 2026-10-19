@@ -111,6 +111,7 @@ export default defineConfig({
               text: "Conteúdo",
               items: [
                 { text: "Componente base", link: "/guide/components/main" },
+                { text: "Transição de páginas", link: "/guide/components/page-transition" },
                 { text: "Componentes de layout", link: "/guide/components/layout" },
                 { text: "Agrupador de Conteúdo", link: "/guide/components/section" },
                 { text: "Conteúdo Expansível", link: "/guide/components/details" },
@@ -216,6 +217,7 @@ export default defineConfig({
             { text: "ULink", link: "/api/components/link" },
             { text: "UMain", link: "/api/components/main" },
             { text: "UMaskField", link: "/api/components/mask-field" },
+            { text: "UPageTransition", link: "/api/components/page-transition" },
             { text: "UTable", link: "/api/components/table" },
             { text: "UTextField", link: "/api/components/text-field" },
           ],

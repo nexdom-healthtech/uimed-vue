@@ -20,3 +20,4 @@ export { default as ULink } from "@/components/link/link.vue";
 export { default as UDataSet } from "@/components/data-sets/data-set/data-set.vue";
 export { default as UDataSetItem } from "@/components/data-sets/data-set-item/data-set-item.vue";
 export { default as UDialog } from "@/components/dialogs/dialog/dialog.vue";
+export { default as UPageTransition } from "@/components/page-transition/page-transition.vue";

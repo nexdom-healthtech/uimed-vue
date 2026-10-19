@@ -43,6 +43,7 @@ const apis = [
             { text: "Link", link: "./components/link" },
             { text: "Main", link: './components/main' },
             { text: "MaskField", link: "./components/mask-field" },
+            { text: "PageTransition", link: "./components/page-transition" },
             { text: "Table", link: "./components/table" },
             { text: "TextField", link: "./components/text-field" }
         ]
