@@ -38,6 +38,7 @@ Os componentes a seguir possuem exemplos práticos de utilização dentro desta 
 | [Links](./components/link)                                             | Componente para links de texto.                        |
 | [Listagens](./components/data-set)                                     | Componente para listagem de dados.                     |
 | [Tabelas](./components/table)                                          | Componente para apresentação de dados em tabelas.      |
+| [Transição de páginas](./components/page-transition)                   | Componente para animar a troca de páginas.             |
 
 ### Composables
 

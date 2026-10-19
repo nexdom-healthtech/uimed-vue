@@ -26,6 +26,7 @@ describe("components", () => {
     expect(components.UDataSet).not.toBeUndefined();
     expect(components.UDataSetItem).not.toBeUndefined();
     expect(components.UDialog).not.toBeUndefined();
+    expect(components.UPageTransition).not.toBeUndefined();
   });
 
   it("should prefix every exported component with 'U'", () => {
