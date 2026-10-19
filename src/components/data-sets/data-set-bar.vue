@@ -1,5 +1,8 @@
 <template>
-  <Row align-y="center">
+  <Row align-y="end">
+    <!-- The search field leaves room above its text for the floating label, so its text, icon and
+         underline sit below its middle. Centered on it, the actions would look higher than the
+         field, so they line up with its underline instead -->
     <!-- No column grows to push the search field to the end of the line, so the actions and the
          search field share it in two columns, and the search field is aligned to the end of its
          own -->
