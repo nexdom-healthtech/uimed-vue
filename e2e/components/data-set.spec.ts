@@ -179,8 +179,10 @@ test.describe("data-set", () => {
       expect(exportBox?.x).toBeGreaterThan(getRight(newBox));
       expect(fieldBox?.x).toBeGreaterThan(getRight(exportBox));
       expect(getRight(fieldBox)).toBeCloseTo(getRight(dataSetBox), 0);
+      // The field's text and icon sit below its middle, above its underline, so the buttons line
+      // up with the underline: centered on the field's box, they look higher than the field
       for (const box of [newBox, exportBox]) {
-        expect(getMiddle(box)).toBeCloseTo(getMiddle(fieldBox), 0);
+        expect(getBottom(box)).toBeCloseTo(getBottom(fieldBox), 0);
       }
     });
 
@@ -606,10 +608,6 @@ function getRight(box: Box) {
 
 function getBottom(box: Box) {
   return (box?.y ?? 0) + (box?.height ?? 0);
-}
-
-function getMiddle(box: Box) {
-  return (box?.y ?? 0) + (box?.height ?? 0) / 2;
 }
 
 /**

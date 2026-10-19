@@ -29,9 +29,9 @@ describe("DataSetBar", () => {
     expect(wrapper.find(".random-class").exists()).toBeFalsy();
   });
 
-  it("should center the actions with the search field", () => {
+  it("should line up the actions with the bottom of the search field", () => {
     const wrapper = mountDataSetBar({ actions: [{ label: "Novo paciente" }], searchable: true });
-    expect(findBarRow(wrapper).props("alignY")).toBe("center");
+    expect(findBarRow(wrapper).props("alignY")).toBe("end");
   });
 
   describe("searchable", () => {
