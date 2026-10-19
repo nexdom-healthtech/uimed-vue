@@ -48,7 +48,6 @@
                 :key="childIndex"
                 v-bind="routeToListItemProps(childItem.route)"
                 :title="childItem.description"
-                :prepend-icon="childItem.icon && icons[childItem.icon]"
                 @click="childItem.action"
               />
             </v-list-group>

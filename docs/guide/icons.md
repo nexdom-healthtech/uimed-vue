@@ -4,7 +4,7 @@ outline: deep
 
 # Ícones
 
-Os componentes que aceitam um ícone, como o [botão de ícone](./components/icon-button) e os itens e grupos do [menu de navegação](./components/main#menu-de-navegacao), recebem o nome de um dos ícones listados nesta página na propriedade `icon`.
+Os componentes que aceitam um ícone, como o [botão de ícone](./components/icon-button) e os itens e grupos do primeiro nível do [menu de navegação](./components/main#menu-de-navegacao), recebem o nome de um dos ícones listados nesta página na propriedade `icon`.
 
 Os ícones são desenhados como imagens vetoriais (SVG) na própria página, sem carregar uma fonte de ícones. Por isso, classes de fontes de ícones (como `mdi-home`) não exibem ícones: use os nomes desta página.
 
@@ -53,7 +53,7 @@ const navigationMenu: NonNullable<MainProps["navigationMenu"]> = {
 
 No menu, o ícone usa a cor do texto do menu. Ele é decorativo: leitores de tela anunciam apenas a descrição.
 
-Utilize ícones em todos os itens de um mesmo nível do menu, ou em nenhum deles. Itens sem ícone ao lado de itens com ícone ficam com os títulos desalinhados.
+Apenas os itens e grupos do primeiro nível do menu aceitam ícones: os itens dentro de um grupo não os exibem. Utilize ícones em todos os itens e grupos do primeiro nível, ou em nenhum deles. Itens sem ícone ao lado de itens com ícone ficam com os títulos desalinhados.
 
 ## Ícones disponíveis
 
