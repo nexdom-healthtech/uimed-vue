@@ -1,22 +1,23 @@
 import { mount } from "@vue/test-utils";
-import { VCol, VDefaultsProvider, VTextField } from "vuetify/components";
+import { VDefaultsProvider, VTextField } from "vuetify/components";
 import Button from "@/components/button/button.vue";
 import DataSetBar from "@/components/data-sets/data-set-bar.vue";
 import Column from "@/components/grid/column/column.vue";
+import Row from "@/components/grid/row/row.vue";
 import TextField from "@/components/inputs/text-field/text-field.vue";
 import type { SectionAction } from "@/components/sections/section/types.ts";
 import { vueTestUtilsPluginUimed } from "@/unit-test.ts";
 
 describe("DataSetBar", () => {
-  it("should not render anything by default", () => {
+  it("should render neither actions nor the search field by default", () => {
     const wrapper = mountDataSetBar();
-    expect(findLines(wrapper)).toHaveLength(0);
+    expect(findBarColumns(wrapper)).toHaveLength(0);
     expect(wrapper.text()).toBe("");
   });
 
-  it("should not render anything when actions is empty", () => {
+  it("should not render the actions when actions is empty", () => {
     const wrapper = mountDataSetBar({ actions: [] });
-    expect(findLines(wrapper)).toHaveLength(0);
+    expect(findBarColumns(wrapper)).toHaveLength(0);
   });
 
   it("should not inherit unexpected attributes", () => {
@@ -24,8 +25,13 @@ describe("DataSetBar", () => {
       { actions: [{ label: "Novo paciente" }], searchable: true },
       { class: "random-class" },
     );
-    expect(findLines(wrapper)).toHaveLength(2);
+    expect(findBarColumns(wrapper)).toHaveLength(2);
     expect(wrapper.find(".random-class").exists()).toBeFalsy();
+  });
+
+  it("should center the actions with the search field", () => {
+    const wrapper = mountDataSetBar({ actions: [{ label: "Novo paciente" }], searchable: true });
+    expect(findBarRow(wrapper).props("alignY")).toBe("center");
   });
 
   describe("searchable", () => {
@@ -35,25 +41,27 @@ describe("DataSetBar", () => {
       expect(textField.props("type")).toBe("search");
       expect(textField.props("label")).toBe("Pesquisar");
       expect(findButtons(wrapper)).toHaveLength(0);
+      expect(findBarColumns(wrapper)).toHaveLength(1);
     });
 
-    it("should push the search field to the end of the bar, with a width of its own", () => {
+    it("should put the search field at the end of the whole bar, with a width of its own", () => {
       const wrapper = mountDataSetBar({ searchable: true });
-      const searchColumn = findSearchColumn(wrapper);
-      expect(searchColumn?.findComponent(TextField).exists()).toBe(true);
-      expect(wrapper.findComponent(Column).exists()).toBeFalsy();
-      expect(searchColumn?.classes()).toEqual(
-        expect.arrayContaining(["ms-auto", "v-col--cols-12", "v-col--cols-sm-auto"]),
-      );
+      const searchColumn = findBarColumns(wrapper)[0];
+      expect(searchColumn.props("cols")).toBe("12");
+      const searchRow = searchColumn.findComponent(Row);
+      expect(searchRow.props("alignX")).toBe("end");
+      const fieldColumn = searchRow.findComponent(Column);
+      expect(fieldColumn.props("cols")).toBe("auto");
+      expect(fieldColumn.findComponent(TextField).exists()).toBe(true);
     });
 
     it("should hide the empty messages area of the search field and keep it as wide as a card", () => {
       const wrapper = mountDataSetBar({ searchable: true });
-      const defaultsProvider = findSearchColumn(wrapper)?.findComponent(VDefaultsProvider);
-      expect(defaultsProvider?.props("defaults")).toEqual({
+      const defaultsProvider = wrapper.findComponent(VDefaultsProvider);
+      expect(defaultsProvider.props("defaults")).toEqual({
         VTextField: { hideDetails: "auto", minWidth: 240 },
       });
-      expect(defaultsProvider?.findComponent(TextField).exists()).toBe(true);
+      expect(defaultsProvider.findComponent(TextField).exists()).toBe(true);
       expect(wrapper.findComponent(VTextField).attributes("style")).toContain("min-width: 240px;");
       expect(wrapper.findComponent(VTextField).find(".v-input__details").classes()).toContain(
         "v-input__details--hidden",
@@ -75,33 +83,48 @@ describe("DataSetBar", () => {
   });
 
   describe("actions", () => {
-    it("should render only the actions when not searchable", () => {
+    it("should render only the actions, on the whole bar, when not searchable", () => {
       const wrapper = mountDataSetBar({ actions: [{ label: "Novo paciente" }] });
       expect(findButtons(wrapper)).toHaveLength(1);
       expect(findTextField(wrapper).exists()).toBeFalsy();
+      expect(findBarColumns(wrapper)).toHaveLength(1);
+      expect(findBarColumns(wrapper)[0].props("cols")).toBe("12");
     });
 
-    it("should render one button per action, in order, before the search field", () => {
+    it("should render the actions before the search field, each with the given width", () => {
       const wrapper = mountDataSetBar({
         actions: [{ label: "Novo paciente" }, { label: "Importar" }],
         searchable: true,
       });
-      const columns = findLines(wrapper);
-      expect(columns).toHaveLength(3);
-      expect(columns[0].text()).toBe("Novo paciente");
-      expect(columns[1].text()).toBe("Importar");
-      expect(columns[2].element).toBe(findSearchColumn(wrapper)?.element);
-      expect(findButtons(wrapper).map((button) => button.text())).toEqual([
+      const [actionsColumn, searchColumn] = findBarColumns(wrapper);
+      expect(actionsColumn.props("cols")).toBe("6");
+      expect(searchColumn.props("cols")).toBe("6");
+      expect(actionsColumn.findAllComponents(Button).map((button) => button.text())).toEqual([
         "Novo paciente",
         "Importar",
       ]);
+      expect(searchColumn.findComponent(TextField).exists()).toBe(true);
+      expect(searchColumn.findComponent(Button).exists()).toBe(false);
+    });
+
+    it("should put the actions and the search field on lines of their own with the whole width", () => {
+      const wrapper = mountDataSetBar({
+        actions: [{ label: "Novo paciente" }],
+        searchable: true,
+        cols: "12",
+      });
+      const [actionsColumn, searchColumn] = findBarColumns(wrapper);
+      expect(actionsColumn.props("cols")).toBe("12");
+      expect(searchColumn.props("cols")).toBe("12");
     });
 
     it("should render each action in a column with its own width, full width on extra small screens", () => {
       const wrapper = mountDataSetBar({ actions: [{ label: "Novo paciente" }] });
-      const column = wrapper.findComponent(Column);
+      const actionsRow = findBarColumns(wrapper)[0].findComponent(Row);
+      const column = actionsRow.findComponent(Column);
       expect(column.props("cols")).toBe("auto");
       expect(column.props("listItem")).toBeFalsy();
+      expect(column.findComponent(Button).exists()).toBe(true);
       expect(findButtons(wrapper)[0].props("fullWidth")).toBe(true);
     });
 
@@ -172,11 +195,16 @@ describe("DataSetBar", () => {
 });
 
 function mountDataSetBar(
-  props: { actions?: SectionAction[]; searchable?: boolean; modelValue?: string } = {},
+  props: {
+    actions?: SectionAction[];
+    searchable?: boolean;
+    modelValue?: string;
+    cols?: "6" | "12";
+  } = {},
   attrs: Record<string, unknown> = {},
 ) {
   return mount(DataSetBar, {
-    props,
+    props: { cols: "6", ...props },
     attrs,
     global: {
       plugins: [vueTestUtilsPluginUimed()],
@@ -185,11 +213,22 @@ function mountDataSetBar(
 }
 
 /**
- * Finds the columns rendered by the bar, one per action and one for the search
+ * Finds the bar's own row, around the columns of the actions and of the search
  * field.
  */
-function findLines(wrapper: ReturnType<typeof mountDataSetBar>) {
-  return wrapper.findAll(".v-col");
+function findBarRow(wrapper: ReturnType<typeof mountDataSetBar>) {
+  return wrapper.findComponent(Row);
+}
+
+/**
+ * Finds the columns of the bar's own row, without the nested ones: one for the
+ * actions and one for the search field.
+ */
+function findBarColumns(wrapper: ReturnType<typeof mountDataSetBar>) {
+  const barRow = findBarRow(wrapper);
+  return barRow
+    .findAllComponents(Column)
+    .filter((column) => column.element.parentElement === barRow.element);
 }
 
 function findButtons(wrapper: ReturnType<typeof mountDataSetBar>) {
@@ -198,11 +237,4 @@ function findButtons(wrapper: ReturnType<typeof mountDataSetBar>) {
 
 function findTextField(wrapper: ReturnType<typeof mountDataSetBar>) {
   return wrapper.findComponent(TextField);
-}
-
-/**
- * Finds the last column of the bar, where the search field is rendered.
- */
-function findSearchColumn(wrapper: ReturnType<typeof mountDataSetBar>) {
-  return wrapper.findAllComponents(VCol).at(-1);
 }

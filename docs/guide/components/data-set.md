@@ -176,7 +176,7 @@ const pacientes = [
 
 A prop `actions` define as ações sobre a listagem como um todo, como "Novo paciente". Elas são exibidas como botões à esquerda da barra acima dos registros, na mesma linha do campo de pesquisa, e aceitam as mesmas opções das [ações do agrupador de conteúdo](./section#acoes). A barra só é exibida quando há ações ou pesquisa.
 
-Quando as ações e o campo de pesquisa não cabem na mesma linha, o campo de pesquisa passa para a linha seguinte, ainda à direita. Em telas muito pequenas, como as de celulares, cada ação e o campo de pesquisa ocupam uma linha inteira.
+Com o campo de pesquisa, as ações ocupam a metade esquerda da barra, e o campo, a metade direita. As ações que não cabem na metade delas passam para a linha seguinte, ainda à esquerda. Quando a listagem não tem largura para dois cartões lado a lado, como em diálogos e painéis laterais, as ações e o campo de pesquisa ficam em linhas separadas, com o campo ainda à direita. Em telas muito pequenas, como as de celulares, cada ação e o campo de pesquisa ocupam uma linha inteira.
 
 <demo col>
 <u-data-set

@@ -216,6 +216,29 @@ describe("DataSet", () => {
           expect(findColumns(wrapper)[0].props("cols")).toBe("3");
         });
 
+        it("should share the bar in halves until the width is measured", async () => {
+          const wrapper = mountObservedDataSet({ columns: 1, searchable: true });
+          await wrapper.vm.$nextTick();
+          expect(findDataSetBar(wrapper).props("cols")).toBe("6");
+        });
+
+        it.each([
+          [1, 503, "12"],
+          [1, 504, "6"],
+          [6, 503, "12"],
+          [3, 1100, "6"],
+        ] as const)(
+          "should give the bar of a data set of %i columns, %ipx wide, halves of size %s",
+          async (columns, width, cols) => {
+            const wrapper = mountObservedDataSet({ columns, searchable: true });
+            await wrapper.vm.$nextTick();
+
+            MockResizeObserver.instances[0].resize(width);
+            await wrapper.vm.$nextTick();
+            expect(findDataSetBar(wrapper).props("cols")).toBe(cols);
+          },
+        );
+
         it("should stop observing while loading and observe again afterwards", async () => {
           const wrapper = mountObservedDataSet();
           await wrapper.vm.$nextTick();
@@ -377,6 +400,7 @@ describe("DataSet", () => {
         const wrapper = mountDataSet({ searchable: true });
         const lines = findLines(wrapper);
         expect(findDataSetBar(wrapper).props("searchable")).toBe(true);
+        expect(findDataSetBar(wrapper).props("actions")).toBeUndefined();
         expect(lines).toHaveLength(2);
         expect(lines[0].findComponent(TextField).exists()).toBeTruthy();
         expect(lines[1].element.firstElementChild).toBe(findVDataIterator(wrapper).element);
@@ -404,35 +428,43 @@ describe("DataSet", () => {
       it("should not render the bar by default", () => {
         const wrapper = mountDataSet();
         const lines = findLines(wrapper);
-        expect(findDataSetBar(wrapper).props("actions")).toBeUndefined();
-        expect(findDataSetBar(wrapper).props("searchable")).toBeFalsy();
+        expect(findDataSetBar(wrapper).exists()).toBeFalsy();
         expect(lines).toHaveLength(1);
         expect(lines[0].element.firstElementChild).toBe(findVDataIterator(wrapper).element);
       });
 
-      it("should render the actions on the lines above the grid, before the search field", () => {
+      it("should not render the bar when actions is empty and not searchable", () => {
+        const wrapper = mountDataSet({ actions: [] });
+        expect(findDataSetBar(wrapper).exists()).toBeFalsy();
+        expect(findLines(wrapper)).toHaveLength(1);
+      });
+
+      it("should render the actions on the line above the grid, with the search field", () => {
         const actions = [{ label: "Novo paciente" }, { label: "Importar" }];
         const wrapper = mountDataSet({ actions, searchable: true });
         const lines = findLines(wrapper);
         expect(findDataSetBar(wrapper).props("actions")).toEqual(actions);
-        expect(lines).toHaveLength(4);
-        expect(lines.slice(0, 2).map((line) => line.text())).toEqual(["Novo paciente", "Importar"]);
-        expect(lines[2].findComponent(TextField).exists()).toBeTruthy();
-        expect(lines[3].element.firstElementChild).toBe(findVDataIterator(wrapper).element);
+        expect(findDataSetBar(wrapper).props("searchable")).toBe(true);
+        expect(lines).toHaveLength(2);
+        expect(lines[0].element.firstElementChild).toBe(findDataSetBar(wrapper).element);
+        expect(lines[1].element.firstElementChild).toBe(findVDataIterator(wrapper).element);
       });
 
-      it("should center the actions with the search field", () => {
-        const wrapper = mountDataSet({ actions: [{ label: "Novo paciente" }] });
-        expect(findLayoutRow(wrapper).props("alignY")).toBe("center");
-        expect(findLayoutRow(wrapper).props("list")).toBeFalsy();
+      it("should render the bar with only actions", () => {
+        const actions = [{ label: "Novo paciente" }];
+        const wrapper = mountDataSet({ actions });
+        expect(findDataSetBar(wrapper).props("actions")).toEqual(actions);
+        expect(findDataSetBar(wrapper).props("searchable")).toBe(false);
+        expect(findLines(wrapper)).toHaveLength(2);
       });
 
-      it("should put the records on a full-width line of their own, below the bar", () => {
+      it("should put the bar and the records on full-width lines of their own", () => {
         const wrapper = mountDataSet({ actions: [{ label: "Novo paciente" }] });
-        const recordsColumn = findLayoutRow(wrapper).findAllComponents(Column).at(1);
-        expect(recordsColumn?.props("cols")).toBe("12");
-        expect(recordsColumn?.props("listItem")).toBeFalsy();
-        expect(recordsColumn?.element.firstElementChild).toBe(findVDataIterator(wrapper).element);
+        const [barColumn, recordsColumn] = findLineColumns(wrapper);
+        expect(barColumn.props("cols")).toBe("12");
+        expect(barColumn.props("listItem")).toBeFalsy();
+        expect(recordsColumn.props("cols")).toBe("12");
+        expect(recordsColumn.props("listItem")).toBeFalsy();
       });
 
       it("should keep the bar out of the list of records", () => {
@@ -689,6 +721,17 @@ function findLayoutRow(wrapper: ReturnType<typeof mountDataSet>) {
 
 function findLines(wrapper: ReturnType<typeof mountDataSet>) {
   return findLayoutRow(wrapper).findAll(":scope > .v-col");
+}
+
+/**
+ * Finds the `UColumn`s of the row that lays out the bar and the records, without
+ * the nested ones: one per line.
+ */
+function findLineColumns(wrapper: ReturnType<typeof mountDataSet>) {
+  const layoutRow = findLayoutRow(wrapper);
+  return layoutRow
+    .findAllComponents(Column)
+    .filter((column) => column.element.parentElement === layoutRow.element);
 }
 
 function findDataSetBar(wrapper: ReturnType<typeof mountDataSet>) {

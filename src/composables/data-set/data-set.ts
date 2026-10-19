@@ -126,6 +126,16 @@ export function useDataSetColumnCols(
 }
 
 /**
+ * Width, out of the bar's 12 columns, of the actions and of the search field
+ * above the records of a data set `width` pixels wide: they share the bar in
+ * halves (`"6"`) where two cards fit side by side, so the search field, as wide
+ * as a card, fits in its half, and take a line each (`"12"`) otherwise.
+ */
+export function useDataSetBarCols(width: MaybeRefOrGetter<number>): ComputedRef<"6" | "12"> {
+  return computed(() => (getDataSetFittingColumns(2, toValue(width)) === 2 ? "6" : "12"));
+}
+
+/**
  * Maps the record properties considered by the search to Vuetify's filter
  * keys. An empty list means every property, just like an undefined one.
  */
