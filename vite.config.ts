@@ -40,6 +40,9 @@ export default defineConfig({
       components: "src/components/index.ts",
       composables: "src/composables/index.ts",
     },
+    // Publishes one module per source file instead of one per entry, so the apps' bundlers can
+    // split the components (and the Vuetify styles they import) by the route that uses them
+    unbundle: true,
     copy: "src/styles",
     deps: { neverBundle: [/\.css$/, /^node:/] },
     platform: "neutral",
