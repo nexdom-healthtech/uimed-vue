@@ -26,6 +26,9 @@
     "CLAUDE.md"
   ],
   "type": "module",
+  "sideEffects": [
+    "*.css"
+  ],
   "exports": {
     ".": "./dist/index.js",
     "./components": "./dist/components.js",
