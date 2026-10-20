@@ -111,7 +111,7 @@ async function expectNoA11yViolationsInColorScheme(page: Page, colorScheme: "lig
  * report them. Buttons without a fill (secondary and ghost) take them as their color.
  */
 export const themeTextRgb = {
-  primary: "rgb(0, 122, 74)",
+  primary: "rgb(7, 77, 49)",
   danger: "rgb(201, 42, 30)",
 } as const;
 

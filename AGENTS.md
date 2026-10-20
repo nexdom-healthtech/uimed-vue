@@ -179,7 +179,7 @@ Use an existing composable (e.g. `use-toast`) as the reference, and deliver in t
 - Reuse the shared internal composables for props that recur across components, so every component maps them to Vuetify the same way, instead of mapping them again:
   - `fullWidth`/`fullHeight`: `useFullWidth`/`useFullHeight` (`src/composables/dimensions/dimensions.ts`), applying Vuetify's `w-100`/`h-100` classes even where the component has `width`/`height` props.
   - `alignX`/`alignY`: `useAlignX`/`useAlignY` (`src/composables/alignment/alignment.ts`), with the `AlignX`/`AlignY` types from the group's `types.ts`.
-  - `color`: `useVuetifyColor` (`src/composables/colors/use-vuetify-color.ts`), with the `ColorVariant` type from the group's `types.ts`. Where the color is the text's instead of a fill (e.g. `UButton`'s `ghost` variant), use `useVuetifyTextColor` (`use-vuetify-text-color.ts`) instead: the fills are too light to reach WCAG AA's contrast as text, so each one has a darker text shade in the theme.
+  - `color`: `useVuetifyColor` (`src/composables/colors/use-vuetify-color.ts`), with the `ColorVariant` type from the group's `types.ts`. Where the color is the text's instead of a fill (e.g. `UButton`'s `ghost` variant), use `useVuetifyTextColor` (`use-vuetify-text-color.ts`) instead: most fills are too light to reach WCAG AA's contrast as text, so each color has a text shade in the theme, darker than its fill (primary's fill is dark enough to be its own shade).
 
   A new prop that does the same as one of these takes its name and type. When a second component needs a mapping that only one component has, move it into a shared composable first.
 
