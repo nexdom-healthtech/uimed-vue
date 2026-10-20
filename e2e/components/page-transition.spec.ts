@@ -6,7 +6,7 @@ test.describe("page-transition", () => {
     await gotoPage(page, "guide/components/page-transition");
     await expect(getFirstPage(page)).toBeVisible();
     // The demo's router resolves its first route after mounting, so the first page fades in
-    await expect.poll(() => getFirstPage(page).evaluate(getWrapperAnimations)).toBe(0);
+    await expect.poll(() => getFirstPage(page).evaluate(isWrapperAtRest)).toBe(true);
   });
 
   test.describe("demos", () => {
@@ -100,7 +100,7 @@ test.describe("page-transition", () => {
       await expect(getSecondPage(page)).toBeVisible();
       await expect(getFirstPage(page)).toHaveCount(0);
       // Halfway through the fade, the text's contrast is still below the minimum
-      await expect.poll(() => getSecondPage(page).evaluate(getWrapperAnimations)).toBe(0);
+      await expect.poll(() => getSecondPage(page).evaluate(isWrapperAtRest)).toBe(true);
 
       await expectNoA11yViolations(page);
     });
@@ -114,7 +114,7 @@ test.describe("page-transition", () => {
       await page.getByRole("button", { name: "Ir para a agenda" }).click();
       await expect(getSecondPage(page)).toBeVisible();
       await expect(getFirstPage(page)).toHaveCount(0);
-      await expect.poll(() => getSecondPage(page).evaluate(getWrapperAnimations)).toBe(0);
+      await expect.poll(() => getSecondPage(page).evaluate(isWrapperAtRest)).toBe(true);
       // Clicking scrolled the page, which would capture the docs' fixed header halfway down
       await page.evaluate(() => globalThis.scrollTo(0, 0));
 
@@ -123,8 +123,13 @@ test.describe("page-transition", () => {
   });
 });
 
-function getWrapperAnimations(element: Element) {
-  return element.parentElement!.getAnimations().length;
+/**
+ * Whether the element around the page finished fading in. Right after the previous page leaves,
+ * the next one is still transparent for a frame, before its fade starts.
+ */
+function isWrapperAtRest(element: Element) {
+  const wrapper = element.parentElement!;
+  return wrapper.getAnimations().length === 0 && getComputedStyle(wrapper).opacity === "1";
 }
 
 function getFirstPage(page: Page) {
