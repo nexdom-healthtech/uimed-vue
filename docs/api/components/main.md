@@ -115,9 +115,10 @@ Item dentro de um [grupo](#navigationmenuparent). Tem as mesmas propriedades do 
 
 ## Slots
 
-| Slot      | Descrição                                                                                                                                                                                            |
-| --------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `default` | Conteúdo exibido dentro do componente, que ocupa toda a altura visível abaixo do menu superior (e acima do rodapé, quando exibido). Utilize uma [`URow`](./grid/row) com `fullHeight` para ocupá-la. |
+| Slot                   | Descrição                                                                                                                                                                                                                                                       |
+| ---------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `default`              | Conteúdo exibido dentro do componente, que ocupa toda a altura visível abaixo do menu superior (e acima do rodapé, quando exibido). Utilize uma [`URow`](./grid/row) com `fullHeight` para ocupá-la.                                                            |
+| `user-section-details` | Detalhes do usuário exibidos no menu do usuário, abaixo do nome e do subtítulo e acima das opções, com o texto centralizado (por exemplo, a empresa, o perfil de acesso e um botão para gerenciar o perfil). **Só é exibido quando `appBar.user` é informado.** |
 
 ## Exemplo
 

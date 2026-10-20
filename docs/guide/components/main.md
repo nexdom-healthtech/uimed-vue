@@ -181,6 +181,74 @@ const appBar: NonNullable<MainProps["appBar"]> = {
 </script>
 ```
 
+#### Detalhes do usuário
+
+Para mostrar mais informações do usuário no menu, como a empresa e o perfil de acesso, use o slot `user-section-details`. O conteúdo aparece abaixo do nome e do subtítulo e acima das opções, com o texto centralizado como eles. O slot aceita qualquer conteúdo, inclusive ações, como um botão para gerenciar o perfil.
+
+O slot só é exibido quando há um menu do usuário, ou seja, quando `appBar.user` é informado.
+
+<demo contained data-testid="demo-root-user-details">
+<u-main :appBar="userDetailsAppBar" data-testid="root-demo-user-details">
+  <template #user-section-details>
+    <u-row>
+      <u-column cols="12">
+        <strong>Unimed do Estado de Santa Catarina</strong>
+        <div>Perfil Administrador</div>
+      </u-column>
+    </u-row>
+    <u-row>
+      <u-column cols="12">
+        <u-button variant="secondary" full-width @click="manageProfile">Gerenciar perfil</u-button>
+      </u-column>
+    </u-row>
+  </template>
+  <h2>O conteúdo da página vai aqui...</h2>
+</u-main>
+</demo>
+
+```vue
+<template>
+  <u-main :appBar>
+    <template #user-section-details>
+      <u-row>
+        <u-column cols="12">
+          <strong>Unimed do Estado de Santa Catarina</strong>
+          <div>Perfil Administrador</div>
+        </u-column>
+      </u-row>
+      <u-row>
+        <u-column cols="12">
+          <u-button variant="secondary" full-width @click="manageProfile">
+            Gerenciar perfil
+          </u-button>
+        </u-column>
+      </u-row>
+    </template>
+    <h2>O conteúdo da página vai aqui...</h2>
+  </u-main>
+</template>
+
+<script lang="ts" setup>
+import type { ComponentProps } from "vue-component-type-helpers";
+import { UButton, UColumn, UMain, URow } from "@nexdom/uimed-vue/components";
+
+type MainProps = ComponentProps<typeof UMain>;
+
+const appBar: NonNullable<MainProps["appBar"]> = {
+  title: "Menu superior",
+  user: {
+    title: "Julyana Costa",
+    subtitle: "julyana.costa@example.com",
+    options: [{ description: "Sair", action: () => window.alert("Saindo...") }],
+  },
+};
+
+function manageProfile() {
+  window.alert("Abrindo o perfil...");
+}
+</script>
+```
+
 ### Menu de navegação
 
 A prop `navigation-menu` define as configurações para apresentação do menu lateral de navegação.
@@ -444,7 +512,7 @@ O conteúdo da página ocupa toda a altura visível abaixo do menu superior (e a
 <script lang="ts" setup>
   import { computed, reactive, ref } from "vue"
   import type { ComponentProps } from "vue-component-type-helpers"
-  import { UMain } from "../../../dist/components.js"
+  import { UButton, UColumn, UMain, URow } from "../../../dist/components.js"
 
   type MainProps = ComponentProps<typeof UMain>
 
@@ -704,6 +772,20 @@ O conteúdo da página ocupa toda a altura visível abaixo do menu superior (e a
       options: [{ description: "Sair", action: () => window.alert("Saindo...") }],
     },
   };
+
+  const userDetailsAppBar: NonNullable<MainProps["appBar"]> = {
+    title: "Menu superior",
+    dataTestid: "demo-root-user-details-app-bar",
+    user: {
+      title: "Julyana Costa",
+      subtitle: "julyana.costa@example.com",
+      options: [{ description: "Sair", action: () => window.alert("Saindo...") }],
+    },
+  };
+
+  function manageProfile() {
+    window.alert("Abrindo o perfil...");
+  }
 
   const loadingNavigationMenu: NonNullable<MainProps["navigationMenu"]> = {
     dataTestid: "demo-root-loading-navigation-menu",

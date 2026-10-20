@@ -194,6 +194,53 @@ test.describe("main", () => {
           );
         });
       });
+
+      test.describe("user details", () => {
+        test("shows the details centered between the user's name and the options", async ({
+          page,
+        }) => {
+          await getUserDetailsButton(page).click();
+          const userMenu = getUserDetailsMenu(page);
+          await expect(userMenu).toBeVisible();
+          // The menu grows from the button while it opens, so its boxes are only final afterwards
+          await waitForAnimations(page);
+
+          const organization = userMenu.getByText("Unimed do Estado de Santa Catarina");
+          const profile = userMenu.getByText("Perfil Administrador");
+          await expect(organization).toHaveCSS("text-align", "center");
+          await expect(profile).toHaveCSS("text-align", "center");
+
+          const [card, subtitle, organizationBox, manageButton, option] = await Promise.all([
+            getBox(userMenu),
+            getBox(userMenu.locator(".v-card-subtitle")),
+            getBox(organization),
+            getBox(userMenu.getByRole("button", { name: "Gerenciar perfil" })),
+            getBox(userMenu.getByRole("button", { name: "Sair" })),
+          ]);
+
+          expect(subtitle.y + subtitle.height).toBeLessThanOrEqual(organizationBox.y);
+          expect(manageButton.y + manageButton.height).toBeLessThanOrEqual(option.y);
+          const cardCenter = card.x + card.width / 2;
+          const organizationCenter = organizationBox.x + organizationBox.width / 2;
+          expect(Math.abs(organizationCenter - cardCenter)).toBeLessThanOrEqual(1);
+        });
+
+        test("triggers the action of a button in the details", async ({ page }) => {
+          await getUserDetailsButton(page).click();
+
+          const dialogPromise = page.waitForEvent("dialog");
+          await getUserDetailsMenu(page).getByRole("button", { name: "Gerenciar perfil" }).click();
+
+          const dialog = await dialogPromise;
+          expect(dialog.type()).toBe("alert");
+          expect(dialog.message()).toBe("Abrindo o perfil...");
+        });
+
+        test("matches the accessible snapshot of the open user details menu", async ({ page }) => {
+          await getUserDetailsButton(page).click();
+          await expect(getUserDetailsMenu(page)).toMatchAriaSnapshot();
+        });
+      });
     });
 
     test.describe("navigation-menu", () => {
@@ -842,6 +889,12 @@ test.describe("main", () => {
       await expect(getUserInitialsMenu(page)).toBeVisible();
       await expectNoA11yViolations(page);
     });
+
+    test("has no violations with the menu of the user details open", async ({ page }) => {
+      await getUserDetailsButton(page).click();
+      await expect(getUserDetailsMenu(page)).toBeVisible();
+      await expectNoA11yViolations(page);
+    });
   });
 
   test.describe("UI consistency", () => {
@@ -894,6 +947,14 @@ test.describe("main", () => {
       // The demo is as tall as the viewport, so the docs' fixed navigation bar would cover its top
       await page.addStyleTag({ content: ".VPNav { visibility: hidden; }" });
       await expect(getBackgroundDemo(page)).toHaveScreenshot();
+    });
+
+    test("matches last screenshot of the open user details menu", async ({ page }) => {
+      await getUserDetailsButton(page).click();
+      await expect(getUserDetailsMenu(page)).toBeVisible();
+      // The menu grows from the button while it opens
+      await waitForAnimations(page);
+      await expect(getUserDetailsMenu(page)).toHaveScreenshot();
     });
 
     // The loading demo with its drawer closed is already in the screenshots above
@@ -1103,6 +1164,14 @@ function getUserInitialsButton(page: Page) {
 
 function getUserInitialsMenu(page: Page) {
   return page.getByTestId("demo-root-user-initials-app-bar-user-menu");
+}
+
+function getUserDetailsButton(page: Page) {
+  return page.getByTestId("demo-root-user-details-app-bar-user");
+}
+
+function getUserDetailsMenu(page: Page) {
+  return page.getByTestId("demo-root-user-details-app-bar-user-menu");
 }
 
 function getPlaygroundAppBar(page: Page) {

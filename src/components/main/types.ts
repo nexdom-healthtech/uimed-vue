@@ -62,3 +62,21 @@ export type MainProps = {
    */
   background?: ColorVariant;
 };
+
+/**
+ * Slots exposed by the {@link Main} component.
+ */
+export type MainSlots = {
+  /**
+   * Content of the page, below the app bar (and above the footer, when shown).
+   */
+  default?: () => unknown;
+
+  /**
+   * Details of the user shown in the user menu of the app bar, below the
+   * name and subtitle and above the options, with the text centered like
+   * them (e.g. the user's organization and profile, and an action to manage
+   * the profile). Only shown when `appBar.user` is given.
+   */
+  "user-section-details"?: () => unknown;
+};

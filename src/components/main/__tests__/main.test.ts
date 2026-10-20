@@ -1,4 +1,4 @@
-import { VApp, VMain } from "vuetify/components";
+import { VApp, VBtn, VCard, VMain } from "vuetify/components";
 import Main from "@/components/main/main.vue";
 import { flushPromises, mount } from "@vue/test-utils";
 import { vueTestUtilsPluginUimed } from "@/unit-test.ts";
@@ -283,6 +283,30 @@ describe("Main", () => {
 
         expect(wrapper.attributes("style")).toBeUndefined();
         expect(wrapper.classes()).not.toContain(classValue);
+      });
+    });
+  });
+
+  describe("slots", () => {
+    describe("user-section-details", () => {
+      it("should pass the details to the user menu of the app bar", async () => {
+        const detailsWrapper = mount(Main, {
+          props: { appBar: { user: { title: "Beetlejuice" } } },
+          slots: { "user-section-details": '<strong data-testid="details">Unimed</strong>' },
+          global: { plugins: [vueTestUtilsPluginUimed()] },
+        });
+        const appBar = findAppBar(detailsWrapper);
+        expect(appBar.vm.$slots["user-section-details"]).toBeDefined();
+
+        await appBar.findComponent(VBtn).trigger("click");
+
+        expect(appBar.findComponent(VCard).find('[data-testid="details"]').text()).toBe("Unimed");
+      });
+
+      it("should not pass an empty slot to the app bar without details", async () => {
+        await wrapper.setProps({ appBar: { user: { title: "Beetlejuice" } } });
+
+        expect(findAppBar(wrapper).vm.$slots["user-section-details"]).toBeUndefined();
       });
     });
   });

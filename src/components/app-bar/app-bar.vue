@@ -118,6 +118,10 @@
               :subtitle="user?.subtitle"
               class="text-center"
             />
+            <!-- The app's details of the user continue the header, so their text is centered too -->
+            <v-card-text v-if="slots['user-section-details']" class="text-center">
+              <slot name="user-section-details" />
+            </v-card-text>
 
             <v-divider />
 
@@ -180,6 +184,7 @@ export default {
 <script setup lang="ts">
 import {
   type AppBarProps,
+  type AppBarSlots,
   type ParentOption,
   type ParentOptionOrOption,
 } from "@/components/app-bar/types.ts";
@@ -217,6 +222,7 @@ type Props = AppBarProps & {
 };
 
 const props = defineProps<Props>();
+const slots = defineSlots<AppBarSlots>();
 const notificationsOpen = defineModel<boolean>("notificationsOpen", { default: false });
 const navigationOpen = defineModel<boolean>("navigationOpen");
 // Ctrl+K (⌘K on macOS) also opens the navigation menu, handled by the menu itself

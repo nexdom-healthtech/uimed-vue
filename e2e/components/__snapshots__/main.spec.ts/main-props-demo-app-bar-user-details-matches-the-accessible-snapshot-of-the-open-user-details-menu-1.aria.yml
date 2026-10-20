@@ -1,0 +1,7 @@
+- text: Julyana Costa julyana.costa@example.com
+- strong: Unimed do Estado de Santa Catarina
+- text: Perfil Administrador
+- button "Gerenciar perfil"
+- separator
+- group:
+    - button "Sair"
