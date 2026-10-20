@@ -23,17 +23,19 @@ export function createUimed(): Plugin {
           colors: {
             background: "#EAEDF0",
             surface: "#FCFCFD",
-            primary: "#00995D",
+            primary: "#074D31",
             secondary: "#FCFCFD",
             success: "#A9EFC5",
             warning: "#FFE596",
             error: "#D92D20",
             info: "#9ACBE5",
-            // White text on the primary fill has a contrast of 3.67:1, below WCAG AA's 4.5:1
-            "on-primary": "#000000",
-            // Darker shades of the colors above for when they're the text color (e.g. in ghost
-            // buttons), since the fills are too light to reach 4.5:1 on the surface or background
-            "primary-text": "#007A4A",
+            // Without it, Vuetify generates pure white for the text on the primary fill, instead of
+            // the surface's off-white
+            "on-primary": "#FCFCFD",
+            // Shades of the colors above for when they're the text color (e.g. in ghost buttons).
+            // Primary is dark enough to be its own text; the others are darker, since their fills
+            // are too light to reach 4.5:1 on the surface or background
+            "primary-text": "#074D31",
             "success-text": "#16783E",
             "info-text": "#277096",
             "warning-text": "#846300",

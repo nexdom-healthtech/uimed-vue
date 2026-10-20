@@ -485,8 +485,8 @@ test.describe("main", () => {
       const app = getBackgroundApp(page);
 
       await expect(app).toContainClass("bg-primary");
-      await expect(app).toHaveCSS("background-color", "rgb(0, 153, 93)");
-      await expect(app.getByRole("heading", { level: 2 })).toHaveCSS("color", "rgb(0, 0, 0)");
+      await expect(app).toHaveCSS("background-color", "rgb(7, 77, 49)");
+      await expect(app.getByRole("heading", { level: 2 })).toHaveCSS("color", "rgb(252, 252, 253)");
     });
 
     test("keeps the background of the app bar", async ({ page }) => {
@@ -496,7 +496,7 @@ test.describe("main", () => {
       );
 
       await expect(getBackgroundAppBar(page)).toHaveCSS("background-color", defaultBackground);
-      expect(defaultBackground).not.toBe("rgb(0, 153, 93)");
+      expect(defaultBackground).not.toBe("rgb(7, 77, 49)");
     });
 
     test("matches the accessible snapshot of the background demo", async ({ page }) => {
