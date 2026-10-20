@@ -49,30 +49,12 @@ export default {
 import { VDefaultsProvider } from "vuetify/components";
 import Button from "@/components/button/button.vue";
 import Column from "@/components/grid/column/column.vue";
-import type { ColumnProps } from "@/components/grid/column/types.ts";
 import Row from "@/components/grid/row/row.vue";
 import TextField from "@/components/inputs/text-field/text-field.vue";
-import type { SectionAction } from "@/components/sections/section/types.ts";
+import type { DataSetBarProps } from "@/components/data-sets/types.ts";
 import { minDataSetItemWidth } from "@/composables/data-set/data-set.ts";
 
-const props = defineProps<{
-  /**
-   * Actions about the whole list, rendered as buttons at the start of the bar.
-   */
-  actions?: SectionAction[];
-
-  /**
-   * Whether the search field is rendered at the end of the bar.
-   */
-  searchable?: boolean;
-
-  /**
-   * Width, out of the bar's 12 columns, of the actions and of the search field
-   * when both are rendered: `"6"` to share a line, or `"12"` to take a line
-   * each, when the bar is too narrow for the search field to fit in half of it.
-   */
-  cols: Extract<ColumnProps["cols"], "6" | "12">;
-}>();
+const props = defineProps<DataSetBarProps>();
 
 const search = defineModel<string>({ default: "" });
 
