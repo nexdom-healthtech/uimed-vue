@@ -2,7 +2,7 @@
   <!-- The page is wrapped so any page can be animated, whatever it renders at its root. The
   wrapper takes the parent's height, so pages with `fullHeight` still have a height to fill -->
   <v-fade-transition mode="out-in">
-    <div :key="getPageKey(slots.default?.())" class="h-100">
+    <div :key="pageKey" class="h-100">
       <slot />
     </div>
   </v-fade-transition>
@@ -16,9 +16,10 @@
  *
  * The page is rendered inside a `div` that takes the whole height of its
  * parent, so any page is animated, whatever it renders at its root. The
- * change happens when the slot renders another component, or the same one
- * with another `key` (e.g. `:key="route.fullPath"`, to also animate a route
- * whose params change). Attributes (`class`, `style`...) aren't passed on.
+ * change is animated whenever `transitionKey` changes, which defaults to the
+ * current route's `fullPath`: every navigation is animated, including the
+ * ones that only change the route's params, query or hash. Attributes
+ * (`class`, `style`...) aren't passed on.
  *
  * @example
  * ```vue
@@ -41,12 +42,14 @@ export default {
 </script>
 
 <script setup lang="ts">
-import type { VNode } from "vue";
+import { computed } from "vue";
+import { useRoute } from "vue-router";
 import { VFadeTransition } from "vuetify/components";
-import { getPageKey } from "@/utils/page-key.ts";
+import type { PageTransitionProps } from "@/components/page-transition/types.ts";
 
-const slots = defineSlots<{
-  /** The page to animate, usually the route's component (`<component :is="Component" />`). */
-  default?: () => VNode[];
-}>();
+const props = defineProps<PageTransitionProps>();
+
+const route = useRoute();
+
+const pageKey = computed(() => props.transitionKey ?? route.fullPath);
 </script>
