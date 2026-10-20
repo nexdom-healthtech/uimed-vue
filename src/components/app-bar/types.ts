@@ -31,6 +31,18 @@ export type AppBarProps = {
 };
 
 /**
+ * Slots exposed by the {@link AppBar} component.
+ */
+export type AppBarSlots = {
+  /**
+   * Details of the user shown in the user menu, below the name and subtitle
+   * and above the options, with the text centered like them (e.g. the user's
+   * organization and profile, and an action to manage the profile).
+   */
+  "user-section-details"?: () => unknown;
+};
+
+/**
  * A single notification entry shown in the {@link AppBar}.
  */
 interface AppBarNotification {

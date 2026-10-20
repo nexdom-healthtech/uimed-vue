@@ -5,7 +5,11 @@
       v-bind="appBarProps"
       v-model:notifications-open="notificationsOpen"
       v-model:navigation-open="navigationMenuOpen"
-    />
+    >
+      <template v-if="slots['user-section-details']" #user-section-details>
+        <slot name="user-section-details" />
+      </template>
+    </app-bar>
 
     <navigation-menu
       v-if="props.navigationMenu"
@@ -51,7 +55,7 @@ export default {
 import AppBar from "@/components/app-bar/app-bar.vue";
 import NavigationMenu from "@/components/navigation-menu/navigation-menu.vue";
 import AppFooter from "@/components/footer/footer.vue";
-import { type MainProps } from "@/components/main/types.ts";
+import { type MainProps, type MainSlots } from "@/components/main/types.ts";
 import { VApp, VMain } from "vuetify/components";
 import Container from "@/components/grid/container/container.vue";
 import Toast from "@/components/dialogs/toast.vue";
@@ -60,6 +64,7 @@ import useVuetifyBackgroundColor from "@/composables/colors/use-vuetify-backgrou
 import { computed, ref } from "vue";
 
 const props = defineProps<MainProps>();
+const slots = defineSlots<MainSlots>();
 const appBarProps = computed(() =>
   props.appBar
     ? {

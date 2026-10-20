@@ -8,6 +8,8 @@ import {
   VBtn,
   VCard,
   VCardItem,
+  VCardText,
+  VDivider,
   VIcon,
   VImg,
   VListGroup,
@@ -839,6 +841,49 @@ describe("AppBar", () => {
       });
     });
   });
+
+  describe("slots", () => {
+    describe("user-section-details", () => {
+      const user = {
+        title: "Beetlejuice",
+        subtitle: "beetle3x@gmail.com",
+        options: [{ description: "Sair" }],
+      };
+      const details = '<strong data-testid="details">Unimed do Brasil</strong>';
+
+      it("should present the details centered between the user info and the options", async () => {
+        const detailsWrapper = mountAppBarWithDetails(user, details);
+        await findVBtn(detailsWrapper).trigger("click");
+
+        const vCard = findVCard(detailsWrapper);
+        const [, infoItem] = findVCardItems(vCard);
+        const vCardText = vCard.findComponent(VCardText);
+        expect(vCardText.find('[data-testid="details"]').text()).toBe("Unimed do Brasil");
+        expect(vCardText.classes()).toContain("text-center");
+        expect(isBefore(infoItem, vCardText)).toBeTruthy();
+        expect(isBefore(vCardText, vCard.findComponent(VDivider))).toBeTruthy();
+        expect(isBefore(vCardText, vCard.findComponent(VList))).toBeTruthy();
+      });
+
+      it("should present the details below the avatar without a title nor a subtitle", async () => {
+        const detailsWrapper = mountAppBarWithDetails({}, details);
+        await findVBtn(detailsWrapper).trigger("click");
+
+        const vCard = findVCard(detailsWrapper);
+        const vCardItems = findVCardItems(vCard);
+        expect(vCardItems).toHaveLength(1);
+        expect(isBefore(vCardItems[0], vCard.findComponent(VCardText))).toBeTruthy();
+        expect(vCard.find('[data-testid="details"]').exists()).toBeTruthy();
+      });
+
+      it("should leave no empty area without details", async () => {
+        await wrapper.setProps({ user });
+        await findVBtn(wrapper).trigger("click");
+
+        expect(findVCard(wrapper).findComponent(VCardText).exists()).toBeFalsy();
+      });
+    });
+  });
 });
 
 function mountAppBar() {
@@ -848,6 +893,14 @@ function mountAppBar() {
       style: styleValue,
       class: classValue,
     },
+    global: getGlobalMountingOptions(),
+  });
+}
+
+function mountAppBarWithDetails(user: AppBarUserProps, details: string) {
+  return mount(AppBar, {
+    props: { user },
+    slots: { "user-section-details": details },
     global: getGlobalMountingOptions(),
   });
 }
