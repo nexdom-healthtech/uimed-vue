@@ -176,6 +176,8 @@ const pacientes = [
 
 A prop `actions` define as ações sobre a listagem como um todo, como "Novo paciente". Elas são exibidas como botões à esquerda da barra acima dos registros, na mesma linha do campo de pesquisa, e aceitam as mesmas opções das [ações do agrupador de conteúdo](./section#acoes). A barra só é exibida quando há ações ou pesquisa.
 
+Sem `variant`, as ações da listagem são `secondary`, e não `primary` como nas ações do agrupador de conteúdo e dos registros, para não concorrerem com elas. Uma ação que informa `variant` mantém a sua.
+
 Com o campo de pesquisa, as ações ocupam a metade esquerda da barra, e o campo, a metade direita. As ações que não cabem na metade delas passam para a linha seguinte, ainda à esquerda. Quando a listagem não tem largura para dois cartões lado a lado, como em diálogos e painéis laterais, as ações e o campo de pesquisa ficam em linhas separadas, com o campo ainda à direita. Em telas muito pequenas, como as de celulares, cada ação e o campo de pesquisa ocupam uma linha inteira.
 
 <demo col>
@@ -184,7 +186,7 @@ Com o campo de pesquisa, as ações ocupam a metade esquerda da barra, e o campo
   :columns="2"
   :actions="[
     { label: 'Novo paciente', onClick: novoPaciente },
-    { label: 'Exportar', variant: 'secondary', onClick: exportar },
+    { label: 'Exportar', onClick: exportar },
   ]"
   searchable
   data-testid="demo-data-set-list-actions"
@@ -203,7 +205,7 @@ Com o campo de pesquisa, as ações ocupam a metade esquerda da barra, e o campo
     :columns="2"
     :actions="[
       { label: 'Novo paciente', onClick: novoPaciente },
-      { label: 'Exportar', variant: 'secondary', onClick: exportar },
+      { label: 'Exportar', onClick: exportar },
     ]"
     searchable
   >

@@ -9,12 +9,14 @@
     <Column v-if="props.actions?.length" :cols="props.searchable ? props.cols : '12'">
       <Row>
         <!-- Each action takes the full width of its column, which only stretches it below sm -->
+        <!-- The list's actions are secondary unless they set a variant, so they don't compete with
+             the actions of the records and of the sections -->
         <Column
-          v-for="({ label, onClick, ...action }, index) in props.actions"
+          v-for="({ label, onClick, variant = 'secondary', ...action }, index) in props.actions"
           :key="index"
           cols="auto"
         >
-          <Button full-width v-bind="action" @click="onClick">
+          <Button full-width :variant v-bind="action" @click="onClick">
             {{ label }}
           </Button>
         </Column>

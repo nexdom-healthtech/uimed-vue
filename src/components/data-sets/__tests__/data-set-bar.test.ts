@@ -1,5 +1,5 @@
 import { mount } from "@vue/test-utils";
-import { VDefaultsProvider, VTextField } from "vuetify/components";
+import { VBtn, VDefaultsProvider, VTextField } from "vuetify/components";
 import Button from "@/components/button/button.vue";
 import DataSetBar from "@/components/data-sets/data-set-bar.vue";
 import Column from "@/components/grid/column/column.vue";
@@ -133,12 +133,33 @@ describe("DataSetBar", () => {
       expect(findButtons(wrapper)[0].props("fullWidth")).toBe(false);
     });
 
+    it("should render the actions as secondary by default", () => {
+      const wrapper = mountDataSetBar({ actions: [{ label: "Novo paciente" }] });
+      expect(findButtons(wrapper)[0].props("variant")).toBe("secondary");
+      expect(wrapper.findComponent(VBtn).props("variant")).toBe("outlined");
+    });
+
+    it("should render an action with an undefined variant as secondary", () => {
+      const wrapper = mountDataSetBar({
+        actions: [{ label: "Novo paciente", variant: undefined }],
+      });
+      expect(findButtons(wrapper)[0].props("variant")).toBe("secondary");
+    });
+
+    it.each(["primary", "ghost"] as const)(
+      'should keep the variant an action sets: "%s"',
+      (variant) => {
+        const wrapper = mountDataSetBar({ actions: [{ label: "Novo paciente", variant }] });
+        expect(findButtons(wrapper)[0].props("variant")).toBe(variant);
+      },
+    );
+
     it("should forward the action props to the buttons", () => {
       const wrapper = mountDataSetBar({
         actions: [
           {
             label: "Novo paciente",
-            variant: "secondary",
+            variant: "ghost",
             type: "submit",
             color: "danger",
             disabled: true,
@@ -149,7 +170,7 @@ describe("DataSetBar", () => {
         ],
       });
       const button = findButtons(wrapper)[0];
-      expect(button.props("variant")).toBe("secondary");
+      expect(button.props("variant")).toBe("ghost");
       expect(button.props("type")).toBe("submit");
       expect(button.props("color")).toBe("danger");
       expect(button.props("disabled")).toBe(true);
