@@ -16,6 +16,7 @@ export const feedbackColorToVuetifyColor: Record<FeedbackColorVariant, FeedbackV
 export const colorToVuetifyColor: Record<ColorVariant, VuetifyColor> = {
   primary: "primary",
   secondary: "secondary",
+  tertiary: "tertiary",
   ...feedbackColorToVuetifyColor,
 };
 
@@ -27,6 +28,7 @@ export const colorToVuetifyColor: Record<ColorVariant, VuetifyColor> = {
 export const colorToVuetifyTextColor: Record<ColorVariant, VuetifyTextColor> = {
   primary: "primary-text",
   secondary: "on-surface",
+  tertiary: "tertiary-text",
   positive: "success-text",
   informative: "info-text",
   caution: "warning-text",
