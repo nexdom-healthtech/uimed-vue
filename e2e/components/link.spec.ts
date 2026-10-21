@@ -1,5 +1,5 @@
 import { test, expect, type Page } from "@playwright/test";
-import { gotoPage } from "@e2e/utils.ts";
+import { expectNoA11yViolations, gotoPage, themeTextRgb } from "@e2e/utils.ts";
 
 const externalUrl = "https://nexdom-healthtech.github.io/shared/";
 
@@ -59,9 +59,20 @@ test.describe("link", () => {
       await expect(getExternalLink(page)).toHaveCSS("text-decoration-line", "none");
     });
 
+    test("takes the theme's link color", async ({ page }) => {
+      await expect(getRouteLink(page)).toHaveCSS("color", themeTextRgb.link);
+      await expect(getExternalLink(page)).toHaveCSS("color", themeTextRgb.link);
+    });
+
     test("matches the accessible snapshot of the demos", async ({ page }) => {
       await expect(page.locator(".vp-doc .demo").first()).toMatchAriaSnapshot();
       await expect(page.locator(".vp-doc .demo").nth(1)).toMatchAriaSnapshot();
+    });
+  });
+
+  test.describe("accessibility", () => {
+    test("has no violations", async ({ page }) => {
+      await expectNoA11yViolations(page);
     });
   });
 

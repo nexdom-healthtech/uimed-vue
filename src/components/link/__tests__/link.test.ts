@@ -20,9 +20,9 @@ describe("Link", () => {
     expect(link.text()).toBe(text);
   });
 
-  it("should only have the class that removes the underline", async () => {
+  it("should only have the classes that remove the underline and set the link color", async () => {
     const { link } = await mountLink();
-    expect(link.classes()).toEqual(["text-decoration-none"]);
+    expect(link.classes()).toEqual(["text-decoration-none", "text-link"]);
   });
 
   it("should not inherit unexpected attributes", async () => {

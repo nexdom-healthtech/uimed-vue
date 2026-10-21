@@ -40,6 +40,9 @@ export function createUimed(): Plugin {
             "info-text": "#277096",
             "warning-text": "#846300",
             "error-text": "#C92A1E",
+            // Text color of `ULink`: a darker shade of the originally requested #027CBE, since that
+            // one stays below 4.5:1 on the background
+            link: "#0271AD",
           },
           variables: {
             "border-color": "#D0D5DD",

@@ -1,9 +1,10 @@
 <template>
-  <!-- No Vuetify component renders an inline text link, so the class removes the browser's underline -->
+  <!-- No Vuetify component renders an inline text link, so the classes remove the browser's underline
+  and set the theme's link color, instead of the browser's blue and purple -->
   <component
     :is="isExternalRoute(props.route) ? 'a' : RouterLink"
     v-bind="routeProps"
-    class="text-decoration-none"
+    class="text-decoration-none text-link"
     :data-testid="props.dataTestid"
   >
     <slot />
