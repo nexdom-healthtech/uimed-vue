@@ -224,6 +224,12 @@ test.describe("data-set", () => {
       expect((firstCard?.y ?? 0) - getBottom(fieldBox)).toBeCloseTo(cardsGap, 0);
     });
 
+    test("outlines the list actions by default", async ({ page }) => {
+      const buttons = getListActionButtons(page.getByTestId("demo-data-set-list-actions"));
+      await expectOutlinedButton(buttons.nth(0), themeTextRgb.primary);
+      await expectOutlinedButton(buttons.nth(1), themeTextRgb.primary);
+    });
+
     test("calls the clicked list action", async ({ page }) => {
       const dataSet = page.getByTestId("demo-data-set-list-actions");
       const lastAction = page.getByTestId("demo-data-set-list-actions-last");
@@ -434,6 +440,10 @@ test.describe("data-set", () => {
 
       await page.getByTestId("data-set-playground-actions").locator("input").click();
       await expect(preview.getByRole("button", { name: "Novo paciente" })).toBeVisible();
+      await expectOutlinedButton(
+        preview.getByRole("button", { name: "Novo paciente" }),
+        themeTextRgb.primary,
+      );
 
       await page.getByTestId("data-set-playground-searchable").locator("input").click();
       await expect(preview.getByRole("textbox", { name: "Pesquisar" })).toHaveCount(0);
