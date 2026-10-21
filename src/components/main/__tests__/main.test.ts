@@ -91,11 +91,36 @@ describe("Main", () => {
         await wrapper.setProps({ appBar: { title }, navigationMenu: undefined });
         expect(findAppBar(wrapper).props("navigation")).toBe(false);
 
-        await wrapper.setProps({ navigationMenu: { items: [{ description: "Home" }] } });
+        await wrapper.setProps({
+          navigationMenu: { items: [{ description: "Home", icon: "home" }] },
+        });
         expect(findAppBar(wrapper).props("navigation")).toBe(true);
 
         // Cleanup for subsequent tests
         await wrapper.setProps({ navigationMenu: undefined });
+      });
+
+      it("should only show the navigation button below the mobile breakpoint", async () => {
+        window.innerWidth = 1280;
+        window.dispatchEvent(new Event("resize"));
+        const desktop = mountMain();
+
+        try {
+          await desktop.setProps({ appBar: { title }, navigationMenu: { items: [] } });
+
+          // The navigation menu is a rail, always visible, above the mobile breakpoint
+          expect(findAppBar(desktop).props("navigation")).toBe(false);
+
+          window.innerWidth = 1024;
+          window.dispatchEvent(new Event("resize"));
+          await flushPromises();
+
+          expect(findAppBar(desktop).props("navigation")).toBe(true);
+        } finally {
+          window.innerWidth = 1024;
+          window.dispatchEvent(new Event("resize"));
+          desktop.unmount();
+        }
       });
 
       describe("notificationsOpen", () => {
@@ -118,7 +143,7 @@ describe("Main", () => {
     });
 
     describe("navigationMenu", () => {
-      const items = [{ description: "Home", route: "/" }];
+      const items = [{ description: "Home", route: "/", icon: "home" as const }];
 
       it("should only load navigation menu when its prop is filled", async () => {
         expect(wrapper.findComponent(NavigationMenu).exists()).toBeFalsy();
@@ -179,7 +204,9 @@ describe("Main", () => {
 
     describe("loading", () => {
       const appBar = { title: "AI Chat" };
-      const navigationMenu = { items: [{ description: "Home", route: "/" }] };
+      const navigationMenu = {
+        items: [{ description: "Home", route: "/", icon: "home" as const }],
+      };
 
       it("should not be loading by default", async () => {
         await wrapper.setProps({ appBar, navigationMenu });

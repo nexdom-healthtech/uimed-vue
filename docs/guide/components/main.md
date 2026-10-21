@@ -50,7 +50,7 @@ A prop `app-bar` define as configurações para apresentação do menu superior.
 
 Para ocultar o menu superior, basta omitir essa prop.
 
-As ações do menu superior têm nomes fixos para leitores de tela: "Menu de navegação" (que também informa se o menu de navegação está expandido ou recolhido), "Ajuda", "Notificações" e "Menu do usuário". Quando há notificações não lidas, o botão de notificações inclui a quantidade no nome, por exemplo "Notificações (2 não lidas)" ou "Notificações (1 não lida)".
+As ações do menu superior têm nomes fixos para leitores de tela: "Menu de navegação" (exibido apenas em telas pequenas, que também informa se o menu de navegação está aberto ou fechado), "Ajuda", "Notificações" e "Menu do usuário". Quando há notificações não lidas, o botão de notificações inclui a quantidade no nome, por exemplo "Notificações (2 não lidas)" ou "Notificações (1 não lida)".
 
 No menu do usuário aberto, o avatar aparece maior e centralizado, com o nome (`title`) e o `subtitle` do usuário abaixo dele.
 
@@ -255,13 +255,17 @@ A prop `navigation-menu` define as configurações para apresentação do menu l
 
 Para ocultar o menu de navegação, basta omitir essa prop.
 
-Os itens e grupos do primeiro nível do menu podem exibir um ícone antes da sua descrição, informado pelo nome na propriedade `icon`. Os nomes disponíveis estão em [Ícones](../icons). Utilize ícones em todos eles, ou em nenhum: itens sem ícone ao lado de itens com ícone ficam com os títulos desalinhados. Os itens dentro de um grupo não aceitam ícones, para que o menu siga o mesmo padrão visual em todas as aplicações.
+Em telas largas (a partir de 1145px), o menu fica sempre visível à esquerda do conteúdo, recolhido, mostrando apenas os ícones dos itens e grupos do primeiro nível e um item "Buscar". Ele se expande sobre o conteúdo, sem deslocá-lo, enquanto o mouse está sobre ele, enquanto o foco do teclado está nele ou pelo atalho de busca, e volta a se recolher quando o mouse e o foco saem dele. Recolhido, ele destaca o grupo que contém a página atual; expandido, abre esse grupo e destaca apenas o item da página. Ao se recolher, ele fecha os grupos e limpa o texto da busca.
+
+Em telas pequenas, o menu fica oculto e é aberto sobre o conteúdo pelo botão "Menu de navegação" do menu superior.
+
+Os itens e grupos do primeiro nível do menu exibem um ícone antes da sua descrição, informado pelo nome na propriedade obrigatória `icon`. Os nomes disponíveis estão em [Ícones](../icons). Os itens dentro de um grupo não aceitam ícones, para que o menu siga o mesmo padrão visual em todas as aplicações.
 
 O menu também conta com um campo de busca que filtra itens e grupos em tempo real, no formato _case-insensitive_.
 
-O atalho `Ctrl + K` (`⌘ + K` no macOS), indicado no próprio campo de busca, abre o menu e coloca o foco na busca, com o texto já digitado selecionado. Com o menu aberto, o atalho apenas leva o foco de volta à busca. Ele funciona mesmo com o foco em um campo de formulário, mas é ignorado com o foco dentro de diálogos, confirmações, menus suspensos e editores de texto rico, ou no botão de um menu suspenso aberto.
+O atalho `Ctrl + K` (`⌘ + K` no macOS), indicado no próprio campo de busca, expande o menu (ou o abre, em telas pequenas) e coloca o foco na busca, com o texto já digitado selecionado. Com o menu expandido ou aberto, o atalho apenas leva o foco de volta à busca. Levar o foco ao item "Buscar" do menu recolhido tem o mesmo efeito. Ele funciona mesmo com o foco em um campo de formulário, mas é ignorado com o foco dentro de diálogos, confirmações, menus suspensos e editores de texto rico, ou no botão de um menu suspenso aberto.
 
-A tecla `Esc` fecha o menu enquanto o foco está nele ou, se ele foi aberto pelo atalho, mesmo com o foco fora dele (como durante o carregamento, em que a busca desabilitada não recebe o foco). Se o menu foi aberto pelo atalho, o foco volta ao elemento que o tinha antes.
+A tecla `Esc` recolhe (ou fecha) o menu enquanto o foco está nele ou, se ele foi expandido pelo atalho, mesmo com o foco fora dele (como durante o carregamento, em que a busca desabilitada não recebe o foco). Se o menu foi expandido pelo atalho ou pelo item "Buscar", o foco volta ao elemento que o tinha antes. Recolhido pelo `Esc`, o menu só volta a se expandir quando o mouse entra nele, quando o foco sai e volta a ele, ou pelo atalho.
 
 Quando a página tem mais de um `UMain` com menu de navegação, apenas o primeiro responde ao atalho. Por isso, nesta página, `Ctrl + K` abre o menu da demonstração abaixo em vez da busca da documentação, que continua disponível pela tecla `/`.
 
@@ -324,7 +328,7 @@ const navigationMenu: NonNullable<MainProps["navigationMenu"]> = {
 
 A prop `loading` exibe skeletons no lugar das ações do menu superior (ajuda, notificações e usuário) e dos itens do menu de navegação, enquanto os dados do usuário e as opções de menu são carregados.
 
-O botão do menu de navegação, a logo e o título continuam visíveis. O menu de navegação continua abrindo normalmente, com a busca desabilitada, e ao final do carregamento os itens aparecem já filtrados pelo texto buscado. Se o menu de notificações estiver aberto quando o carregamento começar, ele é fechado.
+A logo e o título continuam visíveis, assim como o botão do menu de navegação, em telas pequenas. O menu de navegação continua se expandindo (ou abrindo, em telas pequenas) normalmente, com a busca e o item "Buscar" desabilitados, e ao final do carregamento os itens aparecem já filtrados pelo texto buscado. Se o menu de notificações estiver aberto quando o carregamento começar, ele é fechado.
 
 O conteúdo da página não é afetado: nele, utilize a prop `loading` dos próprios componentes, como o [Section](./section).
 
@@ -366,9 +370,11 @@ const navigationMenu: NonNullable<MainProps["navigationMenu"]> = {
     {
       description: "Início",
       route: "/",
+      icon: "home",
     },
     {
       description: "Configurações",
+      icon: "cog",
       action: () => window.alert("Abrindo configurações..."),
     },
   ],
@@ -720,9 +726,11 @@ O conteúdo da página ocupa toda a altura visível abaixo do menu superior (e a
       {
         description: "Início",
         route: "/",
+        icon: "home",
       },
       {
         description: "Documentação",
+        icon: "folder",
         items: [
           {
             description: "Componentes",
@@ -793,9 +801,11 @@ O conteúdo da página ocupa toda a altura visível abaixo do menu superior (e a
       {
         description: "Início",
         route: "/",
+        icon: "home",
       },
       {
         description: "Configurações",
+        icon: "cog",
         action: () => window.alert("Abrindo configurações..."),
       },
     ],

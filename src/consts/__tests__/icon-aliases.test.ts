@@ -106,14 +106,32 @@ describe("icon aliases", () => {
   it("should draw the groups of the navigation menu, collapsed and expanded", async () => {
     const wrapper = mountAttached(NavigationMenu, {
       modelValue: true,
-      items: [{ description: "Cadastros", items: [{ description: "Pacientes" }] }],
+      items: [{ description: "Cadastros", icon: "folder", items: [{ description: "Pacientes" }] }],
     });
 
     await expectDrawnAliases(["expand"]);
 
-    await wrapper.find("button.v-list-item").trigger("click");
+    await wrapper.find(".v-list-group button.v-list-item").trigger("click");
 
     await expectDrawnAliases(["collapse"]);
+  });
+
+  it("should draw the search item and the icons of the navigation menu's collapsed rail", async () => {
+    window.innerWidth = 1280;
+    window.dispatchEvent(new Event("resize"));
+
+    try {
+      mountAttached(NavigationMenu, {
+        items: [
+          { description: "Cadastros", icon: "folder", items: [{ description: "Pacientes" }] },
+        ],
+      });
+
+      await expectDrawnAliases(["search", "folder", "expand"]);
+    } finally {
+      window.innerWidth = 1024;
+      window.dispatchEvent(new Event("resize"));
+    }
   });
 
   it("should draw the details, collapsed and expanded", async () => {

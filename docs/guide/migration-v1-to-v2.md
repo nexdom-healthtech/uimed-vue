@@ -147,6 +147,38 @@ Na v1, as colunas de uma `Row` eram esticadas até a altura da coluna mais alta 
 </template>
 ```
 
+### Menu de navegação
+
+Na v2, o ícone (`icon`) é obrigatório nos itens e grupos do primeiro nível do menu de navegação (`navigationMenu`). Os itens dentro de um grupo continuam sem ícone. Os nomes disponíveis estão em [Ícones](./icons).
+
+Em telas a partir de 1145px, o menu deixa de ser aberto pelo botão "Menu de navegação" do menu superior, que não é mais exibido: ele fica sempre visível à esquerda do conteúdo, recolhido em uma faixa de 56px com os ícones, e se expande sobre o conteúdo com o mouse, com o foco do teclado ou pelo atalho `Ctrl + K` (veja [Menu de navegação](./components/main#menu-de-navegacao)). O conteúdo da página fica 56px mais estreito, e testes automatizados que clicavam no botão para abrir o menu passam a encontrá-lo apenas em telas menores. Em telas menores, o menu continua sendo aberto pelo botão.
+
+**Antes (v1):**
+
+```ts
+const navigationMenu = {
+  items: [
+    { description: "Início", route: "/" },
+    { description: "Cadastros", items: [{ description: "Pacientes", route: "/pacientes" }] },
+  ],
+};
+```
+
+**Depois (v2):**
+
+```ts
+const navigationMenu = {
+  items: [
+    { description: "Início", route: "/", icon: "home" },
+    {
+      description: "Cadastros",
+      icon: "folder",
+      items: [{ description: "Pacientes", route: "/pacientes" }],
+    },
+  ],
+};
+```
+
 ## Dicas de Migração
 
 1. Procure por todas as importações antigas e substitua pelos novos nomes com o prefixo `U`
@@ -154,5 +186,6 @@ Na v1, as colunas de uma `Row` eram esticadas até a altura da coluna mais alta 
 3. Os tipos de props não são mais exportados pela biblioteca. Utilize `ComponentProps`, de [`vue-component-type-helpers`](https://www.npmjs.com/package/vue-component-type-helpers), para obtê-los a partir do componente (veja [Tipagem de props](./getting-started#tipagem-de-props))
 4. Substitua a propriedade `date` das notificações do menu superior por `when`, informando o texto já formatado (veja [Notificações do menu superior](#notificacoes-do-menu-superior))
 5. Adicione `align-y="stretch"` às `URow` cujas colunas precisam ter a mesma altura (veja [Alinhamento vertical das colunas](#alinhamento-vertical-das-colunas))
+6. Informe um `icon` em todos os itens e grupos do primeiro nível do menu de navegação, e revise as telas e os testes que contavam com o botão do menu em telas largas (veja [Menu de navegação](#menu-de-navegacao))
 
 Para mais informações sobre cada componente, consulte a [Documentação da API](../api/).

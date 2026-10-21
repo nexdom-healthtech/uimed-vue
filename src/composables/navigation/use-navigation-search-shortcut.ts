@@ -43,15 +43,21 @@ export interface NavigationShortcutKeys {
 }
 
 export interface UseNavigationSearchShortcutOptions {
-  /** Open state of the navigation menu (its `v-model`). */
+  /**
+   * Open state of the navigation menu: its `v-model` as a drawer, or whether its rail is expanded
+   * to search.
+   */
   open: Ref<boolean>;
   /** Search field, focused (and its text selected) when the shortcut is pressed. */
   field: MaybeRefOrGetter<ComponentPublicInstance | null>;
 }
 
 export interface NavigationSearchShortcut extends NavigationShortcutKeys {
-  /** Closes the navigation menu, as `Esc` does. */
-  close: () => void;
+  /**
+   * Opens the menu and focuses the search, as the shortcut does. When the menu closes with the
+   * focus inside it, the focus goes back to `origin`.
+   */
+  openSearch: (origin: EventTarget | null) => Promise<void>;
 }
 
 /**
@@ -71,9 +77,10 @@ export function useNavigationShortcutKeys(): NavigationShortcutKeys {
 
 /**
  * Listens to Ctrl+K (⌘K on macOS) on `window` while mounted: opens the menu, waits for it to
- * render (the drawer is `inert` while closed) and focuses the search field (a disabled field, as
- * while loading, can't take the focus). When the menu opened by the shortcut closes with the focus
- * inside it, the focus goes back to where it was.
+ * render (the drawer is `inert` while closed, and the rail only shows the field while expanded)
+ * and focuses the search field (a disabled field, as while loading, can't take the focus). When
+ * the menu opened by the shortcut closes with the focus inside it, the focus goes back to where it
+ * was.
  */
 export function useNavigationSearchShortcut(
   options: UseNavigationSearchShortcutOptions,
@@ -82,7 +89,7 @@ export function useNavigationSearchShortcut(
   const owner = Symbol("navigation-search-shortcut");
 
   /** Element focused before the shortcut opened the menu, which gets the focus back on close. */
-  let origin: Element | null = null;
+  let origin: EventTarget | null = null;
 
   onMounted(() => {
     owners.value.push(owner);
@@ -104,7 +111,8 @@ export function useNavigationSearchShortcut(
     const target = origin;
     origin = null;
 
-    // Runs before the drawer turns `inert`, which would drop the focus
+    // Runs before the drawer turns `inert` (or the collapsed rail hides the field), which would
+    // drop the focus
     const menu = findInput().closest(".v-navigation-drawer")!;
     if (!menu.contains(document.activeElement)) return;
 
@@ -115,15 +123,17 @@ export function useNavigationSearchShortcut(
   function onKeydown(event: KeyboardEvent) {
     if (owners.value[0] !== owner || isIgnoredTarget(event)) return;
 
-    if (isShortcut(event)) void openAndFocus(event);
-    // While loading, the menu opened by the shortcut leaves the focus behind its scrim, out of
-    // reach of its own `Esc` handler
-    else if (event.key === "Escape" && origin) close();
+    if (isShortcut(event)) {
+      event.preventDefault();
+      void openSearch(document.activeElement);
+    }
+    // While loading, the menu opened by the shortcut leaves the focus behind its scrim (or outside
+    // the rail), out of reach of its own `Esc` handler
+    else if (event.key === "Escape" && origin) open.value = false;
   }
 
-  async function openAndFocus(event: KeyboardEvent) {
-    event.preventDefault();
-    if (!open.value) origin = document.activeElement;
+  async function openSearch(from: EventTarget | null) {
+    if (!open.value) origin = from;
     open.value = true;
 
     await nextTick();
@@ -137,11 +147,7 @@ export function useNavigationSearchShortcut(
     return toValue(field)!.$el.querySelector("input");
   }
 
-  function close() {
-    open.value = false;
-  }
-
-  return { ...useNavigationShortcutKeys(), close };
+  return { ...useNavigationShortcutKeys(), openSearch };
 }
 
 function isMacOS(): boolean {

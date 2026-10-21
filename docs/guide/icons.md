@@ -53,7 +53,7 @@ const navigationMenu: NonNullable<MainProps["navigationMenu"]> = {
 
 No menu, o ícone usa a cor do texto do menu. Ele é decorativo: leitores de tela anunciam apenas a descrição.
 
-Apenas os itens e grupos do primeiro nível do menu aceitam ícones: os itens dentro de um grupo não os exibem. Utilize ícones em todos os itens e grupos do primeiro nível, ou em nenhum deles. Itens sem ícone ao lado de itens com ícone ficam com os títulos desalinhados.
+O ícone é obrigatório nos itens e grupos do primeiro nível do menu, porque, em telas largas, o menu fica recolhido e mostra apenas os ícones. Os itens dentro de um grupo não exibem ícones.
 
 ## Ícones disponíveis
 

@@ -26,12 +26,12 @@ export type NavigationMenuParentItem = {
   description: string;
 
   /**
-   * Icon shown before the group's description. One of the names listed on the "Ícones" guide
-   * page.
+   * Icon shown before the group's description, and alone while the menu is collapsed to a rail.
+   * One of the names listed on the "Ícones" guide page.
    *
    * @see {@link https://nexdom-healthtech.github.io/uimed-vue/guide/icons | Icons Guide}
    */
-  icon?: Icon;
+  icon: Icon;
 
   /**
    * Child {@link NavigationMenuChildItem} list. Unlike the first level items, they show no icon.
@@ -52,12 +52,12 @@ export interface NavigationMenuItem {
   description: string;
 
   /**
-   * Icon shown before the item's description. One of the names listed on the "Ícones" guide
-   * page.
+   * Icon shown before the item's description, and alone while the menu is collapsed to a rail.
+   * One of the names listed on the "Ícones" guide page.
    *
    * @see {@link https://nexdom-healthtech.github.io/uimed-vue/guide/icons | Icons Guide}
    */
-  icon?: Icon;
+  icon: Icon;
 
   /**
    * Route to navigate when item is clicked.
