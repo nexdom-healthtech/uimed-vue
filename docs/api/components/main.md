@@ -66,7 +66,9 @@ Responsável por carregar o menu superior, o menu de navegação lateral, o roda
 
 ### `NavigationMenu`
 
-O menu conta com um campo de busca, focado pelo atalho `Ctrl + K` (`⌘ + K` no macOS), que também abre o menu. A tecla `Esc` fecha o menu enquanto o foco está nele.
+Em telas largas (a partir de 1145px), o menu fica recolhido à esquerda do conteúdo, mostrando apenas os ícones, e se expande sobre o conteúdo enquanto o mouse ou o foco do teclado estão nele. Em telas pequenas, ele é aberto pelo botão "Menu de navegação" do menu superior.
+
+O menu conta com um campo de busca, focado pelo atalho `Ctrl + K` (`⌘ + K` no macOS), que também expande (ou abre) o menu. A tecla `Esc` recolhe (ou fecha) o menu enquanto o foco está nele.
 
 | Prop         | Tipo                                             | Padrão | Descrição                                                                                                                 |
 | ------------ | ------------------------------------------------ | ------ | ------------------------------------------------------------------------------------------------------------------------- |
@@ -75,18 +77,18 @@ O menu conta com um campo de busca, focado pelo atalho `Ctrl + K` (`⌘ + K` no 
 
 #### `NavigationMenuParent`
 
-| Prop          | Tipo                                                    | Padrão | Descrição                                                                                            |
-| ------------- | ------------------------------------------------------- | ------ | ---------------------------------------------------------------------------------------------------- |
-| `description` | `string`                                                |        | Título do agrupador de itens ([item](#navigationmenuitem)).                                          |
-| `icon`        | [`Icon`](../../guide/icons)                             |        | Ícone exibido antes da descrição do agrupador. Um dos nomes listados em [Ícones](../../guide/icons). |
-| `items`       | [`NavigationMenuChildItem[]`](#navigationmenuchilditem) |        | Lista de [itens](#navigationmenuchilditem) que serão agrupados neste tópico.                         |
+| Prop          | Tipo                                                    | Padrão | Descrição                                                                                                                                             |
+| ------------- | ------------------------------------------------------- | ------ | ----------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `description` | `string`                                                |        | Título do agrupador de itens ([item](#navigationmenuitem)).                                                                                           |
+| `icon`        | [`Icon`](../../guide/icons)                             |        | **Obrigatória.** Ícone exibido antes da descrição do agrupador, e sozinho com o menu recolhido. Um dos nomes listados em [Ícones](../../guide/icons). |
+| `items`       | [`NavigationMenuChildItem[]`](#navigationmenuchilditem) |        | Lista de [itens](#navigationmenuchilditem) que serão agrupados neste tópico.                                                                          |
 
 #### `NavigationMenuItem`
 
 | Prop          | Tipo                                                                                              | Padrão | Descrição                                                                                                                                        |
 | ------------- | ------------------------------------------------------------------------------------------------- | ------ | ------------------------------------------------------------------------------------------------------------------------------------------------ |
 | `description` | `string`                                                                                          |        | Título/descrição do item.                                                                                                                        |
-| `icon`        | [`Icon`](../../guide/icons)                                                                       |        | Ícone exibido antes da descrição do item. Um dos nomes listados em [Ícones](../../guide/icons).                                                  |
+| `icon`        | [`Icon`](../../guide/icons)                                                                       |        | **Obrigatória.** Ícone exibido antes da descrição do item, e sozinho com o menu recolhido. Um dos nomes listados em [Ícones](../../guide/icons). |
 | `route`       | [`RouteLocationRaw`](https://router.vuejs.org/api/type-aliases/RouteLocationRaw.html) \| `string` |        | Rota para direcionar o usuário ao clicar no item, podendo essa ser uma rota externa (exemplo: `"https://google.com"`) ou local (exemplo: `"/"`). |
 | `action`      | `() => void`                                                                                      |        | Função que será executada quando o usuário clicar no item.                                                                                       |
 

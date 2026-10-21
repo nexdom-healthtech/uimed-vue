@@ -162,6 +162,9 @@ The components use the same map for the icons they draw on their own (e.g. `icon
 - Vuetify's skeleton loader sets its loading announcement as camelCase `ariaLabel`/`ariaLive`. On the client they're set as DOM properties, which the browser reflects as the hyphenated attributes, but the server renderer writes them as the invalid `arialabel`/`arialive` attributes, and hydration doesn't fix them
   - To fix it, our components use the internal `SkeletonLoader` (`src/components/skeleton-loader/`), which unsets those keys and passes the hyphenated `aria-label`/`aria-live` instead.
   - When Vuetify sets the hyphenated attributes itself, we should remove `SkeletonLoader` and use Vuetify's skeleton loader again. A failing `SkeletonLoader` unit test after a Vuetify update is the sign: unsetting the camelCase keys would then remove the attributes on the client.
+- Vuetify's navigation drawer only expands its rail (`rail` with `expand-on-hover`) on its own `mouseenter`/`mouseleave` events, through an internal hover state, and its `rail` prop can't expand it over the page without pushing the content aside
+  - To expand the navigation menu's rail on keyboard focus (and by the search shortcut), and to keep it expanded when the mouse leaves with the focus inside, `useNavigationRail` (`src/composables/navigation/use-navigation-rail.ts`) dispatches synthetic `mouseenter`/`mouseleave` events on the drawer, which its own listeners ignore.
+  - When Vuetify expands the rail on focus, or lets it be expanded over the page through a prop, we should remove the synthetic events. Failing unit or E2E tests of the rail's focus after a Vuetify update are the sign that its internal hover state changed.
 
 ## Documentation
 

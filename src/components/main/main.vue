@@ -61,16 +61,19 @@ import Container from "@/components/grid/container/container.vue";
 import Toast from "@/components/dialogs/toast.vue";
 import DialogHost from "@/components/dialogs/dialog-host.vue";
 import useVuetifyBackgroundColor from "@/composables/colors/use-vuetify-background-color.ts";
+import { useMobileNavigation } from "@/composables/navigation/use-navigation-rail.ts";
 import { computed, ref } from "vue";
 
 const props = defineProps<MainProps>();
 const slots = defineSlots<MainSlots>();
+const mobile = useMobileNavigation();
 const appBarProps = computed(() =>
   props.appBar
     ? {
         ...props.appBar,
         logo: props.logo,
-        navigation: props.navigationMenu !== undefined,
+        // Above the mobile breakpoint, the navigation menu is a rail, always visible
+        navigation: props.navigationMenu !== undefined && mobile.value,
         loading: props.loading,
       }
     : undefined,

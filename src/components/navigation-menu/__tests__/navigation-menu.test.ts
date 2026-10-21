@@ -1,4 +1,4 @@
-import { mdiCogOutline, mdiHome, mdiHospitalBuilding } from "@mdi/js";
+import { mdiCogOutline, mdiHome, mdiHospitalBuilding, mdiMagnify } from "@mdi/js";
 import {
   VNavigationDrawer,
   VList,
@@ -11,6 +11,8 @@ import TextField from "@/components/inputs/text-field/text-field.vue";
 import { owners } from "@/composables/navigation/use-navigation-search-shortcut.ts";
 import { flushPromises, mount, renderToString } from "@vue/test-utils";
 import { vueTestUtilsPluginUimed } from "@/unit-test.ts";
+import type { Plugin } from "vue";
+import { createMemoryHistory, createRouter, type Router } from "vue-router";
 import type {
   NavigationMenuItem,
   NavigationMenuParentItem,
@@ -19,6 +21,8 @@ import type {
 const testId = "navigation-menu-test-component";
 const styleValue = "random-style";
 const classValue = "random-class";
+const DESKTOP_WIDTH = 1280;
+const MOBILE_WIDTH = 1024;
 
 describe("NavigationMenu", () => {
   let wrapper = mountNavigationMenu();
@@ -49,15 +53,24 @@ describe("NavigationMenu", () => {
   });
 
   describe("props", () => {
-    const firstItem = { description: "First item", route: "/first" };
-    const secondItem = { description: "Second item", route: "https://google.com" };
-    const thirdItem = { description: "Third item", action: vi.fn() };
+    const firstItem: NavigationMenuItem = {
+      description: "First item",
+      route: "/first",
+      icon: "home",
+    };
+    const secondItem: NavigationMenuItem = {
+      description: "Second item",
+      route: "https://google.com",
+      icon: "flask",
+    };
+    const thirdItem = { description: "Third item", action: vi.fn(), icon: "cog" } as const;
     const items: Array<NavigationMenuItem> = [firstItem, secondItem, thirdItem];
 
     const parentItemFirstChild = { description: "First group first item", route: "/first-first" };
     const parentItemSecondChild = { description: "First group second item", action: vi.fn() };
-    const parentItem = {
+    const parentItem: NavigationMenuParentItem = {
       description: "First group",
+      icon: "folder",
       items: [parentItemFirstChild, parentItemSecondChild],
     };
     const parentItems: Array<NavigationMenuParentItem> = [parentItem];
@@ -70,7 +83,7 @@ describe("NavigationMenu", () => {
 
       // Vuetify's `list` role only allows list items, but the items are links
       it("should present the items as a group", () => {
-        expect(wrapper.findComponent(VList).attributes("role")).toBe("group");
+        expect(findVSkeletonLoader(wrapper).findComponent(VList).attributes("role")).toBe("group");
       });
 
       it("should render plain items with correct title", async () => {
@@ -130,6 +143,7 @@ describe("NavigationMenu", () => {
         const header = findVListGroups(wrapper)[0].findComponent(VListItem);
         expect(header.element.tagName).toBe("BUTTON");
         expect(header.attributes("role")).toBeUndefined();
+        expect(header.attributes("aria-selected")).toBeUndefined();
         expect(header.attributes("type")).toBe("button");
         expect(header.attributes("aria-expanded")).toBe("false");
         // A native button only takes its content's width and centers its text, unlike the other
@@ -186,7 +200,7 @@ describe("NavigationMenu", () => {
         expect(vListGroups).toHaveLength(parentItems.length);
 
         // Find the plain item (should be a direct VListItem that's not in a group)
-        const [plainItem] = wrapper.findAllComponents(VListItem);
+        const [plainItem] = findVListItems(wrapper);
         expect(plainItem.exists()).toBeTruthy();
         expect(plainItem.props("title")).toBe(firstItem.description);
         expect(plainItem.props("to")).toBe(firstItem.route);
@@ -239,18 +253,13 @@ describe("NavigationMenu", () => {
         expect(profileItem.find(".v-list-item__prepend").exists()).toBeFalsy();
       });
 
-      it("should show no icon when the item or group has none", async () => {
-        await wrapper.setProps({ items: [firstItem, parentItem] });
+      it("should require an icon on the first level items and groups", () => {
+        // @ts-expect-error: the collapsed menu shows only the icons
+        const item: NavigationMenuItem = { description: "Home", route: "/" };
+        // @ts-expect-error: the collapsed menu shows only the icons
+        const group: NavigationMenuParentItem = { description: "Group", items: [] };
 
-        const [vListGroup] = findVListGroups(wrapper);
-        await vListGroup.trigger("click");
-
-        const vListItems = findVListItems(wrapper);
-        expect(vListItems).toHaveLength(4); // plain item + group activator + 2 children
-        for (const vListItem of vListItems) {
-          expect(vListItem.props("prependIcon")).toBeUndefined();
-        }
-        expect(wrapper.find(".v-list-item__prepend").exists()).toBeFalsy();
+        expect([item, group]).toHaveLength(2);
       });
 
       it("should keep the icon out of the item's accessible name", async () => {
@@ -261,6 +270,177 @@ describe("NavigationMenu", () => {
           "true",
         );
         expect(vListItem.text()).toBe(homeItem.description);
+      });
+    });
+
+    describe("rail", () => {
+      const groupItem: NavigationMenuParentItem = {
+        description: "Units",
+        icon: "hospital",
+        items: [{ description: "Unit list", route: "/units" }],
+      };
+
+      afterEach(async () => {
+        document.body.innerHTML = "";
+        await resize(MOBILE_WIDTH);
+      });
+
+      async function mountDesktop(options: MountOptions = {}) {
+        // Menus mounted by previous tests would answer the shortcut first
+        owners.value = [];
+        await resize(DESKTOP_WIDTH);
+        const desktop = mountNavigationMenu(options);
+        await flushPromises();
+        return desktop;
+      }
+
+      function isSearchFieldShown(menu: ReturnType<typeof mountNavigationMenu>) {
+        return findTextField(menu).element.parentElement!.style.display !== "none";
+      }
+
+      function isSearchItemShown(menu: ReturnType<typeof mountNavigationMenu>) {
+        return findSearchItem(menu).element.parentElement!.style.display !== "none";
+      }
+
+      it("should be a temporary drawer below the mobile breakpoint", () => {
+        const vNavigationDrawer = findVNavigationDrawer(wrapper);
+
+        expect(vNavigationDrawer.props("mobile")).toBe(true);
+        expect(vNavigationDrawer.props("permanent")).toBe(false);
+        expect(vNavigationDrawer.props("rail")).toBe(false);
+        expect(vNavigationDrawer.props("expandOnHover")).toBe(true);
+        expect(isSearchFieldShown(wrapper)).toBe(true);
+        expect(isSearchItemShown(wrapper)).toBe(false);
+      });
+
+      it("should be a permanent rail above the mobile breakpoint", async () => {
+        const desktop = await mountDesktop();
+        const vNavigationDrawer = findVNavigationDrawer(desktop);
+
+        expect(vNavigationDrawer.props("mobile")).toBe(false);
+        expect(vNavigationDrawer.props("permanent")).toBe(true);
+        expect(vNavigationDrawer.props("rail")).toBe(true);
+        expect(vNavigationDrawer.props("modelValue")).toBe(true);
+      });
+
+      it("should show a search item while collapsed and the search field while expanded", async () => {
+        const desktop = await mountDesktop();
+        expect(isSearchItemShown(desktop)).toBe(true);
+        expect(isSearchFieldShown(desktop)).toBe(false);
+
+        await desktop.trigger("mouseenter");
+
+        expect(isSearchItemShown(desktop)).toBe(false);
+        expect(isSearchFieldShown(desktop)).toBe(true);
+      });
+
+      it("should present the search item as a button named Buscar, with the shortcut", async () => {
+        const searchItem = findSearchItem(await mountDesktop());
+
+        expect(searchItem.element.tagName).toBe("BUTTON");
+        expect(searchItem.attributes("type")).toBe("button");
+        expect(searchItem.attributes("role")).toBeUndefined();
+        expect(searchItem.attributes("aria-keyshortcuts")).toBe("Control+K");
+        expect(searchItem.props("prependIcon")).toBe(mdiMagnify);
+        expect(searchItem.text()).toBe("Buscar");
+        // A native button only takes its content's width and centers its text, unlike the items
+        expect(searchItem.classes()).toEqual(expect.arrayContaining(["w-100", "text-start"]));
+      });
+
+      // Vuetify's list is focusable and would pass the focus on to the item, which would then give it
+      // back to the list instead of the page
+      it("should leave the search item's list out of the tab order", async () => {
+        const list = findSearchItem(await mountDesktop()).element.parentElement!;
+
+        expect(list.getAttribute("tabindex")).toBe("-1");
+        expect(list.getAttribute("role")).toBe("group");
+      });
+
+      it("should disable the search item, out of the tab order, only while loading", async () => {
+        const desktop = await mountDesktop();
+        expect(findSearchItem(desktop).props("disabled")).toBe(false);
+        expect(findSearchItem(desktop).attributes("tabindex")).toBeUndefined();
+        expect(findSearchItem(desktop).attributes("aria-disabled")).toBeUndefined();
+
+        await desktop.setProps({ loading: true });
+
+        expect(findSearchItem(desktop).props("disabled")).toBe(true);
+        expect(findSearchItem(desktop).attributes("tabindex")).toBe("-1");
+        expect(findSearchItem(desktop).attributes("aria-disabled")).toBe("true");
+      });
+
+      it("should expand and focus the search when the search item takes the focus", async () => {
+        const desktop = await mountDesktop({ attachTo: document.body });
+        const origin = appendButton();
+        origin.focus();
+
+        (findSearchItem(desktop).element as HTMLElement).focus();
+        await flushPromises();
+
+        expect(isSearchFieldShown(desktop)).toBe(true);
+        expect(document.activeElement).toBe(findTextField(desktop).find("input").element);
+
+        await findTextField(desktop).find("input").trigger("keydown", { key: "Escape" });
+
+        expect(isSearchItemShown(desktop)).toBe(true);
+        expect(document.activeElement).toBe(origin);
+        desktop.unmount();
+      });
+
+      it("should move the focus to the search item, without searching, when Escape hides the search field", async () => {
+        const desktop = await mountDesktop({ attachTo: document.body });
+        await desktop.trigger("mouseenter");
+        const input = findTextField(desktop).find("input");
+        (input.element as HTMLElement).focus();
+
+        await input.trigger("keydown", { key: "Escape" });
+        await flushPromises();
+
+        expect(document.activeElement).toBe(findSearchItem(desktop).element);
+        expect(isSearchItemShown(desktop)).toBe(true);
+        expect(isSearchFieldShown(desktop)).toBe(false);
+        desktop.unmount();
+      });
+
+      it("should collapse with Escape", async () => {
+        const desktop = await mountDesktop();
+        await desktop.trigger("mouseenter");
+
+        await desktop.trigger("keydown", { key: "Escape" });
+
+        expect(isSearchItemShown(desktop)).toBe(true);
+        expect(desktop.emitted("update:modelValue")).toBeUndefined();
+      });
+
+      it("should name each group by its description, to open it", async () => {
+        const desktop = await mountDesktop();
+        await desktop.setProps({ items: [groupItem] });
+
+        expect(findVListGroups(desktop)[0].props("value")).toBe(groupItem.description);
+        expect(findVSkeletonLoader(desktop).findComponent(VList).props("opened")).toEqual([]);
+      });
+
+      it("should highlight the group of the current page only while collapsed", async () => {
+        const router = createRouter({
+          history: createMemoryHistory(),
+          routes: [{ path: "/:path(.*)*", component: { render: () => null } }],
+        });
+        await router.push("/units");
+        const desktop = await mountDesktop({ router });
+        await desktop.setProps({ items: [groupItem, parentItem] });
+        const [unitsHeader, otherHeader] = findVListGroups(desktop).map((group) =>
+          group.findComponent(VListItem),
+        );
+
+        expect(unitsHeader.props("active")).toBe(true);
+        expect(otherHeader.props("active")).toBe(false);
+
+        await desktop.trigger("mouseenter");
+
+        expect(unitsHeader.props("active")).toBe(false);
+        expect(findVSkeletonLoader(desktop).findComponent(VList).props("opened")).toEqual([
+          groupItem.description,
+        ]);
       });
     });
 
@@ -525,15 +705,21 @@ describe("NavigationMenu", () => {
   });
 });
 
-function mountNavigationMenu(options: { attachTo?: HTMLElement } = {}) {
+type MountOptions = { attachTo?: HTMLElement; router?: Router };
+
+function mountNavigationMenu(options: MountOptions = {}) {
+  const { attachTo, router } = options;
+  const global = getGlobalMountingOptions();
+  if (router) global.plugins.push(router);
+
   return mount(NavigationMenu, {
-    ...options,
+    attachTo,
     attrs: {
       "data-testid": testId,
       style: styleValue,
       class: classValue,
     },
-    global: getGlobalMountingOptions(),
+    global,
   });
 }
 
@@ -548,7 +734,16 @@ function getGlobalMountingOptions() {
   return {
     stubs: {
       VNavigationDrawer: {
-        props: { modelValue: String, color: String, temporary: Boolean, absolute: Boolean },
+        props: {
+          modelValue: Boolean,
+          color: String,
+          mobile: Boolean,
+          permanent: Boolean,
+          rail: Boolean,
+          expandOnHover: Boolean,
+          temporary: Boolean,
+          absolute: Boolean,
+        },
         emits: ["update:modelValue"],
         // The inner element stands for the drawer's own, which holds the focus while it's open
         template: `
@@ -561,7 +756,7 @@ function getGlobalMountingOptions() {
         `,
       },
     },
-    plugins: [vueTestUtilsPluginUimed()],
+    plugins: [vueTestUtilsPluginUimed()] as Array<Plugin>,
   };
 }
 
@@ -573,8 +768,25 @@ function findTextField(wrapper: ReturnType<typeof mountNavigationMenu>) {
   return wrapper.findComponent(TextField);
 }
 
+/** The menu's items and groups' headers, without the search item. */
 function findVListItems(wrapper: ReturnType<typeof mountNavigationMenu>) {
-  return wrapper.findAllComponents(VListItem);
+  return findVSkeletonLoader(wrapper).findAllComponents(VListItem);
+}
+
+function findSearchItem(wrapper: ReturnType<typeof mountNavigationMenu>) {
+  return wrapper.findAllComponents(VListItem).find((item) => item.props("title") === "Buscar")!;
+}
+
+function appendButton() {
+  const button = document.createElement("button");
+  document.body.append(button);
+  return button;
+}
+
+async function resize(width: number) {
+  window.innerWidth = width;
+  window.dispatchEvent(new Event("resize"));
+  await flushPromises();
 }
 
 function findVSkeletonLoader(wrapper: ReturnType<typeof mountNavigationMenu>) {

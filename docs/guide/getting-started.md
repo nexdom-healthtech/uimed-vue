@@ -95,7 +95,7 @@ const appBar: AppBar = {
 };
 
 const navigationMenu: NavigationMenu = {
-  items: [{ description: "Home", route: "/" }],
+  items: [{ description: "Home", route: "/", icon: "home" }],
 };
 
 const sectionActions: SectionAction[] = [{ type: "submit", label: "Salvar" }];

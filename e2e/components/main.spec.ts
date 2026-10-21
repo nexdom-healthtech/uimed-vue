@@ -245,8 +245,7 @@ test.describe("main", () => {
 
     test.describe("navigation-menu", () => {
       test.beforeEach(async ({ page }) => {
-        const button = getNavigationToggleButton(page);
-        await button.click();
+        await expandByMouse(page, getNavigationMenu(page));
       });
 
       test("matches the accessible snapshot of the navigation menu demo", async ({ page }) => {
@@ -257,7 +256,8 @@ test.describe("main", () => {
       test("shows the icon of each item and group, hidden from screen readers", async ({
         page,
       }) => {
-        // The children of the closed group are rendered, but hidden
+        // The children of the closed group are rendered, but hidden, as the search item while the
+        // menu is expanded
         const items = getNavigationMenu(page).locator(".v-list-item").filter({ visible: true });
         const itemIcons = items.locator(".v-list-item__prepend .v-icon");
         await expect(items).toHaveText(["Início", "Documentação", "Configurações"]);
@@ -296,7 +296,7 @@ test.describe("main", () => {
       test("shows its items over the menu's color, without a background of their own", async ({
         page,
       }) => {
-        const list = getNavigationMenu(page).locator(".v-list");
+        const list = getNavigationMenu(page).locator(".v-navigation-drawer__content .v-list");
 
         await expect(list).toHaveCSS("background-color", "rgba(0, 0, 0, 0)");
       });
@@ -331,6 +331,319 @@ test.describe("main", () => {
     });
   });
 
+  // The default viewport (1280px) is above the mobile breakpoint (1145px)
+  test.describe("navigation rail", () => {
+    test("renders the rail on the client without hydration mismatches", async ({ page }) => {
+      const errors: string[] = [];
+      page.on("console", (message) => {
+        if (message.type() === "error") errors.push(message.text());
+      });
+
+      await page.reload();
+      await page.locator("h1").waitFor({ state: "visible" });
+
+      await expectCollapsed(getNavigationMenu(page));
+      expect(errors).toEqual([]);
+    });
+
+    test("shows the collapsed rail beside the content, with the icons and a search item", async ({
+      page,
+    }) => {
+      const drawer = getNavigationMenu(page);
+      await expectCollapsed(drawer);
+
+      const items = drawer.locator(".v-list-item").filter({ visible: true });
+      await expect(items).toHaveCount(4);
+      const itemIcons = items.locator(".v-list-item__prepend .v-icon");
+      await expect(itemIcons.nth(0).locator("path")).toHaveAttribute("d", icons.search);
+      await expect(itemIcons.nth(1).locator("path")).toHaveAttribute("d", icons.home);
+      await expect(itemIcons.nth(2).locator("path")).toHaveAttribute("d", icons.folder);
+      await expect(itemIcons.nth(3).locator("path")).toHaveAttribute("d", icons.cog);
+
+      // The titles are only clipped by the rail, so they still name the items
+      await expect(drawer.getByRole("button", { name: "Buscar", exact: true })).toBeVisible();
+      await expect(drawer.getByRole("link", { name: "Início" })).toBeVisible();
+      await expect(drawer.getByRole("button", { name: "Documentação" })).toBeVisible();
+      await expect(getNavigationMenuSearch(page)).toBeHidden();
+
+      const [rail, content] = await Promise.all([
+        getBox(drawer),
+        getBox(getNavigationToggleDemo(page).locator(".v-main > .v-container")),
+      ]);
+      expect(content.x).toBeGreaterThanOrEqual(rail.x + rail.width);
+    });
+
+    test("leaves the navigation button out of the app bar", async ({ page }) => {
+      await expect(getNavigationToggleButton(page)).not.toBeAttached();
+      await expect(getNavigationMenu(page)).toBeVisible();
+    });
+
+    test("expands over the content while the mouse is over it", async ({ page }) => {
+      const drawer = getNavigationMenu(page);
+      const content = getNavigationToggleDemo(page).locator(".v-main > .v-container");
+      await scrollToMenu(drawer);
+      const contentBefore = await getBox(content);
+
+      await expandByMouse(page, drawer);
+
+      await expect(getNavigationMenuSearch(page)).toBeVisible();
+      await expect(drawer.getByRole("button", { name: "Buscar", exact: true })).toBeHidden();
+      expect((await getBox(drawer)).width).toBe(256);
+      expect(await getBox(content)).toEqual(contentBefore);
+
+      await page.mouse.move(1000, 600);
+
+      await expectCollapsed(drawer);
+    });
+
+    test("expands while the keyboard focus is in it, and collapses when it leaves", async ({
+      page,
+    }) => {
+      const drawer = getNavigationMenu(page);
+
+      // The search item passes the focus on to the search field
+      await tabInto(page, drawer);
+      await expect(getNavigationMenuSearch(page)).toBeFocused();
+      await expectExpanded(drawer);
+
+      await page.keyboard.press("Tab");
+      await expect(drawer.getByRole("link", { name: "Início" })).toBeFocused();
+      await expectExpanded(drawer);
+
+      // The list's items take the focus with the arrow keys, and Tab leaves the list
+      await page.keyboard.press("ArrowDown");
+      await page.keyboard.press("ArrowDown");
+      await expect(drawer.getByRole("button", { name: "Configurações" })).toBeFocused();
+      await expectExpanded(drawer);
+      await page.keyboard.press("Tab");
+
+      await expectCollapsed(drawer);
+    });
+
+    test("stays expanded while the mouse leaves with the keyboard focus inside", async ({
+      page,
+    }) => {
+      const drawer = getNavigationMenu(page);
+      await tabInto(page, drawer);
+      await page.keyboard.press("Tab");
+
+      await expandByMouse(page, drawer);
+      await page.mouse.move(1000, 600);
+
+      await expectExpanded(drawer);
+      await expect(drawer.getByRole("link", { name: "Início" })).toBeFocused();
+    });
+
+    test("collapses after a click on an item once the mouse leaves", async ({ page }) => {
+      const drawer = getNavigationMenu(page);
+      await expandByMouse(page, drawer);
+
+      await drawer.getByRole("link", { name: "Início" }).click();
+      await page.mouse.move(1000, 600);
+
+      await expectCollapsed(drawer);
+    });
+
+    test("collapses with Escape, even with the mouse over it, until the mouse enters again", async ({
+      page,
+    }) => {
+      const drawer = getNavigationMenu(page);
+      await expandByMouse(page, drawer);
+      const link = drawer.getByRole("link", { name: "Início" });
+      await link.focus();
+
+      await page.keyboard.press("Escape");
+
+      await expectCollapsed(drawer);
+      await expect(link).toBeFocused();
+
+      await page.mouse.move(1000, 600);
+      await expandByMouse(page, drawer);
+    });
+
+    test("moves the focus to the search item when Escape hides the search field", async ({
+      page,
+    }) => {
+      const drawer = getNavigationMenu(page);
+      await expandByMouse(page, drawer);
+      await getNavigationMenuSearch(page).click();
+
+      await page.keyboard.press("Escape");
+
+      await expectCollapsed(drawer);
+      await expect(drawer.getByRole("button", { name: "Buscar", exact: true })).toBeFocused();
+    });
+
+    test("expands and focuses the search with the search item", async ({ page }) => {
+      const drawer = getNavigationMenu(page);
+      const title = page.getByTestId("root-playground-title").locator("input");
+      await title.focus();
+
+      await drawer.getByRole("button", { name: "Buscar", exact: true }).focus();
+
+      await expectExpanded(drawer);
+      await expect(getNavigationMenuSearch(page)).toBeFocused();
+
+      await page.keyboard.press("Escape");
+
+      await expectCollapsed(drawer);
+      await expect(title).toBeFocused();
+    });
+
+    test("clears the search when it collapses", async ({ page }) => {
+      const drawer = getNavigationMenu(page);
+      await expandByMouse(page, drawer);
+      await getNavigationMenuSearch(page).fill("Configurações");
+      await expect(drawer.getByRole("link", { name: "Início" })).not.toBeAttached();
+
+      // The focus in the search field would keep it expanded
+      await getNavigationMenuSearch(page).blur();
+      await page.mouse.move(1000, 600);
+      await expectCollapsed(drawer);
+
+      await expect(getNavigationMenuSearch(page)).toHaveValue("");
+      await expect(drawer.getByRole("link", { name: "Início" })).toBeVisible();
+    });
+
+    test("highlights the group of the current page while collapsed, and the page while expanded", async ({
+      page,
+    }) => {
+      const drawer = getNavigationMenu(page);
+      const group = drawer.getByRole("button", { name: "Documentação" });
+      const link = drawer.getByRole("link", { name: "Componentes" });
+      await openComponentsPage(page);
+
+      await expectCollapsed(drawer);
+      await expect(group).toContainClass("v-list-item--active");
+      await expect(link).toBeHidden();
+
+      await expandByMouse(page, drawer);
+
+      // The group of the current page opens on its own
+      await expect(link).toBeVisible();
+      await expect(link).toContainClass("v-list-item--active");
+      await expect(group).toHaveAttribute("aria-expanded", "true");
+      await expect(group).not.toContainClass("v-list-item--active");
+    });
+
+    test("closes the groups when it collapses", async ({ page }) => {
+      const drawer = getNavigationMenu(page);
+      const group = drawer.getByRole("button", { name: "Documentação" });
+      await expandByMouse(page, drawer);
+      await group.click();
+      await expect(group).toHaveAttribute("aria-expanded", "true");
+
+      await page.mouse.move(1000, 600);
+
+      await expectCollapsed(drawer);
+      await expect(group).toHaveAttribute("aria-expanded", "false");
+      await expect(drawer.getByRole("link", { name: "Componentes" })).toBeHidden();
+    });
+  });
+
+  test.describe("navigation drawer below the mobile breakpoint", () => {
+    test.beforeEach(async ({ page }) => {
+      await page.setViewportSize(MOBILE_VIEWPORT);
+      await expect(getNavigationToggleButton(page)).toBeVisible();
+    });
+
+    test("toggles drawer visibility with nav icon", async ({ page }) => {
+      const button = getNavigationToggleButton(page);
+      const drawer = getNavigationToggleDrawer(page);
+
+      await expect(drawer).not.toContainClass("v-navigation-drawer--active");
+      await expect(drawer).not.toContainClass("v-navigation-drawer--rail");
+
+      await button.click();
+      await expect(drawer).toContainClass("v-navigation-drawer--active");
+      await expect(getNavigationMenuSearch(page)).toBeVisible();
+
+      await button.click();
+      await expect(drawer).not.toContainClass("v-navigation-drawer--active");
+    });
+
+    test("names the nav icon and toggles its aria-expanded with the drawer", async ({ page }) => {
+      const button = getNavigationToggleDemo(page).getByRole("button", {
+        name: "Menu de navegação",
+        exact: true,
+      });
+      const drawer = getNavigationToggleDrawer(page);
+
+      await expect(button).toHaveAttribute("aria-expanded", "false");
+
+      await button.click();
+      await expect(drawer).toContainClass("v-navigation-drawer--active");
+      await expect(button).toHaveAttribute("aria-expanded", "true");
+
+      await button.click();
+      await expect(drawer).not.toContainClass("v-navigation-drawer--active");
+      await expect(button).toHaveAttribute("aria-expanded", "false");
+    });
+
+    test("closes the drawer opened by its button with Escape", async ({ page }) => {
+      await getNavigationToggleButton(page).click();
+      await getNavigationMenu(page).getByRole("link", { name: "Início" }).focus();
+
+      await page.keyboard.press("Escape");
+
+      await expect(getNavigationToggleDrawer(page)).not.toContainClass(
+        "v-navigation-drawer--active",
+      );
+    });
+
+    test("closes the drawer with a click outside it", async ({ page }) => {
+      await getNavigationToggleButton(page).click();
+      await expect(getNavigationToggleDrawer(page)).toContainClass("v-navigation-drawer--active");
+
+      await getNavigationToggleDemo(page).locator(".v-navigation-drawer__scrim").click();
+
+      await expect(getNavigationToggleDrawer(page)).not.toContainClass(
+        "v-navigation-drawer--active",
+      );
+    });
+
+    test("opens the drawer with the shortcut and closes it with Escape", async ({ page }) => {
+      const title = page.getByTestId("root-playground-title").locator("input");
+      await title.focus();
+
+      await title.press("ControlOrMeta+k");
+      await expect(getNavigationToggleDrawer(page)).toContainClass("v-navigation-drawer--active");
+      await expect(getNavigationMenuSearch(page)).toBeFocused();
+
+      await page.keyboard.press("Escape");
+
+      await expect(getNavigationToggleDrawer(page)).not.toContainClass(
+        "v-navigation-drawer--active",
+      );
+      await expect(title).toBeFocused();
+    });
+
+    test("keeps the search and filters the items when loading ends", async ({ page }) => {
+      const navigationMenu = getPlaygroundNavigationMenu(page);
+
+      await page.getByTestId("root-playground-app-bar-navigation").click();
+      await getPlaygroundNavigationMenuSearch(page).fill("Início");
+
+      await getPlaygroundLoadingToggleButton(page).click();
+      await expect(navigationMenu.getByText("Início")).not.toBeAttached();
+      await expect(getPlaygroundNavigationMenuSearch(page)).toHaveValue("Início");
+
+      await getPlaygroundLoadingToggleButton(page).click();
+      await expect(navigationMenu.getByText("Início")).toBeVisible();
+      await expect(navigationMenu.getByText("Documentação")).not.toBeAttached();
+    });
+
+    test("turns back into a collapsed rail above the mobile breakpoint", async ({ page }) => {
+      await getNavigationToggleButton(page).click();
+
+      await page.setViewportSize({ width: 1280, height: 720 });
+      await page.mouse.move(1000, 600);
+
+      await expect(getNavigationToggleButton(page)).not.toBeAttached();
+      await expectCollapsed(getNavigationMenu(page));
+    });
+  });
+
   // `ControlOrMeta` is Control on the Linux runners and ⌘ on macOS, as the shortcut itself
   test.describe("navigation-menu shortcut", () => {
     const shortcut = "ControlOrMeta+k";
@@ -339,6 +652,8 @@ test.describe("main", () => {
       const userAgent = await page.evaluate(() => navigator.userAgent);
       const keys = userAgent.includes("Macintosh") ? "⌘K" : "Ctrl+K";
       const search = getNavigationMenuSearch(page);
+      // The collapsed menu hides the field
+      await expandByMouse(page, getNavigationMenu(page));
 
       await expect(search).toHaveAttribute("placeholder", `Buscar (${keys})`);
       await expect(search).toHaveAccessibleName("Buscar");
@@ -350,7 +665,13 @@ test.describe("main", () => {
           includeHidden: true,
         }),
       ).toHaveCount(1);
-      await expect(getNavigationToggleButton(page)).toHaveAttribute(
+      await expect(
+        getNavigationMenu(page).getByRole("button", {
+          name: "Buscar",
+          exact: true,
+          includeHidden: true,
+        }),
+      ).toHaveAttribute(
         "aria-keyshortcuts",
         userAgent.includes("Macintosh") ? "Meta+K" : "Control+K",
       );
@@ -359,14 +680,10 @@ test.describe("main", () => {
     test("opens only the first navigation menu and focuses its search", async ({ page }) => {
       await page.keyboard.press(shortcut);
 
-      await expect(getNavigationToggleDrawer(page)).toContainClass("v-navigation-drawer--active");
+      await expectExpanded(getNavigationToggleDrawer(page));
       await expect(getNavigationMenuSearch(page)).toBeFocused();
-      await expect(getLoadingNavigationMenu(page)).not.toContainClass(
-        "v-navigation-drawer--active",
-      );
-      await expect(getPlaygroundNavigationMenu(page)).not.toContainClass(
-        "v-navigation-drawer--active",
-      );
+      await expectCollapsed(getLoadingNavigationMenu(page));
+      await expectCollapsed(getPlaygroundNavigationMenu(page));
       // The docs search, which also answers Ctrl+K, stays closed
       await expect(getDocsSearch(page)).not.toBeAttached();
     });
@@ -379,7 +696,7 @@ test.describe("main", () => {
 
       await page.keyboard.press(shortcut);
 
-      await expect(getNavigationToggleDrawer(page)).toContainClass("v-navigation-drawer--active");
+      await expectExpanded(getNavigationToggleDrawer(page));
       await expect(search).toBeFocused();
       await expect(search).toHaveValue("Início");
       expect(await getSelection(search)).toEqual([0, "Início".length]);
@@ -393,7 +710,7 @@ test.describe("main", () => {
 
       await title.press(shortcut);
 
-      await expect(getNavigationToggleDrawer(page)).toContainClass("v-navigation-drawer--active");
+      await expectExpanded(getNavigationToggleDrawer(page));
       await expect(getNavigationMenuSearch(page)).toBeFocused();
       await expect(title).toHaveValue("Novo título");
       await expect(getDocsSearch(page)).not.toBeAttached();
@@ -406,9 +723,7 @@ test.describe("main", () => {
 
       await link.press(shortcut);
 
-      await expect(getNavigationToggleDrawer(page)).not.toContainClass(
-        "v-navigation-drawer--active",
-      );
+      await expectCollapsed(getNavigationToggleDrawer(page));
       await expect(getDocsSearch(page)).toBeVisible();
     });
 
@@ -423,13 +738,11 @@ test.describe("main", () => {
 
       await page.keyboard.press(shortcut);
 
-      await expect(getNavigationToggleDrawer(page)).not.toContainClass(
-        "v-navigation-drawer--active",
-      );
+      await expectCollapsed(getNavigationToggleDrawer(page));
       await expect(getDocsSearch(page)).toBeVisible();
     });
 
-    test("closes the navigation menu with Escape and gives the focus back", async ({ page }) => {
+    test("collapses the navigation menu with Escape and gives the focus back", async ({ page }) => {
       const title = page.getByTestId("root-playground-title").locator("input");
       await title.focus();
       await title.press(shortcut);
@@ -437,30 +750,41 @@ test.describe("main", () => {
 
       await page.keyboard.press("Escape");
 
-      await expect(getNavigationToggleDrawer(page)).not.toContainClass(
-        "v-navigation-drawer--active",
-      );
+      await expectCollapsed(getNavigationToggleDrawer(page));
       await expect(title).toBeFocused();
     });
 
-    test("closes the navigation menu opened by its button with Escape", async ({ page }) => {
-      await getNavigationToggleButton(page).click();
-      await getNavigationMenu(page).getByRole("link", { name: "Início" }).focus();
+    test("collapses the navigation menu after navigating from its search", async ({ page }) => {
+      // Starts on another page, so the link to "Início" navigates
+      await openComponentsPage(page);
+      const title = page.getByTestId("root-playground-title").locator("input");
+      await title.focus();
+      await title.press(shortcut);
+      await getNavigationMenuSearch(page).fill("Início");
 
+      await page.keyboard.press("Tab");
+      await page.keyboard.press("Enter");
+
+      await expectCollapsed(getNavigationToggleDrawer(page));
+      await expect(title).toBeFocused();
+    });
+
+    test("expands the menu again with the shortcut after Escape", async ({ page }) => {
+      await page.keyboard.press(shortcut);
       await page.keyboard.press("Escape");
+      await expectCollapsed(getNavigationToggleDrawer(page));
 
-      await expect(getNavigationToggleDrawer(page)).not.toContainClass(
-        "v-navigation-drawer--active",
-      );
+      await page.keyboard.press(shortcut);
+
+      await expectExpanded(getNavigationToggleDrawer(page));
+      await expect(getNavigationMenuSearch(page)).toBeFocused();
     });
 
     test("keeps the docs search on the slash key", async ({ page }) => {
       await page.keyboard.press("/");
 
       await expect(getDocsSearch(page)).toBeVisible();
-      await expect(getNavigationToggleDrawer(page)).not.toContainClass(
-        "v-navigation-drawer--active",
-      );
+      await expectCollapsed(getNavigationToggleDrawer(page));
     });
   });
 
@@ -474,17 +798,30 @@ test.describe("main", () => {
       await expect(page.getByTestId("demo-root-loading-app-bar-help")).not.toBeAttached();
       await expect(page.getByTestId("demo-root-loading-app-bar-notifications")).not.toBeAttached();
       await expect(page.getByTestId("demo-root-loading-app-bar-user")).not.toBeAttached();
-      await expect(getLoadingNavigationButton(page)).toBeVisible();
+      // Above the mobile breakpoint, the menu is a rail instead of the button's drawer
+      await expect(getLoadingNavigationButton(page)).not.toBeAttached();
       await expect(appBar).toContainText("Menu superior");
     });
 
-    test("opens the navigation menu with skeleton items and a disabled search", async ({
+    test("shows skeleton items and a disabled search item in the collapsed rail", async ({
       page,
     }) => {
-      await getLoadingNavigationButton(page).click();
-
       const navigationMenu = getLoadingNavigationMenu(page);
-      await expect(navigationMenu).toContainClass("v-navigation-drawer--active");
+
+      await expectCollapsed(navigationMenu);
+      await expect(navigationMenu).toHaveAttribute("aria-busy", "true");
+      await expect(navigationMenu.locator(".v-skeleton-loader")).toBeVisible();
+      await expect(
+        navigationMenu.getByRole("button", { name: "Buscar", exact: true }),
+      ).toBeDisabled();
+    });
+
+    test("expands the navigation menu with skeleton items and a disabled search", async ({
+      page,
+    }) => {
+      const navigationMenu = getLoadingNavigationMenu(page);
+      await expandByMouse(page, navigationMenu);
+
       await expect(navigationMenu).toHaveAttribute("aria-busy", "true");
       await expect(navigationMenu.locator(".v-skeleton-loader")).toBeVisible();
       await expectLoadingAnnouncement(navigationMenu.locator(".v-skeleton-loader"), 1);
@@ -495,8 +832,7 @@ test.describe("main", () => {
     });
 
     test("matches the accessible snapshot of the loading demo", async ({ page }) => {
-      await getLoadingNavigationButton(page).click();
-      await expect(getLoadingNavigationMenu(page)).toContainClass("v-navigation-drawer--active");
+      await expectCollapsed(getLoadingNavigationMenu(page));
 
       await expect(getLoadingDemo(page)).toMatchAriaSnapshot();
     });
@@ -594,7 +930,7 @@ test.describe("main", () => {
       const navigationMenu = getPlaygroundNavigationMenu(page);
       const notificationsButton = getPlaygroundNotificationsButton(page);
 
-      await page.getByTestId("root-playground-app-bar-navigation").click();
+      await expandByMouse(page, navigationMenu);
       await expect(navigationMenu.getByText("Início")).toBeVisible();
 
       await getPlaygroundLoadingToggleButton(page).click();
@@ -613,21 +949,6 @@ test.describe("main", () => {
       await expect(notificationsButton).toBeVisible();
       await expect(navigationMenu).not.toHaveAttribute("aria-busy");
       await expect(getPlaygroundNavigationMenuSearch(page)).toBeEnabled();
-    });
-
-    test("keeps the search and filters the items when loading ends", async ({ page }) => {
-      const navigationMenu = getPlaygroundNavigationMenu(page);
-
-      await page.getByTestId("root-playground-app-bar-navigation").click();
-      await getPlaygroundNavigationMenuSearch(page).fill("Início");
-
-      await getPlaygroundLoadingToggleButton(page).click();
-      await expect(navigationMenu.getByText("Início")).not.toBeAttached();
-      await expect(getPlaygroundNavigationMenuSearch(page)).toHaveValue("Início");
-
-      await getPlaygroundLoadingToggleButton(page).click();
-      await expect(navigationMenu.getByText("Início")).toBeVisible();
-      await expect(navigationMenu.getByText("Documentação")).not.toBeAttached();
     });
 
     test("closes the notifications menu when loading starts", async ({ page }) => {
@@ -811,37 +1132,6 @@ test.describe("main", () => {
       const demo = getNavigationToggleDemo(page);
       await expect(demo).toMatchAriaSnapshot();
     });
-
-    test("toggles drawer visibility with nav icon", async ({ page }) => {
-      const button = getNavigationToggleButton(page);
-      const drawer = getNavigationToggleDrawer(page);
-
-      await expect(drawer).not.toContainClass("v-navigation-drawer--active");
-
-      await button.click();
-      await expect(drawer).toContainClass("v-navigation-drawer--active");
-
-      await button.click();
-      await expect(drawer).not.toContainClass("v-navigation-drawer--active");
-    });
-
-    test("names the nav icon and toggles its aria-expanded with the drawer", async ({ page }) => {
-      const button = getNavigationToggleDemo(page).getByRole("button", {
-        name: "Menu de navegação",
-        exact: true,
-      });
-      const drawer = getNavigationToggleDrawer(page);
-
-      await expect(button).toHaveAttribute("aria-expanded", "false");
-
-      await button.click();
-      await expect(drawer).toContainClass("v-navigation-drawer--active");
-      await expect(button).toHaveAttribute("aria-expanded", "true");
-
-      await button.click();
-      await expect(drawer).not.toContainClass("v-navigation-drawer--active");
-      await expect(button).toHaveAttribute("aria-expanded", "false");
-    });
   });
 
   test.describe("fonts", () => {
@@ -879,6 +1169,26 @@ test.describe("main", () => {
       await expectNoA11yViolations(page);
       await page.keyboard.press("Escape");
 
+      await expandByMouse(page, getNavigationMenu(page));
+      await expectNoA11yViolations(page);
+    });
+
+    test("has no violations with the group of the current page highlighted", async ({ page }) => {
+      await openComponentsPage(page);
+      await expect(
+        getNavigationMenu(page).getByRole("button", { name: "Documentação" }),
+      ).toContainClass("v-list-item--active");
+      await expectNoA11yViolations(page);
+
+      await expandByMouse(page, getNavigationMenu(page));
+      await expect(
+        getNavigationMenu(page).getByRole("link", { name: "Componentes" }),
+      ).toContainClass("v-list-item--active");
+      await expectNoA11yViolations(page);
+    });
+
+    test("has no violations with the drawer open below the mobile breakpoint", async ({ page }) => {
+      await page.setViewportSize(MOBILE_VIEWPORT);
       await getNavigationToggleButton(page).click();
       await expect(getNavigationToggleDrawer(page)).toContainClass("v-navigation-drawer--active");
       await expectNoA11yViolations(page);
@@ -918,21 +1228,33 @@ test.describe("main", () => {
       await expect(page).toHaveScreenshot({ fullPage: true });
     });
 
-    test("matches last screenshot with the navigation menu open", async ({ page }) => {
-      await chooseUserMenuOption(page);
-      await openNotificationsMenu(page);
-      await page.keyboard.press("Escape");
-      await getNavigationToggleButton(page).click();
-      await expect(page).toHaveScreenshot({ fullPage: true });
+    test("matches last screenshot of the collapsed navigation rail", async ({ page }) => {
+      await expectCollapsed(getNavigationMenu(page));
+      await expectDemoScreenshot(page, getNavigationToggleDemo(page));
     });
 
-    test("matches last screenshot after closing the navigation menu", async ({ page }) => {
-      await chooseUserMenuOption(page);
-      await openNotificationsMenu(page);
-      await page.keyboard.press("Escape");
+    test("matches last screenshot of the navigation rail expanded by the mouse", async ({
+      page,
+    }) => {
+      await getNavigationToggleDemo(page).scrollIntoViewIfNeeded();
+      await expandByMouse(page, getNavigationMenu(page));
+      await expectDemoScreenshot(page, getNavigationToggleDemo(page));
+    });
+
+    test("matches last screenshot of the collapsed navigation rail with the current page's group", async ({
+      page,
+    }) => {
+      await openComponentsPage(page);
+      await expectDemoScreenshot(page, getNavigationToggleDemo(page));
+    });
+
+    test("matches last screenshot with the navigation drawer open below the mobile breakpoint", async ({
+      page,
+    }) => {
+      await page.setViewportSize(MOBILE_VIEWPORT);
       await getNavigationToggleButton(page).click();
-      await getNavigationToggleButton(page).click();
-      await expect(page).toHaveScreenshot({ fullPage: true });
+      await expect(getNavigationToggleDrawer(page)).toContainClass("v-navigation-drawer--active");
+      await expectDemoScreenshot(page, getNavigationToggleDemo(page));
     });
 
     test("matches last screenshot of the footer demo", async ({ page }) => {
@@ -957,16 +1279,77 @@ test.describe("main", () => {
       await expect(getUserDetailsMenu(page)).toHaveScreenshot();
     });
 
-    // The loading demo with its drawer closed is already in the screenshots above
-    test("matches last screenshot of the loading demo with its navigation menu open", async ({
+    test("matches last screenshot of the loading demo with its navigation rail collapsed", async ({
       page,
     }) => {
-      await getLoadingNavigationButton(page).click();
-      await expect(getLoadingNavigationMenu(page)).toContainClass("v-navigation-drawer--active");
-      await expect(page).toHaveScreenshot({ fullPage: true });
+      await expectCollapsed(getLoadingNavigationMenu(page));
+      await expectDemoScreenshot(page, getLoadingDemo(page));
     });
   });
 });
+
+/** A viewport below the mobile breakpoint (1145px), where the navigation menu is a drawer. */
+const MOBILE_VIEWPORT = { width: 1000, height: 720 };
+
+async function expectCollapsed(drawer: Locator) {
+  await expect(drawer).toContainClass("v-navigation-drawer--rail");
+  await expect(drawer).not.toContainClass("v-navigation-drawer--is-hovering");
+  await waitForAnimations(drawer.page());
+  expect((await getBox(drawer)).width).toBe(56);
+}
+
+async function expectExpanded(drawer: Locator) {
+  await expect(drawer).toContainClass("v-navigation-drawer--is-hovering");
+  await waitForAnimations(drawer.page());
+  expect((await getBox(drawer)).width).toBe(256);
+}
+
+/** Scrolls to the menu, aligned to the bottom so its top stays below the docs' fixed navigation bar. */
+async function scrollToMenu(drawer: Locator) {
+  await drawer.evaluate((element) => element.scrollIntoView({ block: "end" }));
+}
+
+/** Moves the mouse over the menu, away from its items, so none of them shows its hover state. */
+async function expandByMouse(page: Page, drawer: Locator) {
+  // Scrolling under the mouse would move it out of the menu
+  await scrollToMenu(drawer);
+  await drawer.hover({ position: { x: 28, y: 400 } });
+  await expectExpanded(drawer);
+}
+
+/** Moves the keyboard focus forward, from the demo above, until it gets into the menu. */
+async function tabInto(page: Page, drawer: Locator) {
+  await page.getByTestId("demo-root-user-initials-app-bar-user").focus();
+  for (let presses = 0; presses < 20; presses++) {
+    await page.keyboard.press("Tab");
+    if (await drawer.evaluate((element) => element.contains(document.activeElement))) return;
+  }
+  throw new Error("The focus should get into the navigation menu");
+}
+
+/** Navigates to the "Componentes" page, in the "Documentação" group, from the expanded menu. */
+async function openComponentsPage(page: Page) {
+  const drawer = getNavigationMenu(page);
+  await expandByMouse(page, drawer);
+  await drawer.getByRole("button", { name: "Documentação" }).click();
+  // The group grows while it opens, moving the link
+  await waitForAnimations(page);
+  await drawer.getByRole("link", { name: "Componentes" }).click();
+  await page.mouse.move(1000, 600);
+  await expectCollapsed(drawer);
+}
+
+/**
+ * Takes the screenshot of a demo with the docs' fixed navigation bars hidden (also the "Nesta
+ * página" one of narrow screens), since the demo is as tall as the viewport and the bars would cover
+ * its top. The demo must already be in view, as it is after expanding its menu: scrolling it under
+ * the mouse would collapse the menu.
+ */
+async function expectDemoScreenshot(page: Page, demo: Locator) {
+  await waitForAnimations(page);
+  await page.addStyleTag({ content: ".VPNav, .VPLocalNav { visibility: hidden; }" });
+  await expect(demo).toHaveScreenshot();
+}
 
 async function chooseUserMenuOption(page: Page) {
   await getUserButton(page).click();

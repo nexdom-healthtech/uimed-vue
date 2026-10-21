@@ -319,16 +319,46 @@ describe("useNavigationSearchShortcut", () => {
     });
   });
 
-  describe("close", () => {
-    it("should close the menu", async () => {
+  describe("openSearch", () => {
+    it("should open the menu and focus the search, as the key does", async () => {
       const wrapper = mountMenu();
-      await pressShortcut();
+      const input = findInput(wrapper) as HTMLInputElement;
+      input.value = "Início";
 
-      wrapper.vm.shortcut.close();
+      await wrapper.vm.shortcut.openSearch(null);
 
-      expect(isOpen(wrapper)).toBe(false);
+      expect(isOpen(wrapper)).toBe(true);
+      expect(document.activeElement).toBe(input);
+      expect([input.selectionStart, input.selectionEnd]).toEqual([0, "Início".length]);
     });
 
+    it("should give the focus back to the given origin when the menu closes", async () => {
+      const wrapper = mountMenu();
+      const origin = appendOutside("button");
+      appendOutside("input").focus();
+
+      await wrapper.vm.shortcut.openSearch(origin);
+      wrapper.vm.open = false;
+      await nextTick();
+
+      expect(document.activeElement).toBe(origin);
+    });
+
+    it("should keep the first origin when the menu is already open", async () => {
+      const wrapper = mountMenu();
+      const origin = appendOutside("button");
+      origin.focus();
+      await pressShortcut();
+
+      await wrapper.vm.shortcut.openSearch(appendOutside("button"));
+      wrapper.vm.open = false;
+      await nextTick();
+
+      expect(document.activeElement).toBe(origin);
+    });
+  });
+
+  describe("close", () => {
     it("should give the focus back to where it was when the menu opened by the key", async () => {
       const wrapper = mountMenu();
       const origin = appendOutside("button");
@@ -336,7 +366,7 @@ describe("useNavigationSearchShortcut", () => {
       await pressShortcut();
       expect(document.activeElement).toBe(findInput(wrapper));
 
-      wrapper.vm.shortcut.close();
+      wrapper.vm.open = false;
       await nextTick();
 
       expect(document.activeElement).toBe(origin);
@@ -350,7 +380,7 @@ describe("useNavigationSearchShortcut", () => {
       origin.focus();
       await pressShortcut();
 
-      wrapper.vm.shortcut.close();
+      wrapper.vm.open = false;
       await nextTick();
 
       expect(document.activeElement).toBe(origin);
@@ -363,7 +393,7 @@ describe("useNavigationSearchShortcut", () => {
       await pressShortcut();
       await pressShortcut();
 
-      wrapper.vm.shortcut.close();
+      wrapper.vm.open = false;
       await nextTick();
 
       expect(document.activeElement).toBe(origin);
@@ -376,7 +406,7 @@ describe("useNavigationSearchShortcut", () => {
       const elsewhere = appendOutside("input");
       elsewhere.focus();
 
-      wrapper.vm.shortcut.close();
+      wrapper.vm.open = false;
       await nextTick();
 
       expect(document.activeElement).toBe(elsewhere);
@@ -389,7 +419,7 @@ describe("useNavigationSearchShortcut", () => {
       await nextTick();
       findItem(wrapper).focus();
 
-      wrapper.vm.shortcut.close();
+      wrapper.vm.open = false;
       await nextTick();
 
       expect(document.activeElement).toBe(findItem(wrapper));
@@ -399,13 +429,13 @@ describe("useNavigationSearchShortcut", () => {
       const wrapper = mountMenu();
       appendOutside("button").focus();
       await pressShortcut();
-      wrapper.vm.shortcut.close();
+      wrapper.vm.open = false;
       await nextTick();
 
       wrapper.vm.open = true;
       await nextTick();
       findItem(wrapper).focus();
-      wrapper.vm.shortcut.close();
+      wrapper.vm.open = false;
       await nextTick();
 
       expect(document.activeElement).toBe(findItem(wrapper));
