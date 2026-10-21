@@ -29,10 +29,11 @@ test.describe("icon-button", () => {
     test("applies each color of the palette", async ({ page }) => {
       const buttons = page.getByTestId("demo-colors").getByRole("button");
 
-      await expect(buttons).toHaveCount(6);
+      await expect(buttons).toHaveCount(7);
       for (const [index, color] of [
         "primary",
         "secondary",
+        "tertiary",
         "success",
         "info",
         "warning",

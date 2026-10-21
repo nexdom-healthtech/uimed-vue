@@ -12,12 +12,15 @@ const light = {
     surface: "#FCFCFD",
     primary: "#074D31",
     secondary: "#FCFCFD",
+    tertiary: "#00995D",
     success: "#A9EFC5",
     warning: "#FFE596",
     error: "#D92D20",
     info: "#9ACBE5",
     "on-primary": "#FCFCFD",
+    "on-tertiary": "#000000",
     "primary-text": "#074D31",
+    "tertiary-text": "#007547",
     "success-text": "#16783E",
     "info-text": "#277096",
     "warning-text": "#846300",
@@ -88,6 +91,7 @@ describe("index", () => {
 
       it.each([
         "primary-text",
+        "tertiary-text",
         "success-text",
         "info-text",
         "warning-text",
@@ -100,10 +104,13 @@ describe("index", () => {
       });
     });
 
-    it("should keep the text on the primary fill above WCAG AA's minimum", () => {
-      const text = toRgb(light.colors["on-primary"]);
+    it.each([
+      ["primary", "on-primary"],
+      ["tertiary", "on-tertiary"],
+    ] as const)("should keep the text on the %s fill above WCAG AA's minimum", (fill, onFill) => {
+      const text = toRgb(light.colors[onFill]);
 
-      expect(contrast(text, toRgb(light.colors.primary))).toBeGreaterThanOrEqual(minContrast);
+      expect(contrast(text, toRgb(light.colors[fill]))).toBeGreaterThanOrEqual(minContrast);
     });
   });
 });

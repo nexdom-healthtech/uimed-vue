@@ -179,6 +179,26 @@ const navigationMenu = {
 };
 ```
 
+### Cor `primary`
+
+Na v1, a cor `primary` era o azul do tema padrão. Na v2, a `primary` é um verde-escuro (`#074D31`), com texto claro, e o verde da marca (`#00995D`) está disponível como `tertiary`, com texto preto, que também é a cor do menu de navegação. Nas versões beta da v2 até a `2.0.0-beta.57`, esse verde era a `primary`. Para usar o verde da marca, utilize `color="tertiary"`.
+
+**Antes (v1):**
+
+```vue
+<template>
+  <btn color="primary">Agendar</btn>
+</template>
+```
+
+**Depois (v2):**
+
+```vue
+<template>
+  <u-button color="tertiary">Agendar</u-button>
+</template>
+```
+
 ## Dicas de Migração
 
 1. Procure por todas as importações antigas e substitua pelos novos nomes com o prefixo `U`
@@ -187,5 +207,6 @@ const navigationMenu = {
 4. Substitua a propriedade `date` das notificações do menu superior por `when`, informando o texto já formatado (veja [Notificações do menu superior](#notificacoes-do-menu-superior))
 5. Adicione `align-y="stretch"` às `URow` cujas colunas precisam ter a mesma altura (veja [Alinhamento vertical das colunas](#alinhamento-vertical-das-colunas))
 6. Informe um `icon` em todos os itens e grupos do primeiro nível do menu de navegação, e revise as telas e os testes que contavam com o botão do menu em telas largas (veja [Menu de navegação](#menu-de-navegacao))
+7. Utilize `color="tertiary"` onde a aplicação deve usar o verde da marca, já que a `primary` da v2 é um verde-escuro (veja [Cor `primary`](#cor-primary))
 
 Para mais informações sobre cada componente, consulte a [Documentação da API](../api/).
