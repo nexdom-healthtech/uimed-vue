@@ -108,11 +108,13 @@ async function expectNoA11yViolationsInColorScheme(page: Page, colorScheme: "lig
 
 /**
  * Text shades of the theme colors set by `createUimed()` (`src/index.ts`), as computed styles
- * report them. Buttons without a fill (secondary and ghost) take them as their color.
+ * report them. Buttons without a fill (secondary and ghost) take them as their color, and links
+ * take `link`.
  */
 export const themeTextRgb = {
   primary: "rgb(7, 77, 49)",
   danger: "rgb(201, 42, 30)",
+  link: "rgb(2, 113, 173)",
 } as const;
 
 /** Expects a button outlined by a solid border in `borderColor`, without a fill. */

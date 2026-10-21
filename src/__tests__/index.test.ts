@@ -22,6 +22,7 @@ const light = {
     "info-text": "#277096",
     "warning-text": "#846300",
     "error-text": "#C92A1E",
+    link: "#0271AD",
   },
   variables: {
     "border-color": "#D0D5DD",
@@ -85,14 +86,18 @@ describe("index", () => {
         expect(contrast(text, background)).toBeGreaterThanOrEqual(minContrast);
       });
 
-      it.each(["primary-text", "success-text", "info-text", "warning-text", "error-text"] as const)(
-        "should keep `%s` above WCAG AA's minimum",
-        (textColor) => {
-          expect(
-            contrast(toRgb(light.colors[textColor]), toRgb(light.colors[backgroundColor])),
-          ).toBeGreaterThanOrEqual(minContrast);
-        },
-      );
+      it.each([
+        "primary-text",
+        "success-text",
+        "info-text",
+        "warning-text",
+        "error-text",
+        "link",
+      ] as const)("should keep `%s` above WCAG AA's minimum", (textColor) => {
+        expect(
+          contrast(toRgb(light.colors[textColor]), toRgb(light.colors[backgroundColor])),
+        ).toBeGreaterThanOrEqual(minContrast);
+      });
     });
 
     it("should keep the text on the primary fill above WCAG AA's minimum", () => {
