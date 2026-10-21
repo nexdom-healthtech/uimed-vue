@@ -49,7 +49,7 @@ export interface DialogAction<T extends string = string> {
 
   /**
    * Applies a color to the button.
-   * One of `primary`, `secondary`, `positive`, `informative`, `caution`, or `danger`.
+   * One of `primary`, `secondary`, `tertiary`, `positive`, `informative`, `caution`, or `danger`.
    * @default "primary"
    */
   color?: ColorVariant;
@@ -104,7 +104,7 @@ export interface ConfirmOptions {
 
   /**
    * Applies a color to the confirm button.
-   * One of `primary`, `secondary`, `positive`, `informative`, `caution`, or `danger`.
+   * One of `primary`, `secondary`, `tertiary`, `positive`, `informative`, `caution`, or `danger`.
    * @default "primary"
    */
   color?: ColorVariant;

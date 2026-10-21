@@ -5,7 +5,8 @@ Composable para evitar a perda de alterações não salvas de um formulário ao 
 ## Tipo
 
 ```ts
-type ColorVariant = "primary" | "secondary" | "positive" | "informative" | "caution" | "danger";
+type ColorVariant =
+  "primary" | "secondary" | "tertiary" | "positive" | "informative" | "caution" | "danger";
 
 interface UnsavedChangesValues<T> {
   previous: import("vue").MaybeRefOrGetter<T>;
@@ -67,14 +68,14 @@ Com `beforeUnload` ligado (padrão), recarregar a página, fechar a aba ou sair 
 
 ### `UnsavedChangesOptions`
 
-| Opção          | Tipo                                                                                         | Padrão                                                                     | Descrição                                                                               |
-| -------------- | -------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------- | --------------------------------------------------------------------------------------- |
-| `title`        | `string`                                                                                     | `"Alterações não salvas"`                                                  | Título do diálogo, em texto simples (HTML não é interpretado).                          |
-| `message`      | `string`                                                                                     | `"Existem alterações que ainda não foram salvas. Deseja sair sem salvar?"` | Mensagem do diálogo, em texto simples (HTML não é interpretado).                        |
-| `confirmText`  | `string`                                                                                     | `"Sair sem salvar"`                                                        | Texto do botão que continua a navegação.                                                |
-| `cancelText`   | `string`                                                                                     | `"Continuar editando"`                                                     | Texto do botão que cancela a navegação.                                                 |
-| `color`        | `"primary"` \| `"secondary"` \| `"positive"` \| `"informative"` \| `"caution"` \| `"danger"` | `"danger"`                                                                 | Cor do botão que continua a navegação.                                                  |
-| `beforeUnload` | `boolean`                                                                                    | `true`                                                                     | Apresenta o aviso do navegador ao recarregar, fechar a aba ou sair por um link externo. |
+| Opção          | Tipo                                                                                                         | Padrão                                                                     | Descrição                                                                               |
+| -------------- | ------------------------------------------------------------------------------------------------------------ | -------------------------------------------------------------------------- | --------------------------------------------------------------------------------------- |
+| `title`        | `string`                                                                                                     | `"Alterações não salvas"`                                                  | Título do diálogo, em texto simples (HTML não é interpretado).                          |
+| `message`      | `string`                                                                                                     | `"Existem alterações que ainda não foram salvas. Deseja sair sem salvar?"` | Mensagem do diálogo, em texto simples (HTML não é interpretado).                        |
+| `confirmText`  | `string`                                                                                                     | `"Sair sem salvar"`                                                        | Texto do botão que continua a navegação.                                                |
+| `cancelText`   | `string`                                                                                                     | `"Continuar editando"`                                                     | Texto do botão que cancela a navegação.                                                 |
+| `color`        | `"primary"` \| `"secondary"` \| `"tertiary"` \| `"positive"` \| `"informative"` \| `"caution"` \| `"danger"` | `"danger"`                                                                 | Cor do botão que continua a navegação.                                                  |
+| `beforeUnload` | `boolean`                                                                                                    | `true`                                                                     | Apresenta o aviso do navegador ao recarregar, fechar a aba ou sair por um link externo. |
 
 ### Acessibilidade
 

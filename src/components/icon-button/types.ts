@@ -22,7 +22,7 @@ export type IconButtonProps = {
 
   /**
    * Applies a color to the button.
-   * One of `primary`, `secondary`, `positive`, `informative`, `caution`, or `danger`.
+   * One of `primary`, `secondary`, `tertiary`, `positive`, `informative`, `caution`, or `danger`.
    * @default "primary"
    */
   color?: ColorVariant;

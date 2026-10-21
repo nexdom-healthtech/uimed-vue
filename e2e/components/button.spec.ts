@@ -10,7 +10,7 @@ import {
 const actionDuration = 1500;
 const externalUrl = "https://nexdom-healthtech.github.io/shared/";
 
-const colors = ["primary", "secondary", "positive", "informative", "caution", "danger"];
+const colors = ["primary", "secondary", "tertiary", "positive", "informative", "caution", "danger"];
 
 test.describe("button", () => {
   test.beforeEach(async ({ page }) => {

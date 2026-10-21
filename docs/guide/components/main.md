@@ -422,14 +422,14 @@ const footer: NonNullable<MainProps["footer"]> = {
 
 ### Cor de fundo
 
-A prop `background` aplica uma cor ao fundo de toda a aplicação, como em landing pages, com as mesmas opções de cor do [Botão](./button): `primary`, `secondary`, `positive`, `informative`, `caution` e `danger`. Quando omitida, a aplicação usa o fundo padrão do tema.
+A prop `background` aplica uma cor ao fundo de toda a aplicação, como em landing pages, com as mesmas opções de cor do [Botão](./button): `primary`, `secondary`, `tertiary`, `positive`, `informative`, `caution` e `danger`. Quando omitida, a aplicação usa o fundo padrão do tema.
 
 O texto colocado diretamente sobre o fundo passa a usar a cor associada a ele (branco ou preto). O menu superior, o rodapé, as [Sections](./section) e os diálogos mantêm os próprios fundos.
 
 Cuide do contraste ao escolher a cor:
 
 - `secondary` é a mesma cor do fundo das [Sections](./section) e do menu superior, que perdem a separação do restante da página.
-- Evite combinações em que o componente some no fundo, como um botão `primary` ou links sobre o fundo `primary`, ou links e campos de formulário sobre o fundo `danger`.
+- Evite combinações em que o componente some no fundo, como um botão `primary` ou links sobre o fundo `primary`, um botão `primary` sobre o fundo `tertiary`, ou links e campos de formulário sobre o fundo `danger`.
 
 <demo contained data-testid="demo-root-background" unpadded>
 <u-main background="primary" :appBar="backgroundAppBar" data-testid="root-demo-background">
@@ -634,7 +634,7 @@ O conteúdo da página ocupa toda a altura visível abaixo do menu superior (e a
   }
 
   // "Padrão" omite a prop, mantendo o fundo padrão do tema
-  const playgroundBackgroundOptions = [{ label: "Padrão", value: "" }, "primary", "secondary", "positive", "informative", "caution", "danger"];
+  const playgroundBackgroundOptions = [{ label: "Padrão", value: "" }, "primary", "secondary", "tertiary", "positive", "informative", "caution", "danger"];
 
   const playgroundActions = ref({
     title: {

@@ -5,7 +5,8 @@ Composable para execução de ações somente após a confirmação do usuário 
 ## Tipo
 
 ```ts
-type ColorVariant = "primary" | "secondary" | "positive" | "informative" | "caution" | "danger";
+type ColorVariant =
+  "primary" | "secondary" | "tertiary" | "positive" | "informative" | "caution" | "danger";
 
 interface ConfirmOptions {
   title?: string;
@@ -42,13 +43,13 @@ Os diálogos de `confirm` compartilham a fila de diálogos do [`useDialog`](./us
 
 ### `ConfirmOptions`
 
-| Opção         | Tipo                                                                                         | Padrão        | Descrição                                                        |
-| ------------- | -------------------------------------------------------------------------------------------- | ------------- | ---------------------------------------------------------------- |
-| `title`       | `string`                                                                                     |               | Título do diálogo, em texto simples (HTML não é interpretado).   |
-| `message`     | `string`                                                                                     |               | Mensagem do diálogo, em texto simples (HTML não é interpretado). |
-| `confirmText` | `string`                                                                                     | `"Confirmar"` | Texto do botão de confirmação.                                   |
-| `cancelText`  | `string`                                                                                     | `"Cancelar"`  | Texto do botão de cancelamento.                                  |
-| `color`       | `"primary"` \| `"secondary"` \| `"positive"` \| `"informative"` \| `"caution"` \| `"danger"` | `"primary"`   | Cor do botão de confirmação.                                     |
+| Opção         | Tipo                                                                                                         | Padrão        | Descrição                                                        |
+| ------------- | ------------------------------------------------------------------------------------------------------------ | ------------- | ---------------------------------------------------------------- |
+| `title`       | `string`                                                                                                     |               | Título do diálogo, em texto simples (HTML não é interpretado).   |
+| `message`     | `string`                                                                                                     |               | Mensagem do diálogo, em texto simples (HTML não é interpretado). |
+| `confirmText` | `string`                                                                                                     | `"Confirmar"` | Texto do botão de confirmação.                                   |
+| `cancelText`  | `string`                                                                                                     | `"Cancelar"`  | Texto do botão de cancelamento.                                  |
+| `color`       | `"primary"` \| `"secondary"` \| `"tertiary"` \| `"positive"` \| `"informative"` \| `"caution"` \| `"danger"` | `"primary"`   | Cor do botão de confirmação.                                     |
 
 ### Retorno
 

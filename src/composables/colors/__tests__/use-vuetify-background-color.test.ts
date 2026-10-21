@@ -6,6 +6,7 @@ describe("useVuetifyBackgroundColor", () => {
   it.each([
     ["primary", "bg-primary"],
     ["secondary", "bg-secondary"],
+    ["tertiary", "bg-tertiary"],
     ["positive", "bg-success"],
     ["informative", "bg-info"],
     ["caution", "bg-warning"],
