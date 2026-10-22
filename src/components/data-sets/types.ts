@@ -6,7 +6,8 @@ import type { SectionAction } from "@/components/sections/section/types.ts";
  */
 export type DataSetBarProps = {
   /**
-   * Actions about the whole list, rendered as buttons at the start of the bar.
+   * Actions about the whole list, rendered as buttons at the start of the bar,
+   * `secondary` unless they set `variant`.
    */
   actions?: SectionAction[];
 

@@ -39,7 +39,9 @@ export type DataSetProps<T extends object> = {
   /**
    * List of actions about the whole list, such as creating a record, displayed
    * as buttons at the start of the bar above the records, before the search
-   * field. Same shape as `USection`'s actions.
+   * field. Same shape as `USection`'s actions, but an action without `variant`
+   * is `secondary`, not `primary`, so it doesn't compete with the actions of the
+   * records; an action that sets `variant` keeps it.
    *
    * With the search field, the actions take the first half of the bar,
    * wrapping within it, or a line of their own when the data set isn't wide
