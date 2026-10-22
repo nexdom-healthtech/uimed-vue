@@ -8,85 +8,7 @@ Tooling is built around [Vite+](https://github.com/voidzero-dev/vite-plus) (`vp`
 
 ## Using this library in an app
 
-These steps are for developers _consuming_ `@nexdom/uimed-vue` in a Vue application (not for contributing to this repo — see the rest of this document for that).
-
-### Install
-
-```bash
-vp add @nexdom/uimed-vue
-# But, if you're not using Vite+ yet...
-npm i @nexdom/uimed-vue
-# Or
-pnpm add @nexdom/uimed-vue
-# Or
-yarn add @nexdom/uimed-vue
-```
-
-Peer dependencies (`@mdi/js`, `@nexdom/shared`, `resize-observer-polyfill`, `sass-embedded`, `vite-plus`, `vue`, `vue-component-type-helpers`, `vue-router`, `vuetify`) must be installed alongside it — most package managers install these automatically, but confirm versions match what's declared in `package.json`'s `peerDependencies`.
-
-### Setup
-
-Add the Vite plugin, which compiles the components' styles with the library's font and Sass settings. Without it, components lose the Unimed Slab font:
-
-```ts
-// vite.config.ts
-import { vitePluginUimed } from "@nexdom/uimed-vue/plugins";
-
-// ...
-
-plugins: [vue(), vitePluginUimed()];
-
-// ...
-```
-
-Register the plugin in the Vue app:
-
-```ts
-// main.js or main.ts
-import { createApp } from "vue";
-import { createUimed } from "@nexdom/uimed-vue";
-
-import App from "./App.vue";
-
-const uimed = createUimed();
-
-createApp(App).use(uimed).mount("#app");
-```
-
-### Usage
-
-Place the `UMain` component at the top of `App.vue`, then add other components as needed:
-
-```vue
-<!-- App.vue -->
-<template>
-  <u-main>
-    <!-- ... -->
-  </u-main>
-</template>
-
-<script setup lang="ts">
-import { UMain } from "@nexdom/uimed-vue/components";
-</script>
-```
-
-Never write CSS, classes or any kind of styling. Always use component props.
-
-The library doesn't export prop types. Derive them with `ComponentProps` from `vue-component-type-helpers`:
-
-```ts
-import type { ComponentProps } from "vue-component-type-helpers";
-import { UMain, USection } from "@nexdom/uimed-vue/components";
-
-type MainProps = ComponentProps<typeof UMain>;
-type AppBar = NonNullable<MainProps["appBar"]>;
-type NavigationMenu = NonNullable<MainProps["navigationMenu"]>;
-type SectionAction = NonNullable<ComponentProps<typeof USection>["actions"]>[number];
-```
-
-Available entry points: `@nexdom/uimed-vue` (root), `@nexdom/uimed-vue/components`, `@nexdom/uimed-vue/composables`, `@nexdom/uimed-vue/plugins`, `@nexdom/uimed-vue/unit-test` (test helpers, e.g. `vueTestUtilsPluginUimed()` for mounting components with Vuetify in Vitest).
-
-Full component/composable reference lives in the [docs](https://nexdom-healthtech.github.io/uimed-vue/).
+The guide for apps (install, setup, usage rules, entry points and breaking changes) is the usage skill [`skills/uimed-vue/SKILL.md`](skills/uimed-vue/SKILL.md), published with the package along with references generated from the docs, so each app's agents read the guide of the version it installed. This file isn't published: it's only for working on this repo.
 
 ## Contributing to this repo
 
@@ -252,6 +174,12 @@ The stack is newer than most AI models' training data (Vue 3.5, Vuetify 4, Vue R
   - Queries to both servers leave your machine: describe what you need in generic terms and never include source code or business rules.
 - Before adding a dependency, check whether Vuetify, `@nexdom/shared` or the current dependencies already cover the need. If not, confirm with the requester, check the package's docs, maintenance and license, and declare runtime dependencies as `peerDependencies` (enforced by dependency-cruiser's `use-peer-deps` rule).
 - Vuetify is an internal detail: consumers use the library's props, and `docs` never mention Vuetify.
+
+## Usage skill
+
+- `skills/uimed-vue/SKILL.md` is what the apps' agents read about the library. Keep it in sync in the same PR: update it when a change affects the setup, the peer dependencies, the entry points or the usage rules, and add an item to its "Breaking changes" section for every breaking change (`!` commit). Its unit tests fail when it mentions an entry point, component or composable the package doesn't export.
+- Its `references/` folder is generated from `docs/guide` and `docs/api` by `vp pack` (`src/skills.ts`) and isn't committed. The references leave out what only renders on the site (the frontmatter, `<demo>`, `<playground>`, the page's scripts and other HTML blocks, and the `:::` markers), so whatever apps need must be in the pages' text or code examples, not only in a demo.
+- The skill is written in English, like this file; its references are the docs, in Portuguese.
 
 ## AI agents
 

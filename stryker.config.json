@@ -7,7 +7,7 @@
   "testRunner_comment": "Take a look at https://stryker-mutator.io/docs/stryker-js/vitest-runner for information about the vitest plugin.",
   "coverageAnalysis": "perTest",
   "plugins": ["@stryker-mutator/vitest-runner"],
-  "ignorePatterns": ["docs", ".*", "reports"],
+  "ignorePatterns": ["docs/*", "!docs/guide", "!docs/api", ".*", "reports"],
   "ignoreStatic": true,
   "thresholds": { "high": 100, "low": 100, "break": 100 },
   "appendPlugins": ["stryker-vue-ignorer"],
