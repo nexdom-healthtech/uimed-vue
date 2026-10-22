@@ -29,3 +29,6 @@ blob-report
 .stryker-tmp
 reports
 .vitest/
+
+# Usage skill references, generated from the docs by `vp pack`
+skills/uimed-vue/references

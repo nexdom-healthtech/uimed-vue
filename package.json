@@ -22,8 +22,7 @@
   },
   "files": [
     "dist",
-    "AGENTS.md",
-    "CLAUDE.md"
+    "skills"
   ],
   "type": "module",
   "sideEffects": [

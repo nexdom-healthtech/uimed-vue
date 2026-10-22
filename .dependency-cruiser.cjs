@@ -100,7 +100,7 @@ module.exports = {
       severity: "error",
       from: {
         path: ["src"],
-        pathNot: ["src/(plugins|unit-test).ts", "__tests__"],
+        pathNot: ["src/(plugins|skills|unit-test).ts", "__tests__"],
       },
       to: {
         dependencyTypesNot: ["local", "npm-peer"],
@@ -111,7 +111,7 @@ module.exports = {
       comment: `Since this project is a library, you should prefer to use peer or Node.js core dependencies.`,
       severity: "error",
       from: {
-        path: ["src/(plugins|unit-test).ts"],
+        path: ["src/(plugins|skills|unit-test).ts"],
         pathNot: ["__tests__"],
       },
       to: {
@@ -123,7 +123,9 @@ module.exports = {
       comment: `The root folders from this project must be components, composables, consts or utils only.`,
       severity: "error",
       from: {
-        pathNot: ["src/(__tests__|index|plugins|unit-test|components|composables|consts|utils)"],
+        pathNot: [
+          "src/(__tests__|index|plugins|skills|unit-test|components|composables|consts|utils)",
+        ],
       },
       to: {},
     },

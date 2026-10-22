@@ -1,4 +1,5 @@
 import { vitestServerPluginUimed } from "./src/plugins.ts";
+import { writeSkillReferences } from "./src/skills.ts";
 import { resolve } from "node:path";
 import { defineConfig } from "vite-plus";
 import vue from "@vitejs/plugin-vue";
@@ -44,6 +45,14 @@ export default defineConfig({
     // split the components (and the Vuetify styles they import) by the route that uses them
     unbundle: true,
     copy: "src/styles",
+    hooks: {
+      // The usage skill published with the package references the docs of the same version
+      "build:done": () =>
+        writeSkillReferences(
+          resolve(import.meta.dirname, "./docs"),
+          resolve(import.meta.dirname, "./skills/uimed-vue/references"),
+        ),
+    },
     deps: { neverBundle: [/\.css$/, /^node:/] },
     platform: "neutral",
     plugins: [vue()],

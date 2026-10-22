@@ -104,6 +104,26 @@ const sectionActions: SectionAction[] = [{ type: "submit", label: "Salvar" }];
 
 `NonNullable` é necessário porque as props são opcionais: sem ele, o tipo também aceitaria `undefined`, impedindo o acesso a propriedades aninhadas (como `AppBar["user"]`) e o uso com `reactive<...>()` ou `computed<...>()`.
 
+## Agentes de IA
+
+O pacote traz um guia de uso para agentes de IA (como Claude Code, Codex, Cursor ou Copilot), no formato aberto de Agent Skills, em `node_modules/@nexdom/uimed-vue/skills/uimed-vue/SKILL.md`. Ele reúne a instalação, a configuração, as regras de uso, os pontos de entrada, as mudanças incompatíveis e esta documentação, todos na versão instalada no projeto: a cada atualização da biblioteca, o guia é atualizado junto.
+
+Para que o agente do seu projeto use o guia, referencie-o uma vez nas instruções dele:
+
+::: code-group
+
+```md [CLAUDE.md]
+@node_modules/@nexdom/uimed-vue/skills/uimed-vue/SKILL.md
+```
+
+```md [AGENTS.md]
+Para usar a biblioteca `@nexdom/uimed-vue`, siga `node_modules/@nexdom/uimed-vue/skills/uimed-vue/SKILL.md`.
+```
+
+:::
+
+O guia trata só do uso da biblioteca: as regras do seu projeto, como o fluxo de Git e os agentes, continuam nas instruções dele.
+
 ## E agora?
 
 Importe o componente [`Main`](../api/components/main) para dentro do seu `App.vue`, conforme o exemplo a seguir e então você poderá utilizar todos os recursos do `@nexdom/uimed-vue` a vontade.
