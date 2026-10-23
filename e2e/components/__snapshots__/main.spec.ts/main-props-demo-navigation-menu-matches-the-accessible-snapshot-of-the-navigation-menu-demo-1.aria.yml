@@ -1,7 +1,6 @@
 - navigation:
     - textbox "Buscar":
         - /placeholder: Buscar (Ctrl+K)
-    - alert
     - separator
     - group:
         - link "Início"
