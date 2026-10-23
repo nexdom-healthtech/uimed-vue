@@ -103,7 +103,14 @@ test.describe("dialog", () => {
   test.describe("closing", () => {
     for (const [way, close] of [
       ["Esc", (page: Page) => page.keyboard.press("Escape")],
-      ["a click outside it", (page: Page) => page.mouse.click(5, 5)],
+      [
+        "a click outside it",
+        async (page: Page) => {
+          await page.mouse.click(5, 5);
+          // Vuetify closes on a click outside in a timeout, which the paused clock holds
+          await page.clock.runFor(1);
+        },
+      ],
       ["its close button", (page: Page) => getClose(getDialog(page)).click()],
     ] as const) {
       test(`updates v-model only once it finishes leaving, after ${way}`, async ({ page }) => {
@@ -515,7 +522,11 @@ test.describe("dialog", () => {
       // A long title is cut before the close button
       await page.getByTestId("dialog-playground-title").locator("input").fill(longTitle);
       await selectOption(page, "dialog-playground-size", "small");
-      await page.getByTestId("dialog-playground-open").click();
+      const open = page.getByTestId("dialog-playground-open");
+      // The steps above leave the page at varying scroll positions, so the screenshot's background
+      // is fixed by centering the button before the click
+      await open.evaluate((element) => element.scrollIntoView({ block: "center" }));
+      await open.click();
       await expect(dialog.getByRole("button", { name: "Cancelar" })).toBeFocused();
       await expect(page).toHaveScreenshot();
     });
