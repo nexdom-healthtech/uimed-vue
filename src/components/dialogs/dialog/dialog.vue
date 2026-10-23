@@ -21,7 +21,7 @@
         <v-card-title class="d-flex justify-space-between align-center">
           <span class="text-truncate">{{ title }}</span>
           <v-icon-btn
-            icon="$close"
+            :icon="icons.close"
             aria-label="Fechar"
             :aria-disabled="isLoading"
             variant="text"
@@ -76,6 +76,7 @@ import { dialogHostKey } from "@/components/dialogs/dialog/dialog-host-key.ts";
 import type { DialogProps, DialogSize } from "@/components/dialogs/dialog/types.ts";
 import { useDialogFocus } from "@/composables/dialogs/use-dialog-focus.ts";
 import { useDialogLoading } from "@/composables/dialogs/use-dialog-loading.ts";
+import { icons } from "@/consts/icons.ts";
 import {
   computed,
   inject,

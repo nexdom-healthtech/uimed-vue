@@ -7,6 +7,7 @@ import type {
   DialogProps,
   DialogSize,
 } from "@/components/dialogs/dialog/types.ts";
+import { icons } from "@/consts/icons.ts";
 import { vueTestUtilsPluginUimed } from "@/unit-test.ts";
 import { flushPromises, mount, type VueWrapper } from "@vue/test-utils";
 import { h, nextTick, type VNode } from "vue";
@@ -193,7 +194,7 @@ describe("Dialog", () => {
 
         const close = findClose(wrapper);
         expect(close.props()).toMatchObject({
-          icon: "$close",
+          icon: icons.close,
           variant: "text",
           size: "small",
           disabled: false,
