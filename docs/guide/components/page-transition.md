@@ -17,7 +17,7 @@ Só a troca de páginas é animada. A primeira página aparece sem animação qu
 
 Navegue entre as páginas da demonstração.
 
-<demo col contained>
+<demo col contained unpadded>
   <u-main>
     <router-view v-slot="{ Component }">
       <u-page-transition>

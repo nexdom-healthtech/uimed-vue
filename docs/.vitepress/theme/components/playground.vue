@@ -1,6 +1,6 @@
 <template>
   <div class="playground vp-raw">
-    <div class="playground-preview">
+    <div class="playground-preview" :class="{ 'playground-preview-unpadded': unpadded }">
       <slot />
     </div>
     <div class="playground-controls">
@@ -79,6 +79,8 @@ interface Button extends BaseAction {
 
 type Action = Input | Combobox | Button | Checkbox;
 
+defineProps<{ unpadded?: boolean }>();
+
 const actions = defineModel<Record<string, Action>>("actions", {
   default: () => ({}),
 });
@@ -113,6 +115,12 @@ const actions = defineModel<Record<string, Action>>("actions", {
     border: 1px solid var(--vp-c-divider);
     border-radius: 8px;
     padding: 1rem;
+
+    // `UMain` fills the preview, which only clips it to the rounded border
+    &.playground-preview-unpadded {
+      overflow: hidden;
+      padding: 0;
+    }
   }
 
   &-controls {

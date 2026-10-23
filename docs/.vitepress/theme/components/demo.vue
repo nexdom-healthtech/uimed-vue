@@ -11,6 +11,7 @@ interface Props {
   col?: boolean;
   contained?: boolean;
   itemsCenter?: boolean;
+  unpadded?: boolean;
 }
 
 const props = defineProps<Props>();
@@ -18,6 +19,7 @@ const classes = computed(() => ({
   "demo-col": props.col,
   "demo-contained": props.contained,
   "demo-items-center": props.itemsCenter,
+  "demo-unpadded": props.unpadded,
 }));
 </script>
 
@@ -40,7 +42,10 @@ const classes = computed(() => ({
     overflow: hidden;
     background: rgb(var(--v-theme-background));
     border-radius: 8px;
-    padding: 1rem;
+
+    &:not(.demo-unpadded) {
+      padding: 1rem;
+    }
   }
 
   &-items-center {

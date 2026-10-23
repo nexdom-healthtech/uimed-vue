@@ -6,7 +6,7 @@ Os diálogos são apresentados um de cada vez, na ordem em que foram solicitados
 
 ## Uso
 
-<demo>
+<demo unpadded>
   <u-main>
     <u-row>
       <u-column cols="auto">

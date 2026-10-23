@@ -4,7 +4,7 @@ Uma vez que carregamos o [Componente base](../components/main), podemos estar ti
 
 ## Uso
 
-<demo>
+<demo unpadded>
   <u-main>
     <u-row>
       <u-column cols="auto">

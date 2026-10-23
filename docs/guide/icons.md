@@ -70,7 +70,7 @@ Use-os com a mesma função, para que o significado de cada ícone seja o mesmo 
 
 Busque um ícone pelo nome, sem diferenciar maiúsculas, minúsculas ou acentos, e clique no ícone para copiar o seu nome.
 
-<demo data-testid="demo-icons">
+<demo data-testid="demo-icons" unpadded>
 <u-main>
 <u-text-field v-model="search" type="search" label="Buscar ícone" data-testid="icons-search" />
 <p aria-live="polite" data-testid="icons-count">{{ countText }}</p>
