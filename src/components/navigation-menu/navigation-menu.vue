@@ -17,15 +17,19 @@
     @keydown.esc="dismiss"
   >
     <template #prepend>
-      <div v-show="!collapsed" class="px-4 pt-2">
-        <text-field
-          ref="searchField"
-          v-model="search"
-          type="search"
-          :placeholder="`Buscar (${shortcutLabel})`"
-          :data-testid="searchDataTestid"
-          :disabled="props.loading"
-        />
+      <div v-show="!collapsed" class="px-4 py-2">
+        <!-- Hides the empty messages area, which made the expanded rail's search taller than the
+        collapsed one's search item and pushed the items down when the rail expanded -->
+        <v-defaults-provider :defaults="searchFieldDefaults">
+          <text-field
+            ref="searchField"
+            v-model="search"
+            type="search"
+            :placeholder="`Buscar (${shortcutLabel})`"
+            :data-testid="searchDataTestid"
+            :disabled="props.loading"
+          />
+        </v-defaults-provider>
       </div>
 
       <!-- Vuetify's list is focusable and passes the focus on to its first item: out of the tab
@@ -123,7 +127,14 @@ import { routeToListItemProps } from "@/composables/navigation/use-route-props.t
 import { icons } from "@/consts/icons.ts";
 import TextField from "@/components/inputs/text-field/text-field.vue";
 import SkeletonLoader from "@/components/skeleton-loader/skeleton-loader.vue";
-import { VNavigationDrawer, VList, VListItem, VListGroup, VDivider } from "vuetify/components";
+import {
+  VDefaultsProvider,
+  VNavigationDrawer,
+  VList,
+  VListItem,
+  VListGroup,
+  VDivider,
+} from "vuetify/components";
 import { useNavigationSearchShortcut } from "@/composables/navigation/use-navigation-search-shortcut.ts";
 import { isParentItem, useNavigationRail } from "@/composables/navigation/use-navigation-rail.ts";
 import { computed, ref, useTemplateRef, type ComponentPublicInstance } from "vue";
@@ -135,6 +146,7 @@ type Props = NavigationMenuProps & {
 const props = defineProps<Props>();
 const open = defineModel<boolean>({ default: false });
 const search = ref("");
+const searchFieldDefaults = { VTextField: { hideDetails: "auto" } };
 const field = useTemplateRef<ComponentPublicInstance>("searchField");
 const {
   mobile,
