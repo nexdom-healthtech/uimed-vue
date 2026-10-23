@@ -22,7 +22,7 @@ Cada coluna é capaz de ajustar o seu próprio tamanho para ocupar um determinad
 
 ### Uso
 
-<demo>
+<demo unpadded>
 <u-main>
   <u-container>
     <u-row>
@@ -158,7 +158,7 @@ Quando as colunas de uma linha apresentam itens de uma mesma lista, como os cart
 
 Assim, a linha passa a ser uma lista e as colunas, os seus itens, e as tecnologias assistivas, como leitores de tela, anunciam a quantidade de itens e a posição de cada um deles. A aparência da grade não muda: a lista não recebe recuo nem marcadores.
 
-<demo>
+<demo unpadded>
 <u-main>
   <u-container>
     <u-row list data-testid="demo-layout-list">
@@ -211,7 +211,7 @@ Com `stretch`, é a coluna que cresce até a altura da mais alta: o seu conteúd
 As colunas só ficam lado a lado em telas a partir de 600px de largura. Em telas menores, cada coluna ocupa uma linha inteira e o alinhamento não tem efeito visível, exceto em [linhas com altura total](#altura-total), em que as colunas são alinhadas, em conjunto, dentro da altura da linha.
 :::
 
-<demo>
+<demo unpadded>
 <u-main>
   <u-container>
     <u-row align-y="start" data-testid="demo-layout-align-y-start">
@@ -377,7 +377,7 @@ As colunas só ficam lado a lado em telas a partir de 600px de largura. Em telas
 `start` e `end` acompanham a direção do texto: em idiomas escritos da direita para a esquerda, `start` fica à direita e `end`, à esquerda.
 :::
 
-<demo>
+<demo unpadded>
 <u-main>
   <u-container>
     <u-row align-x="start" data-testid="demo-layout-align-x-start">
@@ -463,7 +463,7 @@ Por padrão, uma `Row` cresce apenas até a altura do seu conteúdo. Com a prop 
 
 Combinada às props `alignY` e `alignX`, a linha posiciona as suas colunas nessa altura. Com `align-y="center"` e `align-x="center"`, por exemplo, o formulário de uma tela de login fica centralizado na tela, nos dois eixos:
 
-<demo contained>
+<demo contained unpadded>
 <u-main :app-bar="{ title: 'Acesso' }">
   <u-row full-height align-y="center" align-x="center" data-testid="demo-layout-full-height">
     <u-column cols="auto">

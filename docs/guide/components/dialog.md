@@ -267,7 +267,7 @@ const actions: DialogAction[] = [
 
 Diálogos das composables [useDialog](../composables/use-dialog) e [useConfirm](../composables/use-confirm) abertos por uma ação aparecem sobre a janela. Ao fechá-los, o foco volta para a janela ou, se ela também tiver sido fechada, para o elemento que a abriu.
 
-<demo>
+<demo unpadded>
 <u-main>
 <u-row>
 <u-column cols="auto">

@@ -73,7 +73,7 @@ Use an existing component (e.g. `button`) as the reference, and deliver all of t
 
 1. `src/components/<name>/<name>.vue` (following the pattern in [Code conventions](#code-conventions)), `types.ts` and `__tests__/<name>.test.ts`.
 2. The `U`-prefixed export in `src/components/index.ts`.
-3. A usage guide at `docs/guide/components/<name>.md`, with `<demo>` examples (and a `<playground>` section when the component has configurable props), and an API reference at `docs/api/components/<name>.md` (props, events and slots tables). Both in Portuguese. In a demo's template inside a `.md` file, don't put an attribute with a template literal after one with an arrow function in the same tag: the Markdown type-check (`vue-tsc`) reads the `>` of `=>` as the end of the tag and fails with `TS1003`. Order the attributes so the template literal comes first.
+3. A usage guide at `docs/guide/components/<name>.md`, with `<demo>` examples (and a `<playground>` section when the component has configurable props), and an API reference at `docs/api/components/<name>.md` (props, events and slots tables). Both in Portuguese. A `<demo>` (or `<playground>`) that renders `UMain` takes the `unpadded` prop, so the app fills it edge to edge in the docs' dark mode. In a demo's template inside a `.md` file, don't put an attribute with a template literal after one with an arrow function in the same tag: the Markdown type-check (`vue-tsc`) reads the `>` of `=>` as the end of the tag and fails with `TS1003`. Order the attributes so the template literal comes first.
 4. Both pages registered in the sidebar at `docs/.vitepress/config.ts`.
 5. `e2e/components/<name>.spec.ts` covering the guide's interactive examples, an "accessibility" check (see [Testing conventions](#testing-conventions)) and a "UI consistency" screenshot check (plus accessible snapshots where relevant). Commit the generated files under `__snapshots__`/`__screenshot__`.
 6. The full CI sequence passing locally.
@@ -84,7 +84,7 @@ Use an existing composable (e.g. `use-toast`) as the reference, and deliver in t
 
 1. `src/composables/<group>/<name>.ts` and `__tests__/<name>.test.ts`, plus the types in the group's `types.ts`. If it relies on an internal component (as `useToast` relies on the internal `Toast` rendered by `UMain`), that component follows the component layout but isn't exported.
 2. The export in `src/composables/index.ts`, and its assertion in `src/composables/__tests__/index.test.ts`.
-3. A usage guide at `docs/guide/composables/<name>.md` and an API reference at `docs/api/composables/<name>.md`, both in Portuguese, registered in both sidebars at `docs/.vitepress/config.ts` and listed in `docs/api/index.md` and in the table of `docs/guide/index.md`. If it relies on `UMain` (like `useToast`), also mention it in `UMain`'s guide and API pages.
+3. A usage guide at `docs/guide/composables/<name>.md` and an API reference at `docs/api/composables/<name>.md`, both in Portuguese (with `unpadded` on the demos that render `UMain`, as in [Adding a new component](#adding-a-new-component)), registered in both sidebars at `docs/.vitepress/config.ts` and listed in `docs/api/index.md` and in the table of `docs/guide/index.md`. If it relies on `UMain` (like `useToast`), also mention it in `UMain`'s guide and API pages.
 4. `e2e/composables/<name>.spec.ts` covering the guide's examples, an "accessibility" check (see [Testing conventions](#testing-conventions)) and a "UI consistency" screenshot check.
 5. The full CI sequence passing locally.
 

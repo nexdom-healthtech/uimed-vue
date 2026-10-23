@@ -8,7 +8,7 @@ Se o usuário cancelar, ou se a ação falhar, `confirm` devolve `false`. Em cas
 
 ## Uso
 
-<demo>
+<demo unpadded>
   <u-main>
     <u-row>
       <u-column cols="auto">

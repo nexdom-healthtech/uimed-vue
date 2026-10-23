@@ -16,7 +16,7 @@ A `logo` nos permite provisionar a URL que será utilizada pelo `Main` para orqu
 
 A logo é decorativa e não é anunciada por leitores de tela, que identificam a aplicação pelo título do menu superior (`title` da prop `app-bar`); por isso, informe o título junto com a `logo`.
 
-<demo contained data-testid="demo-root-logo">
+<demo contained data-testid="demo-root-logo" unpadded>
 <u-main :appBar="{ title: appBar.title }" :logo>
   <h2>O conteúdo da página vai aqui...</h2>
 </u-main>
@@ -54,7 +54,7 @@ As ações do menu superior têm nomes fixos para leitores de tela: "Menu de nav
 
 No menu do usuário aberto, o avatar aparece maior e centralizado, com o nome (`title`) e o `subtitle` do usuário abaixo dele.
 
-<demo contained>
+<demo contained unpadded>
 <u-main :appBar @update:notifications-open="toggleNotifications">
   <h2>O conteúdo da página vai aqui...</h2>
 </u-main>
@@ -151,7 +151,7 @@ O avatar do usuário mostra a imagem informada em `img`. Sem `img`, ele mostra a
 
 O avatar é decorativo: leitores de tela não leem as iniciais e continuam anunciando o botão como "Menu do usuário".
 
-<demo contained data-testid="demo-root-user-initials">
+<demo contained data-testid="demo-root-user-initials" unpadded>
 <u-main :appBar="userInitialsAppBar" data-testid="root-demo-user-initials">
   <h2>O conteúdo da página vai aqui...</h2>
 </u-main>
@@ -187,7 +187,7 @@ Para mostrar mais informações do usuário no menu, como a empresa e o perfil d
 
 O slot só é exibido quando há um menu do usuário, ou seja, quando `appBar.user` é informado.
 
-<demo contained data-testid="demo-root-user-details">
+<demo contained data-testid="demo-root-user-details" unpadded>
 <u-main :appBar="userDetailsAppBar" data-testid="root-demo-user-details">
   <template #user-section-details>
     <u-row>
@@ -269,7 +269,7 @@ A tecla `Esc` recolhe (ou fecha) o menu enquanto o foco está nele ou, se ele fo
 
 Quando a página tem mais de um `UMain` com menu de navegação, apenas o primeiro responde ao atalho. Por isso, nesta página, `Ctrl + K` abre o menu da demonstração abaixo em vez da busca da documentação, que continua disponível pela tecla `/`.
 
-<demo contained data-testid="demo-root-navigation-toggle">
+<demo contained data-testid="demo-root-navigation-toggle" unpadded>
 <u-main :appBar="demoNavigationToggleAppBar" :navigationMenu="navigationMenu" data-testid="root-demo-navigation-toggle">
   <h2>O conteúdo da página vai aqui...</h2>
 </u-main>
@@ -332,7 +332,7 @@ A logo e o título continuam visíveis, assim como o botão do menu de navegaç�
 
 O conteúdo da página não é afetado: nele, utilize a prop `loading` dos próprios componentes, como o [Section](./section).
 
-<demo contained data-testid="demo-root-loading">
+<demo contained data-testid="demo-root-loading" unpadded>
 <u-main :appBar="loadingAppBar" :navigationMenu="loadingNavigationMenu" loading data-testid="root-demo-loading">
   <h2>O conteúdo da página vai aqui...</h2>
 </u-main>
@@ -388,7 +388,7 @@ A prop `footer` exibe um texto fixo na parte inferior da tela, como a versão da
 
 Para ocultar o rodapé, basta omitir essa prop ou deixar o seu `description` vazio, por exemplo enquanto o usuário não estiver autenticado. O carregamento (prop `loading`) não afeta o rodapé.
 
-<demo contained data-testid="demo-root-footer">
+<demo contained data-testid="demo-root-footer" unpadded>
 <u-main :appBar="{ title: appBar.title }" :footer="footer">
   <h2>O conteúdo da página vai aqui...</h2>
 </u-main>
@@ -431,7 +431,7 @@ Cuide do contraste ao escolher a cor:
 - `secondary` é a mesma cor do fundo das [Sections](./section) e do menu superior, que perdem a separação do restante da página.
 - Evite combinações em que o componente some no fundo, como um botão `primary` ou links sobre o fundo `primary`, ou links e campos de formulário sobre o fundo `danger`.
 
-<demo contained data-testid="demo-root-background">
+<demo contained data-testid="demo-root-background" unpadded>
 <u-main background="primary" :appBar="backgroundAppBar" data-testid="root-demo-background">
   <h2>Boas-vindas ao portal</h2>
 </u-main>
@@ -462,7 +462,7 @@ const appBar: NonNullable<MainProps["appBar"]> = {
 
 O evento `update:notificationsOpen` é emitido sempre que o menu de notificações é aberto ou fechado.
 
-<demo contained data-testid="demo-notifications-open-event">
+<demo contained data-testid="demo-notifications-open-event" unpadded>
 <u-main :app-bar="eventsAppBar" @update:notifications-open="onNotificationsOpen" data-testid="root-demo-notifications-open">
   <h2 data-testid="root-demo-notifications-open-count">
     {{ notificationsOpenCount }} interação(ões)
@@ -501,8 +501,8 @@ function onNotificationsOpen() {
 
 Experimente as combinações de props do componente.
 
-<playground v-model:actions="playgroundActions">
-<demo contained>
+<playground v-model:actions="playgroundActions" unpadded>
+<demo contained unpadded>
 <u-main :app-bar="playgroundAppBar" :navigationMenu="playgroundActions.showNavigationMenu.value ? playgroundNavigationMenu : undefined" :loading="playgroundActions.loading.value" :footer="{ description: playgroundActions.footer.value, dataTestid: 'root-playground-footer' }" :background="playgroundBackground" data-testid="root-preview">
   <h2>O conteúdo da página vai aqui...</h2>
 </u-main>

@@ -11,7 +11,7 @@ A composable compara o valor original do formulário (`previous`) com o valor at
 
 Edite o nome do paciente e tente ir para a lista.
 
-<demo col>
+<demo col unpadded>
   <u-main>
     <router-view />
   </u-main>
