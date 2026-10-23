@@ -396,6 +396,20 @@ test.describe("main", () => {
       await expectCollapsed(drawer);
     });
 
+    test("keeps its items in place when it expands", async ({ page }) => {
+      const drawer = getNavigationMenu(page);
+      const item = drawer.getByRole("link", { name: "Início" });
+      const divider = drawer.locator(".v-divider");
+      await scrollToMenu(drawer);
+      await expectCollapsed(drawer);
+      const [itemBefore, dividerBefore] = await Promise.all([getBox(item), getBox(divider)]);
+
+      await expandByMouse(page, drawer);
+
+      expect((await getBox(divider)).y).toBe(dividerBefore.y);
+      expect((await getBox(item)).y).toBe(itemBefore.y);
+    });
+
     test("expands while the keyboard focus is in it, and collapses when it leaves", async ({
       page,
     }) => {

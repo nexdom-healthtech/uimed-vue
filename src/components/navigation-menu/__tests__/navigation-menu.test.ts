@@ -1,10 +1,12 @@
 import { mdiCogOutline, mdiHome, mdiHospitalBuilding, mdiMagnify } from "@mdi/js";
 import {
+  VDefaultsProvider,
   VNavigationDrawer,
   VList,
   VListItem,
   VListGroup,
   VSkeletonLoader,
+  VTextField,
 } from "vuetify/components";
 import NavigationMenu from "@/components/navigation-menu/navigation-menu.vue";
 import TextField from "@/components/inputs/text-field/text-field.vue";
@@ -557,6 +559,15 @@ describe("NavigationMenu", () => {
       it("should render the search field with correct data-testid", () => {
         const textField = findTextField(wrapper);
         expect(textField.props("dataTestid")).toBe(`${testId}-search`);
+      });
+
+      it("should hide the empty messages area of the search field", () => {
+        const defaultsProvider = wrapper.findComponent(VDefaultsProvider);
+        expect(defaultsProvider.props("defaults")).toEqual({ VTextField: { hideDetails: "auto" } });
+        expect(defaultsProvider.findComponent(TextField).exists()).toBe(true);
+        expect(wrapper.findComponent(VTextField).find(".v-input__details").classes()).toContain(
+          "v-input__details--hidden",
+        );
       });
 
       it("should show the shortcut in the placeholder instead of a label", () => {
