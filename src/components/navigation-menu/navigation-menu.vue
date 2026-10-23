@@ -1,7 +1,7 @@
 <template>
   <v-navigation-drawer
     v-model="drawerOpen"
-    color="primary"
+    color="tertiary"
     :data-testid="props.dataTestid"
     :aria-busy="props.loading || undefined"
     :mobile="mobile"
@@ -52,7 +52,7 @@
 
     <v-divider />
 
-    <skeleton-loader :loading="props.loading" type="list-item@6" color="primary">
+    <skeleton-loader :loading="props.loading" type="list-item@6" color="tertiary">
       <!-- Vuetify's `list` role only allows list items, but the items are links -->
       <v-list v-model:opened="opened" nav role="group">
         <template v-for="(item, index) in filteredItems" :key="index">

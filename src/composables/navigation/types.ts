@@ -46,7 +46,7 @@ export interface UnsavedChangesOptions {
 
   /**
    * Applies a color to the button which leaves the page.
-   * One of `primary`, `secondary`, `positive`, `informative`, `caution`, or `danger`.
+   * One of `primary`, `secondary`, `tertiary`, `positive`, `informative`, `caution`, or `danger`.
    * @default "danger"
    */
   color?: ColorVariant;

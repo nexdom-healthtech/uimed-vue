@@ -7,7 +7,8 @@ Composable para apresentação de diálogos.
 ```ts
 type ButtonVariant = "primary" | "secondary" | "ghost";
 
-type ColorVariant = "primary" | "secondary" | "positive" | "informative" | "caution" | "danger";
+type ColorVariant =
+  "primary" | "secondary" | "tertiary" | "positive" | "informative" | "caution" | "danger";
 
 interface DialogAction<T extends string = string> {
   text: string;
@@ -45,12 +46,12 @@ Os diálogos são apresentados um de cada vez, na ordem em que foram solicitados
 
 ### `DialogAction`
 
-| Opção     | Tipo                                                                                         | Padrão                                       | Descrição                                              |
-| --------- | -------------------------------------------------------------------------------------------- | -------------------------------------------- | ------------------------------------------------------ |
-| `text`    | `string`                                                                                     |                                              | Texto do botão.                                        |
-| `value`   | `string`                                                                                     |                                              | Valor devolvido por `dialog` quando o botão é clicado. |
-| `variant` | `"primary"` \| `"secondary"` \| `"ghost"`                                                    | `"ghost"`, ou `"primary"` para a última ação | Variante do botão.                                     |
-| `color`   | `"primary"` \| `"secondary"` \| `"positive"` \| `"informative"` \| `"caution"` \| `"danger"` | `"primary"`                                  | Cor do botão.                                          |
+| Opção     | Tipo                                                                                                         | Padrão                                       | Descrição                                              |
+| --------- | ------------------------------------------------------------------------------------------------------------ | -------------------------------------------- | ------------------------------------------------------ |
+| `text`    | `string`                                                                                                     |                                              | Texto do botão.                                        |
+| `value`   | `string`                                                                                                     |                                              | Valor devolvido por `dialog` quando o botão é clicado. |
+| `variant` | `"primary"` \| `"secondary"` \| `"ghost"`                                                                    | `"ghost"`, ou `"primary"` para a última ação | Variante do botão.                                     |
+| `color`   | `"primary"` \| `"secondary"` \| `"tertiary"` \| `"positive"` \| `"informative"` \| `"caution"` \| `"danger"` | `"primary"`                                  | Cor do botão.                                          |
 
 ### Retorno
 

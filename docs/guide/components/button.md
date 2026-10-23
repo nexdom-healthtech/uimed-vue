@@ -35,11 +35,12 @@ import { UButton } from "@nexdom/uimed-vue/components";
 
 ### Cores
 
-A prop `color` aceita um dos valores da paleta do componente: `primary`, `secondary`, `positive`, `informative`, `caution` ou `danger`.
+A prop `color` aceita um dos valores da paleta do componente: `primary`, `secondary`, `tertiary`, `positive`, `informative`, `caution` ou `danger`.
 
 <demo>
 <u-button color="primary">Primary</u-button>
 <u-button color="secondary">Secondary</u-button>
+<u-button color="tertiary">Tertiary</u-button>
 <u-button color="positive">Positive</u-button>
 <u-button color="informative">Informative</u-button>
 <u-button color="caution">Caution</u-button>
@@ -50,6 +51,7 @@ A prop `color` aceita um dos valores da paleta do componente: `primary`, `second
 <template>
   <u-button color="primary">Primary</u-button>
   <u-button color="secondary">Secondary</u-button>
+  <u-button color="tertiary">Tertiary</u-button>
   <u-button color="positive">Positive</u-button>
   <u-button color="informative">Informative</u-button>
   <u-button color="caution">Caution</u-button>
@@ -224,7 +226,7 @@ import type { ComponentProps } from "vue-component-type-helpers";
 
 type Props = ComponentProps<typeof UButton>;
   const playgroundVariantOptions: Array<Props["variant"]> = ["primary", "secondary", "ghost"];
-  const playgroundColorOptions: Array<Props["color"]> = ["primary", "secondary", "positive", "informative", "caution", "danger"];
+  const playgroundColorOptions: Array<Props["color"]> = ["primary", "secondary", "tertiary", "positive", "informative", "caution", "danger"];
 
   const playgroundActions = ref({
     label: {

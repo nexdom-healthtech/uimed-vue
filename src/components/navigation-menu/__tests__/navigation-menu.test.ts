@@ -39,8 +39,8 @@ describe("NavigationMenu", () => {
     expect(vNavigationDrawer.props("absolute")).toBeTruthy();
   });
 
-  it("should use the primary color", () => {
-    expect(findVNavigationDrawer(wrapper).props("color")).toBe("primary");
+  it("should use the tertiary color", () => {
+    expect(findVNavigationDrawer(wrapper).props("color")).toBe("tertiary");
   });
 
   it('should inherit "data-testid" attribute', () => {
@@ -500,8 +500,8 @@ describe("NavigationMenu", () => {
         const vSkeletonLoader = findVSkeletonLoader(wrapper);
         expect(vSkeletonLoader.props("loading")).toBe(true);
         expect(vSkeletonLoader.props("type")).toBe("list-item@6");
-        // Matches the menu's primary background, so the skeleton doesn't draw a light box over it
-        expect(vSkeletonLoader.props("color")).toBe("primary");
+        // Matches the menu's tertiary background, so the skeleton doesn't draw a light box over it
+        expect(vSkeletonLoader.props("color")).toBe("tertiary");
         expect(vSkeletonLoader.findAll(".v-skeleton-loader__list-item")).toHaveLength(6);
         expect(findVListItems(wrapper)).toHaveLength(0);
       });

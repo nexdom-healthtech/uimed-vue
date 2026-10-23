@@ -36,11 +36,12 @@ import { UIconButton } from "@nexdom/uimed-vue/components";
 
 ### Cores
 
-A prop `color` aceita um dos valores da paleta do componente: `primary`, `secondary`, `positive`, `informative`, `caution` ou `danger`. O padrão é `primary`.
+A prop `color` aceita um dos valores da paleta do componente: `primary`, `secondary`, `tertiary`, `positive`, `informative`, `caution` ou `danger`. O padrão é `primary`.
 
 <demo data-testid="demo-colors">
 <u-icon-button icon="account" label="Perfil" color="primary" />
 <u-icon-button icon="cog" label="Configurações" color="secondary" />
+<u-icon-button icon="stethoscope" label="Atendimentos" color="tertiary" />
 <u-icon-button icon="calendar" label="Agenda" color="positive" />
 <u-icon-button icon="fileDocument" label="Documentos" color="informative" />
 <u-icon-button icon="folder" label="Cadastros" color="caution" />
@@ -51,6 +52,7 @@ A prop `color` aceita um dos valores da paleta do componente: `primary`, `second
 <template>
   <u-icon-button icon="account" label="Perfil" color="primary" />
   <u-icon-button icon="cog" label="Configurações" color="secondary" />
+  <u-icon-button icon="stethoscope" label="Atendimentos" color="tertiary" />
   <u-icon-button icon="calendar" label="Agenda" color="positive" />
   <u-icon-button icon="fileDocument" label="Documentos" color="informative" />
   <u-icon-button icon="folder" label="Cadastros" color="caution" />
@@ -116,7 +118,7 @@ Consulte a referência de [API do UIconButton](../../api/components/icon-button)
 
   type Props = ComponentProps<typeof UIconButton>
   const playgroundIconOptions: Array<Props["icon"]> = ["home", "homeAlternative", "calendar", "accountGroup", "cog", "hospital"]
-  const playgroundColorOptions: Array<Props["color"]> = ["primary", "secondary", "positive", "informative", "caution", "danger"]
+  const playgroundColorOptions: Array<Props["color"]> = ["primary", "secondary", "tertiary", "positive", "informative", "caution", "danger"]
 
   const playgroundActions = ref({
     icon: {
