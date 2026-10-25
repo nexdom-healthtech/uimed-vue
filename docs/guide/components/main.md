@@ -261,7 +261,7 @@ Em telas pequenas, o menu fica oculto e é aberto sobre o conteúdo pelo botão 
 
 Os itens e grupos do primeiro nível do menu exibem um ícone antes da sua descrição, informado pelo nome na propriedade obrigatória `icon`. Os nomes disponíveis estão em [Ícones](../icons). Os itens dentro de um grupo não aceitam ícones, para que o menu siga o mesmo padrão visual em todas as aplicações.
 
-O menu também conta com um campo de busca que filtra itens e grupos em tempo real, no formato _case-insensitive_.
+O menu também conta com um campo de busca que filtra itens e grupos em tempo real, no formato _case-insensitive_. Enquanto há texto na busca, os grupos com resultados ficam abertos, mostrando os itens encontrados. Um grupo ainda pode ser fechado pelo seu cabeçalho, até o texto mudar de novo. Ao limpar a busca, ficam abertos os grupos que estavam abertos antes dela.
 
 O atalho `Ctrl + K` (`⌘ + K` no macOS), indicado no próprio campo de busca, expande o menu (ou o abre, em telas pequenas) e coloca o foco na busca, com o texto já digitado selecionado. Com o menu expandido ou aberto, o atalho apenas leva o foco de volta à busca. Levar o foco ao item "Buscar" do menu recolhido tem o mesmo efeito. Ele funciona mesmo com o foco em um campo de formulário, mas é ignorado com o foco dentro de diálogos, confirmações, menus suspensos e editores de texto rico, ou no botão de um menu suspenso aberto.
 

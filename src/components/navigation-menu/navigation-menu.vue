@@ -129,7 +129,7 @@ import SkeletonLoader from "@/components/skeleton-loader/skeleton-loader.vue";
 import { VNavigationDrawer, VList, VListItem, VListGroup, VDivider } from "vuetify/components";
 import { useNavigationSearchShortcut } from "@/composables/navigation/use-navigation-search-shortcut.ts";
 import { isParentItem, useNavigationRail } from "@/composables/navigation/use-navigation-rail.ts";
-import { computed, ref, useTemplateRef, type ComponentPublicInstance } from "vue";
+import { computed, ref, useTemplateRef, watch, type ComponentPublicInstance } from "vue";
 
 type Props = NavigationMenuProps & {
   loading?: boolean;
@@ -173,6 +173,19 @@ function onSearchItemFocus(event: FocusEvent) {
 }
 const searchDataTestid = computed(() => `${props.dataTestid}-search`);
 const query = computed(() => search.value.toLowerCase());
+
+/** Groups open before the search started, which open again when it's cleared */
+let groupsBeforeSearch = opened.value;
+
+// While searching, every group with a match opens, so its matching items show. Each change to the
+// text opens them again, even one the user closed, and clearing it brings back the groups that were
+// open before the search
+watch(query, (text, previous) => {
+  if (!previous) groupsBeforeSearch = opened.value;
+  opened.value = text
+    ? filteredItems.value.filter(isParentItem).map(({ description }) => description)
+    : groupsBeforeSearch;
+});
 
 function filterItems(): Array<NavigationMenuParentItemOrItem> {
   const items = props.items ?? [];

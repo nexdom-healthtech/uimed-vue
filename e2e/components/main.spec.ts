@@ -505,6 +505,26 @@ test.describe("main", () => {
       await expect(drawer.getByRole("link", { name: "Início" })).toBeVisible();
     });
 
+    test("opens the groups with a match while searching, and closes them again when it's cleared", async ({
+      page,
+    }) => {
+      const drawer = getNavigationMenu(page);
+      const group = drawer.getByRole("button", { name: "Documentação" });
+      await expandByMouse(page, drawer);
+      await expect(group).toHaveAttribute("aria-expanded", "false");
+
+      await getNavigationMenuSearch(page).fill("comp");
+
+      await expect(group).toHaveAttribute("aria-expanded", "true");
+      await expect(drawer.getByRole("link", { name: "Componentes" })).toBeVisible();
+      await expect(drawer.getByRole("link", { name: "Composables" })).toBeVisible();
+
+      await getNavigationMenuSearch(page).clear();
+
+      await expect(group).toHaveAttribute("aria-expanded", "false");
+      await expect(drawer.getByRole("link", { name: "Componentes" })).toBeHidden();
+    });
+
     test("highlights the group of the current page while collapsed, and the page while expanded", async ({
       page,
     }) => {

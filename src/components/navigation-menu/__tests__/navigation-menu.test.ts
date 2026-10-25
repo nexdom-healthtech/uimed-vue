@@ -646,6 +646,87 @@ describe("NavigationMenu", () => {
         expect(vListItems).toHaveLength(items.length);
       });
 
+      describe("groups", () => {
+        const people = { description: "Pessoas", route: "/pessoas" };
+        const humanResources: NavigationMenuParentItem = {
+          description: "Recursos humanos",
+          icon: "folder",
+          items: [people, { description: "Cargos", route: "/cargos" }],
+        };
+        const finance: NavigationMenuParentItem = {
+          description: "Financeiro",
+          icon: "cog",
+          items: [{ description: "Pagamentos", route: "/pagamentos" }],
+        };
+
+        beforeEach(async () => {
+          await wrapper.setProps({ items: [humanResources, finance, firstItem] });
+        });
+
+        function openedGroups() {
+          return findVSkeletonLoader(wrapper).findComponent(VList).props("opened");
+        }
+
+        async function toggleGroup(description: string) {
+          const group = findVListGroups(wrapper).find(
+            (vListGroup) => vListGroup.findComponent(VListItem).props("title") === description,
+          )!;
+          await group.find("button").trigger("click");
+        }
+
+        it("should open the groups with a match while searching, showing the matching items", async () => {
+          await findTextField(wrapper).setValue("pess");
+
+          expect(openedGroups()).toEqual([humanResources.description]);
+          const [group] = findVListGroups(wrapper);
+          expect(group.find("button").attributes("aria-expanded")).toBe("true");
+          expect(group.findAllComponents(VListItem).map((item) => item.props("title"))).toEqual([
+            humanResources.description,
+            people.description,
+          ]);
+        });
+
+        it("should open every group with a match, including one whose own description matches", async () => {
+          // Also matches a plain item, which isn't a group to open
+          await findTextField(wrapper).setValue("r");
+
+          expect(openedGroups()).toEqual([humanResources.description, finance.description]);
+
+          await findTextField(wrapper).setValue("financ");
+
+          expect(openedGroups()).toEqual([finance.description]);
+        });
+
+        it("should let the user close a group while searching, until the text changes", async () => {
+          await findTextField(wrapper).setValue("pess");
+          await toggleGroup(humanResources.description);
+
+          expect(openedGroups()).toEqual([]);
+
+          await findTextField(wrapper).setValue("pesso");
+
+          expect(openedGroups()).toEqual([humanResources.description]);
+        });
+
+        it("should open again the groups that were open before the search when it's cleared", async () => {
+          await toggleGroup(finance.description);
+          expect(openedGroups()).toEqual([finance.description]);
+
+          await findTextField(wrapper).setValue("pess");
+          await findTextField(wrapper).setValue("pesso");
+
+          expect(openedGroups()).toEqual([humanResources.description]);
+
+          await findTextField(wrapper).setValue("");
+
+          expect(openedGroups()).toEqual([finance.description]);
+        });
+
+        it("should keep the groups closed without a search", () => {
+          expect(openedGroups()).toEqual([]);
+        });
+      });
+
       it("should match case-insensitively", async () => {
         await wrapper.setProps({ items });
 
