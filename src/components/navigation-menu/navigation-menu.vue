@@ -59,10 +59,13 @@
 
     <skeleton-loader :loading="props.loading" type="list-item@6" color="tertiary">
       <!-- Vuetify's `list` role only allows list items, but the items are links.
+      Vuetify makes the list the only tab stop and takes its items out of the tab order, for the arrow
+      keys: the items are links and buttons, so each one is a tab stop instead (the arrow keys still
+      move between them), and the list stays out of the tab order.
       `indent` aligns the items of a group with its title, which the 24px between the icons and
       the titles (`settings.scss`) move 8px to the left of Vuetify's default indentation. It
       replaces the group's prepend width too, so it's the icon (24px) plus that gap (24px) -->
-      <v-list v-model:opened="opened" nav role="group" :indent="48">
+      <v-list v-model:opened="opened" nav role="group" tabindex="-1" :indent="48">
         <template v-for="(item, index) in filteredItems" :key="index">
           <template v-if="isParentItem(item)">
             <v-list-group :value="item.description">
@@ -84,6 +87,7 @@
                   :aria-expanded="isOpen"
                   :aria-selected="undefined"
                   :role="undefined"
+                  tabindex="0"
                   tag="button"
                   type="button"
                   class="w-100 text-start v-treeview-item--activatable-group-activator"
@@ -95,6 +99,7 @@
                 :key="childIndex"
                 v-bind="routeToListItemProps(childItem.route)"
                 :title="childItem.description"
+                tabindex="0"
                 @click="childItem.action"
               />
             </v-list-group>
@@ -105,6 +110,7 @@
             :title="item.description"
             :prepend-icon="icons[item.icon]"
             v-bind="routeToListItemProps(item.route)"
+            tabindex="0"
             @click="item.action"
           />
         </template>

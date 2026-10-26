@@ -97,6 +97,20 @@ describe("NavigationMenu", () => {
         expect(findVSkeletonLoader(wrapper).findComponent(VList).props("indent")).toBe(48);
       });
 
+      // Vuetify makes the list the only tab stop, which skipped every item after the first one
+      it("should leave the list out of the tab order and make each item a tab stop", async () => {
+        await wrapper.setProps({ items: [firstItem, parentItem, thirdItem] });
+
+        expect(findVSkeletonLoader(wrapper).findComponent(VList).attributes("tabindex")).toBe("-1");
+        const [plainLink, groupHeader, groupLink, groupAction, plainAction] =
+          findVListItems(wrapper);
+        for (const item of [plainLink, groupHeader, groupLink, groupAction, plainAction]) {
+          expect(item.attributes("tabindex"), `${item.props("title")}`).toBe("0");
+        }
+        expect(groupHeader.props("title")).toBe(parentItem.description);
+        expect(plainAction.props("title")).toBe(thirdItem.description);
+      });
+
       it("should render plain items with correct title", async () => {
         await wrapper.setProps({ items });
 
