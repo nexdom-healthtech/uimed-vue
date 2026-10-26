@@ -611,6 +611,47 @@ test.describe("main", () => {
       await expect(group).toHaveAttribute("aria-expanded", "false");
       await expect(drawer.getByRole("link", { name: "Componentes" })).toBeHidden();
     });
+
+    test("moves through every item with Tab, including a group's items, and back with Shift+Tab", async ({
+      page,
+    }) => {
+      const drawer = getNavigationMenu(page);
+      const search = getNavigationMenuSearch(page);
+      const focused = page.locator(":focus");
+      const items = ["Início", "Documentação", "Componentes", "Composables", "Configurações"];
+      await expandByMouse(page, drawer);
+      await drawer.getByRole("button", { name: "Documentação" }).click();
+      await search.focus();
+
+      for (const item of items) {
+        await page.keyboard.press("Tab");
+        await expect(focused).toHaveText(item);
+      }
+
+      for (const item of items.toReversed().slice(1)) {
+        await page.keyboard.press("Shift+Tab");
+        await expect(focused).toHaveText(item);
+      }
+      await page.keyboard.press("Shift+Tab");
+      await expect(search).toBeFocused();
+    });
+
+    test("skips the items of a closed group with Tab, and keeps the arrow keys", async ({
+      page,
+    }) => {
+      const drawer = getNavigationMenu(page);
+      const focused = page.locator(":focus");
+      await expandByMouse(page, drawer);
+      await getNavigationMenuSearch(page).focus();
+
+      for (const item of ["Início", "Documentação", "Configurações"]) {
+        await page.keyboard.press("Tab");
+        await expect(focused).toHaveText(item);
+      }
+
+      await page.keyboard.press("ArrowUp");
+      await expect(focused).toHaveText("Documentação");
+    });
   });
 
   test.describe("navigation drawer below the mobile breakpoint", () => {
