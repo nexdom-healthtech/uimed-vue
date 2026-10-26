@@ -516,6 +516,9 @@ test.describe("main", () => {
       await expectCollapsed(drawer);
       await expect(group).toContainClass("v-list-item--active");
       await expect(link).toBeHidden();
+      // Highlighted like the other items, which Vuetify doesn't do for a group's header by default
+      const groupHighlight = await getOverlayOpacity(group);
+      expect(groupHighlight).toBeGreaterThan(0);
 
       await expandByMouse(page, drawer);
 
@@ -524,6 +527,7 @@ test.describe("main", () => {
       await expect(link).toContainClass("v-list-item--active");
       await expect(group).toHaveAttribute("aria-expanded", "true");
       await expect(group).not.toContainClass("v-list-item--active");
+      expect(await getOverlayOpacity(link)).toBe(groupHighlight);
     });
 
     test("closes the groups when it collapses", async ({ page }) => {
@@ -1375,6 +1379,12 @@ async function getBox(locator: Locator) {
   const box = await locator.boundingBox();
   if (!box) throw new Error("The element should be visible");
   return box;
+}
+
+/** Opacity of a list item's highlight, the overlay Vuetify shows on the active items */
+async function getOverlayOpacity(item: Locator) {
+  const overlay = item.locator(".v-list-item__overlay");
+  return Number(await overlay.evaluate((element) => getComputedStyle(element).opacity));
 }
 
 /**
