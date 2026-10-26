@@ -58,8 +58,11 @@
     <v-divider />
 
     <skeleton-loader :loading="props.loading" type="list-item@6" color="tertiary">
-      <!-- Vuetify's `list` role only allows list items, but the items are links -->
-      <v-list v-model:opened="opened" nav role="group">
+      <!-- Vuetify's `list` role only allows list items, but the items are links.
+      `indent` aligns the items of a group with its title, which the 24px between the icons and
+      the titles (`settings.scss`) move 8px to the left of Vuetify's default indentation. It
+      replaces the group's prepend width too, so it's the icon (24px) plus that gap (24px) -->
+      <v-list v-model:opened="opened" nav role="group" :indent="48">
         <template v-for="(item, index) in filteredItems" :key="index">
           <template v-if="isParentItem(item)">
             <v-list-group :value="item.description">

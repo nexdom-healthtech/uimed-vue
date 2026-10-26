@@ -11,6 +11,10 @@ $layout-elevation: 2;
   // Vuetify's 0.38 draws the fields' underline and outline with a contrast of 2.3:1 on white and
   // 2.12:1 on the navigation menu, below WCAG AA's 3:1 for interface components
   $field-outline-opacity: 0.6,
+  // Vuetify's 32px between a list item's icons and its title truncated common descriptions (e.g.
+  // "Recursos humanos") in the expanded navigation menu, whose groups have an icon on each side
+  $list-item-icon-margin-start: 24px,
+  $list-item-icon-margin-end: 24px,
   // The utility classes are a render-blocking stylesheet in the apps, so only the ones the
   // components use are generated. The theme's colors (`primary`, ...) don't come from here, and
   // the palettes are left out: only the shades (black, white and transparent) remain, since
