@@ -434,6 +434,8 @@ describe("NavigationMenu", () => {
 
         expect(unitsHeader.props("active")).toBe(true);
         expect(otherHeader.props("active")).toBe(false);
+        // Without it, Vuetify hides the highlight of an active group's header
+        expect(unitsHeader.classes()).toContain("v-treeview-item--activatable-group-activator");
 
         await desktop.trigger("mouseenter");
 

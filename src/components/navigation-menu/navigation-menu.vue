@@ -63,7 +63,10 @@
               without the `aria-selected` Vuetify gives it for the group's value, which buttons
               don't take.
               A native button only takes its content's width and centers its text, so `w-100` and
-              `text-start` make it as wide as the other items and aligned with them -->
+              `text-start` make it as wide as the other items and aligned with them.
+              Vuetify hides the highlight of an active group's header, except on the activatable
+              groups of its tree view: their class shows the collapsed rail's group of the current
+              page highlighted like the other items (the header is only active then) -->
               <template #activator="{ props: activatorProps, isOpen }">
                 <v-list-item
                   v-bind="activatorProps"
@@ -75,7 +78,7 @@
                   :role="undefined"
                   tag="button"
                   type="button"
-                  class="w-100 text-start"
+                  class="w-100 text-start v-treeview-item--activatable-group-activator"
                 />
               </template>
 
