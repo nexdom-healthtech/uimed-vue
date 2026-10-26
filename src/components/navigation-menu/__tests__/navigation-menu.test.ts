@@ -93,6 +93,10 @@ describe("NavigationMenu", () => {
         expect(findVSkeletonLoader(wrapper).findComponent(VList).attributes("role")).toBe("group");
       });
 
+      it("should align the items of a group with its title", () => {
+        expect(findVSkeletonLoader(wrapper).findComponent(VList).props("indent")).toBe(48);
+      });
+
       it("should render plain items with correct title", async () => {
         await wrapper.setProps({ items });
 

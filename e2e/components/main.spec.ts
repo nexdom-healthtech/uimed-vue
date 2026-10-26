@@ -411,6 +411,39 @@ test.describe("main", () => {
       expect((await getBox(item)).y).toBe(itemBefore.y);
     });
 
+    test("fits a group's common description, between its icon and its arrow, when expanded", async ({
+      page,
+    }) => {
+      const drawer = getNavigationMenu(page);
+      await expandByMouse(page, drawer);
+      const title = drawer
+        .getByRole("button", { name: "Documentação" })
+        .locator(".v-list-item-title");
+
+      // The description of the issue that reported it truncated, which the demo doesn't have
+      const truncated = await title.evaluate((element) => {
+        element.textContent = "Recursos humanos";
+        return element.scrollWidth > element.clientWidth;
+      });
+
+      expect(truncated).toBe(false);
+    });
+
+    test("aligns the items of a group with its title", async ({ page }) => {
+      const drawer = getNavigationMenu(page);
+      await expandByMouse(page, drawer);
+      const group = drawer.getByRole("button", { name: "Documentação" });
+      await group.click();
+      // The group grows while it opens, moving its items
+      await waitForAnimations(page);
+
+      const [groupTitle, itemTitle] = await Promise.all([
+        getBox(group.locator(".v-list-item-title")),
+        getBox(drawer.getByRole("link", { name: "Componentes" }).locator(".v-list-item-title")),
+      ]);
+      expect(itemTitle.x).toBe(groupTitle.x);
+    });
+
     test("expands while the keyboard focus is in it, and collapses when it leaves", async ({
       page,
     }) => {
