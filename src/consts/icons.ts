@@ -4,6 +4,7 @@ import {
   mdiAccountGroupOutline,
   mdiAccountOutline,
   mdiAlertCircle,
+  mdiArrowUp,
   mdiBellOutline,
   mdiCalendar,
   mdiCalendarOutline,
@@ -96,6 +97,7 @@ export const icons = {
   showPassword: mdiEye,
   hidePassword: mdiEyeOff,
   close: mdiClose,
+  backToTop: mdiArrowUp,
   // Same drawing as `error`: both are aliases of the underlying components
   clear: mdiCloseCircle,
   // Expansion of menus and groups. `dropdown` and `subgroup` (the month and year selection of the

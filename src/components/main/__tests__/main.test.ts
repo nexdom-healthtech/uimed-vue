@@ -8,6 +8,7 @@ import DialogHost from "@/components/dialogs/dialog-host.vue";
 import AppBar from "@/components/app-bar/app-bar.vue";
 import NavigationMenu from "@/components/navigation-menu/navigation-menu.vue";
 import Footer from "@/components/footer/footer.vue";
+import BackToTop from "@/components/main/back-to-top.vue";
 import { owners } from "@/composables/navigation/use-navigation-search-shortcut.ts";
 import { nextTick } from "vue";
 
@@ -40,6 +41,63 @@ describe("Main", () => {
   it("should contain dialog component", () => {
     const dialog = wrapper.findComponent(DialogHost);
     expect(dialog.exists()).toBeTruthy();
+  });
+
+  describe("back to top", () => {
+    let backToTopWrapper: ReturnType<typeof mountMain>;
+    let contentTop = 0;
+
+    beforeEach(() => {
+      contentTop = 0;
+      vi.spyOn(HTMLElement.prototype, "getBoundingClientRect").mockImplementation(
+        () => ({ top: contentTop }) as DOMRect,
+      );
+      vi.stubGlobal(
+        "matchMedia",
+        vi.fn(() => ({ matches: false })),
+      );
+      vi.stubGlobal("scrollTo", vi.fn());
+      backToTopWrapper = mountMain({ attachTo: document.body });
+    });
+
+    afterEach(() => {
+      backToTopWrapper.unmount();
+      vi.restoreAllMocks();
+    });
+
+    function findMain() {
+      return backToTopWrapper.findComponent(VMain);
+    }
+
+    it("should render the button after the footer, so the layout places it above the footer", async () => {
+      await backToTopWrapper.setProps({ footer: { description: "Versão 1.4.2" } });
+
+      const layoutItems = backToTopWrapper.findAll(".v-footer, .v-fab");
+      expect(layoutItems.map((item) => item.classes()[0])).toEqual(["v-footer", "v-fab"]);
+    });
+
+    it("should hide the button while the content is in view", () => {
+      expect(backToTopWrapper.findComponent(BackToTop).props("active")).toBe(false);
+    });
+
+    it("should show the button once the page scrolls past one screen of content", async () => {
+      contentTop = -(globalThis.innerHeight + 1);
+      globalThis.dispatchEvent(new Event("scroll"));
+      await nextTick();
+
+      expect(backToTopWrapper.findComponent(BackToTop).props("active")).toBe(true);
+    });
+
+    it("should make the content focusable from scripts only", () => {
+      expect(findMain().attributes("tabindex")).toBe("-1");
+    });
+
+    it("should scroll to the top of the content and focus it when the button is clicked", () => {
+      backToTopWrapper.findComponent(BackToTop).vm.$emit("click");
+
+      expect(globalThis.scrollTo).toHaveBeenCalledOnce();
+      expect(document.activeElement).toBe(findMain().element);
+    });
   });
 
   it('should inherit "data-testid" attribute', () => {
@@ -300,7 +358,8 @@ describe("Main", () => {
           footer: { description: "Versão 1.4.2" },
         });
 
-        const coloredElements = wrapper.findAll("[class*='bg-']");
+        // The back-to-top button has a color of its own
+        const coloredElements = wrapper.findAll("[class*='bg-']:not(.v-fab .v-btn)");
         expect(coloredElements).toHaveLength(1);
         expect(coloredElements[0]?.classes()).toContain("v-application");
       });
@@ -343,8 +402,9 @@ function findBackgroundClasses(wrapper: ReturnType<typeof mountMain>) {
   return wrapper.classes().filter((className) => className.startsWith("bg-"));
 }
 
-function mountMain() {
+function mountMain(options: { attachTo?: HTMLElement } = {}) {
   return mount(Main, {
+    ...options,
     attrs: {
       "data-testid": testId,
       style: styleValue,

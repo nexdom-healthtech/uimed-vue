@@ -18,7 +18,8 @@
       :loading="props.loading"
     />
 
-    <v-main>
+    <!-- Focusable, so the back-to-top button can move the focus to the start of the content -->
+    <v-main ref="main" tabindex="-1">
       <!-- Full height, so the page's rows and containers with `fullHeight` have a height to fill -->
       <container full-height>
         <slot />
@@ -28,6 +29,9 @@
     </v-main>
 
     <app-footer v-if="props.footer?.description" v-bind="props.footer" />
+
+    <!-- After the footer, so the layout places it above the footer -->
+    <back-to-top v-scroll="onScroll" :active="visible" @click="backToTop" />
   </v-app>
 </template>
 
@@ -55,14 +59,17 @@ export default {
 import AppBar from "@/components/app-bar/app-bar.vue";
 import NavigationMenu from "@/components/navigation-menu/navigation-menu.vue";
 import AppFooter from "@/components/footer/footer.vue";
+import BackToTop from "@/components/main/back-to-top.vue";
 import { type MainProps, type MainSlots } from "@/components/main/types.ts";
 import { VApp, VMain } from "vuetify/components";
+import { Scroll as vScroll } from "vuetify/directives";
 import Container from "@/components/grid/container/container.vue";
 import Toast from "@/components/dialogs/toast.vue";
 import DialogHost from "@/components/dialogs/dialog-host.vue";
 import useVuetifyBackgroundColor from "@/composables/colors/use-vuetify-background-color.ts";
 import { useMobileNavigation } from "@/composables/navigation/use-navigation-rail.ts";
-import { computed, ref } from "vue";
+import useBackToTop from "@/composables/navigation/use-back-to-top.ts";
+import { computed, ref, useTemplateRef } from "vue";
 
 const props = defineProps<MainProps>();
 const slots = defineSlots<MainSlots>();
@@ -83,4 +90,7 @@ const backgroundClass = useVuetifyBackgroundColor(() => props.background);
 
 const notificationsOpen = defineModel<boolean>("notificationsOpen", { default: false });
 const navigationMenuOpen = ref<boolean>(false);
+
+const main = useTemplateRef<InstanceType<typeof VMain>>("main");
+const { visible, onScroll, backToTop } = useBackToTop(() => main.value?.$el);
 </script>

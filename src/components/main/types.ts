@@ -80,3 +80,21 @@ export type MainSlots = {
    */
   "user-section-details"?: () => unknown;
 };
+
+/**
+ * Props of the internal back-to-top button of {@link Main}.
+ */
+export type BackToTopProps = {
+  /** Shows the button, which stays rendered (and keeps its place in the layout) while hidden. */
+  active: boolean;
+};
+
+/**
+ * Events of the internal back-to-top button of {@link Main}.
+ */
+export type BackToTopEmits =
+  /**
+   * Emitted when the button is activated, by a click or the keyboard.
+   * @returns void
+   */
+  (e: "click") => void;

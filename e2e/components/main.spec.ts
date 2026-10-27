@@ -948,6 +948,68 @@ test.describe("main", () => {
     });
   });
 
+  test.describe("back to top demo", () => {
+    test("is hidden while the top of the demo is in view", async ({ page }) => {
+      await getBackToTopDemo(page).scrollIntoViewIfNeeded();
+      await expect(getBackToTopDemo(page).locator(".v-fab .v-btn")).toBeHidden();
+    });
+
+    test("shows once the page scrolls past a screen of the demo, and hides back at its top", async ({
+      page,
+    }) => {
+      await scrollToBackToTopDemoEnd(page);
+      await expect(getBackToTopButton(page)).toBeVisible();
+
+      await getBackToTopDemo(page).evaluate((demo) => demo.scrollIntoView());
+
+      await expect(getBackToTopDemo(page).locator(".v-fab .v-btn")).toBeHidden();
+    });
+
+    test("is named for screen readers, without a visible text", async ({ page }) => {
+      await scrollToBackToTopDemoEnd(page);
+
+      await expect(getBackToTopButton(page)).toHaveAccessibleName("Retornar ao topo");
+      await expect(getBackToTopButton(page).getByText("Retornar ao topo")).toHaveClass("d-sr-only");
+    });
+
+    test("sits at the bottom end of the demo, above the footer", async ({ page }) => {
+      await scrollToBackToTopDemoEnd(page);
+      await waitForAnimations(page);
+
+      const demo = await getBox(getBackToTopDemo(page));
+      const button = await getBox(getBackToTopButton(page));
+      const footer = await getBox(getBackToTopFooter(page));
+
+      expect(button.y + button.height).toBeLessThanOrEqual(footer.y);
+      expect(button.x + button.width).toBeGreaterThan(demo.x + demo.width - 100);
+    });
+
+    test("scrolls back to the top of the content and focuses it on click", async ({ page }) => {
+      await scrollToBackToTopDemoEnd(page);
+
+      await getBackToTopButton(page).click();
+
+      // Within a pixel, since the page's scroll can stop at a fraction of a pixel
+      await expect
+        .poll(async () => Math.abs(await getTopInViewport(getBackToTopContent(page))))
+        .toBeLessThanOrEqual(1);
+      await expect(getBackToTopContent(page)).toBeFocused();
+      await expect(getBackToTopDemo(page).locator(".v-fab .v-btn")).toBeHidden();
+    });
+
+    test("scrolls back instantly with the keyboard when the user prefers reduced motion", async ({
+      page,
+    }) => {
+      await page.emulateMedia({ reducedMotion: "reduce" });
+      await scrollToBackToTopDemoEnd(page);
+
+      await getBackToTopButton(page).press("Enter");
+
+      expect(Math.abs(await getTopInViewport(getBackToTopContent(page)))).toBeLessThanOrEqual(1);
+      await expect(getBackToTopContent(page)).toBeFocused();
+    });
+  });
+
   test.describe("background demo", () => {
     test("colors the background of the app and the text placed on it", async ({ page }) => {
       const app = getBackgroundApp(page);
@@ -1285,6 +1347,12 @@ test.describe("main", () => {
       await expectNoA11yViolations(page);
     });
 
+    test("has no violations with the back-to-top button shown", async ({ page }) => {
+      await scrollToBackToTopDemoEnd(page);
+      await expect(getBackToTopButton(page)).toBeVisible();
+      await expectNoA11yViolations(page);
+    });
+
     test("has no violations with the menu of the user details open", async ({ page }) => {
       await getUserDetailsButton(page).click();
       await expect(getUserDetailsMenu(page)).toBeVisible();
@@ -1294,23 +1362,26 @@ test.describe("main", () => {
 
   test.describe("UI consistency", () => {
     // Each state builds on the previous one, as a user would reach it, with one full-page screenshot
-    // per test, so each test fits in the default timeout
+    // per test, so each test fits in the default timeout. The page is long enough that capturing it
+    // takes longer than the assertion's default 5s when the specs run in parallel
+    const fullPageScreenshot = { fullPage: true, timeout: 15_000 };
+
     test("matches last screenshot after choosing a user menu option", async ({ page }) => {
       await chooseUserMenuOption(page);
-      await expect(page).toHaveScreenshot({ fullPage: true });
+      await expect(page).toHaveScreenshot(fullPageScreenshot);
     });
 
     test("matches last screenshot with the notifications menu open", async ({ page }) => {
       await chooseUserMenuOption(page);
       await openNotificationsMenu(page);
-      await expect(page).toHaveScreenshot({ fullPage: true });
+      await expect(page).toHaveScreenshot(fullPageScreenshot);
     });
 
     test("matches last screenshot after closing the notifications menu", async ({ page }) => {
       await chooseUserMenuOption(page);
       await openNotificationsMenu(page);
       await page.keyboard.press("Escape");
-      await expect(page).toHaveScreenshot({ fullPage: true });
+      await expect(page).toHaveScreenshot(fullPageScreenshot);
     });
 
     test("matches last screenshot of the collapsed navigation rail", async ({ page }) => {
@@ -1347,6 +1418,15 @@ test.describe("main", () => {
       // The demo is as tall as the viewport, so the docs' fixed navigation bar would cover its top
       await page.addStyleTag({ content: ".VPNav { visibility: hidden; }" });
       await expect(getFooterDemo(page)).toHaveScreenshot();
+    });
+
+    test("matches last screenshot of the back-to-top button above the footer", async ({ page }) => {
+      await scrollToBackToTopDemoEnd(page);
+      await expect(getBackToTopButton(page)).toBeVisible();
+      await waitForAnimations(page);
+      await page.addStyleTag({ content: ".VPNav, .VPLocalNav { visibility: hidden; }" });
+      // The demo is taller than the viewport, so only its end, with the button, is in view
+      await expect(page).toHaveScreenshot();
     });
 
     test("matches last screenshot of the background demo", async ({ page }) => {
@@ -1528,6 +1608,32 @@ function getBackgroundApp(page: Page) {
 
 function getBackgroundAppBar(page: Page) {
   return page.getByTestId("demo-root-background-app-bar");
+}
+
+function getBackToTopDemo(page: Page) {
+  return page.getByTestId("demo-root-back-to-top");
+}
+
+function getBackToTopButton(page: Page) {
+  return getBackToTopDemo(page).getByRole("button", { name: "Retornar ao topo" });
+}
+
+function getBackToTopContent(page: Page) {
+  return getBackToTopDemo(page).locator("main.v-main");
+}
+
+function getBackToTopFooter(page: Page) {
+  return page.getByTestId("demo-root-back-to-top-footer");
+}
+
+/** Scrolls the page until the end of the back-to-top demo, more than a screen below its top. */
+async function scrollToBackToTopDemoEnd(page: Page) {
+  await getBackToTopDemo(page).evaluate((demo) => demo.scrollIntoView({ block: "end" }));
+}
+
+/** Distance from the top of the viewport to the top of `locator`. */
+function getTopInViewport(locator: Locator) {
+  return locator.evaluate((element) => element.getBoundingClientRect().top);
 }
 
 function getFooterDemo(page: Page) {
