@@ -424,7 +424,7 @@ const footer: NonNullable<MainProps["footer"]> = {
 
 A prop `background` aplica uma cor ao fundo de toda a aplicação, como em landing pages, com as mesmas opções de cor do [Botão](./button): `primary`, `secondary`, `tertiary`, `positive`, `informative`, `caution` e `danger`. Quando omitida, a aplicação usa o fundo padrão do tema.
 
-O texto colocado diretamente sobre o fundo passa a usar a cor associada a ele (branco ou preto). O menu superior, o rodapé, as [Sections](./section) e os diálogos mantêm os próprios fundos.
+O texto colocado diretamente sobre o fundo passa a usar a cor associada a ele (branco, verde-escuro ou preto). O menu superior, o rodapé, as [Sections](./section) e os diálogos mantêm os próprios fundos.
 
 Cuide do contraste ao escolher a cor:
 

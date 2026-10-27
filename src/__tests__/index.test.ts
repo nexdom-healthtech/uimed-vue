@@ -17,6 +17,9 @@ const light = {
     warning: "#FFE596",
     error: "#D92D20",
     info: "#9ACBE5",
+    "on-background": "#053321",
+    "on-surface": "#053321",
+    "on-secondary": "#053321",
     "on-primary": "#FCFCFD",
     "on-tertiary": "#000000",
     "primary-text": "#074D31",
@@ -29,7 +32,8 @@ const light = {
   },
   variables: {
     "border-color": "#D0D5DD",
-    "medium-emphasis-opacity": 0.7,
+    "high-emphasis-opacity": 1,
+    "medium-emphasis-opacity": 0.72,
   },
 } satisfies ThemeDefinition;
 
@@ -43,9 +47,9 @@ const minComponentContrast = 3;
 // `$field-outline-opacity` in `src/styles/settings.scss`, the opacity of the fields' underline and
 // outline (checked against the compiled styles by the plugins' tests)
 const fieldOutlineOpacity = 0.6;
-// Vuetify's opacity for the theme's text color, on top of which secondary text applies
-// `medium-emphasis-opacity`
-const highEmphasisOpacity = 0.87;
+// Vuetify's opacity for the overlay of active items (e.g. the selected item of a list), drawn in
+// the item's text color
+const activatedOpacity = 0.12;
 
 vi.mock("vuetify", () => ({ createVuetify: vi.fn() }));
 
@@ -89,17 +93,34 @@ describe("index", () => {
     });
 
     describe.each(["surface", "background"] as const)("contrast on the %s", (backgroundColor) => {
+      const textColor = toRgb(light.colors[`on-${backgroundColor}`]);
+      const { "high-emphasis-opacity": highEmphasis, "medium-emphasis-opacity": mediumEmphasis } =
+        light.variables;
+
+      it("should keep text above WCAG AA's minimum", () => {
+        const background = toRgb(light.colors[backgroundColor]);
+        const text = blend(textColor, background, highEmphasis);
+
+        expect(contrast(text, background)).toBeGreaterThanOrEqual(minContrast);
+      });
+
       it("should keep secondary text above WCAG AA's minimum", () => {
         const background = toRgb(light.colors[backgroundColor]);
-        const opacity = highEmphasisOpacity * light.variables["medium-emphasis-opacity"];
-        const text = blend([0, 0, 0], background, opacity);
+        const text = blend(textColor, background, highEmphasis * mediumEmphasis);
+
+        expect(contrast(text, background)).toBeGreaterThanOrEqual(minContrast);
+      });
+
+      it("should keep secondary text on an active item above WCAG AA's minimum", () => {
+        const background = blend(textColor, toRgb(light.colors[backgroundColor]), activatedOpacity);
+        const text = blend(textColor, background, highEmphasis * mediumEmphasis);
 
         expect(contrast(text, background)).toBeGreaterThanOrEqual(minContrast);
       });
 
       it("should keep the fields' underline above WCAG AA's minimum for interface components", () => {
         const background = toRgb(light.colors[backgroundColor]);
-        const underline = blend([0, 0, 0], background, highEmphasisOpacity * fieldOutlineOpacity);
+        const underline = blend(textColor, background, highEmphasis * fieldOutlineOpacity);
 
         expect(contrast(underline, background)).toBeGreaterThanOrEqual(minComponentContrast);
       });
@@ -121,6 +142,7 @@ describe("index", () => {
 
     it.each([
       ["primary", "on-primary"],
+      ["secondary", "on-secondary"],
       ["tertiary", "on-tertiary"],
     ] as const)("should keep the text on the %s fill above WCAG AA's minimum", (fill, onFill) => {
       const text = toRgb(light.colors[onFill]);

@@ -51,9 +51,9 @@ export type MainProps = {
 
   /**
    * Applies a color to the background of the whole app, e.g. on landing pages. Text placed
-   * directly on the background takes the color the theme pairs with it (white or black), while
-   * the app bar, the footer, sections and dialogs keep their own backgrounds. When omitted, the
-   * app uses the theme's default background.
+   * directly on the background takes the color the theme pairs with it (white, dark green or
+   * black), while the app bar, the footer, sections and dialogs keep their own backgrounds. When
+   * omitted, the app uses the theme's default background.
    *
    * @example
    * ```vue

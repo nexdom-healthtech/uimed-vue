@@ -6,7 +6,7 @@ import { mdi } from "vuetify/iconsets/mdi-svg";
 import { icons } from "@/consts/icons.ts";
 import { localeOptions } from "@/consts/locale.ts";
 
-/** The library's default theme, with its colors and the opacities of secondary text and borders */
+/** The library's default theme, with its colors and the opacities of the text and borders */
 const light: ThemeDefinition = {
   dark: false,
   colors: {
@@ -19,6 +19,14 @@ const light: ThemeDefinition = {
     warning: "#FFE596",
     error: "#D92D20",
     info: "#9ACBE5",
+    // The brand's dark green as the text on the background and the surfaces, instead of
+    // Vuetify's black
+    "on-background": "#053321",
+    "on-surface": "#053321",
+    // Secondary is the surface's off-white, so its text is the same dark green as the
+    // surface's. Without it, filled secondary buttons keep black text while the outlined and
+    // ghost ones are green
+    "on-secondary": "#053321",
     // Without it, Vuetify generates pure white for the text on the primary fill, instead of
     // the surface's off-white
     "on-primary": "#FCFCFD",
@@ -40,9 +48,13 @@ const light: ThemeDefinition = {
   },
   variables: {
     "border-color": "#D0D5DD",
-    // Vuetify's 0.6 renders secondary text (e.g. subtitles and field labels) with a
-    // contrast of 4.3:1 on the surface, below WCAG AA's 4.5:1
-    "medium-emphasis-opacity": 0.7,
+    // Renders the text in the exact #053321 (11.9:1 on the background). Vuetify's 0.87
+    // lightens it to another shade of green
+    "high-emphasis-opacity": 1,
+    // Secondary text (e.g. subtitles and field labels) in the dark green reaches 5.34:1 on
+    // the background and 4.72:1 on its active items (an overlay of 0.12 of the same color).
+    // Vuetify's 0.6, and 0.7 on the active items, stay below WCAG AA's 4.5:1
+    "medium-emphasis-opacity": 0.72,
   },
 };
 
