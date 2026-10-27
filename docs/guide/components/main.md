@@ -237,8 +237,8 @@ type MainProps = ComponentProps<typeof UMain>;
 const appBar: NonNullable<MainProps["appBar"]> = {
   title: "Menu superior",
   user: {
-    title: "Julyana Costa",
-    subtitle: "julyana.costa@example.com",
+    title: "Douglas Martins",
+    subtitle: "douglas.martins@example.com",
     options: [{ description: "Sair", action: () => window.alert("Saindo...") }],
   },
 };
@@ -384,7 +384,7 @@ const navigationMenu: NonNullable<MainProps["navigationMenu"]> = {
 
 ### Rodapé
 
-A prop `footer` exibe um texto fixo na parte inferior da tela, como a versão da aplicação, para que o usuário consiga informá-la ao suporte ao relatar um problema. O texto fica centralizado e o conteúdo da página termina acima do rodapé, sem ficar coberto por ele.
+A prop `footer` exibe um texto fixo na parte inferior da tela, como a versão da aplicação, para que o usuário consiga informá-la ao suporte ao relatar um problema. O texto fica centralizado, o rodapé tem a mesma elevação (sombra) do menu superior e o conteúdo da página termina acima do rodapé, sem ficar coberto por ele.
 
 Para ocultar o rodapé, basta omitir essa prop ou deixar o seu `description` vazio, por exemplo enquanto o usuário não estiver autenticado. O carregamento (prop `loading`) não afeta o rodapé.
 
@@ -785,8 +785,8 @@ O conteúdo da página ocupa toda a altura visível abaixo do menu superior (e a
     title: "Menu superior",
     dataTestid: "demo-root-user-details-app-bar",
     user: {
-      title: "Julyana Costa",
-      subtitle: "julyana.costa@example.com",
+      title: "Douglas Martins",
+      subtitle: "douglas.martins@example.com",
       options: [{ description: "Sair", action: () => window.alert("Saindo...") }],
     },
   };
