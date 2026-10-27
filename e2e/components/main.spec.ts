@@ -1,6 +1,7 @@
 import {
   expectLoadingAnnouncement,
   expectNoA11yViolations,
+  getFieldContrast,
   gotoPage,
   selectOption,
   waitForAnimations,
@@ -583,6 +584,19 @@ test.describe("main", () => {
     test.beforeEach(async ({ page }) => {
       await page.setViewportSize(MOBILE_VIEWPORT);
       await expect(getNavigationToggleButton(page)).toBeVisible();
+    });
+
+    // Measured with the mouse and the focus away from the field, which raise its underline
+    test("keeps the search's placeholder and underline above WCAG AA's minimum contrast", async ({
+      page,
+    }) => {
+      await getNavigationToggleButton(page).click();
+      await expect(getNavigationToggleDrawer(page)).toContainClass("v-navigation-drawer--active");
+
+      const { placeholder, underline } = await getFieldContrast(getNavigationMenuSearch(page));
+
+      expect(placeholder).toBeGreaterThanOrEqual(4.5);
+      expect(underline).toBeGreaterThanOrEqual(3);
     });
 
     test("toggles drawer visibility with nav icon", async ({ page }) => {

@@ -45,6 +45,11 @@ describe("NavigationMenu", () => {
     expect(findVNavigationDrawer(wrapper).props("color")).toBe("tertiary");
   });
 
+  // Its placeholders are drawn at the disabled opacity, which the default theme keeps at 0.38
+  it("should use the navigation theme, with a readable search placeholder", () => {
+    expect(findVNavigationDrawer(wrapper).props("theme")).toBe("navigation");
+  });
+
   it('should inherit "data-testid" attribute', () => {
     expect(wrapper.attributes("data-testid")).toBe(testId);
   });
@@ -831,6 +836,7 @@ function getGlobalMountingOptions() {
         props: {
           modelValue: Boolean,
           color: String,
+          theme: String,
           mobile: Boolean,
           permanent: Boolean,
           rail: Boolean,

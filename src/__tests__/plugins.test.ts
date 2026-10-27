@@ -93,6 +93,12 @@ describe("plugins", () => {
       expect(footer).toContain(shadow);
     });
 
+    it("should compile the fields' underline and outline with a readable opacity", async () => {
+      const css = await load(plugin, `${vuetify}/lib/components/VField/VField.css`);
+
+      expect(css).toMatch(/\.v-field__outline \{[^}]*--v-field-border-opacity: 0\.6;/);
+    });
+
     describe("utility classes", () => {
       // Vuetify's global styles and utility classes with its default settings, without the library's
       let defaultStyles: string;

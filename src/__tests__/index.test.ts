@@ -33,8 +33,16 @@ const light = {
   },
 } satisfies ThemeDefinition;
 
+// The navigation menu's theme, the same colors with readable placeholders on its tertiary fill
+const navigation = { ...light, variables: { ...light.variables, "disabled-opacity": 0.8 } };
+
 // WCAG AA's minimum contrast for text of normal size
 const minContrast = 4.5;
+// WCAG AA's minimum contrast for interface components, such as the fields' underline
+const minComponentContrast = 3;
+// `$field-outline-opacity` in `src/styles/settings.scss`, the opacity of the fields' underline and
+// outline (checked against the compiled styles by the plugins' tests)
+const fieldOutlineOpacity = 0.6;
 // Vuetify's opacity for the theme's text color, on top of which secondary text applies
 // `medium-emphasis-opacity`
 const highEmphasisOpacity = 0.87;
@@ -76,7 +84,7 @@ describe("index", () => {
       expect(createVuetify).toHaveBeenCalledWith({
         icons: { defaultSet: "mdi", aliases: icons, sets: { mdi } },
         locale: { locale: "pt-BR", messages: { "pt-BR": pt } },
-        theme: { defaultTheme: "light", themes: { light } },
+        theme: { defaultTheme: "light", themes: { light, navigation } },
       });
     });
 
@@ -87,6 +95,13 @@ describe("index", () => {
         const text = blend([0, 0, 0], background, opacity);
 
         expect(contrast(text, background)).toBeGreaterThanOrEqual(minContrast);
+      });
+
+      it("should keep the fields' underline above WCAG AA's minimum for interface components", () => {
+        const background = toRgb(light.colors[backgroundColor]);
+        const underline = blend([0, 0, 0], background, highEmphasisOpacity * fieldOutlineOpacity);
+
+        expect(contrast(underline, background)).toBeGreaterThanOrEqual(minComponentContrast);
       });
 
       it.each([
@@ -111,6 +126,27 @@ describe("index", () => {
       const text = toRgb(light.colors[onFill]);
 
       expect(contrast(text, toRgb(light.colors[fill]))).toBeGreaterThanOrEqual(minContrast);
+    });
+
+    describe("navigation menu, on the tertiary fill", () => {
+      const fill = toRgb(navigation.colors.tertiary);
+      const text = toRgb(navigation.colors["on-tertiary"]);
+
+      it("should keep the search's placeholder above WCAG AA's minimum", () => {
+        const placeholder = blend(text, fill, navigation.variables["disabled-opacity"]);
+
+        expect(contrast(placeholder, fill)).toBeGreaterThanOrEqual(minContrast);
+      });
+
+      it("should keep the search's underline above WCAG AA's minimum for interface components", () => {
+        const underline = blend(text, fill, fieldOutlineOpacity);
+
+        expect(contrast(underline, fill)).toBeGreaterThanOrEqual(minComponentContrast);
+      });
+
+      it("should keep the default theme's placeholders as they are elsewhere", () => {
+        expect(light.variables).not.toHaveProperty("disabled-opacity");
+      });
     });
   });
 });
