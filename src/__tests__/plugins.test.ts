@@ -84,6 +84,15 @@ describe("plugins", () => {
       expect(css).toMatch(/\.v-list-item-subtitle \{[^}]*line-height: normal;/);
     });
 
+    it("should compile the footer with the same elevation as the app bar", async () => {
+      const footer = await load(plugin, `${vuetify}/lib/components/VFooter/VFooter.css`);
+      const appBar = await load(plugin, `${vuetify}/lib/components/VAppBar/VAppBar.css`);
+      const [shadow] = appBar!.match(/box-shadow: [^;]+;/)!;
+
+      expect(shadow).toContain("0px 2px 6px 2px");
+      expect(footer).toContain(shadow);
+    });
+
     describe("utility classes", () => {
       // Vuetify's global styles and utility classes with its default settings, without the library's
       let defaultStyles: string;
