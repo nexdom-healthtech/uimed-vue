@@ -1,5 +1,5 @@
 import { test, expect, type Page } from "@playwright/test";
-import { expectNoA11yViolations, gotoPage, selectOption } from "@e2e/utils.ts";
+import { expectNoA11yViolations, getFieldContrast, gotoPage, selectOption } from "@e2e/utils.ts";
 
 test.describe("text-field", () => {
   test.beforeEach(async ({ page }) => {
@@ -188,6 +188,15 @@ test.describe("text-field", () => {
   test.describe("accessibility", () => {
     test("has no violations", async ({ page }) => {
       await expectNoA11yViolations(page);
+    });
+
+    // Axe doesn't measure it. Measured without the mouse or the focus on the field, which raise it
+    test("keeps the underline above WCAG AA's minimum for interface components", async ({
+      page,
+    }) => {
+      const { underline } = await getFieldContrast(page.locator(".demo .v-field input").first());
+
+      expect(underline).toBeGreaterThanOrEqual(3);
     });
   });
 

@@ -125,3 +125,54 @@ export async function expectOutlinedButton(button: Locator, borderColor: string)
   await expect(button).not.toHaveCSS("border-top-width", "0px");
   await expect(button).toHaveCSS("border-top-color", borderColor);
 }
+
+/**
+ * Contrast of a field's placeholder and of its underline (or outline) with the background behind
+ * the field, which axe doesn't measure. Against WCAG AA, the placeholder is text (4.5:1) and the
+ * underline is an interface component (3:1).
+ */
+export async function getFieldContrast(input: Locator) {
+  return input.evaluate((element) => {
+    const channels = (color: string) => {
+      const canvas = document.createElement("canvas");
+      const context = canvas.getContext("2d")!;
+      context.fillStyle = color;
+      context.fillRect(0, 0, 1, 1);
+      const [red, green, blue, alpha] = context.getImageData(0, 0, 1, 1).data;
+      return { rgb: [red, green, blue], alpha: alpha / 255 };
+    };
+    const luminance = (rgb: number[]) => {
+      const [red, green, blue] = rgb.map((channel) => {
+        const value = channel / 255;
+        return value <= 0.04045 ? value / 12.92 : ((value + 0.055) / 1.055) ** 2.4;
+      });
+      return 0.2126 * red + 0.7152 * green + 0.0722 * blue;
+    };
+    const field = element.closest(".v-field")!;
+    let background = [255, 255, 255];
+    for (let ancestor: Element | null = field; ancestor; ancestor = ancestor.parentElement) {
+      const color = channels(getComputedStyle(ancestor).backgroundColor);
+      if (color.alpha === 1) {
+        background = color.rgb;
+        break;
+      }
+    }
+    // The color as drawn on the background, with its own alpha and the element's opacity
+    const contrastOf = (color: string, opacity: string) => {
+      const { rgb, alpha } = channels(color);
+      const drawn = rgb.map((channel, index) => {
+        const weight = alpha * Number(opacity);
+        return channel * weight + background[index] * (1 - weight);
+      });
+      const [lighter, darker] = [luminance(drawn), luminance(background)].sort((a, b) => b - a);
+      return (lighter + 0.05) / (darker + 0.05);
+    };
+    const placeholder = getComputedStyle(element, "::placeholder");
+    const underline = getComputedStyle(field.querySelector(".v-field__outline")!, "::before");
+
+    return {
+      placeholder: contrastOf(placeholder.color, placeholder.opacity),
+      underline: contrastOf(underline.borderBottomColor, underline.opacity),
+    };
+  });
+}
