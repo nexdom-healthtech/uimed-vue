@@ -199,6 +199,8 @@ Na v1, a cor `primary` era o azul do tema padrão. Na v2, a `primary` é um verd
 </template>
 ```
 
+O texto sobre o fundo e as superfícies (cards, diálogos, menu superior) também mudou: é verde-escuro (`#053321`), não preto.
+
 ## Dicas de Migração
 
 1. Procure por todas as importações antigas e substitua pelos novos nomes com o prefixo `U`
