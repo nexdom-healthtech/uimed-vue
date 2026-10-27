@@ -2,7 +2,9 @@ import useBackToTop, { type BackToTop } from "@/composables/navigation/use-back-
 import { mount, type VueWrapper } from "@vue/test-utils";
 import { defineComponent, useTemplateRef } from "vue";
 
-type Content = VueWrapper & { vm: BackToTop };
+type ContentWrapper = VueWrapper & { vm: BackToTop };
+
+const Content = defineComponent({ template: `<main tabindex="-1"></main>` });
 
 describe("useBackToTop", () => {
   const wrappers: VueWrapper[] = [];
@@ -30,24 +32,25 @@ describe("useBackToTop", () => {
     vi.restoreAllMocks();
   });
 
-  function mountContent(withContent = true): Content {
+  function mountContent(withContent = true): ContentWrapper {
     const wrapper = mount(
       defineComponent({
+        components: { Content },
         props: { withContent: Boolean },
         setup(props) {
-          const content = useTemplateRef<HTMLElement>("content");
-          return useBackToTop(() => (props.withContent ? (content.value ?? undefined) : undefined));
+          const content = useTemplateRef<InstanceType<typeof Content>>("content");
+          return useBackToTop(() => (props.withContent ? content.value : null));
         },
-        template: `<main ref="content" tabindex="-1"></main>`,
+        template: `<content ref="content" />`,
       }),
       { props: { withContent }, attachTo: document.body },
     );
     wrappers.push(wrapper);
-    return wrapper as unknown as Content;
+    return wrapper as unknown as ContentWrapper;
   }
 
   /** Scrolls the page so the top of the content is `top` pixels from the top of the viewport. */
-  function scrollTo(wrapper: Content, top: number) {
+  function scrollTo(wrapper: ContentWrapper, top: number) {
     contentTop = top;
     wrapper.vm.onScroll();
   }

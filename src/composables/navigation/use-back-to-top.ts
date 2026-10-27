@@ -13,23 +13,24 @@ export interface BackToTop {
 }
 
 /**
- * Back-to-top button's state for `content`, the element the button brings into view and focuses
- * (which must be focusable, e.g. with `tabindex="-1"`). The button shows once the top of the content
- * is a screen above the viewport, instead of after the page scrolls a screen: in apps both are the
- * same, but on pages with more than one `UMain` (like the docs) only the one scrolled past shows it.
+ * Back-to-top button's state for `content`, the template ref of the component whose element the
+ * button brings into view and focuses (which must be focusable, e.g. with `tabindex="-1"`). The
+ * button shows once the top of the content is a screen above the viewport, instead of after the page
+ * scrolls a screen: in apps both are the same, but on pages with more than one `UMain` (like the
+ * docs) only the one scrolled past shows it.
  */
 export default function useBackToTop(
-  content: MaybeRefOrGetter<HTMLElement | undefined>,
+  content: MaybeRefOrGetter<{ $el: HTMLElement } | null>,
 ): BackToTop {
   const visible = ref(false);
 
   function onScroll() {
-    const element = toValue(content);
+    const element = toValue(content)?.$el;
     visible.value = element ? -element.getBoundingClientRect().top > globalThis.innerHeight : false;
   }
 
   function backToTop() {
-    const element = toValue(content);
+    const element = toValue(content)?.$el;
     if (!element) return;
 
     globalThis.scrollTo({
