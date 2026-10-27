@@ -91,6 +91,5 @@ const backgroundClass = useVuetifyBackgroundColor(() => props.background);
 const notificationsOpen = defineModel<boolean>("notificationsOpen", { default: false });
 const navigationMenuOpen = ref<boolean>(false);
 
-const main = useTemplateRef<InstanceType<typeof VMain>>("main");
-const { visible, onScroll, backToTop } = useBackToTop(() => main.value?.$el);
+const { visible, onScroll, backToTop } = useBackToTop(useTemplateRef("main"));
 </script>

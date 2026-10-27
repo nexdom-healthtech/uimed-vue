@@ -1,6 +1,6 @@
 import { VApp, VBtn, VCard, VMain } from "vuetify/components";
 import Main from "@/components/main/main.vue";
-import { flushPromises, mount } from "@vue/test-utils";
+import { flushPromises, mount, renderToString } from "@vue/test-utils";
 import { vueTestUtilsPluginUimed } from "@/unit-test.ts";
 import { UContainer } from "@/components/index.ts";
 import Toast from "@/components/dialogs/toast.vue";
@@ -78,6 +78,14 @@ describe("Main", () => {
 
     it("should hide the button while the content is in view", () => {
       expect(backToTopWrapper.findComponent(BackToTop).props("active")).toBe(false);
+    });
+
+    it("should render the button hidden on the server, where the scroll isn't known", async () => {
+      const html = await renderToString(Main, { global: { plugins: [vueTestUtilsPluginUimed()] } });
+
+      const page = document.createElement("template");
+      page.innerHTML = html;
+      expect(page.content.querySelector<HTMLElement>(".v-fab .v-btn")?.style.display).toBe("none");
     });
 
     it("should show the button once the page scrolls past one screen of content", async () => {
