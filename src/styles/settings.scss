@@ -1,4 +1,9 @@
+// The app bar and the footer frame the content of UMain, so they share one elevation
+$layout-elevation: 2;
+
 @use "vuetify/settings" with (
+  $app-bar-elevation: $layout-elevation,
+  $footer-elevation: $layout-elevation,
   $body-font-family: var(--v-font-body, "Unimed Slab", sans-serif),
   // Unimed Slab's ascent and descent take 1.26em, more than the subtitles' default 1rem line
   // height, which clipped its descenders and accented capitals
