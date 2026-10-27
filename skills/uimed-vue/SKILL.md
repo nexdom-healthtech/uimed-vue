@@ -83,6 +83,7 @@ createApp(App).use(createUimed()).mount("#app");
   type SectionAction = NonNullable<ComponentProps<typeof USection>["actions"]>[number];
   ```
 
+- `UMain` shows a "back to top" floating button on its own once the page scrolls past a screen, so don't add one to the screens.
 - Icons are passed by name (e.g. `icon="cog"`), from the list in [`references/guide/icons.md`](references/guide/icons.md).
 - The components' internal texts, such as their messages and the names read by screen readers, are in Portuguese (pt-BR).
 

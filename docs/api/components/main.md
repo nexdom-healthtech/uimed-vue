@@ -109,6 +109,10 @@ Item dentro de um [grupo](#navigationmenuparent). Tem as mesmas propriedades do 
 | `dataTestid`  | `string` |        | Aplica atributo `data-testid` para testes sobre o rodapé.                                                                          |
 | `description` | `string` |        | Texto exibido no rodapé, por exemplo a versão da aplicação (`"Versão 1.4.2"`). **O rodapé será ocultado quando omitido ou vazio.** |
 
+## Retornar ao topo
+
+O componente exibe um botão flutuante "Retornar ao topo" no canto inferior direito quando o usuário rola a página por mais de uma tela, sem props para configurá-lo. Veja [Retornar ao topo](../../guide/components/main#retornar-ao-topo) no guia.
+
 ## Eventos
 
 | Event                      | Retorno   | Descrição                                                      |

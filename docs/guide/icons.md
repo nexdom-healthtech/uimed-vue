@@ -61,7 +61,7 @@ A lista começa pelos ícones de conteúdo, como `home` e `calendar`, cujos nome
 
 Em seguida vêm os ícones que os próprios componentes exibem, cujos nomes descrevem a função com que os componentes os usam:
 
-- Ações, como `help`, `search`, `showPassword` e `close`.
+- Ações, como `help`, `search`, `showPassword`, `close` e `backToTop`.
 - Expansão de menus e grupos, como `dropdown`, `expand` e `collapse`, e navegação entre páginas, com `prev` e `next`.
 - Marcações da caixa de seleção: `checkboxOn` e `checkboxOff`.
 - Retorno ao usuário, nas cores das mensagens: `success`, `info`, `warning` e `error`.
@@ -130,6 +130,7 @@ Consulte o [botão de ícone](./components/icon-button) e o [Componente base](./
     "showPassword",
     "hidePassword",
     "close",
+    "backToTop",
     "clear",
     "dropdown",
     "subgroup",

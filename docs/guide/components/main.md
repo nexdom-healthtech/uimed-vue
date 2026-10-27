@@ -456,6 +456,48 @@ const appBar: NonNullable<MainProps["appBar"]> = {
 </script>
 ```
 
+## Retornar ao topo
+
+Em páginas longas, como listagens e formulários extensos, o `UMain` exibe um botão flutuante no canto inferior direito para voltar ao início do conteúdo. Ele aparece quando o usuário rola a página por mais de uma tela e some ao voltar ao topo, sem nenhuma prop: páginas curtas nunca o exibem.
+
+O botão fica acima do rodapé, quando exibido, e abaixo dos diálogos e dos toasts. Ao ser acionado, ele rola a página até o início do conteúdo de forma suave, ou imediata quando o usuário prefere reduzir os movimentos nas configurações do sistema, e move o foco para o início do conteúdo, para que quem navega pelo teclado continue a partir dali. Os leitores de tela o anunciam como "Retornar ao topo".
+
+Role a demonstração abaixo para ver o botão:
+
+<demo contained data-testid="demo-root-back-to-top" unpadded>
+<u-main :appBar="{ title: appBar.title }" :footer="backToTopFooter" data-testid="root-demo-back-to-top">
+  <h2>Manual do usuário</h2>
+  <p v-for="step in 12" :key="step">{{ step }}. {{ manualText }}</p>
+</u-main>
+</demo>
+
+```vue
+<template>
+  <u-main :appBar :footer>
+    <h2>Manual do usuário</h2>
+    <p v-for="step in 12" :key="step">{{ step }}. {{ manualText }}</p>
+  </u-main>
+</template>
+
+<script lang="ts" setup>
+import type { ComponentProps } from "vue-component-type-helpers";
+import { UMain } from "@nexdom/uimed-vue/components";
+
+type MainProps = ComponentProps<typeof UMain>;
+
+const manualText =
+  "Este manual descreve cada etapa do atendimento, do agendamento da consulta à emissão do relatório final, com as orientações para preencher os formulários, conferir os dados do paciente antes de salvar e resolver as pendências mais comuns. Siga as etapas na ordem em que aparecem e, em caso de dúvida, procure a equipe de suporte da sua unidade.";
+
+const appBar: NonNullable<MainProps["appBar"]> = {
+  title: "Menu superior",
+};
+
+const footer: NonNullable<MainProps["footer"]> = {
+  description: "Versão 1.4.2",
+};
+</script>
+```
+
 ## Eventos
 
 ### Notificações
@@ -758,6 +800,14 @@ O conteúdo da página ocupa toda a altura visível abaixo do menu superior (e a
   const footer: NonNullable<MainProps["footer"]> = {
     description: "Versão 1.4.2",
     dataTestid: "demo-root-footer-footer",
+  };
+
+  const manualText =
+    "Este manual descreve cada etapa do atendimento, do agendamento da consulta à emissão do relatório final, com as orientações para preencher os formulários, conferir os dados do paciente antes de salvar e resolver as pendências mais comuns. Siga as etapas na ordem em que aparecem e, em caso de dúvida, procure a equipe de suporte da sua unidade.";
+
+  const backToTopFooter: NonNullable<MainProps["footer"]> = {
+    description: "Versão 1.4.2",
+    dataTestid: "demo-root-back-to-top-footer",
   };
 
   const loadingAppBar: NonNullable<MainProps["appBar"]> = {
