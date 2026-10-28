@@ -653,6 +653,35 @@ test.describe("main", () => {
       expect(await getOverlayOpacity(link)).toBe(groupHighlight);
     });
 
+    test("keeps the item highlighted on a page below its route's path, opened in a dialog", async ({
+      page,
+    }) => {
+      const drawer = getNestedPageNavigationMenu(page);
+      const group = drawer.getByRole("button", { name: "Documentação" });
+      const link = drawer.getByRole("link", { name: "Componentes" });
+      const home = drawer.getByRole("link", { name: "Início" });
+      const dialog = getNestedPageDialog(page);
+      await expect(group).not.toContainClass("v-list-item--active");
+
+      await getNestedPageNewButton(page).click();
+
+      await expect(dialog).toBeVisible();
+      await expectCollapsed(drawer);
+      await expect(group).toContainClass("v-list-item--active");
+      // The root's item is only highlighted on its own page
+      await expect(home).not.toContainClass("v-list-item--active");
+      await expect(home).not.toHaveAttribute("aria-current");
+      await expectNoA11yViolations(page);
+
+      // The dialog's overlay covers the menu, so the mouse can't expand it: the event the mouse would
+      // fire expands it behind the dialog
+      await drawer.dispatchEvent("mouseenter");
+      await expectExpanded(drawer);
+      await expect(link).toContainClass("v-list-item--active");
+      await expect(link).toHaveAttribute("aria-current", "page");
+      await expect(group).toHaveAttribute("aria-expanded", "true");
+    });
+
     test("closes the groups when it collapses", async ({ page }) => {
       const drawer = getNavigationMenu(page);
       const group = drawer.getByRole("button", { name: "Documentação" });
@@ -1912,6 +1941,18 @@ function getNavigationToggleButton(page: Page) {
 
 function getNavigationToggleDrawer(page: Page) {
   return page.getByTestId("demo-root-navigation-toggle-navigation-menu");
+}
+
+function getNestedPageNavigationMenu(page: Page) {
+  return page.getByTestId("demo-root-nested-page-navigation-menu");
+}
+
+function getNestedPageNewButton(page: Page) {
+  return page.getByTestId("demo-root-nested-page-new");
+}
+
+function getNestedPageDialog(page: Page) {
+  return page.getByRole("dialog", { name: "Novo componente" });
 }
 
 function getNavigationMenuSearch(page: Page) {
