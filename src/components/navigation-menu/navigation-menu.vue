@@ -9,8 +9,8 @@
     :permanent="!mobile"
     :rail="!mobile"
     expand-on-hover
-    absolute
     temporary
+    :order="layoutOrder"
     @focusin="onFocusin"
     @focusout="onFocusout"
     @mouseenter="onMouseenter"
@@ -124,7 +124,8 @@
  * Lateral navigation menu listing plain and/or grouped navigation items. Above the mobile
  * breakpoint, it's a rail showing only the items' icons, which expands over the page while the
  * mouse is over it, the keyboard focus is in it or the user searches. Below it, it's a drawer
- * opened by the app bar's button.
+ * opened by the app bar's button. It stays fixed on the screen while the page scrolls, between the
+ * app bar and the footer, and only its items scroll when they don't fit.
  */
 export default {
   inheritAttrs: false,
@@ -157,6 +158,10 @@ type Props = NavigationMenuProps & {
 };
 
 const props = defineProps<Props>();
+// The app's bars are laid out in the order they're rendered, and the footer is rendered after the
+// menu, which would then run beside it down to the bottom of the screen. Laid out after the footer,
+// the menu ends above it
+const layoutOrder = 1;
 const open = defineModel<boolean>({ default: false });
 const search = ref("");
 const searchFieldDefaults = { VTextField: { hideDetails: "auto" } };

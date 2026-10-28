@@ -259,6 +259,8 @@ Em telas largas (a partir de 1145px), o menu fica sempre visível à esquerda do
 
 Em telas pequenas, o menu fica oculto e é aberto sobre o conteúdo pelo botão "Menu de navegação" do menu superior.
 
+O menu fica fixo na tela enquanto a página rola, abaixo do menu superior e acima do rodapé, quando ele é exibido. Se os itens não couberem na altura disponível, apenas a lista do menu rola, e a busca continua no topo dele.
+
 Os itens e grupos do primeiro nível do menu exibem um ícone antes da sua descrição, informado pelo nome na propriedade obrigatória `icon`. Os nomes disponíveis estão em [Ícones](../icons). Os itens dentro de um grupo não aceitam ícones, para que o menu siga o mesmo padrão visual em todas as aplicações.
 
 O menu também conta com um campo de busca que filtra itens e grupos em tempo real, no formato _case-insensitive_. Enquanto há texto na busca, os grupos com resultados ficam abertos, mostrando os itens encontrados. Um grupo ainda pode ser fechado pelo seu cabeçalho, até o texto mudar de novo. Ao limpar a busca, ficam abertos os grupos que estavam abertos antes dela.
