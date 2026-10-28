@@ -38,7 +38,14 @@ describe("NavigationMenu", () => {
     const vNavigationDrawer = findVNavigationDrawer(wrapper);
     expect(vNavigationDrawer.exists()).toBeTruthy();
     expect(vNavigationDrawer.props("temporary")).toBeTruthy();
-    expect(vNavigationDrawer.props("absolute")).toBeTruthy();
+  });
+
+  // Positioned by the app's layout, the menu stays fixed on the screen while the page scrolls
+  it("should stay fixed on the screen, between the app bar and the footer", () => {
+    const vNavigationDrawer = findVNavigationDrawer(wrapper);
+
+    expect(vNavigationDrawer.props("absolute")).toBe(false);
+    expect(vNavigationDrawer.props("order")).toBe(1);
   });
 
   it("should use the tertiary color", () => {
@@ -861,6 +868,7 @@ function getGlobalMountingOptions() {
           expandOnHover: Boolean,
           temporary: Boolean,
           absolute: Boolean,
+          order: [Number, String],
         },
         emits: ["update:modelValue"],
         // The inner element stands for the drawer's own, which holds the focus while it's open

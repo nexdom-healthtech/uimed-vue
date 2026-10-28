@@ -374,6 +374,61 @@ test.describe("main", () => {
       expect(content.x).toBeGreaterThanOrEqual(rail.x + rail.width);
     });
 
+    test("stays between the app bar and the footer, which takes the app's whole width", async ({
+      page,
+    }) => {
+      const drawer = getPlaygroundNavigationMenu(page);
+      await expectCollapsed(drawer);
+
+      const [app, appBar, rail, footer] = await Promise.all([
+        getBox(page.getByTestId("root-preview")),
+        getBox(getPlaygroundAppBar(page)),
+        getBox(drawer),
+        getBox(getPlaygroundFooter(page)),
+      ]);
+      expect(rail.y).toBeCloseTo(appBar.y + appBar.height, 0);
+      expect(rail.y + rail.height).toBeCloseTo(footer.y, 0);
+      expect(footer.x).toBeCloseTo(app.x, 0);
+      expect(footer.width).toBeCloseTo(app.width, 0);
+    });
+
+    // The docs contain each demo's app, which then scrolls with the page. In an app, the main
+    // component is the page, as without that containment
+    test("stays in place while the page scrolls", async ({ page }) => {
+      await page.addStyleTag({ content: ".demo { contain: none !important; }" });
+      const drawer = getNavigationMenu(page);
+      const content = getNavigationToggleDemo(page).locator(".v-main > .v-container");
+      const [rail, contentBefore] = await Promise.all([getBox(drawer), getBox(content)]);
+
+      await page.evaluate(() => globalThis.scrollBy(0, 300));
+
+      await expect
+        .poll(async () => (await getBox(content)).y)
+        .toBeCloseTo(contentBefore.y - 300, 0);
+      expect(await getBox(drawer)).toEqual(rail);
+    });
+
+    test("scrolls only its items when they don't fit", async ({ page }) => {
+      await page.setViewportSize({ width: 1280, height: 200 });
+      const drawer = getNavigationMenu(page);
+      const items = drawer.locator(".v-navigation-drawer__content");
+      await scrollToMenu(drawer);
+      await items.hover();
+      await expectExpanded(drawer);
+      const [scrollHeight, clientHeight] = await items.evaluate((element) => [
+        element.scrollHeight,
+        element.clientHeight,
+      ]);
+      expect(scrollHeight).toBeGreaterThan(clientHeight + 20);
+      const pageScroll = await page.evaluate(() => globalThis.scrollY);
+
+      await page.mouse.wheel(0, 20);
+
+      await expect.poll(() => items.evaluate((element) => element.scrollTop)).toBeGreaterThan(0);
+      expect(await page.evaluate(() => globalThis.scrollY)).toBe(pageScroll);
+      await expect(getNavigationMenuSearch(page)).toBeInViewport();
+    });
+
     test("leaves the navigation button out of the app bar", async ({ page }) => {
       await expect(getNavigationToggleButton(page)).not.toBeAttached();
       await expect(getNavigationMenu(page)).toBeVisible();
