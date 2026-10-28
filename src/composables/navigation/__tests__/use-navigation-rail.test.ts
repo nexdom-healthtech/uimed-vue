@@ -4,6 +4,7 @@ import {
   useNavigationRail,
   type NavigationRail,
 } from "@/composables/navigation/use-navigation-rail.ts";
+import { useActiveRoute } from "@/composables/navigation/use-active-route.ts";
 import type {
   NavigationMenuItem,
   NavigationMenuParentItem,
@@ -70,6 +71,7 @@ const Harness = defineComponent({
       field: useTemplateRef("field"),
       searchItem: useTemplateRef("searchItem"),
       items: () => props.items,
+      hasActiveRoute: useActiveRoute(() => props.items).hasActiveRoute,
       search,
     });
     return { open, search, rail, ...rail };
@@ -602,33 +604,6 @@ describe("useNavigationRail", () => {
 
       await expand(wrapper);
       expect(isActiveGroup(usersGroup)).toBe(false);
-    });
-
-    it("should highlight the group of a parent of the current page", async () => {
-      await router.push({ name: "user", params: { id: "7" } });
-      const wrapper = await mountDesktopRail({ router });
-
-      expect(wrapper.vm.rail.isActiveGroup(usersGroup)).toBe(true);
-    });
-
-    it("should compare the params of the group's routes with the current page's", async () => {
-      await router.push("/units/2");
-      const wrapper = await mountDesktopRail({ router });
-      expect(wrapper.vm.rail.isActiveGroup(unitsGroup)).toBe(false);
-
-      await router.push("/units/1");
-      expect(wrapper.vm.rail.isActiveGroup(unitsGroup)).toBe(true);
-    });
-
-    it("should not highlight a group whose routes match no page", async () => {
-      const wrapper = await mountDesktopRail({ router });
-      const unknown: NavigationMenuParentItem = {
-        description: "Desconhecido",
-        icon: "folder",
-        items: [{ description: "Nenhuma", route: "/nowhere/at/all" }],
-      };
-
-      expect(wrapper.vm.rail.isActiveGroup(unknown)).toBe(false);
     });
 
     it("should not highlight groups in apps without a router", async () => {

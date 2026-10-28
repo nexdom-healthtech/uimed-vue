@@ -84,6 +84,7 @@ createApp(App).use(createUimed()).mount("#app");
   ```
 
 - `UMain` shows a "back to top" floating button on its own once the page scrolls past a screen, so don't add one to the screens.
+- A navigation menu item stays highlighted on the pages below its route's path (e.g. a form opened in a dialog at `/people/new` highlights the item of `/people`, but `/people-archive` doesn't), so give those pages paths below the item's. The root (`/`) only highlights on its own page, and when several items contain the page, only the one with the longest path is highlighted.
 - Icons are passed by name (e.g. `icon="cog"`), from the list in [`references/guide/icons.md`](references/guide/icons.md).
 - The components' internal texts, such as their messages and the names read by screen readers, are in Portuguese (pt-BR).
 

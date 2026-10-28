@@ -96,7 +96,7 @@
               <v-list-item
                 v-for="(childItem, childIndex) in item.items"
                 :key="childIndex"
-                v-bind="routeToListItemProps(childItem.route)"
+                v-bind="listItemProps(childItem.route)"
                 :title="childItem.description"
                 tabindex="0"
                 @click="childItem.action"
@@ -108,7 +108,7 @@
             v-else
             :title="item.description"
             :prepend-icon="icons[item.icon]"
-            v-bind="routeToListItemProps(item.route)"
+            v-bind="listItemProps(item.route)"
             tabindex="0"
             @click="item.action"
           />
@@ -136,7 +136,7 @@ import {
   type NavigationMenuProps,
   type NavigationMenuParentItemOrItem,
 } from "@/components/navigation-menu/types.ts";
-import { routeToListItemProps } from "@/composables/navigation/use-route-props.ts";
+import { useActiveRoute } from "@/composables/navigation/use-active-route.ts";
 import { icons } from "@/consts/icons.ts";
 import TextField from "@/components/inputs/text-field/text-field.vue";
 import SkeletonLoader from "@/components/skeleton-loader/skeleton-loader.vue";
@@ -165,6 +165,7 @@ const open = defineModel<boolean>({ default: false });
 const search = ref("");
 const searchFieldDefaults = { VTextField: { hideDetails: "auto" } };
 const field = useTemplateRef<ComponentPublicInstance>("searchField");
+const { hasActiveRoute, listItemProps } = useActiveRoute(() => props.items);
 const {
   mobile,
   collapsed,
@@ -183,6 +184,7 @@ const {
   field,
   searchItem: useTemplateRef<ComponentPublicInstance>("searchItem"),
   items: () => props.items,
+  hasActiveRoute,
   search,
 });
 const {

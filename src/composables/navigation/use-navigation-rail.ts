@@ -1,4 +1,3 @@
-import { isDeepEqual } from "@nexdom/shared/utils";
 import {
   computed,
   inject,
@@ -13,13 +12,12 @@ import {
   type Ref,
   type WritableComputedRef,
 } from "vue";
-import { routerKey, type RouteLocationRaw } from "vue-router";
+import { routerKey } from "vue-router";
 import { useDisplay } from "vuetify";
 import type {
   NavigationMenuParentItem,
   NavigationMenuParentItemOrItem,
 } from "@/components/navigation-menu/types.ts";
-import { isExternalRoute } from "@/composables/navigation/use-route-props.ts";
 
 /**
  * Mouse events the rail dispatches on the drawer to expand or collapse it, which its own listeners
@@ -37,8 +35,10 @@ export interface UseNavigationRailOptions {
    * element.
    */
   searchItem: MaybeRefOrGetter<ComponentPublicInstance | null>;
-  /** Items of the menu, whose group with the current page opens when the rail expands. */
+  /** Items of the menu, whose group with the active item opens when the rail expands. */
   items: MaybeRefOrGetter<Array<NavigationMenuParentItemOrItem> | undefined>;
+  /** Whether one of the group's items is the active one (see `useActiveRoute`). */
+  hasActiveRoute: (item: NavigationMenuParentItem) => boolean;
   /** Search text, cleared when the rail collapses, so a filter never hides its icons. */
   search: Ref<string>;
 }
@@ -57,7 +57,7 @@ export interface NavigationRail {
   menuOpen: WritableComputedRef<boolean>;
   /** Open groups (by description): none while collapsed. */
   opened: WritableComputedRef<unknown[]>;
-  /** Whether the group is highlighted: only while collapsed, when it has the current page. */
+  /** Whether the group is highlighted: only while collapsed, when it has the active item. */
   isActiveGroup: (item: NavigationMenuParentItem) => boolean;
   /** Collapses the rail (`Esc`), or closes the drawer below the mobile breakpoint. */
   dismiss: () => Promise<void>;
@@ -93,7 +93,7 @@ export function useMobileNavigation(): ComputedRef<boolean> {
  * expand on focus, and to stay expanded when the mouse leaves with the focus inside.
  */
 export function useNavigationRail(options: UseNavigationRailOptions): NavigationRail {
-  const { open, field, searchItem, items, search } = options;
+  const { open, field, searchItem, items, hasActiveRoute, search } = options;
   const mobile = useMobileNavigation();
   const router = inject(routerKey, null);
 
@@ -219,36 +219,12 @@ export function useNavigationRail(options: UseNavigationRailOptions): Navigation
 
   function currentGroups(): unknown[] {
     return (toValue(items) ?? [])
-      .filter((item) => isParentItem(item) && hasCurrentRoute(item))
+      .filter((item) => isParentItem(item) && hasActiveRoute(item))
       .map(({ description }) => description);
   }
 
   function isActiveGroup(item: NavigationMenuParentItem): boolean {
-    return collapsed.value && hasCurrentRoute(item);
-  }
-
-  function hasCurrentRoute(item: NavigationMenuParentItem): boolean {
-    return item.items.some(({ route }) => isCurrentRoute(route));
-  }
-
-  /**
-   * Whether the route is the current page, or one of its parents, as the links highlight
-   * themselves: by the matched route record and the params the route sets.
-   */
-  function isCurrentRoute(route: RouteLocationRaw | undefined): boolean {
-    if (!router || route === undefined || isExternalRoute(route)) return false;
-
-    const { matched, params } = router.resolve(route);
-    const current = router.currentRoute.value;
-    const record = matched.at(-1);
-    // Widened to take the record, which is undefined when the route matches no page (and then isn't
-    // among the current page's records)
-    const currentRecords: ReadonlyArray<unknown> = current.matched;
-
-    return (
-      currentRecords.includes(record) &&
-      Object.entries(params).every(([key, value]) => isDeepEqual(value, current.params[key]))
-    );
+    return collapsed.value && hasActiveRoute(item);
   }
 
   return {
