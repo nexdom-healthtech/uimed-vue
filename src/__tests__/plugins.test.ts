@@ -72,9 +72,9 @@ describe("plugins", () => {
     });
 
     it("should compile Vuetify's labs stylesheets", async () => {
-      const css = await load(plugin, `${vuetify}/lib/labs/VHighlight/VHighlight.css`);
+      const css = await load(plugin, `${vuetify}/lib/labs/VCheckboxGroup/VCheckboxGroup.css`);
 
-      expect(css).toContain(".v-highlight");
+      expect(css).toContain(".v-checkbox-group");
       expect(initAsyncCompiler).toHaveBeenCalledOnce();
     });
 
