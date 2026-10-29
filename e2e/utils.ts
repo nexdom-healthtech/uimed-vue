@@ -59,29 +59,20 @@ export async function waitForAnimations(page: Page) {
  *
  * The check runs in both of the docs' color schemes, since the demos sit on the docs' background,
  * which turns dark in dark mode while the components keep their light theme.
- *
- * `enableRules` also runs rules outside those tags, such as axe's experimental ones, by their ids.
  */
-export async function expectNoA11yViolations(
-  page: Page,
-  { enableRules = [] }: { enableRules?: string[] } = {},
-) {
+export async function expectNoA11yViolations(page: Page) {
   for (const colorScheme of ["light", "dark"] as const) {
     await page.emulateMedia({ colorScheme });
     // The docs follow the system's color scheme, switching the `dark` class on `html`
     const html = expect(page.locator("html"));
     await (colorScheme === "dark" ? html : html.not).toHaveClass(/\bdark\b/);
-    await expectNoA11yViolationsInColorScheme(page, colorScheme, enableRules);
+    await expectNoA11yViolationsInColorScheme(page, colorScheme);
   }
 
   await page.emulateMedia({ colorScheme: "light" });
 }
 
-async function expectNoA11yViolationsInColorScheme(
-  page: Page,
-  colorScheme: "light" | "dark",
-  enableRules: string[],
-) {
+async function expectNoA11yViolationsInColorScheme(page: Page, colorScheme: "light" | "dark") {
   // Elements still fading in or out would be measured with partial contrast
   await waitForAnimations(page);
 
@@ -116,7 +107,9 @@ async function expectNoA11yViolationsInColorScheme(
         "landmark-main-is-top-level": { enabled: false },
         "landmark-no-duplicate-main": { enabled: false },
         "landmark-unique": { enabled: false },
-        ...Object.fromEntries(enableRules.map((rule) => [rule, { enabled: true }])),
+        // Experimental, so axe leaves it out: it checks that the accessible name of buttons and
+        // links contains their visible text, so users of voice commands can say it (WCAG 2.5.3)
+        "label-content-name-mismatch": { enabled: true },
       },
     })
     .analyze();

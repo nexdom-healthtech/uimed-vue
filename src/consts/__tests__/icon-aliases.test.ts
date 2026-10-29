@@ -37,9 +37,10 @@ describe("icon aliases", () => {
 
   it("should draw the expandable options of the app bar's user menu", async () => {
     const wrapper = mountAttached(AppBar, {
+      dataTestid: "app-bar",
       user: { title: "Maria", options: [{ description: "Perfil", items: [] }] },
     });
-    await wrapper.find("[aria-label='Menu do usuário']").trigger("click");
+    await wrapper.find("[data-testid='app-bar-user']").trigger("click");
 
     await expectDrawnAliases(["expand"]);
   });

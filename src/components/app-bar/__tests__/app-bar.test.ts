@@ -522,7 +522,7 @@ describe("AppBar", () => {
         expect(vBtn.exists()).toBeTruthy();
         expect(vBtn.props("icon")).toBeTruthy();
         expect(vBtn.attributes("data-testid")).toBe(`${testId}-user`);
-        expect(vBtn.attributes("aria-label")).toBe("Menu do usuário");
+        expect(vBtn.attributes("aria-label")).toBe("B, Menu do usuário");
 
         const vAvatar = findVAvatar(wrapper);
         expect(vAvatar.exists()).toBeTruthy();
@@ -703,20 +703,21 @@ describe("AppBar", () => {
         });
 
         it.each([
-          ["initials", { title: "Rafael Perini" }],
-          ["icon", {}],
-          ["picture", { img: "/picture.png" }],
+          ["initials", { title: "Rafael Perini" }, "RP, Menu do usuário"],
+          ["icon", {}, "Menu do usuário"],
+          ["picture", { title: "Rafael Perini", img: "/picture.png" }, "Menu do usuário"],
         ])(
-          "should keep the primary color and hide the %s from screen readers",
-          async (_, userProps: AppBarUserProps) => {
+          "should keep the primary color, hide the %s from screen readers and name the button after it",
+          async (_, userProps: AppBarUserProps, label) => {
             const avatars = await findAvatars(userProps);
 
             for (const vAvatar of avatars) {
               expect(vAvatar.exists()).toBeTruthy();
               expect(vAvatar.props("color")).toBe("primary");
+              // The initials start the button's name, so they aren't read twice
               expect(vAvatar.attributes("aria-hidden")).toBe("true");
             }
-            expect(findVBtn(wrapper).attributes("aria-label")).toBe("Menu do usuário");
+            expect(findVBtn(wrapper).attributes("aria-label")).toBe(label);
           },
         );
 
