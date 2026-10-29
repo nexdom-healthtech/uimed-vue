@@ -198,6 +198,17 @@ test.describe("text-field", () => {
 
       expect(underline).toBeGreaterThanOrEqual(3);
     });
+
+    // Axe doesn't measure it either. With a label, the placeholder only shows while the field has
+    // the focus
+    test("keeps the placeholder above WCAG AA's minimum", async ({ page }) => {
+      const input = page.getByPlaceholder("me.nexdom@gmail.com");
+      await input.focus();
+
+      const { placeholder } = await getFieldContrast(input);
+
+      expect(placeholder).toBeGreaterThanOrEqual(4.5);
+    });
   });
 
   test.describe("UI consistency", () => {

@@ -55,6 +55,11 @@ const light: ThemeDefinition = {
     // the background and 4.72:1 on its active items (an overlay of 0.12 of the same color).
     // Vuetify's 0.6, and 0.7 on the active items, stay below WCAG AA's 4.5:1
     "medium-emphasis-opacity": 0.72,
+    // Vuetify draws the fields' placeholders at the disabled opacity. Its 0.38 left them at
+    // 2.22:1 on the surface and 2.17:1 on the background, below WCAG AA's 4.5:1. 0.77 is the
+    // lowest that also keeps the navigation menu's search placeholder above it, on the tertiary
+    // fill (4.56:1). The disabled elements share it, so they're less faded than Vuetify's
+    "disabled-opacity": 0.77,
   },
 };
 
@@ -69,13 +74,7 @@ export function createUimed(): Plugin {
     locale: localeOptions,
     theme: {
       defaultTheme: "light",
-      themes: {
-        light,
-        // The navigation menu's theme: the same colors, with placeholders (which Vuetify draws at
-        // the disabled opacity) readable on the menu's tertiary fill. At the default 0.38, the
-        // search's placeholder has a contrast of 2.12:1, below WCAG AA's 4.5:1
-        navigation: { ...light, variables: { ...light.variables, "disabled-opacity": 0.8 } },
-      },
+      themes: { light },
     },
   });
 }
