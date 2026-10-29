@@ -70,8 +70,7 @@ import {
   useAutocompleteRules,
 } from "@/composables/inputs/autocomplete-field.ts";
 import { useTextFieldVariant } from "@/composables/inputs/fields.ts";
-import { VAutocomplete, VCheckboxBtn, VCombobox, VListItem } from "vuetify/components";
-import { VHighlight } from "vuetify/labs/VHighlight";
+import { VAutocomplete, VCheckboxBtn, VCombobox, VHighlight, VListItem } from "vuetify/components";
 import FieldLoader from "@/components/inputs/field-loader.vue";
 import { computed, ref } from "vue";
 

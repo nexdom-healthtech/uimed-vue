@@ -59,20 +59,29 @@ export async function waitForAnimations(page: Page) {
  *
  * The check runs in both of the docs' color schemes, since the demos sit on the docs' background,
  * which turns dark in dark mode while the components keep their light theme.
+ *
+ * `enableRules` also runs rules outside those tags, such as axe's experimental ones, by their ids.
  */
-export async function expectNoA11yViolations(page: Page) {
+export async function expectNoA11yViolations(
+  page: Page,
+  { enableRules = [] }: { enableRules?: string[] } = {},
+) {
   for (const colorScheme of ["light", "dark"] as const) {
     await page.emulateMedia({ colorScheme });
     // The docs follow the system's color scheme, switching the `dark` class on `html`
     const html = expect(page.locator("html"));
     await (colorScheme === "dark" ? html : html.not).toHaveClass(/\bdark\b/);
-    await expectNoA11yViolationsInColorScheme(page, colorScheme);
+    await expectNoA11yViolationsInColorScheme(page, colorScheme, enableRules);
   }
 
   await page.emulateMedia({ colorScheme: "light" });
 }
 
-async function expectNoA11yViolationsInColorScheme(page: Page, colorScheme: "light" | "dark") {
+async function expectNoA11yViolationsInColorScheme(
+  page: Page,
+  colorScheme: "light" | "dark",
+  enableRules: string[],
+) {
   // Elements still fading in or out would be measured with partial contrast
   await waitForAnimations(page);
 
@@ -94,11 +103,22 @@ async function expectNoA11yViolationsInColorScheme(page: Page, colorScheme: "lig
     .include(".demo")
     .include(".playground")
     .include(".v-overlay-container")
-    .withTags(["wcag2a", "wcag2aa", "wcag21a", "wcag21aa", "wcag22aa", "best-practice"])
-    // The docs show several demos per page, inside their own `main` landmark, so these rules fail
-    // on the page's layout: e.g. each `UMain` demo adds a `main` inside the docs' one, and each
-    // `UDataSet` demo adds a pagination landmark with the same name
-    .disableRules(["landmark-main-is-top-level", "landmark-no-duplicate-main", "landmark-unique"])
+    // A single `options()` call, since `disableRules()` would discard the rules enabled here
+    .options({
+      runOnly: {
+        type: "tag",
+        values: ["wcag2a", "wcag2aa", "wcag21a", "wcag21aa", "wcag22aa", "best-practice"],
+      },
+      rules: {
+        // The docs show several demos per page, inside their own `main` landmark, so these rules
+        // fail on the page's layout: e.g. each `UMain` demo adds a `main` inside the docs' one, and
+        // each `UDataSet` demo adds a pagination landmark with the same name
+        "landmark-main-is-top-level": { enabled: false },
+        "landmark-no-duplicate-main": { enabled: false },
+        "landmark-unique": { enabled: false },
+        ...Object.fromEntries(enableRules.map((rule) => [rule, { enabled: true }])),
+      },
+    })
     .analyze();
 
   await decorativeLayers.evaluate((element) => element.parentNode?.removeChild(element));
