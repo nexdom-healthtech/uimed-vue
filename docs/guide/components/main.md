@@ -50,7 +50,7 @@ A prop `app-bar` define as configurações para apresentação do menu superior.
 
 Para ocultar o menu superior, basta omitir essa prop.
 
-As ações do menu superior têm nomes fixos para leitores de tela: "Menu de navegação" (exibido apenas em telas pequenas, que também informa se o menu de navegação está aberto ou fechado), "Ajuda", "Notificações" e "Menu do usuário". Quando há notificações não lidas, o botão de notificações inclui a quantidade no nome, por exemplo "Notificações (2 não lidas)" ou "Notificações (1 não lida)".
+As ações do menu superior têm estes nomes para leitores de tela: "Menu de navegação" (exibido apenas em telas pequenas, que também informa se o menu de navegação está aberto ou fechado), "Ajuda", "Notificações" e "Menu do usuário". Quando há notificações não lidas, o botão de notificações inclui a quantidade no nome, por exemplo "Notificações (2 não lidas)" ou "Notificações (1 não lida)". Quando o avatar do usuário mostra as iniciais, o nome do botão do menu do usuário começa por elas, por exemplo "RP, Menu do usuário" (veja "Usuário sem imagem", abaixo).
 
 No menu do usuário aberto, o avatar aparece maior e centralizado, com o nome (`title`) e o `subtitle` do usuário abaixo dele.
 
@@ -149,7 +149,7 @@ function toggleNotifications(open: boolean) {
 
 O avatar do usuário mostra a imagem informada em `img`. Sem `img`, ele mostra as iniciais do `title`: a primeira letra do primeiro e do último nome, como "RP" para "Rafael Perini". Sem `img` nem `title`, ele mostra um ícone genérico. A regra vale tanto para o botão do menu superior quanto para o menu do usuário aberto.
 
-O avatar é decorativo: leitores de tela não leem as iniciais e continuam anunciando o botão como "Menu do usuário".
+Quando o avatar mostra as iniciais, o nome do botão do menu do usuário começa por elas, como "RP, Menu do usuário", para que quem usa comando de voz possa acionar o botão falando o texto que vê nele. O avatar em si é decorativo, e os leitores de tela não leem as iniciais duas vezes. Com imagem ou ícone genérico, o botão continua se chamando "Menu do usuário".
 
 <demo contained data-testid="demo-root-user-initials" unpadded>
 <u-main :appBar="userInitialsAppBar" data-testid="root-demo-user-initials">

@@ -163,11 +163,11 @@ test.describe("main", () => {
           await expect(userMenu.locator(".v-avatar")).toHaveText("RP");
         });
 
-        test("keeps the button's name and hides the initials from screen readers", async ({
+        test("starts the button's name with the initials and hides the avatar from screen readers", async ({
           page,
         }) => {
           const userButton = getUserInitialsButton(page);
-          await expect(userButton).toHaveAccessibleName("Menu do usuário");
+          await expect(userButton).toHaveAccessibleName("RP, Menu do usuário");
           await expect(userButton.locator(".v-avatar")).toHaveAttribute("aria-hidden", "true");
 
           await userButton.click();

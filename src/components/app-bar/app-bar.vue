@@ -88,13 +88,8 @@
         </v-menu>
         <v-menu v-if="showUser" :close-on-content-click="false">
           <template #activator="{ props }">
-            <v-btn
-              v-bind="props"
-              :data-testid="userBtnDataTestid"
-              aria-label="Menu do usuário"
-              icon
-            >
-              <!-- Decorative: the button already has an accessible name -->
+            <v-btn v-bind="props" :data-testid="userBtnDataTestid" :aria-label="userLabel" icon>
+              <!-- Decorative: the button has its own name, which starts with the initials shown here -->
               <v-avatar v-bind="userAvatarProps" color="primary" aria-hidden="true" />
             </v-btn>
           </template>
@@ -266,6 +261,11 @@ const userAvatarProps = computed(() => {
   if (userInitials.value) return { text: userInitials.value };
   return { icon: icons.accountAlternative };
 });
+// The button's name starts with the initials it shows, so users of voice commands can say them to
+// open the menu (WCAG 2.5.3)
+const userLabel = computed(() =>
+  userAvatarProps.value.text ? `${userAvatarProps.value.text}, Menu do usuário` : "Menu do usuário",
+);
 // Without a name or a subtitle, the menu shows only the avatar, without an empty line below it
 const hasUserInfo = computed(() => !!props.user!.title || !!props.user!.subtitle);
 
