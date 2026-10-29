@@ -34,11 +34,9 @@ const light = {
     "border-color": "#D0D5DD",
     "high-emphasis-opacity": 1,
     "medium-emphasis-opacity": 0.72,
+    "disabled-opacity": 0.77,
   },
 } satisfies ThemeDefinition;
-
-// The navigation menu's theme, the same colors with readable placeholders on its tertiary fill
-const navigation = { ...light, variables: { ...light.variables, "disabled-opacity": 0.8 } };
 
 // WCAG AA's minimum contrast for text of normal size
 const minContrast = 4.5;
@@ -88,14 +86,17 @@ describe("index", () => {
       expect(createVuetify).toHaveBeenCalledWith({
         icons: { defaultSet: "mdi", aliases: icons, sets: { mdi } },
         locale: { locale: "pt-BR", messages: { "pt-BR": pt } },
-        theme: { defaultTheme: "light", themes: { light, navigation } },
+        theme: { defaultTheme: "light", themes: { light } },
       });
     });
 
     describe.each(["surface", "background"] as const)("contrast on the %s", (backgroundColor) => {
       const textColor = toRgb(light.colors[`on-${backgroundColor}`]);
-      const { "high-emphasis-opacity": highEmphasis, "medium-emphasis-opacity": mediumEmphasis } =
-        light.variables;
+      const {
+        "high-emphasis-opacity": highEmphasis,
+        "medium-emphasis-opacity": mediumEmphasis,
+        "disabled-opacity": disabledOpacity,
+      } = light.variables;
 
       it("should keep text above WCAG AA's minimum", () => {
         const background = toRgb(light.colors[backgroundColor]);
@@ -125,6 +126,14 @@ describe("index", () => {
         expect(contrast(underline, background)).toBeGreaterThanOrEqual(minComponentContrast);
       });
 
+      // The fields draw their placeholders in the text color, at the disabled opacity
+      it("should keep the fields' placeholders above WCAG AA's minimum", () => {
+        const background = toRgb(light.colors[backgroundColor]);
+        const placeholder = blend(textColor, background, highEmphasis * disabledOpacity);
+
+        expect(contrast(placeholder, background)).toBeGreaterThanOrEqual(minContrast);
+      });
+
       it.each([
         "primary-text",
         "tertiary-text",
@@ -151,11 +160,11 @@ describe("index", () => {
     });
 
     describe("navigation menu, on the tertiary fill", () => {
-      const fill = toRgb(navigation.colors.tertiary);
-      const text = toRgb(navigation.colors["on-tertiary"]);
+      const fill = toRgb(light.colors.tertiary);
+      const text = toRgb(light.colors["on-tertiary"]);
 
       it("should keep the search's placeholder above WCAG AA's minimum", () => {
-        const placeholder = blend(text, fill, navigation.variables["disabled-opacity"]);
+        const placeholder = blend(text, fill, light.variables["disabled-opacity"]);
 
         expect(contrast(placeholder, fill)).toBeGreaterThanOrEqual(minContrast);
       });
@@ -164,10 +173,6 @@ describe("index", () => {
         const underline = blend(text, fill, fieldOutlineOpacity);
 
         expect(contrast(underline, fill)).toBeGreaterThanOrEqual(minComponentContrast);
-      });
-
-      it("should keep the default theme's placeholders as they are elsewhere", () => {
-        expect(light.variables).not.toHaveProperty("disabled-opacity");
       });
     });
   });

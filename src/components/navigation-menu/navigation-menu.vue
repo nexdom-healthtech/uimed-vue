@@ -2,7 +2,6 @@
   <v-navigation-drawer
     v-model="drawerOpen"
     color="tertiary"
-    theme="navigation"
     :data-testid="props.dataTestid"
     :aria-busy="props.loading || undefined"
     :mobile="mobile"
