@@ -331,7 +331,9 @@ test.describe("date-time-field", () => {
       await getPreview(page).locator("input").click();
       await expect(getOpenMenu(page)).toBeVisible();
 
-      await expectNoA11yViolations(page);
+      // The calendar's month and year buttons once had accessible names without their visible
+      // text, failing WCAG 2.5.3 (Label in Name), which axe only checks in an experimental rule
+      await expectNoA11yViolations(page, { enableRules: ["label-content-name-mismatch"] });
     });
   });
 

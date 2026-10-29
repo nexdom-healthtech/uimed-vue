@@ -35,7 +35,8 @@ describe("IconButton", () => {
   it("should not inherit unexpected attributes", () => {
     const wrapper = mountIconButton({}, { style: "random-style", class: "random-class" });
 
-    expect(wrapper.attributes("style")).not.toContain("random-style");
+    // Vuetify may render the button without any style attribute
+    expect(wrapper.attributes("style") ?? "").not.toContain("random-style");
     expect(wrapper.classes()).not.toContain("random-class");
   });
 
