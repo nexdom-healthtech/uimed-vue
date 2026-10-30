@@ -326,6 +326,96 @@ const navigationMenu: NonNullable<MainProps["navigationMenu"]> = {
 </script>
 ```
 
+#### Item destacado nas páginas abaixo da rota
+
+O item do menu fica destacado na página da sua rota e nas páginas abaixo do caminho dela, como um cadastro aberto em um diálogo: o item com a rota `/components` fica destacado em `/components` e em `/components/new`, mas não em `/components-archive`. A comparação usa o caminho da rota do item, com os seus parâmetros, e ignora a _query_ e o _hash_ da página. Com o menu recolhido, o grupo do item também fica destacado e, ao expandir o menu, esse grupo abre.
+
+O item da raiz (`/`) só fica destacado na própria raiz, já que todas as páginas estão abaixo dela. Quando a página está no caminho de mais de um item, como `/people` e `/people/reports` em `/people/reports/2026`, só o mais específico, de caminho mais longo, fica destacado. Itens com rota externa ou sem rota nunca ficam destacados.
+
+Na demonstração, o botão "Novo componente" navega para `/components/new`, abaixo de `/components`, a rota do item "Componentes", e o diálogo abre a partir dela. Fechar o diálogo volta para `/components`.
+
+<demo contained data-testid="demo-root-nested-page" unpadded>
+<u-main :appBar="nestedPageAppBar" :navigationMenu="nestedPageNavigationMenu" data-testid="root-demo-nested-page">
+  <u-button route="/components/new" data-testid="demo-root-nested-page-new">Novo componente</u-button>
+  <u-dialog v-model="nestedPageDialogOpen" title="Novo componente" :actions="nestedPageDialogActions" data-testid="demo-root-nested-page-dialog">
+    O formulário do cadastro vai aqui...
+  </u-dialog>
+</u-main>
+</demo>
+
+```ts
+// Rotas da aplicação
+const routes: RouteRecordRaw[] = [
+  // Página do item "Componentes" do menu
+  { path: "/components", name: "components", component: ComponentsPage },
+  // Cadastro, aberto em um diálogo sobre a mesma página
+  { path: "/components/new", name: "new-component", component: ComponentsPage },
+];
+```
+
+```vue
+<!-- ComponentsPage.vue -->
+<template>
+  <u-main :appBar :navigationMenu>
+    <u-button :route="{ name: 'new-component' }">Novo componente</u-button>
+    <u-dialog v-model="open" title="Novo componente" :actions>
+      O formulário do cadastro vai aqui...
+    </u-dialog>
+  </u-main>
+</template>
+
+<script lang="ts" setup>
+import { computed } from "vue";
+import { useRoute, useRouter } from "vue-router";
+import type { ComponentProps } from "vue-component-type-helpers";
+import { UButton, UDialog, UMain } from "@nexdom/uimed-vue/components";
+
+type MainProps = ComponentProps<typeof UMain>;
+type DialogAction = NonNullable<ComponentProps<typeof UDialog>["actions"]>[number];
+
+const route = useRoute();
+const router = useRouter();
+
+// Aberto enquanto a página é a do cadastro; fechar volta para a página do item
+const open = computed({
+  get: () => route.name === "new-component",
+  set: (value) => {
+    if (!value) router.push({ name: "components" });
+  },
+});
+
+const actions: DialogAction[] = [{ label: "Salvar", onClick: () => (open.value = false) }];
+
+const appBar: NonNullable<MainProps["appBar"]> = {
+  title: "Menu superior",
+};
+
+const navigationMenu: NonNullable<MainProps["navigationMenu"]> = {
+  items: [
+    {
+      description: "Início",
+      route: "/",
+      icon: "home",
+    },
+    {
+      description: "Documentação",
+      icon: "folder",
+      items: [
+        {
+          description: "Componentes",
+          route: { name: "components" },
+        },
+        {
+          description: "Composables",
+          route: "/composables",
+        },
+      ],
+    },
+  ],
+};
+</script>
+```
+
 ### Carregamento
 
 A prop `loading` exibe skeletons no lugar das ações do menu superior (ajuda, notificações e usuário) e dos itens do menu de navegação, enquanto os dados do usuário e as opções de menu são carregados.
@@ -561,10 +651,12 @@ O conteúdo da página ocupa toda a altura visível abaixo do menu superior (e a
 
 <script lang="ts" setup>
   import { computed, reactive, ref } from "vue"
+  import { useRoute, useRouter } from "vue-router"
   import type { ComponentProps } from "vue-component-type-helpers"
-  import { UButton, UColumn, UMain, URow } from "../../../dist/components.js"
+  import { UButton, UColumn, UDialog, UMain, URow } from "../../../dist/components.js"
 
   type MainProps = ComponentProps<typeof UMain>
+  type DialogAction = NonNullable<ComponentProps<typeof UDialog>["actions"]>[number]
 
   const logo = "/uimed-vue/favicon.svg";
 
@@ -846,6 +938,51 @@ O conteúdo da página ocupa toda a altura visível abaixo do menu superior (e a
   function manageProfile() {
     window.alert("Abrindo o perfil...");
   }
+
+  const nestedPageAppBar: NonNullable<MainProps["appBar"]> = {
+    title: "Menu superior",
+    dataTestid: "demo-root-nested-page-app-bar",
+  };
+
+  const nestedPageNavigationMenu: NonNullable<MainProps["navigationMenu"]> = {
+    dataTestid: "demo-root-nested-page-navigation-menu",
+    items: [
+      {
+        description: "Início",
+        route: "/",
+        icon: "home",
+      },
+      {
+        description: "Documentação",
+        icon: "folder",
+        items: [
+          {
+            description: "Componentes",
+            route: "/components",
+          },
+          {
+            description: "Composables",
+            route: "/composables",
+          },
+        ],
+      },
+    ],
+  };
+
+  const route = useRoute();
+  const router = useRouter();
+
+  // Aberto enquanto a página é a do cadastro, abaixo da página do item "Componentes"
+  const nestedPageDialogOpen = computed({
+    get: () => route.path === "/components/new",
+    set: (value) => {
+      if (!value) router.push("/components");
+    },
+  });
+
+  const nestedPageDialogActions: DialogAction[] = [
+    { label: "Salvar", onClick: () => (nestedPageDialogOpen.value = false) },
+  ];
 
   const loadingNavigationMenu: NonNullable<MainProps["navigationMenu"]> = {
     dataTestid: "demo-root-loading-navigation-menu",

@@ -204,6 +204,74 @@ describe("NavigationMenu", () => {
         expect(childItems[1].props("title")).toBe(parentItemSecondChild.description);
       });
 
+      it("should highlight only the most specific item on the pages below its path", async () => {
+        const router = createRouter({
+          history: createMemoryHistory(),
+          routes: [{ path: "/:path(.*)*", component: { render: () => null } }],
+        });
+        const reportsChild = { description: "Reports", route: "/first/reports" };
+        const group: NavigationMenuParentItem = {
+          description: "Group",
+          icon: "folder",
+          items: [reportsChild],
+        };
+        // A sibling route of the item's, which the router's links don't take as the item's page
+        await router.push("/first/reports/new");
+        const menu = mountNavigationMenu({ router });
+        await menu.setProps({ items: [firstItem, group] });
+        const [vListGroup] = findVListGroups(menu);
+        await vListGroup.trigger("click");
+
+        const [plainItem, , childItem] = findVListItems(menu);
+        expect(childItem.props("active")).toBe(true);
+        expect(childItem.attributes("aria-current")).toBe("page");
+        expect(childItem.classes()).toContain("v-list-item--active");
+        expect(plainItem.props("active")).toBe(false);
+        expect(plainItem.attributes("aria-current")).toBeUndefined();
+
+        // The router's link would highlight it, as its route's page
+        await router.push("/first");
+        expect(plainItem.props("active")).toBe(true);
+        expect(plainItem.attributes("aria-current")).toBe("page");
+        expect(childItem.props("active")).toBe(false);
+        expect(childItem.attributes("aria-current")).toBeUndefined();
+      });
+
+      it("should not highlight a parent route's item on the page of a more specific item", async () => {
+        const component = { render: () => null };
+        const router = createRouter({
+          history: createMemoryHistory(),
+          routes: [{ path: "/people", component, children: [{ path: "reports", component }] }],
+        });
+        const reportsChild = { description: "Reports", route: "/people/reports" };
+        const group: NavigationMenuParentItem = {
+          description: "Group",
+          icon: "folder",
+          items: [reportsChild],
+        };
+        const peopleItem: NavigationMenuItem = {
+          description: "People",
+          icon: "home",
+          route: "/people",
+        };
+        await router.push("/people/reports");
+        const menu = mountNavigationMenu({ router });
+        await menu.setProps({ items: [peopleItem, group] });
+        await flushPromises();
+        // The group of the active item opens on its own in the drawer
+        expect(findVSkeletonLoader(menu).findComponent(VList).props("opened")).toEqual([
+          group.description,
+        ]);
+
+        // The router's link takes the parent route's item as active, on its child's page
+        const [plainItem, , childItem] = findVListItems(menu);
+        expect(plainItem.props("active")).toBe(false);
+        expect(plainItem.attributes("aria-current")).toBeUndefined();
+        expect(plainItem.classes()).not.toContain("v-list-item--active");
+        expect(childItem.props("active")).toBe(true);
+        expect(childItem.attributes("aria-current")).toBe("page");
+      });
+
       it("should trigger child action when grouped child item is clicked", async () => {
         await wrapper.setProps({ items: parentItems });
 
