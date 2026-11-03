@@ -1,6 +1,6 @@
 # UDateTimeField
 
-Componente para utilização de campos de data e/ou hora.
+Componente para utilização de campos de data e/ou hora, em que o valor é digitado ou escolhido no seletor aberto pelo ícone do campo.
 
 ## Props
 
@@ -12,20 +12,20 @@ Componente para utilização de campos de data e/ou hora.
 | `min`         | `string`                         |              | Valor mínimo permitido, no mesmo formato do `modelValue`. No tipo `datetime`, o horário mínimo só se aplica à própria data do mínimo.                |
 | `max`         | `string`                         |              | Valor máximo permitido, no mesmo formato do `modelValue`. No tipo `datetime`, o horário máximo só se aplica à própria data do máximo.                |
 | `label`       | `string`                         |              | Título dado ao campo.                                                                                                                                |
-| `placeholder` | `string`                         |              | Exemplo de valor para preenchimento do campo.                                                                                                        |
+| `placeholder` | `string`                         |              | Exemplo de valor para preenchimento do campo. **Quando omitida, exibe o formato do tipo (`00/00/0000`, `00:00` ou `00/00/0000 00:00`).**             |
 | `hint`        | `string`                         |              | Dica, instrução ou mensagem relacionada ao campo.                                                                                                    |
 | `required`    | `boolean`                        | `false`      | Torna o campo obrigatório para a submissão do formulário.                                                                                            |
 | `disabled`    | `boolean`                        | `false`      | Remove a possibilidade de interação com o campo.                                                                                                     |
-| `readonly`    | `boolean`                        | `false`      | Remove a possibilidade de edição do campo. O seletor não é aberto.                                                                                   |
+| `readonly`    | `boolean`                        | `false`      | Remove a possibilidade de edição do campo. O valor não pode ser digitado, e o ícone do seletor não é exibido.                                        |
 | `loading`     | `boolean`                        | `false`      | Exibe um indicador de carregamento. O campo mantém o rótulo como nome acessível e fica marcado como ocupado, e leitores de tela ignoram o indicador. |
 | `clearable`   | `boolean`                        | `false`      | Exibe recurso para limpar o campo, alterando o valor para `""`. Não é exibido enquanto o campo for `readonly`.                                       |
 | `dataTestid`  | `string`                         |              | Aplica atributo `data-testid` para testes sobre o componente.                                                                                        |
 
 ## Eventos
 
-| Event               | Retorno  | Descrição                                                                                |
-| ------------------- | -------- | ---------------------------------------------------------------------------------------- |
-| `update:modelValue` | `string` | Retorna o novo valor do campo sempre que o usuário escolhe um valor completo ou o limpa. |
+| Event               | Retorno  | Descrição                                                                                                                                                                  |
+| ------------------- | -------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `update:modelValue` | `string` | Retorna o novo valor do campo sempre que o usuário digita ou escolhe um valor completo, ou o limpa. Enquanto o valor digitado está incompleto ou não existe, retorna `""`. |
 
 ## Exemplo
 

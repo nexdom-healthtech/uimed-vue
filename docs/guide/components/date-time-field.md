@@ -6,7 +6,7 @@ outline: deep
 
 O componente para campos de data e hora se chama `DateTimeField`.
 
-Ao clicar no campo, um seletor é aberto para escolher a data, o horário ou ambos. O valor é exibido no formato brasileiro (`24/09/2026`, `14:30` ou `24/09/2026 14:30`), mas o `v-model` utiliza os formatos padrão dos campos nativos:
+O valor pode ser digitado no campo ou escolhido no seletor aberto pelo ícone dentro dele (um calendário, ou um relógio no tipo `time`), pelo mouse ou pelas teclas `Enter` e espaço. O valor é exibido no formato brasileiro (`24/09/2026`, `14:30` ou `24/09/2026 14:30`), mas o `v-model` utiliza os formatos padrão dos campos nativos:
 
 | Tipo       | Formato do `v-model` | Exemplo            |
 | ---------- | -------------------- | ------------------ |
@@ -15,6 +15,12 @@ Ao clicar no campo, um seletor é aberto para escolher a data, o horário ou amb
 | `datetime` | `YYYY-MM-DDTHH:mm`   | `2026-09-24T14:30` |
 
 Quando não há valor, o `v-model` é uma `string` vazia (`""`).
+
+## Digitação
+
+Ao digitar, só são aceitos números, e as barras, os dois-pontos e o espaço são inseridos automaticamente, no formato do tipo (`00/00/0000`, `00:00` ou `00/00/0000 00:00`). Esse formato também é o `placeholder` padrão, exibido enquanto o campo está vazio e em foco.
+
+O `v-model` só é atualizado quando o valor digitado está completo e é uma data e um horário que existem. Enquanto isso não acontece, ele fica vazio (`""`) e o campo exibe o motivo: "Valor incompleto" ou "Valor inválido" (como em `31/02/2026` ou `25:00`).
 
 > [!Warning]
 > Deve ser utilizado no lugar do `<input>` nativo dos tipos `date`, `time` e `datetime-local`.
@@ -184,7 +190,7 @@ import { UDateTimeField } from "@nexdom/uimed-vue/components";
 
 #### Somente leitura
 
-Utilize a prop `readonly` para evitar que o valor presente em um campo seja alterado. O seletor não é aberto.
+Utilize a prop `readonly` para evitar que o valor presente em um campo seja alterado. O valor não pode ser digitado, e o ícone do seletor não é exibido.
 
 <demo>
 <u-date-time-field model-value="2026-09-24T14:30" label="Somente leitura" readonly data-testid="date-time-field-demo-readonly" />

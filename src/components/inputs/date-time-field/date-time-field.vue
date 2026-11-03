@@ -2,53 +2,66 @@
   <v-text-field
     :id="inputId"
     :model-value="displayValue"
-    :validation-value="modelValue"
+    :validation-value="validationValue"
     :variant="vuetifyVariant"
     :rules
     :data-testid="props.dataTestid"
     :disabled="props.disabled"
     :loading="props.loading"
     :aria-busy="props.loading || undefined"
+    :readonly="props.readonly"
     :label="props.label"
-    :placeholder="props.placeholder"
+    :placeholder
     :hint="props.hint"
     :clearable="isClearable"
-    readonly
+    type="text"
+    inputmode="numeric"
+    @update:model-value="keepFieldControlled"
+    @input="onInput"
+    @compositionend="onCompositionEnd"
     @click:clear="clear"
-    @click:control="openMenu"
   >
-    <v-menu
-      v-model="isMenuOpen"
-      :activator
-      target="parent"
-      :activator-props
-      :content-props
-      location="bottom start"
-      min-width="0"
-      :disabled="isMenuDisabled"
-      :close-on-content-click="false"
-    >
-      <v-card>
-        <v-locale-provider locale="pt-BR" :messages class="d-flex flex-wrap">
-          <v-date-picker
-            v-if="props.type !== 'time'"
-            :model-value="draftDate || null"
-            :min="bounds.dateMin"
-            :max="bounds.dateMax"
-            @update:model-value="onDateUpdate"
+    <template v-if="!props.readonly" #append-inner>
+      <v-menu
+        v-model="isMenuOpen"
+        :target
+        :content-props
+        location="bottom start"
+        min-width="0"
+        :disabled="props.disabled"
+        :close-on-content-click="false"
+      >
+        <template #activator="{ props: activatorProps }">
+          <v-icon
+            v-bind="{ ...activatorProps, ...iconProps }"
+            :disabled="props.disabled"
+            @keydown="onKeydown"
           />
-          <v-time-picker
-            v-if="props.type !== 'date'"
-            :model-value="draftTime"
-            :min="bounds.timeMin"
-            :max="bounds.timeMax"
-            format="24hr"
-            @update:model-value="onTimeUpdate"
-            @update:minute="closeIfComplete"
-          />
-        </v-locale-provider>
-      </v-card>
-    </v-menu>
+        </template>
+        <v-card>
+          <v-locale-provider locale="pt-BR" :messages class="d-flex flex-wrap">
+            <v-date-picker
+              v-if="props.type !== 'time'"
+              :model-value="draftDate || null"
+              :min="bounds.dateMin"
+              :max="bounds.dateMax"
+              hide-header
+              @update:model-value="onDateUpdate"
+            />
+            <v-time-picker
+              v-if="props.type !== 'date'"
+              :model-value="draftTime"
+              :min="bounds.timeMin"
+              :max="bounds.timeMax"
+              format="24hr"
+              hide-title
+              @update:model-value="onTimeUpdate"
+              @update:minute="closeIfComplete"
+            />
+          </v-locale-provider>
+        </v-card>
+      </v-menu>
+    </template>
     <template #loader="loader">
       <field-loader v-bind="loader" />
     </template>
@@ -57,7 +70,9 @@
 
 <script lang="ts">
 /**
- * Date and/or time field component to be used throughout the application.
+ * Date and/or time field component to be used throughout the application. The
+ * user types the value, masked as it's displayed, or picks it in the pickers
+ * opened by the icon inside the field.
  *
  * Its value uses the native input formats: `YYYY-MM-DD` for `date`, `HH:mm`
  * for `time` and `YYYY-MM-DDTHH:mm` for `datetime`.
@@ -79,10 +94,10 @@ export default {
 <script setup lang="ts">
 import type { DateTimeFieldProps } from "@/components/inputs/date-time-field/types.ts";
 import {
-  formatDateTime,
   getDatePart,
   getTimePart,
   joinDateTime,
+  useDateTimeFieldInput,
   useDateTimeFieldMenu,
   useDateTimeFieldPickerBounds,
   useDateTimeFieldRules,
@@ -91,6 +106,7 @@ import { formatDateTime as formatDate } from "@nexdom/shared/utils";
 import {
   VCard,
   VDatePicker,
+  VIcon,
   VLocaleProvider,
   VMenu,
   VTextField,
@@ -110,10 +126,17 @@ const props = withDefaults(defineProps<DateTimeFieldProps>(), {
 const messages = { "pt-BR": pt };
 
 const vuetifyVariant = useTextFieldVariant(() => props.variant);
-const rules = useDateTimeFieldRules(props);
-const displayValue = computed(() => formatDateTime(modelValue.value, props.type));
+const {
+  displayValue,
+  placeholder,
+  validationValue,
+  rule: inputRule,
+  onInput,
+  onCompositionEnd,
+  clear,
+} = useDateTimeFieldInput(props, modelValue);
+const rules = useDateTimeFieldRules(props, inputRule);
 const isClearable = computed(() => props.clearable && !props.readonly);
-const isMenuDisabled = computed(() => props.disabled || props.readonly);
 
 const isMenuOpen = ref(false);
 // Parts picked while the menu is open. Missing parts fall back to the current value.
@@ -122,17 +145,20 @@ const draftDate = computed(() => draft.value.date ?? getDatePart(modelValue.valu
 const draftTime = computed(() => draft.value.time ?? getTimePart(modelValue.value, props.type));
 const draftValue = computed(() => joinDateTime(props.type, draftDate.value, draftTime.value));
 const bounds = useDateTimeFieldPickerBounds(props, draftDate);
-const {
-  inputId,
-  activator,
-  activatorProps,
-  contentProps,
-  open: openMenu,
-} = useDateTimeFieldMenu(isMenuOpen, isMenuDisabled, () => !!props.label);
+const { inputId, target, iconProps, contentProps, onKeydown } = useDateTimeFieldMenu(
+  isMenuOpen,
+  () => props.type,
+  () => !!props.label,
+);
 
 watch(isMenuOpen, () => {
   draft.value = {};
 });
+
+function keepFieldControlled() {
+  // Vuetify only uses `model-value` as the source of the text when there's an update listener;
+  // without it, it keeps and re-renders the raw text the user typed
+}
 
 function onDateUpdate(date: unknown) {
   draft.value.date = formatDate(date as Date, "YYYY-MM-DD");
@@ -151,9 +177,5 @@ function commitDraft() {
 
 function closeIfComplete() {
   if (draftValue.value) isMenuOpen.value = false;
-}
-
-function clear() {
-  modelValue.value = "";
 }
 </script>

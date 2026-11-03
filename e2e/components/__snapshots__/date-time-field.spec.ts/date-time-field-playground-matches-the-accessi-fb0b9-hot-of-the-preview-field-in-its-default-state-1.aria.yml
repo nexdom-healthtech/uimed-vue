@@ -1,3 +1,5 @@
 - text: Label
-- combobox "Label"
+- textbox "Label":
+    - /placeholder: Placeholder
+- button "Selecionar data e horário"
 - alert

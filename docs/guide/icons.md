@@ -106,6 +106,7 @@ Consulte o [botão de ícone](./components/icon-button) e o [Componente base](./
     "accountGroupAlternative",
     "calendar",
     "calendarAlternative",
+    "clock",
     "clipboardText",
     "clipboardTextAlternative",
     "fileDocument",

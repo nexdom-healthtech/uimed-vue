@@ -10,7 +10,7 @@ test.describe("date-time-field", () => {
     test("selects a date", async ({ page }) => {
       const field = page.getByTestId("date-time-field-demo-date");
 
-      await field.locator("input").click();
+      await openPickers(field);
       await pickDay(page, "24 de setembro de 2026");
 
       await expect(getOpenMenu(page)).toBeHidden();
@@ -21,7 +21,7 @@ test.describe("date-time-field", () => {
     test("selects a time, closing after the minutes are picked", async ({ page }) => {
       const field = page.getByTestId("date-time-field-demo-time");
 
-      await field.locator("input").click();
+      await openPickers(field);
       await pickClockItem(page, "14");
       await expect(getOpenMenu(page)).toBeVisible();
       await pickClockItem(page, "30");
@@ -35,7 +35,7 @@ test.describe("date-time-field", () => {
       const field = page.getByTestId("date-time-field-demo-datetime");
       const value = page.getByTestId("date-time-field-demo-datetime-value");
 
-      await field.locator("input").click();
+      await openPickers(field);
       await expect(getOpenMenu(page).locator(".v-date-picker")).toBeVisible();
       await expect(getOpenMenu(page).locator(".v-time-picker")).toBeVisible();
       await pickDay(page, "24 de setembro de 2026");
@@ -43,7 +43,7 @@ test.describe("date-time-field", () => {
       await expect(getOpenMenu(page)).toBeHidden();
       await expect(value).toHaveText('"2026-09-24T08:00"');
 
-      await field.locator("input").click();
+      await openPickers(field);
       await pickClockItem(page, "14");
       await pickClockItem(page, "30");
 
@@ -52,31 +52,84 @@ test.describe("date-time-field", () => {
       await expect(field.locator("input")).toHaveValue("24/09/2026 14:30");
     });
 
-    test("presents the pickers in Portuguese", async ({ page }) => {
-      await page.getByTestId("date-time-field-demo-datetime").locator("input").click();
+    // The style guide's pickers have no title, and the date picker no header with the picked date
+    test("presents the pickers in Portuguese, without titles", async ({ page }) => {
+      await openPickers(page.getByTestId("date-time-field-demo-datetime"));
 
       const menu = getOpenMenu(page);
-      await expect(menu).toContainText("Selecione a data");
-      await expect(menu).toContainText("Selecione o horário");
       await expect(menu.getByRole("button", { name: "Próximo mês" })).toBeVisible();
       await expect(getDay(page, "24 de setembro de 2026")).toBeVisible();
+      await expect(menu).not.toContainText("Selecione");
+      await expect(menu.locator(".v-date-picker .v-picker__header")).toHaveCount(0);
+      await expect(menu.locator(".v-time-picker .v-picker__header")).toBeVisible();
     });
 
-    test("presents the field as a combobox that opens a dialog named by its label", async ({
+    test("types a date, masked as it's displayed", async ({ page }) => {
+      const field = page.getByTestId("date-time-field-demo-date");
+      const input = field.getByRole("textbox", { name: "Data", exact: true });
+
+      await input.clear();
+      await expect(input).toHaveAttribute("placeholder", "00/00/0000");
+      await input.pressSequentially("05102026");
+
+      await expect(input).toHaveValue("05/10/2026");
+      await expect(page.getByTestId("date-time-field-demo-date-value")).toHaveText('"2026-10-05"');
+      await expect(getOpenMenu(page)).toHaveCount(0);
+    });
+
+    test("types a date and a time", async ({ page }) => {
+      const field = page.getByTestId("date-time-field-demo-datetime");
+      const input = field.getByRole("textbox", { name: "Data e hora" });
+
+      await input.clear();
+      await input.pressSequentially("051020261645");
+
+      await expect(input).toHaveValue("05/10/2026 16:45");
+      await expect(page.getByTestId("date-time-field-demo-datetime-value")).toHaveText(
+        '"2026-10-05T16:45"',
+      );
+    });
+
+    test("says why a typed value isn't accepted, until it's a whole, existing time", async ({
+      page,
+    }) => {
+      const field = page.getByTestId("date-time-field-demo-time");
+      const input = field.getByRole("textbox", { name: "Horário" });
+      const value = page.getByTestId("date-time-field-demo-time-value");
+
+      await input.clear();
+      await input.pressSequentially("14");
+      await expect(field).toContainText("Valor incompleto");
+      await expect(value).toHaveText('""');
+
+      await input.pressSequentially("75");
+      await expect(input).toHaveValue("14:75");
+      await expect(field).toContainText("Valor inválido");
+      await expect(value).toHaveText('""');
+
+      await input.press("Backspace");
+      await input.press("Backspace");
+      await input.pressSequentially("55");
+      await expect(field).not.toContainText("Valor");
+      await expect(value).toHaveText('"14:55"');
+    });
+
+    test("opens the pickers with the icon, a button that opens a dialog named by the label", async ({
       page,
     }) => {
       const field = page.getByTestId("date-time-field-demo-date");
-      const input = field.getByRole("combobox", { name: "Data", exact: true });
+      const input = field.getByRole("textbox", { name: "Data", exact: true });
+      const icon = field.getByRole("button", { name: "Selecionar data" });
 
-      await expect(input).toHaveAttribute("aria-haspopup", "dialog");
-      await expect(input).toHaveAttribute("aria-expanded", "false");
-      await expect(input).not.toHaveAttribute("aria-owns");
+      await expect(input).not.toHaveAttribute("aria-haspopup");
+      await expect(icon).toHaveAttribute("aria-haspopup", "dialog");
+      await expect(icon).toHaveAttribute("aria-expanded", "false");
       expect(await getAriaAttributes(field.locator(".v-field"))).toEqual([]);
 
-      await input.click();
+      await icon.click();
 
-      await expect(input).toHaveAttribute("aria-expanded", "true");
-      const controls = await input.getAttribute("aria-controls");
+      await expect(icon).toHaveAttribute("aria-expanded", "true");
+      const controls = await icon.getAttribute("aria-controls");
       const dialog = page.locator(`[id="${controls}"]`).getByRole("dialog", { name: "Data" });
       await expect(dialog).toBeVisible();
       await expect(dialog.locator(".v-date-picker")).toBeVisible();
@@ -84,41 +137,35 @@ test.describe("date-time-field", () => {
       await page.keyboard.press("Escape");
 
       await expect(getOpenMenu(page)).toBeHidden();
-      await expect(input).toHaveAttribute("aria-expanded", "false");
+      await expect(icon).toHaveAttribute("aria-expanded", "false");
     });
 
-    test("opens the picker with ArrowDown and closes it with Escape, keeping the focus", async ({
+    test("opens the pickers with Enter on the icon, reached with Tab from the input", async ({
       page,
     }) => {
-      const input = page
-        .getByTestId("date-time-field-demo-date")
-        .getByRole("combobox", { name: "Data", exact: true });
+      const field = page.getByTestId("date-time-field-demo-time");
+      const icon = field.getByRole("button", { name: "Selecionar horário" });
 
-      await input.focus();
-      await page.keyboard.press("ArrowDown");
+      await field.getByRole("textbox", { name: "Horário" }).focus();
+      await page.keyboard.press("Tab");
+      await expect(icon).toBeFocused();
+      await page.keyboard.press("Enter");
 
-      await expect(getOpenMenu(page)).toBeVisible();
-      await expect(input).toHaveAttribute("aria-expanded", "true");
+      await expect(getOpenMenu(page).locator(".v-time-picker")).toBeVisible();
 
       await page.keyboard.press("Escape");
-
       await expect(getOpenMenu(page)).toBeHidden();
-      await expect(input).toBeFocused();
     });
 
-    test("opens the picker when the field is clicked outside the input", async ({ page }) => {
-      const field = page.getByTestId("date-time-field-demo-date");
+    test("doesn't open the pickers when the field is clicked, where the user types", async ({
+      page,
+    }) => {
+      const input = page.getByTestId("date-time-field-demo-date").locator("input");
 
-      const control = field.locator(".v-field");
-      const box = (await control.boundingBox())!;
-      const isInput = await page.evaluate(
-        ({ x, y }) => document.elementFromPoint(x, y)?.tagName === "INPUT",
-        { x: box.x + 4, y: box.y + 4 },
-      );
-      expect(isInput).toBe(false);
-      await control.click({ position: { x: 4, y: 4 } });
+      await input.click();
 
-      await expect(getOpenMenu(page)).toBeVisible();
+      await expect(input).toBeFocused();
+      await expect(getOpenMenu(page)).toHaveCount(0);
     });
 
     test("matches the accessible snapshot of the types demo", async ({ page }) => {
@@ -128,7 +175,7 @@ test.describe("date-time-field", () => {
 
   test.describe("limits demo", () => {
     test("disables days out of range", async ({ page }) => {
-      await page.getByTestId("date-time-field-demo-limits").locator("input").click();
+      await openPickers(page.getByTestId("date-time-field-demo-limits"));
 
       await expect(getDay(page, "9 de setembro de 2026")).toBeDisabled();
       await expect(getDay(page, "10 de setembro de 2026")).toBeEnabled();
@@ -188,12 +235,18 @@ test.describe("date-time-field", () => {
       }
     });
 
-    test("doesn't open the picker while readonly", async ({ page }) => {
+    test("doesn't let the value be typed or picked while readonly", async ({ page }) => {
       const field = page.getByTestId("date-time-field-demo-readonly");
+      const input = field.locator("input");
 
-      await expect(field.locator("input")).toHaveValue("24/09/2026 14:30");
-      await field.locator("input").click();
+      await expect(input).toHaveValue("24/09/2026 14:30");
+      await expect(input).toHaveAttribute("readonly");
+      await expect(getPickersIcon(field)).toHaveCount(0);
 
+      await input.click();
+      await page.keyboard.type("1");
+
+      await expect(input).toHaveValue("24/09/2026 14:30");
       await expect(getOpenMenu(page)).toHaveCount(0);
     });
 
@@ -216,7 +269,7 @@ test.describe("date-time-field", () => {
       const preview = getPreview(page);
 
       await selectOption(page, "date-time-field-playground-type", "date");
-      await preview.locator("input").click();
+      await openPickers(preview);
 
       await expect(getOpenMenu(page).locator(".v-date-picker")).toBeVisible();
       await expect(getOpenMenu(page).locator(".v-time-picker")).toHaveCount(0);
@@ -225,7 +278,8 @@ test.describe("date-time-field", () => {
       await expect(getOpenMenu(page)).toHaveCount(0);
 
       await selectOption(page, "date-time-field-playground-type", "time");
-      await preview.locator("input").click();
+      await expect(getPickersIcon(preview)).toHaveAccessibleName("Selecionar horário");
+      await openPickers(preview);
 
       await expect(getOpenMenu(page).locator(".v-time-picker")).toBeVisible();
       await expect(getOpenMenu(page).locator(".v-date-picker")).toHaveCount(0);
@@ -269,7 +323,7 @@ test.describe("date-time-field", () => {
       await page.getByTestId("date-time-field-playground-min").locator("input").fill("08:00");
       await page.getByTestId("date-time-field-playground-max").locator("input").fill("18:00");
 
-      await getPreview(page).locator("input").click();
+      await openPickers(getPreview(page));
 
       await expect(getClockItem(page, "7")).toHaveClass(/v-time-picker-clock__item--disabled/);
       await expect(getClockItem(page, "8")).not.toHaveClass(/v-time-picker-clock__item--disabled/);
@@ -288,10 +342,10 @@ test.describe("date-time-field", () => {
     test("stops opening the picker when playground-readonly is toggled", async ({ page }) => {
       const preview = getPreview(page);
 
+      await expect(getPickersIcon(preview)).toBeVisible();
       await page.getByTestId("date-time-field-playground-readonly").locator("input").click();
-      await preview.locator("input").click();
 
-      await expect(getOpenMenu(page)).toHaveCount(0);
+      await expect(getPickersIcon(preview)).toHaveCount(0);
     });
 
     test("presents loading when playground-loading is toggled", async ({ page }) => {
@@ -328,7 +382,7 @@ test.describe("date-time-field", () => {
     });
 
     test("has no violations with the picker open", async ({ page }) => {
-      await getPreview(page).locator("input").click();
+      await openPickers(getPreview(page));
       await expect(getOpenMenu(page)).toBeVisible();
 
       await expectNoA11yViolations(page);
@@ -350,6 +404,15 @@ function getAriaAttributes(locator: Locator) {
 
 function getPreview(page: Page) {
   return page.getByTestId("date-time-field-preview");
+}
+
+/** The icon inside the field that opens its pickers, named after what they pick. */
+function getPickersIcon(field: Locator) {
+  return field.getByRole("button", { name: /^Selecionar/ });
+}
+
+async function openPickers(field: Locator) {
+  await getPickersIcon(field).click();
 }
 
 function getOpenMenu(page: Page): Locator {
