@@ -73,7 +73,7 @@ describe("icon aliases", () => {
       clearable: true,
       modelValue: "2026-10-16T10:30",
     });
-    await wrapper.find(".v-field__field").trigger("click");
+    await wrapper.find(".v-field__append-inner .v-icon").trigger("click");
 
     await expectDrawnAliases(["clear", "prev", "next", "subgroup"]);
   });

@@ -6,8 +6,16 @@ import type {
   DateTimeFieldVariant,
 } from "@/components/inputs/date-time-field/types.ts";
 import { vueTestUtilsPluginUimed } from "@/unit-test.ts";
+import { icons } from "@/consts/icons.ts";
 import { flushPromises, mount } from "@vue/test-utils";
-import { VDatePicker, VLocaleProvider, VMenu, VTextField, VTimePicker } from "vuetify/components";
+import {
+  VDatePicker,
+  VIcon,
+  VLocaleProvider,
+  VMenu,
+  VTextField,
+  VTimePicker,
+} from "vuetify/components";
 
 const variants: [DateTimeFieldVariant, string][] = [
   ["primary", "underlined"],
@@ -53,38 +61,84 @@ describe("DateTimeField", () => {
     expect(wrapper.attributes("class")).not.toContain(classValue);
   });
 
-  it("should prevent typing, since values come from the pickers", () => {
-    const wrapper = mountDateTimeField();
-    expect(findVTextField(wrapper).props("readonly")).toBe(true);
+  it("should let the user type the value, masked as it's displayed", async () => {
+    const wrapper = mountDateTimeField({ type: "date" });
+    const vTextField = findVTextField(wrapper);
+
+    expect(vTextField.props("readonly")).toBe(false);
+    expect(vTextField.props("type")).toBe("text");
+    expect(wrapper.find("input").attributes("inputmode")).toBe("numeric");
+
+    await typeInField(wrapper, "24092026");
+
+    expect(emittedValues(wrapper)).toEqual([["2026-09-24"]]);
+    expect(wrapper.find("input").element.value).toBe("24/09/2026");
+  });
+
+  it("should accept a value typed through a composition, as on mobile keyboards", async () => {
+    const wrapper = mountDateTimeField({ type: "time" });
+    const input = wrapper.find("input");
+
+    input.element.value = "1430";
+    await input.trigger("compositionend");
+
+    expect(emittedValues(wrapper)).toEqual([["14:30"]]);
+  });
+
+  it("should keep the typed text when the underlying field updates its own value", async () => {
+    const wrapper = mountDateTimeField({ type: "date", modelValue: "2026-09-24" });
+
+    findVTextField(wrapper).vm.$emit("update:modelValue", "garbage");
+    await flushPromises();
+
+    expect(findVTextField(wrapper).props("modelValue")).toBe("24/09/2026");
+    expect(emittedValues(wrapper)).toBeUndefined();
+  });
+
+  it("should say why the typed value isn't accepted", async () => {
+    const wrapper = mountDateTimeField({ type: "date" });
+
+    await typeInField(wrapper, "3102");
+    expect(await findVTextField(wrapper).vm.validate()).toEqual(["Valor incompleto"]);
+
+    await typeInField(wrapper, "31022026");
+    expect(await findVTextField(wrapper).vm.validate()).toEqual(["Valor inválido"]);
+    expect(emittedValues(wrapper)).toBeUndefined();
   });
 
   describe("menu", () => {
-    it("should be closed by default", () => {
+    it("should be closed by default, below the input", () => {
       const wrapper = mountDateTimeField();
       const vMenu = findVMenu(wrapper);
+      const inputId = findVTextField(wrapper).props("id");
 
+      expect(inputId).toBeTruthy();
       expect(vMenu.props("modelValue")).toBe(false);
       expect(vMenu.props("disabled")).toBe(false);
       expect(vMenu.props("closeOnContentClick")).toBe(false);
-      expect(vMenu.props("target")).toBe("parent");
+      expect(vMenu.props("target")).toBe(`#${inputId}`);
+      expect(vMenu.props("location")).toBe("bottom start");
     });
 
-    it("should be activated by the input, described as a control that opens a dialog", () => {
+    it("should be opened by the icon inside the field, describing the dialog", () => {
       const wrapper = mountDateTimeField({ label: "Data" });
       const inputId = findVTextField(wrapper).props("id");
-      const vMenu = findVMenu(wrapper);
+      const icon = findIcon(wrapper);
 
-      expect(inputId).toBeTruthy();
-      expect(vMenu.props("activator")).toBe(`#${inputId}`);
-      expect(vMenu.props("activatorProps")).toStrictEqual({
-        role: "combobox",
-        "aria-haspopup": "dialog",
-        "aria-owns": undefined,
-      });
-      expect(vMenu.props("contentProps")).toStrictEqual({
+      expect(icon.props("icon")).toBe(icons.calendar);
+      expect(icon.attributes("aria-label")).toBe("Selecionar data e horário");
+      expect(icon.attributes("aria-haspopup")).toBe("dialog");
+      expect(findVMenu(wrapper).props("contentProps")).toStrictEqual({
         role: "dialog",
         "aria-labelledby": `${inputId}-label`,
       });
+    });
+
+    it("should draw a clock on the icon of the time field", () => {
+      const wrapper = mountDateTimeField({ type: "time" });
+
+      expect(findIcon(wrapper).props("icon")).toBe(icons.clock);
+      expect(findIcon(wrapper).attributes("aria-label")).toBe("Selecionar horário");
     });
 
     it("should not name the dialog when the field has no label", () => {
@@ -95,40 +149,52 @@ describe("DateTimeField", () => {
       });
     });
 
-    it("should open when the field is clicked outside the input", async () => {
+    it("should open when the icon is clicked", async () => {
       const wrapper = mountDateTimeField();
 
-      findVTextField(wrapper).vm.$emit("click:control", new MouseEvent("click"));
+      await findIcon(wrapper).trigger("click");
       await flushPromises();
 
       expect(findVMenu(wrapper).props("modelValue")).toBe(true);
     });
 
-    it("should open when the field is clicked", async () => {
+    it.each(["Enter", " "])('should open with "%s" on the icon', async (key) => {
       const wrapper = mountDateTimeField();
+
+      await findIcon(wrapper).trigger("keydown", { key });
       await flushPromises();
 
-      await clickField(wrapper);
-
       expect(findVMenu(wrapper).props("modelValue")).toBe(true);
+    });
+
+    it("should not open when the field is clicked, where the user types", async () => {
+      const wrapper = mountDateTimeField();
+
+      await wrapper.find("input").trigger("click");
+      await wrapper.find(".v-field__field").trigger("click");
+      await flushPromises();
+
+      expect(findVMenu(wrapper).props("modelValue")).toBe(false);
     });
 
     describe("accessibility", () => {
-      it("should set the menu's attributes on the input, not on the field", async () => {
+      it("should keep the input a plain field and describe the icon as a button that opens a dialog", async () => {
         const wrapper = mountDateTimeField({ label: "Data" }, true);
         await flushPromises();
 
         const input = wrapper.find("input");
-        expect(input.attributes("role")).toBe("combobox");
-        expect(input.attributes("aria-haspopup")).toBe("dialog");
-        expect(input.attributes("aria-expanded")).toBe("false");
-        expect(input.attributes("aria-controls")).toBe(findVMenu(wrapper).vm.id);
-        expect(input.attributes()).not.toHaveProperty("aria-owns");
+        const icon = findIcon(wrapper);
+        expect(input.attributes("role")).toBeUndefined();
+        expect(input.attributes("aria-haspopup")).toBeUndefined();
+        expect(icon.attributes("role")).toBe("button");
+        expect(icon.attributes("tabindex")).toBe("0");
+        expect(icon.attributes("aria-expanded")).toBe("false");
+        expect(icon.attributes("aria-controls")).toBe(findVMenu(wrapper).vm.id);
         expect(fieldAriaAttributes(wrapper)).toEqual([]);
 
-        await input.trigger("click");
+        await icon.trigger("click");
         await flushPromises();
-        expect(input.attributes("aria-expanded")).toBe("true");
+        expect(icon.attributes("aria-expanded")).toBe("true");
 
         const dialog = document.querySelector(".v-overlay__content");
         expect(dialog?.getAttribute("role")).toBe("dialog");
@@ -136,34 +202,6 @@ describe("DateTimeField", () => {
         expect(document.getElementById(`${input.attributes("id")}-label`)?.textContent).toBe(
           "Data",
         );
-      });
-
-      it.each<keyof DateTimeFieldProps>(["readonly", "disabled"])(
-        "should keep the input a plain field while %s",
-        async (prop) => {
-          const wrapper = mountDateTimeField({ [prop]: true }, true);
-          await flushPromises();
-
-          const input = wrapper.find("input");
-          expect(findVMenu(wrapper).props("activator")).toBeUndefined();
-          expect(input.attributes("role")).toBeUndefined();
-          expect(input.attributes("aria-haspopup")).toBeUndefined();
-          expect(input.attributes("aria-expanded")).toBeUndefined();
-          expect(fieldAriaAttributes(wrapper)).toEqual([]);
-        },
-      );
-
-      it("should remove the menu's attributes when it can't open anymore", async () => {
-        const wrapper = mountDateTimeField({}, true);
-        await flushPromises();
-
-        const input = wrapper.find("input");
-        expect(input.attributes("role")).toBe("combobox");
-
-        await wrapper.setProps({ readonly: true });
-        await flushPromises();
-        expect(input.attributes("role")).toBeUndefined();
-        expect(input.attributes("aria-expanded")).toBeUndefined();
       });
     });
 
@@ -174,7 +212,18 @@ describe("DateTimeField", () => {
       const vLocaleProvider = wrapper.findComponent(VLocaleProvider);
       expect(vLocaleProvider.props("locale")).toBe("pt-BR");
       expect(vLocaleProvider.props("messages")).toHaveProperty(["pt-BR", "datePicker", "title"]);
-      expect(wrapper.findComponent(VDatePicker).text()).toContain("Selecione a data");
+      expect(findVDatePicker(wrapper).text()).toContain("2026");
+    });
+
+    // The style guide's pickers have no title, and the date picker no header with the picked date
+    it("should hide the date picker's header and the time picker's title", async () => {
+      const wrapper = mountDateTimeField();
+      await openMenu(wrapper);
+
+      expect(findVDatePicker(wrapper).props("hideHeader")).toBe(true);
+      expect(findVTimePicker(wrapper).props("hideTitle")).toBe(true);
+      expect(findVTimePicker(wrapper).props("hideHeader")).toBe(false);
+      expect(wrapper.text()).not.toContain("Selecione");
     });
 
     it.each(pickersByType)(
@@ -352,6 +401,15 @@ describe("DateTimeField", () => {
         },
       );
 
+      it("should display a value set by the app after the user typed", async () => {
+        const wrapper = mountDateTimeField({ type: "date" });
+
+        await typeInField(wrapper, "2409");
+        await wrapper.setProps({ modelValue: "2026-10-05" });
+
+        expect(findVTextField(wrapper).props("modelValue")).toBe("05/10/2026");
+      });
+
       it("should be an empty string by default", () => {
         const wrapper = mountDateTimeField();
         const vTextField = findVTextField(wrapper);
@@ -369,14 +427,14 @@ describe("DateTimeField", () => {
 
         const vTextField = findVTextField(wrapper);
 
-        expect(vTextField.props("rules")).toHaveLength(1);
+        expect(vTextField.props("rules")).toHaveLength(2);
         expect(vTextField.props("rules")).toContain(required);
         expect(await vTextField.vm.validate()).toEqual(["Campo obrigatório"]);
       });
 
-      it("shouldn't change rules by default", () => {
+      it("should only check the typed value by default", () => {
         const wrapper = mountDateTimeField();
-        expect(findVTextField(wrapper).props("rules")).toHaveLength(0);
+        expect(findVTextField(wrapper).props("rules")).toHaveLength(1);
       });
     });
 
@@ -390,7 +448,7 @@ describe("DateTimeField", () => {
         });
         await flushPromises();
 
-        expect(findVTextField(wrapper).props("rules")).toHaveLength(2);
+        expect(findVTextField(wrapper).props("rules")).toHaveLength(3);
         expect(wrapper.text()).not.toContain("permitido");
 
         await wrapper.setProps({ modelValue: "2026-09-21" });
@@ -435,28 +493,25 @@ describe("DateTimeField", () => {
     });
 
     describe("readonly and disabled", () => {
-      it.each<keyof DateTimeFieldProps>(["readonly", "disabled"])(
-        "should not open the menu while %s",
-        async (prop) => {
-          const wrapper = mountDateTimeField({ [prop]: true });
-          await flushPromises();
+      it("should prevent typing and hide the icon while readonly", async () => {
+        const wrapper = mountDateTimeField({ readonly: true });
 
-          expect(findVMenu(wrapper).props("disabled")).toBe(true);
+        expect(findVTextField(wrapper).props("readonly")).toBe(true);
+        expect(findIcon(wrapper).exists()).toBe(false);
+        expect(findVMenu(wrapper).exists()).toBe(false);
+      });
 
-          await clickField(wrapper);
-          expect(findVMenu(wrapper).props("modelValue")).toBe(false);
-
-          findVTextField(wrapper).vm.$emit("click:control", new MouseEvent("click"));
-          await flushPromises();
-          expect(findVMenu(wrapper).props("modelValue")).toBe(false);
-        },
-      );
-
-      it("should forward disabled to the underlying component", async () => {
+      it("should disable the field, the icon and the menu while disabled", async () => {
         const wrapper = mountDateTimeField();
         await wrapper.setProps({ disabled: true });
 
         expect(findVTextField(wrapper).props("disabled")).toBe(true);
+        expect(findIcon(wrapper).props("disabled")).toBe(true);
+        expect(findVMenu(wrapper).props("disabled")).toBe(true);
+
+        await findIcon(wrapper).trigger("click");
+        await flushPromises();
+        expect(findVMenu(wrapper).props("modelValue")).toBe(false);
       });
 
       it("should hide the clear action while readonly", async () => {
@@ -476,6 +531,16 @@ describe("DateTimeField", () => {
 
         expect(emittedValues(wrapper)).toEqual([[""]]);
       });
+
+      it("should clear a typed value that isn't complete", async () => {
+        const wrapper = mountDateTimeField({ clearable: true, type: "date" });
+
+        await typeInField(wrapper, "2409");
+        findVTextField(wrapper).vm.$emit("click:clear");
+        await flushPromises();
+
+        expect(findVTextField(wrapper).props("modelValue")).toBe("");
+      });
     });
 
     describe("disabled, loading, clearable and readonly", () => {
@@ -486,6 +551,7 @@ describe("DateTimeField", () => {
         expect(vTextField.props("disabled")).toBe(false);
         expect(vTextField.props("loading")).toBe(false);
         expect(vTextField.props("clearable")).toBe(false);
+        expect(vTextField.props("readonly")).toBe(false);
         expect(findVMenu(wrapper).props("disabled")).toBe(false);
       });
 
@@ -514,6 +580,11 @@ describe("DateTimeField", () => {
     });
 
     describe("label, placeholder and hint", () => {
+      it("should use the mask as the placeholder by default", () => {
+        const wrapper = mountDateTimeField({ type: "date" });
+        expect(findVTextField(wrapper).props("placeholder")).toBe("00/00/0000");
+      });
+
       it("should forward to the underlying component", async () => {
         const label = "Label";
         const placeholder = "Placeholder";
@@ -578,14 +649,22 @@ function findVTimePicker(wrapper: Wrapper) {
   return wrapper.findComponent(VTimePicker);
 }
 
+function findIcon(wrapper: Wrapper) {
+  return wrapper.findComponent(VIcon);
+}
+
 function fieldAriaAttributes(wrapper: Wrapper) {
   return Object.keys(wrapper.find(".v-field").attributes()).filter((name) =>
     name.startsWith("aria-"),
   );
 }
 
-async function clickField(wrapper: Wrapper) {
-  await wrapper.find(".v-field__field").trigger("click");
+/** Puts the digits in the input at once, as a paste would. */
+async function typeInField(wrapper: Wrapper, digits: string) {
+  const input = wrapper.find("input");
+  input.element.value = digits;
+  await input.trigger("input", { inputType: "insertFromPaste" });
+  await flushPromises();
 }
 
 async function openMenu(wrapper: Wrapper) {

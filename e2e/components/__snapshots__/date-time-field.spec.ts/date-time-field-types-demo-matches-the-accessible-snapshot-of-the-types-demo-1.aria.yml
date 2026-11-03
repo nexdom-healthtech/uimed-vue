@@ -1,10 +1,19 @@
-- combobox "Data": /\d+\/\d+\/\d+/
+- textbox "Data":
+    - /placeholder: 00/00/0000
+    - text: /\d+\/\d+\/\d+/
+- button "Selecionar data"
 - text: Data
 - alert
-- combobox "Horário": /\d+:\d+/
+- textbox "Horário":
+    - /placeholder: 00:00
+    - text: /\d+:\d+/
+- button "Selecionar horário"
 - text: Horário
 - alert
-- combobox "Data e hora": /\d+\/\d+\/\d+ \d+:\d+/
+- textbox "Data e hora":
+    - /placeholder: 00/00/0000 00:00
+    - text: /\d+\/\d+\/\d+ \d+:\d+/
+- button "Selecionar data e horário"
 - text: Data e hora
 - alert
 - list:
