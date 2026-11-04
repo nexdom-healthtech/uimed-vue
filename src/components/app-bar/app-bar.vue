@@ -9,6 +9,8 @@
       @click="navigationOpen = !navigationOpen"
     />
 
+    <!-- The image takes its width from its height, or WebKit stretches it to the SVG's intrinsic
+    width; no prop sets that -->
     <v-img
       v-if="logo"
       :src="props.logo"
@@ -16,6 +18,7 @@
       height="100%"
       width="fit-content"
       class="py-2 ml-5 mr-n3"
+      image-class="w-auto"
       cover
     />
 

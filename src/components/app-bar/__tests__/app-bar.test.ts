@@ -427,6 +427,7 @@ describe("AppBar", () => {
         expect(vImg.props("height")).toBe("100%");
         expect(vImg.props("width")).toBe("fit-content");
         expect(vImg.props("class")).toContain("py-2 ml-5 mr-n3");
+        expect(vImg.props("imageClass")).toBe("w-auto");
       });
     });
 

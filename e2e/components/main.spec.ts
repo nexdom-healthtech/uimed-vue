@@ -28,6 +28,27 @@ test.describe("main", () => {
         await expect(logo).toHaveAttribute("alt", "");
         await expect(demo.getByRole("img")).toHaveCount(0);
       });
+
+      test("loads the logo and keeps its aspect ratio at the app bar's height", async ({
+        page,
+      }) => {
+        const logo = getLogoDemo(page).locator(".v-img img");
+
+        // Once loaded, the image's natural size gives its aspect ratio
+        await expect
+          .poll(() =>
+            logo.evaluate((element: HTMLImageElement) =>
+              element.complete ? element.naturalWidth : 0,
+            ),
+          )
+          .toBeGreaterThan(0);
+        const ratio = await logo.evaluate(
+          (element: HTMLImageElement) => element.naturalWidth / element.naturalHeight,
+        );
+
+        const { width, height } = await getBox(logo);
+        expect(width).toBeCloseTo(height * ratio, 0);
+      });
     });
 
     test.describe("app-bar", () => {
