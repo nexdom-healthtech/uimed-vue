@@ -107,16 +107,16 @@ describe("DateTimeField", () => {
   });
 
   describe("menu", () => {
-    it("should be closed by default, below the input", () => {
+    it("should be closed by default, below the whole field, so it doesn't cover the messages", async () => {
       const wrapper = mountDateTimeField();
+      await flushPromises();
       const vMenu = findVMenu(wrapper);
-      const inputId = findVTextField(wrapper).props("id");
 
-      expect(inputId).toBeTruthy();
+      expect(findVTextField(wrapper).props("id")).toBeTruthy();
       expect(vMenu.props("modelValue")).toBe(false);
       expect(vMenu.props("disabled")).toBe(false);
       expect(vMenu.props("closeOnContentClick")).toBe(false);
-      expect(vMenu.props("target")).toBe(`#${inputId}`);
+      expect(vMenu.props("target")).toBe(findVTextField(wrapper).element);
       expect(vMenu.props("location")).toBe("bottom start");
     });
 
@@ -149,12 +149,15 @@ describe("DateTimeField", () => {
       });
     });
 
-    it("should open when the icon is clicked", async () => {
+    it("should open when the icon is clicked, without closing on another click", async () => {
       const wrapper = mountDateTimeField();
 
       await findIcon(wrapper).trigger("click");
       await flushPromises();
+      expect(findVMenu(wrapper).props("modelValue")).toBe(true);
 
+      await findIcon(wrapper).trigger("click");
+      await flushPromises();
       expect(findVMenu(wrapper).props("modelValue")).toBe(true);
     });
 
@@ -167,14 +170,70 @@ describe("DateTimeField", () => {
       expect(findVMenu(wrapper).props("modelValue")).toBe(true);
     });
 
-    it("should not open when the field is clicked, where the user types", async () => {
-      const wrapper = mountDateTimeField();
-
-      await wrapper.find("input").trigger("click");
-      await wrapper.find(".v-field__field").trigger("click");
+    it("should open when the input gets the focus, and close once it leaves the field", async () => {
+      const wrapper = mountDateTimeField({}, true);
+      const outside = document.createElement("button");
+      document.body.append(outside);
       await flushPromises();
 
+      wrapper.find("input").element.focus();
+      await flushPromises();
+      expect(findVMenu(wrapper).props("modelValue")).toBe(true);
+
+      outside.focus();
+      vi.advanceTimersToNextFrame();
+      await flushPromises();
       expect(findVMenu(wrapper).props("modelValue")).toBe(false);
+    });
+
+    it("should stay open while the focus moves into it or to the icon", async () => {
+      const wrapper = mountDateTimeField({ type: "date" }, true);
+      await flushPromises();
+
+      wrapper.find("input").element.focus();
+      await flushPromises();
+      document.querySelector<HTMLElement>(".v-overlay__content button")!.focus();
+      vi.advanceTimersToNextFrame();
+      await flushPromises();
+      expect(findVMenu(wrapper).props("modelValue")).toBe(true);
+
+      findIcon(wrapper).element.focus();
+      vi.advanceTimersToNextFrame();
+      await flushPromises();
+      expect(findVMenu(wrapper).props("modelValue")).toBe(true);
+    });
+
+    it("should close once the focus leaves the field from the icon", async () => {
+      const wrapper = mountDateTimeField({}, true);
+      const outside = document.createElement("button");
+      document.body.append(outside);
+      await flushPromises();
+
+      wrapper.find("input").element.focus();
+      await flushPromises();
+      findIcon(wrapper).element.focus();
+      vi.advanceTimersToNextFrame();
+      await flushPromises();
+      expect(findVMenu(wrapper).props("modelValue")).toBe(true);
+
+      outside.focus();
+      vi.advanceTimersToNextFrame();
+      await flushPromises();
+      expect(findVMenu(wrapper).props("modelValue")).toBe(false);
+    });
+
+    it("should not fail when the field is removed while the focus leaves it", async () => {
+      const wrapper = mountDateTimeField({}, true);
+      const outside = document.createElement("button");
+      document.body.append(outside);
+      await flushPromises();
+
+      wrapper.find("input").element.focus();
+      await flushPromises();
+      outside.focus();
+      wrapper.unmount();
+
+      expect(() => vi.advanceTimersToNextFrame()).not.toThrow();
     });
 
     describe("accessibility", () => {
@@ -493,12 +552,18 @@ describe("DateTimeField", () => {
     });
 
     describe("readonly and disabled", () => {
-      it("should prevent typing and hide the icon while readonly", async () => {
-        const wrapper = mountDateTimeField({ readonly: true });
+      it("should prevent typing and keep the icon inactive while readonly", async () => {
+        const wrapper = mountDateTimeField({ readonly: true }, true);
+        await flushPromises();
 
         expect(findVTextField(wrapper).props("readonly")).toBe(true);
-        expect(findIcon(wrapper).exists()).toBe(false);
-        expect(findVMenu(wrapper).exists()).toBe(false);
+        expect(findIcon(wrapper).props("disabled")).toBe(true);
+        expect(findVMenu(wrapper).props("disabled")).toBe(true);
+
+        await findIcon(wrapper).trigger("click");
+        wrapper.find("input").element.focus();
+        await flushPromises();
+        expect(findVMenu(wrapper).props("modelValue")).toBe(false);
       });
 
       it("should disable the field, the icon and the menu while disabled", async () => {

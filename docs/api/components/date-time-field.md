@@ -1,6 +1,6 @@
 # UDateTimeField
 
-Componente para utilização de campos de data e/ou hora, em que o valor é digitado ou escolhido no seletor aberto pelo ícone do campo.
+Componente para utilização de campos de data e/ou hora, em que o valor é digitado ou escolhido no seletor exibido abaixo do campo enquanto ele está em foco, ou aberto pelo ícone do campo.
 
 ## Props
 
@@ -16,7 +16,7 @@ Componente para utilização de campos de data e/ou hora, em que o valor é digi
 | `hint`        | `string`                         |              | Dica, instrução ou mensagem relacionada ao campo.                                                                                                    |
 | `required`    | `boolean`                        | `false`      | Torna o campo obrigatório para a submissão do formulário.                                                                                            |
 | `disabled`    | `boolean`                        | `false`      | Remove a possibilidade de interação com o campo.                                                                                                     |
-| `readonly`    | `boolean`                        | `false`      | Remove a possibilidade de edição do campo. O valor não pode ser digitado, e o ícone do seletor não é exibido.                                        |
+| `readonly`    | `boolean`                        | `false`      | Remove a possibilidade de edição do campo. O valor não pode ser digitado, e o ícone do seletor fica inativo.                                         |
 | `loading`     | `boolean`                        | `false`      | Exibe um indicador de carregamento. O campo mantém o rótulo como nome acessível e fica marcado como ocupado, e leitores de tela ignoram o indicador. |
 | `clearable`   | `boolean`                        | `false`      | Exibe recurso para limpar o campo, alterando o valor para `""`. Não é exibido enquanto o campo for `readonly`.                                       |
 | `dataTestid`  | `string`                         |              | Aplica atributo `data-testid` para testes sobre o componente.                                                                                        |

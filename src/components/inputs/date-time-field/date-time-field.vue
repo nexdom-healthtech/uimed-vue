@@ -1,6 +1,7 @@
 <template>
   <v-text-field
     :id="inputId"
+    ref="textField"
     :model-value="displayValue"
     :validation-value="validationValue"
     :variant="vuetifyVariant"
@@ -20,22 +21,27 @@
     @input="onInput"
     @compositionend="onCompositionEnd"
     @click:clear="clear"
+    @update:focused="onFocusChange"
   >
-    <template v-if="!props.readonly" #append-inner>
+    <template #append-inner>
       <v-menu
+        ref="menu"
         v-model="isMenuOpen"
-        :target
+        :target="fieldElement"
         :content-props
         location="bottom start"
         min-width="0"
-        :disabled="props.disabled"
+        :disabled="isMenuDisabled"
         :close-on-content-click="false"
       >
+        <!-- A click on the icon also focuses the input, which opens the menu: the icon only opens
+        it, without toggling it closed -->
         <template #activator="{ props: activatorProps }">
           <v-icon
-            v-bind="{ ...activatorProps, ...iconProps }"
-            :disabled="props.disabled"
+            v-bind="{ ...activatorProps, ...iconProps, onClick: open }"
+            :disabled="isMenuDisabled"
             @keydown="onKeydown"
+            @blur="onFocusChange(false)"
           />
         </template>
         <v-card>
@@ -72,7 +78,7 @@
 /**
  * Date and/or time field component to be used throughout the application. The
  * user types the value, masked as it's displayed, or picks it in the pickers
- * opened by the icon inside the field.
+ * shown below the field while it has the focus, or opened by the icon inside it.
  *
  * Its value uses the native input formats: `YYYY-MM-DD` for `date`, `HH:mm`
  * for `time` and `YYYY-MM-DDTHH:mm` for `datetime`.
@@ -114,7 +120,7 @@ import {
 } from "vuetify/components";
 import FieldLoader from "@/components/inputs/field-loader.vue";
 import { pt } from "vuetify/locale";
-import { computed, ref, watch } from "vue";
+import { computed, ref, useTemplateRef, watch } from "vue";
 import { useTextFieldVariant } from "@/composables/inputs/fields.ts";
 
 const modelValue = defineModel<string>({ default: "" });
@@ -137,6 +143,11 @@ const {
 } = useDateTimeFieldInput(props, modelValue);
 const rules = useDateTimeFieldRules(props, inputRule);
 const isClearable = computed(() => props.clearable && !props.readonly);
+const isMenuDisabled = computed(() => props.disabled || props.readonly);
+const textField = useTemplateRef<InstanceType<typeof VTextField>>("textField");
+const menu = useTemplateRef<InstanceType<typeof VMenu>>("menu");
+// The whole field, with its messages, so the menu doesn't cover them
+const fieldElement = computed<HTMLElement | undefined>(() => textField.value?.$el);
 
 const isMenuOpen = ref(false);
 // Parts picked while the menu is open. Missing parts fall back to the current value.
@@ -145,10 +156,12 @@ const draftDate = computed(() => draft.value.date ?? getDatePart(modelValue.valu
 const draftTime = computed(() => draft.value.time ?? getTimePart(modelValue.value, props.type));
 const draftValue = computed(() => joinDateTime(props.type, draftDate.value, draftTime.value));
 const bounds = useDateTimeFieldPickerBounds(props, draftDate);
-const { inputId, target, iconProps, contentProps, onKeydown } = useDateTimeFieldMenu(
+const { inputId, iconProps, contentProps, open, onKeydown, onFocusChange } = useDateTimeFieldMenu(
   isMenuOpen,
   () => props.type,
   () => !!props.label,
+  isMenuDisabled,
+  () => [fieldElement.value, menu.value?.contentEl],
 );
 
 watch(isMenuOpen, () => {

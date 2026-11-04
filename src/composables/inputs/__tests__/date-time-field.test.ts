@@ -338,11 +338,82 @@ describe("date-time-field", () => {
   });
 
   describe("useDateTimeFieldMenu", () => {
-    it("should identify the input with a unique id and position the menu below it", () => {
+    it("should identify the input with a unique id", () => {
       const { menu } = mountMenu();
-
       expect(menu.inputId).toBe("test-0");
-      expect(menu.target).toBe("#test-0");
+    });
+
+    it("should open the menu, unless it can't open", () => {
+      const { menu, isOpen, disabled } = mountMenu();
+
+      disabled.value = true;
+      menu.open();
+      expect(isOpen.value).toBe(false);
+
+      disabled.value = false;
+      menu.open();
+      expect(isOpen.value).toBe(true);
+    });
+
+    it("should open the menu when the field gets the focus, unless it can't open", () => {
+      const { menu, isOpen, disabled } = mountMenu();
+
+      disabled.value = true;
+      menu.onFocusChange(true);
+      expect(isOpen.value).toBe(false);
+
+      disabled.value = false;
+      menu.onFocusChange(true);
+      expect(isOpen.value).toBe(true);
+    });
+
+    it("should close the menu once the focus lands outside the field and the menu", async () => {
+      const { menu, isOpen, outside } = mountMenu();
+      isOpen.value = true;
+
+      outside.focus();
+      menu.onFocusChange(false);
+      expect(isOpen.value).toBe(true);
+
+      vi.advanceTimersToNextFrame();
+      expect(isOpen.value).toBe(false);
+    });
+
+    it.each([
+      ["in the field", 0],
+      ["in the menu", 1],
+    ])("should keep the menu open while the focus is %s", async (_, index) => {
+      const { menu, isOpen, elements } = mountMenu();
+      isOpen.value = true;
+
+      elements[index]!.querySelector("button")!.focus();
+      menu.onFocusChange(false);
+      vi.advanceTimersToNextFrame();
+
+      expect(isOpen.value).toBe(true);
+    });
+
+    it("should keep the menu open while the focus is still moving, on the body", async () => {
+      const { menu, isOpen } = mountMenu();
+      isOpen.value = true;
+
+      (document.activeElement as HTMLElement | null)?.blur();
+      menu.onFocusChange(false);
+      vi.advanceTimersToNextFrame();
+
+      expect(isOpen.value).toBe(true);
+    });
+
+    it("should close the menu before its content is rendered", async () => {
+      const { menu, isOpen, outside, rendered } = mountMenu();
+      isOpen.value = true;
+      rendered.value = false;
+
+      outside.focus();
+      menu.onFocusChange(false);
+      vi.advanceTimersToNextFrame();
+
+      expect(isOpen.value).toBe(false);
     });
 
     it.each<[DateTimeFieldType, string, string]>([
@@ -374,6 +445,15 @@ describe("date-time-field", () => {
 
       label.value = false;
       expect(menu.contentProps.value).toEqual({ role: "dialog", "aria-labelledby": undefined });
+    });
+
+    it("should not open the menu with Enter on the icon when it can't open", () => {
+      const { menu, isOpen, disabled } = mountMenu();
+      disabled.value = true;
+
+      menu.onKeydown(new KeyboardEvent("keydown", { key: "Enter", cancelable: true }));
+
+      expect(isOpen.value).toBe(false);
     });
 
     it.each(["Enter", " "])('should open the menu with "%s" on the icon', (key) => {
@@ -462,16 +542,33 @@ describe("date-time-field", () => {
   });
 });
 
+/** The field and the menu's content, each with a focusable button, and a button outside them. */
+function createElements() {
+  document.body.innerHTML =
+    "<div><button>field</button></div><div><button>menu</button></div><button>outside</button>";
+  const [field, content] = Array.from(document.body.querySelectorAll("div"));
+  const outside = document.body.querySelector<HTMLButtonElement>("body > button")!;
+
+  return { elements: [field!, content!], outside };
+}
+
 function mountMenu() {
   const isOpen = ref(false);
   const fieldType = ref<DateTimeFieldType>("datetime");
   const label = ref(true);
+  const disabled = ref(false);
+  // Whether the menu's content is rendered, which only happens once it's open
+  const rendered = ref(true);
+  const { elements, outside } = createElements();
   let menu: ReturnType<typeof useDateTimeFieldMenu> | undefined;
 
   mount(
     {
       setup() {
-        menu = useDateTimeFieldMenu(isOpen, fieldType, label);
+        menu = useDateTimeFieldMenu(isOpen, fieldType, label, disabled, () => [
+          elements[0],
+          rendered.value ? elements[1] : undefined,
+        ]);
         return () => null;
       },
     },
@@ -479,7 +576,7 @@ function mountMenu() {
   );
 
   if (!menu) throw new Error("The composable wasn't called");
-  return { menu, isOpen, fieldType, label };
+  return { menu, isOpen, fieldType, label, disabled, rendered, elements, outside };
 }
 
 /**
