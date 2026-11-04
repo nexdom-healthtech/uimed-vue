@@ -74,7 +74,7 @@ test.describe("date-time-field", () => {
 
       await expect(input).toHaveValue("05/10/2026");
       await expect(page.getByTestId("date-time-field-demo-date-value")).toHaveText('"2026-10-05"');
-      await expect(getOpenMenu(page)).toHaveCount(0);
+      await expect(input).toBeFocused();
     });
 
     test("types a date and a time", async ({ page }) => {
@@ -144,9 +144,15 @@ test.describe("date-time-field", () => {
       page,
     }) => {
       const field = page.getByTestId("date-time-field-demo-time");
+      const input = field.getByRole("textbox", { name: "Horário" });
       const icon = field.getByRole("button", { name: "Selecionar horário" });
 
-      await field.getByRole("textbox", { name: "Horário" }).focus();
+      await input.focus();
+      await expect(getOpenMenu(page)).toBeVisible();
+      await page.keyboard.press("Escape");
+      await expect(getOpenMenu(page)).toBeHidden();
+      await expect(input).toBeFocused();
+
       await page.keyboard.press("Tab");
       await expect(icon).toBeFocused();
       await page.keyboard.press("Enter");
@@ -157,14 +163,47 @@ test.describe("date-time-field", () => {
       await expect(getOpenMenu(page)).toBeHidden();
     });
 
-    test("doesn't open the pickers when the field is clicked, where the user types", async ({
+    test("shows the pickers below the field while it has the focus, keeping it to type", async ({
       page,
     }) => {
-      const input = page.getByTestId("date-time-field-demo-date").locator("input");
+      const field = page.getByTestId("date-time-field-demo-limits");
+      const input = field.getByRole("textbox", { name: "Data do retorno" });
+      // Near the top of the viewport, below the docs' fixed bar, with room below for the pickers,
+      // which would otherwise be moved up into the viewport
+      await field.evaluate((element) => {
+        element.scrollIntoView({ block: "start" });
+        globalThis.scrollBy(0, -100);
+      });
 
       await input.click();
 
+      const content = getOpenMenu(page).locator(".v-overlay__content");
+      await expect(content).toBeVisible();
       await expect(input).toBeFocused();
+      // Below the whole field, so the picker doesn't cover its hint or error message
+      const [fieldBox, contentBox] = await Promise.all([
+        field.boundingBox(),
+        content.boundingBox(),
+      ]);
+      expect(contentBox!.y).toBeGreaterThanOrEqual(fieldBox!.y + fieldBox!.height - 1);
+
+      await input.pressSequentially("15092026");
+      await expect(input).toHaveValue("15/09/2026");
+      await expect(getDay(page, "15 de setembro de 2026").locator("xpath=..")).toHaveClass(
+        /v-date-picker-month__day--selected/,
+      );
+
+      // The icon is inside the field, so the pickers only close when the focus leaves it, from
+      // the input or from the icon
+      await page.keyboard.press("Tab");
+      await expect(getPickersIcon(field)).toBeFocused();
+      await expect(content).toBeVisible();
+      await page.keyboard.press("Tab");
+      await expect(getOpenMenu(page)).toHaveCount(0);
+
+      await input.focus();
+      await expect(content).toBeVisible();
+      await page.keyboard.press("Shift+Tab");
       await expect(getOpenMenu(page)).toHaveCount(0);
     });
 
@@ -241,10 +280,12 @@ test.describe("date-time-field", () => {
 
       await expect(input).toHaveValue("24/09/2026 14:30");
       await expect(input).toHaveAttribute("readonly");
-      await expect(getPickersIcon(field)).toHaveCount(0);
+      await expect(getPickersIcon(field)).toBeVisible();
+      await expect(getPickersIcon(field)).toHaveClass(/v-icon--disabled/);
 
       await input.click();
       await page.keyboard.type("1");
+      await getPickersIcon(field).click({ force: true });
 
       await expect(input).toHaveValue("24/09/2026 14:30");
       await expect(getOpenMenu(page)).toHaveCount(0);
@@ -260,7 +301,7 @@ test.describe("date-time-field", () => {
 
       await expect(value).toHaveText('""');
       await expect(field.locator("input")).toHaveValue("");
-      await expect(getOpenMenu(page)).toHaveCount(0);
+      await expect(field.locator("input")).toBeFocused();
     });
   });
 
@@ -342,10 +383,12 @@ test.describe("date-time-field", () => {
     test("stops opening the picker when playground-readonly is toggled", async ({ page }) => {
       const preview = getPreview(page);
 
-      await expect(getPickersIcon(preview)).toBeVisible();
+      await expect(getPickersIcon(preview)).not.toHaveClass(/v-icon--disabled/);
       await page.getByTestId("date-time-field-playground-readonly").locator("input").click();
 
-      await expect(getPickersIcon(preview)).toHaveCount(0);
+      await expect(getPickersIcon(preview)).toHaveClass(/v-icon--disabled/);
+      await getPickersIcon(preview).click({ force: true });
+      await expect(getOpenMenu(page)).toHaveCount(0);
     });
 
     test("presents loading when playground-loading is toggled", async ({ page }) => {

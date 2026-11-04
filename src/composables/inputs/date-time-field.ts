@@ -31,14 +31,19 @@ type PickerBounds = {
 type DateTimeFieldMenu = {
   /** Id of the field's input. */
   inputId: string;
-  /** Selector of the input, the element the menu is positioned below. */
-  target: string;
   /** Attributes of the icon that opens the menu, named after what its pickers pick. */
   iconProps: ComputedRef<{ icon: string; "aria-label": string; "aria-haspopup": "dialog" }>;
   /** Attributes of the menu's content, describing it as a dialog named by the field's label. */
   contentProps: ComputedRef<Record<string, string | undefined>>;
+  /** Opens the menu, unless it can't open. */
+  open: () => void;
   /** Opens the menu with `Enter` or space on the icon, which only responds to clicks otherwise. */
   onKeydown: (event: KeyboardEvent) => void;
+  /**
+   * Opens the menu when the field gets the focus, and closes it once the focus lands outside the
+   * field and the menu.
+   */
+  onFocusChange: (focused: boolean) => void;
 };
 
 type DateTimeFieldInput = {
@@ -245,16 +250,20 @@ export function useDateTimeFieldInput(
 }
 
 /**
- * Makes an icon inside the field the activator of the pickers' menu, positioned below the input,
- * so the input stays a plain field the user types in.
+ * Opens the pickers' menu when the field gets the focus, keeping the focus in the input so the user
+ * can still type, and from an icon inside the field.
  * @param isOpen - Whether the menu is open.
  * @param type - The field's type, which names the icon and sets its drawing.
  * @param hasLabel - Whether the field has a label, which names the menu's dialog.
+ * @param isDisabled - Whether the menu can't open, as when the field is disabled or readonly.
+ * @param elements - The field and the menu's content: the focus inside them keeps the menu open.
  */
 export function useDateTimeFieldMenu(
   isOpen: Ref<boolean>,
   type: MaybeRefOrGetter<DateTimeFieldType>,
   hasLabel: MaybeRefOrGetter<boolean>,
+  isDisabled: MaybeRefOrGetter<boolean>,
+  elements: MaybeRefOrGetter<Array<Element | undefined>>,
 ): DateTimeFieldMenu {
   const inputId = useId();
 
@@ -269,15 +278,37 @@ export function useDateTimeFieldMenu(
     "aria-labelledby": toValue(hasLabel) ? `${inputId}-label` : undefined,
   }));
 
+  function open() {
+    if (!toValue(isDisabled)) isOpen.value = true;
+  }
+
   function onKeydown(event: KeyboardEvent) {
     if (event.key !== "Enter" && event.key !== " ") return;
 
     event.preventDefault();
     event.stopPropagation();
-    isOpen.value = true;
+    open();
   }
 
-  return { inputId, target: `#${inputId}`, iconProps, contentProps, onKeydown };
+  function onFocusChange(focused: boolean) {
+    if (focused) {
+      open();
+      return;
+    }
+
+    // The focus only lands on its next element after this event, e.g. a day of the date picker
+    requestAnimationFrame(() => {
+      const focusedElement = document.activeElement;
+      // The body has it while the focus is still moving, e.g. into the menu
+      if (focusedElement === document.body) return;
+
+      if (!toValue(elements).some((element) => element?.contains(focusedElement))) {
+        isOpen.value = false;
+      }
+    });
+  }
+
+  return { inputId, iconProps, contentProps, open, onKeydown, onFocusChange };
 }
 
 function parseDate(digits: string): string {

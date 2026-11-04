@@ -6,7 +6,7 @@ outline: deep
 
 O componente para campos de data e hora se chama `DateTimeField`.
 
-O valor pode ser digitado no campo ou escolhido no seletor aberto pelo ícone dentro dele (um calendário, ou um relógio no tipo `time`), pelo mouse ou pelas teclas `Enter` e espaço. O valor é exibido no formato brasileiro (`24/09/2026`, `14:30` ou `24/09/2026 14:30`), mas o `v-model` utiliza os formatos padrão dos campos nativos:
+O valor pode ser digitado no campo ou escolhido no seletor, exibido abaixo do campo enquanto ele está em foco, sem tirar o foco de onde se digita. O seletor também é aberto pelo ícone dentro do campo (um calendário, ou um relógio no tipo `time`), pelo mouse ou pelas teclas `Enter` e espaço, e é fechado pela tecla `Esc` ou quando o foco sai do campo. O valor é exibido no formato brasileiro (`24/09/2026`, `14:30` ou `24/09/2026 14:30`), mas o `v-model` utiliza os formatos padrão dos campos nativos:
 
 | Tipo       | Formato do `v-model` | Exemplo            |
 | ---------- | -------------------- | ------------------ |
@@ -115,7 +115,7 @@ import { UDateTimeField } from "@nexdom/uimed-vue/components";
 
 As props `min` e `max` recebem valores no mesmo formato do `v-model` para o `type` atual. Opções fora do intervalo não podem ser escolhidas no seletor e, se o valor estiver fora do intervalo (por exemplo, quando definido pelo código), uma mensagem de erro é exibida.
 
-<demo data-testid="demo-limits">
+<demo data-testid="demo-limits" items-center>
 <u-date-time-field v-model="limitedValue" label="Data do retorno" type="date" min="2026-09-10" max="2026-09-20" hint="Entre 10/09/2026 e 20/09/2026" data-testid="date-time-field-demo-limits" />
 <u-button variant="secondary" data-testid="date-time-field-demo-limits-out" @click="limitedValue = '2026-09-25'">Definir 25/09/2026</u-button>
 </demo>
@@ -190,7 +190,7 @@ import { UDateTimeField } from "@nexdom/uimed-vue/components";
 
 #### Somente leitura
 
-Utilize a prop `readonly` para evitar que o valor presente em um campo seja alterado. O valor não pode ser digitado, e o ícone do seletor não é exibido.
+Utilize a prop `readonly` para evitar que o valor presente em um campo seja alterado. O valor não pode ser digitado, e o ícone do seletor fica inativo.
 
 <demo>
 <u-date-time-field model-value="2026-09-24T14:30" label="Somente leitura" readonly data-testid="date-time-field-demo-readonly" />
