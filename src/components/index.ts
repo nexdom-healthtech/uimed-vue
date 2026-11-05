@@ -15,6 +15,7 @@ export { default as USectionContent } from "@/components/sections/section-conten
 export { default as USection } from "@/components/sections/section/section.vue";
 export { default as UTable } from "@/components/table/table.vue";
 export { default as UDetails } from "@/components/details/details.vue";
+export { default as UDetailsItem } from "@/components/details/details-item.vue";
 export { default as UImg } from "@/components/img/img.vue";
 export { default as ULink } from "@/components/link/link.vue";
 export { default as UDataSet } from "@/components/data-sets/data-set/data-set.vue";

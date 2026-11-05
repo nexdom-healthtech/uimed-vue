@@ -21,6 +21,7 @@ describe("components", () => {
     expect(components.USection).not.toBeUndefined();
     expect(components.UTable).not.toBeUndefined();
     expect(components.UDetails).not.toBeUndefined();
+    expect(components.UDetailsItem).not.toBeUndefined();
     expect(components.UImg).not.toBeUndefined();
     expect(components.ULink).not.toBeUndefined();
     expect(components.UDataSet).not.toBeUndefined();
