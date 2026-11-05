@@ -1,4 +1,10 @@
-import { expectNoA11yViolations, gotoPage, pauseClock, selectOption } from "@e2e/utils.ts";
+import {
+  expectNoA11yViolations,
+  expectScreenshot,
+  gotoPage,
+  pauseClock,
+  selectOption,
+} from "@e2e/utils.ts";
 import { test, expect, type Locator, type Page } from "@playwright/test";
 
 const actionDuration = 1500;
@@ -149,7 +155,11 @@ test.describe("dialog", () => {
       await expect(dialog).toBeHidden();
       await expect(state).toHaveText("v-model: false");
 
-      await opener.click();
+      // Near the start of the button. In WebKit, sometimes, the button the demo's column stretches
+      // shrinks to its content's width between the mousedown and the mouseup, and a click on its
+      // center ends outside it, while its computed style doesn't change: it looks like a layout bug
+      // of WebKit, which this click only works around
+      await opener.click({ position: { x: 20, y: 18 } });
 
       await expect(dialog).toHaveAccessibleName("Fechando a janela");
       await expect(getClose(dialog)).toBeFocused();
@@ -502,20 +512,20 @@ test.describe("dialog", () => {
       const dialog = getDialog(page);
       await expect(getAction(dialog, "Fechar")).toBeFocused();
       await expect(dialog).toMatchAriaSnapshot();
-      await expect(page).toHaveScreenshot();
+      await expectScreenshot(page);
       await page.keyboard.press("Escape");
       await expect(dialog).toBeHidden();
 
       await page.getByTestId("btn-form").click();
       await expect(dialog.getByRole("textbox", { name: "Nome" })).toBeFocused();
       await expect(dialog).toMatchAriaSnapshot();
-      await expect(page).toHaveScreenshot();
+      await expectScreenshot(page);
       await page.keyboard.press("Escape");
       await expect(dialog).toBeHidden();
 
       await page.getByTestId("btn-long").click();
       await expect(dialog.getByRole("button", { name: "Aceitar" })).toBeInViewport();
-      await expect(page).toHaveScreenshot();
+      await expectScreenshot(page);
       await page.keyboard.press("Escape");
       await expect(dialog).toBeHidden();
 
@@ -528,7 +538,7 @@ test.describe("dialog", () => {
       await open.evaluate((element) => element.scrollIntoView({ block: "center" }));
       await open.click();
       await expect(dialog.getByRole("button", { name: "Cancelar" })).toBeFocused();
-      await expect(page).toHaveScreenshot();
+      await expectScreenshot(page);
     });
   });
 });

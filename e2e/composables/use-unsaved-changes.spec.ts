@@ -1,4 +1,4 @@
-import { expectNoA11yViolations, gotoPage } from "@e2e/utils.ts";
+import { expectNoA11yViolations, expectScreenshot, gotoPage } from "@e2e/utils.ts";
 import { test, expect, type Locator, type Page } from "@playwright/test";
 
 test.describe("use-unsaved-changes", () => {
@@ -163,8 +163,9 @@ test.describe("use-unsaved-changes", () => {
       await page.getByRole("button", { name: "Salvar", exact: true }).click();
       await expect(page.getByTestId("has-changes")).toHaveText("Alterações não salvas: não");
 
-      await page.close({ runBeforeUnload: true });
-      await page.waitForEvent("close");
+      // Leaves by navigating instead of closing the page, which WebKit doesn't do with
+      // `runBeforeUnload`
+      await page.goto("about:blank");
 
       expect(asked).toBe(false);
     });
@@ -190,14 +191,14 @@ test.describe("use-unsaved-changes", () => {
     test("matches last screenshots", async ({ page }) => {
       await getNameField(page).fill("Joana Souza");
       await expect(getForm(page)).toMatchAriaSnapshot();
-      await expect(getForm(page)).toHaveScreenshot();
+      await expectScreenshot(getForm(page));
 
       await page.getByRole("button", { name: "Ir para a lista", exact: true }).click();
       const dialog = getDialog(page);
       await expect(dialog.getByRole("button", { name: "Continuar editando" })).toBeFocused();
 
       await expect(dialog).toMatchAriaSnapshot();
-      await expect(page).toHaveScreenshot();
+      await expectScreenshot(page);
     });
   });
 });

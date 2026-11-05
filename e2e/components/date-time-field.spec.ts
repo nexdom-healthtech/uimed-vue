@@ -1,5 +1,12 @@
 import { test, expect, type Locator, type Page } from "@playwright/test";
-import { expectNoA11yViolations, gotoPage, selectOption } from "@e2e/utils.ts";
+import {
+  expectNoA11yViolations,
+  expectScreenshot,
+  gotoPage,
+  selectOption,
+  skipOutsideScreenshotBrowser,
+  waitForAnimations,
+} from "@e2e/utils.ts";
 
 test.describe("date-time-field", () => {
   test.beforeEach(async ({ page }) => {
@@ -148,7 +155,10 @@ test.describe("date-time-field", () => {
       const icon = field.getByRole("button", { name: "Selecionar horário" });
 
       await input.focus();
-      await expect(getOpenMenu(page)).toBeVisible();
+      // WebKit ignores the key while the menu is still opening. Its content shows up only when the
+      // opening animation starts, so wait for it before waiting for the animation
+      await expect(getOpenMenu(page).locator(".v-overlay__content")).toBeVisible();
+      await waitForAnimations(page);
       await page.keyboard.press("Escape");
       await expect(getOpenMenu(page)).toBeHidden();
       await expect(input).toBeFocused();
@@ -426,15 +436,20 @@ test.describe("date-time-field", () => {
 
     test("has no violations with the picker open", async ({ page }) => {
       await openPickers(getPreview(page));
-      await expect(getOpenMenu(page)).toBeVisible();
+      // The menu's content, not only the menu: its opening transition keeps the content hidden for
+      // two frames before starting the fade-in, so waiting only for the menu could check the
+      // contrast before the fade-in exists for `expectNoA11yViolations` to wait for
+      await expect(getOpenMenu(page).locator(".v-overlay__content")).toBeVisible();
 
       await expectNoA11yViolations(page);
     });
   });
 
   test.describe("UI consistency", () => {
+    skipOutsideScreenshotBrowser();
+
     test("matches last screenshot", async ({ page }) => {
-      await expect(page).toHaveScreenshot({ fullPage: true });
+      await expectScreenshot(page, { fullPage: true });
     });
   });
 });

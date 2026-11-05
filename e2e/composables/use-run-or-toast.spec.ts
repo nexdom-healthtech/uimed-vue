@@ -1,4 +1,4 @@
-import { expectNoA11yViolations, gotoPage, pauseClock } from "@e2e/utils.ts";
+import { expectNoA11yViolations, expectScreenshot, gotoPage, pauseClock } from "@e2e/utils.ts";
 import { test, expect, type Page } from "@playwright/test";
 
 const testId = "btn-danger";
@@ -62,14 +62,14 @@ test.describe("use-run-or-toast", () => {
       await pauseClock(page);
 
       await expect(toastButton).toMatchAriaSnapshot();
-      await expect(page).toHaveScreenshot();
+      await expectScreenshot(page);
 
       await page.clock.runFor(1500);
 
       const toastsContainer = getOverlayContainer(page);
 
       await expect(toastsContainer).toMatchAriaSnapshot();
-      await expect(page).toHaveScreenshot();
+      await expectScreenshot(page);
     });
   });
 });

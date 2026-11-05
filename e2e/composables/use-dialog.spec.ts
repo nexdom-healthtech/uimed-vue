@@ -1,4 +1,4 @@
-import { expectNoA11yViolations, gotoPage } from "@e2e/utils.ts";
+import { expectNoA11yViolations, expectScreenshot, gotoPage } from "@e2e/utils.ts";
 import { test, expect, type Locator, type Page } from "@playwright/test";
 
 test.describe("use-dialog", () => {
@@ -201,7 +201,7 @@ test.describe("use-dialog", () => {
         await expect(getActions(dialog).first()).toBeFocused();
 
         await expect(dialog).toMatchAriaSnapshot();
-        await expect(page).toHaveScreenshot();
+        await expectScreenshot(page);
 
         await page.keyboard.press("Escape");
         await expect(dialog).toBeHidden();
