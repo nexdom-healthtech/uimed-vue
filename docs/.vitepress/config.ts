@@ -117,6 +117,7 @@ export default defineConfig({
                 { text: "Conteúdo Expansível", link: "/guide/components/details" },
                 { text: "Janelas modais", link: "/guide/components/dialog" },
                 { text: "Imagens", link: "/guide/components/img" },
+                { text: "Abas", link: "/guide/components/tabs" },
               ],
             },
             {
@@ -219,6 +220,15 @@ export default defineConfig({
             { text: "UMaskField", link: "/api/components/mask-field" },
             { text: "UPageTransition", link: "/api/components/page-transition" },
             { text: "UTable", link: "/api/components/table" },
+            {
+              text: "Tabs",
+              collapsed: false,
+              items: [
+                { text: "UTabs", link: "/api/components/tabs" },
+                { text: "UTabsContent", link: "/api/components/tabs-content" },
+                { text: "UTabsItem", link: "/api/components/tabs-item" },
+              ],
+            },
             { text: "UTextField", link: "/api/components/text-field" },
           ],
         },
