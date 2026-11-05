@@ -13,6 +13,7 @@ import DateTimeField from "@/components/inputs/date-time-field/date-time-field.v
 import MaskField from "@/components/inputs/mask-field/mask-field.vue";
 import TextField from "@/components/inputs/text-field/text-field.vue";
 import NavigationMenu from "@/components/navigation-menu/navigation-menu.vue";
+import Tabs from "@/components/tabs/tabs.vue";
 import useToast from "@/composables/dialogs/use-toast.ts";
 import { icons } from "@/consts/icons.ts";
 import type { Icon } from "@/consts/types.ts";
@@ -146,6 +147,24 @@ describe("icon aliases", () => {
     await wrapper.find(".v-expansion-panel-title").trigger("click");
 
     await expectDrawnAliases(["collapse"]);
+  });
+
+  it("should draw the scroll arrows of the tabs, when they overflow on a large screen", async () => {
+    window.innerWidth = 1280;
+    window.dispatchEvent(new Event("resize"));
+
+    try {
+      const wrapper = mountAttached(Tabs, { items: [{ title: "Dados" }, { title: "Endereço" }] });
+      // jsdom has no layout, so the tabs never overflow: scrolling them shows the arrows too
+      const container = wrapper.find(".v-slide-group__container");
+      Object.defineProperty(container.element, "scrollLeft", { value: 10 });
+      await container.trigger("scroll");
+
+      await expectDrawnAliases(["prev", "next"]);
+    } finally {
+      window.innerWidth = 1024;
+      window.dispatchEvent(new Event("resize"));
+    }
   });
 
   it("should draw the pagination of the data set", async () => {
