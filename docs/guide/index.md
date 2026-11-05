@@ -30,6 +30,7 @@ Os componentes a seguir possuem exemplos práticos de utilização dentro desta 
 | [Campos de texto](./components/text-field)                             | Componente para campo de texto.                        |
 | [Componente base](./components/main)                                   | Componente raiz.                                       |
 | [Componentes de layout](./components/layout)                           | Componentes para seguir o grid system.                 |
+| [Abas](./components/tabs)                                              | Componente para organizar conteúdo em abas.            |
 | [Agrupador de Conteúdo](./components/section)                          | Componente para agrupar conteúdo.                      |
 | [Conteúdo Expansível](./components/details)                            | Componente para expandir e recolher conteúdo.          |
 | [Formulários](./components/form)                                       | Componente de formulário.                              |

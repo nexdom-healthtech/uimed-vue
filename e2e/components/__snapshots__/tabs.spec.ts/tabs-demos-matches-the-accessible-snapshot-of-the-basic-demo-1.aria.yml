@@ -1,0 +1,6 @@
+- tablist:
+    - tab "Dados pessoais" [selected]
+    - tab "Endereço"
+    - tab "Contato"
+- tabpanel: Nome, data de nascimento e documentos
+- text: "Aba selecionada: dados"

@@ -46,6 +46,9 @@ const apis = [
             { text: "MaskField", link: "./components/mask-field" },
             { text: "PageTransition", link: "./components/page-transition" },
             { text: "Table", link: "./components/table" },
+            { text: "Tabs", link: "./components/tabs" },
+            { text: "TabsContent", link: "./components/tabs-content" },
+            { text: "TabsItem", link: "./components/tabs-item" },
             { text: "TextField", link: "./components/text-field" }
         ]
     },
