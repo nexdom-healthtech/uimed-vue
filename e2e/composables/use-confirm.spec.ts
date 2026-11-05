@@ -1,4 +1,4 @@
-import { expectNoA11yViolations, gotoPage, pauseClock } from "@e2e/utils.ts";
+import { expectNoA11yViolations, expectScreenshot, gotoPage, pauseClock } from "@e2e/utils.ts";
 import { test, expect, type Locator, type Page } from "@playwright/test";
 
 const actionDuration = 1500;
@@ -171,14 +171,14 @@ test.describe("use-confirm", () => {
       await expect(dialog.getByRole("button", { name: "Manter" })).toBeFocused();
 
       await expect(dialog).toMatchAriaSnapshot();
-      await expect(page).toHaveScreenshot();
+      await expectScreenshot(page);
 
       await pauseClock(page);
       await dialog.getByRole("button", { name: "Excluir" }).click();
       await expect(dialog.getByRole("button", { name: "Manter" })).toBeDisabled();
 
       await expect(dialog).toMatchAriaSnapshot();
-      await expect(page).toHaveScreenshot();
+      await expectScreenshot(page);
     });
   });
 });

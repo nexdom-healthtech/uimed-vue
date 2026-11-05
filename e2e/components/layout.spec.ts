@@ -1,4 +1,10 @@
-import { expectNoA11yViolations, gotoPage, selectOption } from "@e2e/utils.ts";
+import {
+  expectNoA11yViolations,
+  expectScreenshot,
+  gotoPage,
+  selectOption,
+  skipOutsideScreenshotBrowser,
+} from "@e2e/utils.ts";
 import { test, expect, type Locator, type Page } from "@playwright/test";
 
 test.describe("layout", () => {
@@ -185,8 +191,10 @@ test.describe("layout", () => {
   });
 
   test.describe("UI consistency", () => {
+    skipOutsideScreenshotBrowser();
+
     test("matches last screenshot", async ({ page }) => {
-      await expect(page).toHaveScreenshot({ fullPage: true });
+      await expectScreenshot(page, { fullPage: true });
     });
   });
 });

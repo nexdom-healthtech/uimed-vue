@@ -72,6 +72,8 @@ vpr test:e2e
 vp run test:e2e
 ```
 
+The E2E tests run in Chromium and in WebKit (Safari's engine). To run them in a single browser, e.g. while debugging, pass its project: `vpr test:e2e --project=chromium` (or `--project=webkit`).
+
 - Run architecture checks:
 
 ```bash

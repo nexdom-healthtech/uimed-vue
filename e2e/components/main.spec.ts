@@ -1,9 +1,11 @@
 import {
   expectLoadingAnnouncement,
   expectNoA11yViolations,
+  expectScreenshot,
   getFieldContrast,
   gotoPage,
   selectOption,
+  skipOutsideScreenshotBrowser,
   waitForAnimations,
 } from "@e2e/utils.ts";
 import { icons } from "@/consts/icons.ts";
@@ -430,7 +432,8 @@ test.describe("main", () => {
     });
 
     test("scrolls only its items when they don't fit", async ({ page }) => {
-      await page.setViewportSize({ width: 1280, height: 200 });
+      const viewportHeight = 200;
+      await page.setViewportSize({ width: 1280, height: viewportHeight });
       const drawer = getNavigationMenu(page);
       const items = drawer.locator(".v-navigation-drawer__content");
       await scrollToMenu(drawer);
@@ -442,12 +445,18 @@ test.describe("main", () => {
       ]);
       expect(scrollHeight).toBeGreaterThan(clientHeight + 20);
       const pageScroll = await page.evaluate(() => globalThis.scrollY);
+      const searchBefore = await getBox(getNavigationMenuSearch(page));
 
       await page.mouse.wheel(0, 20);
 
       await expect.poll(() => items.evaluate((element) => element.scrollTop)).toBeGreaterThan(0);
       expect(await page.evaluate(() => globalThis.scrollY)).toBe(pageScroll);
-      await expect(getNavigationMenuSearch(page)).toBeInViewport();
+      // Compares positions instead of `toBeInViewport`, since WebKit's IntersectionObserver, which it
+      // relies on, misplaces elements inside the demo (`contain: layout`)
+      const searchAfter = await getBox(getNavigationMenuSearch(page));
+      expect(searchAfter).toEqual(searchBefore);
+      expect(searchAfter.y).toBeGreaterThanOrEqual(0);
+      expect(searchAfter.y + searchAfter.height).toBeLessThanOrEqual(viewportHeight);
     });
 
     test("leaves the navigation button out of the app bar", async ({ page }) => {
@@ -837,7 +846,7 @@ test.describe("main", () => {
       const title = page.getByTestId("root-playground-title").locator("input");
       await title.focus();
 
-      await title.press("ControlOrMeta+k");
+      await title.press(await getSearchShortcut(page));
       await expect(getNavigationToggleDrawer(page)).toContainClass("v-navigation-drawer--active");
       await expect(getNavigationMenuSearch(page)).toBeFocused();
 
@@ -875,13 +884,16 @@ test.describe("main", () => {
     });
   });
 
-  // `ControlOrMeta` is Control on the Linux runners and ⌘ on macOS, as the shortcut itself
   test.describe("navigation-menu shortcut", () => {
-    const shortcut = "ControlOrMeta+k";
+    let shortcut: string;
+
+    test.beforeEach(async ({ page }) => {
+      shortcut = await getSearchShortcut(page);
+    });
 
     test("shows the shortcut in the search placeholder and keeps its name", async ({ page }) => {
-      const userAgent = await page.evaluate(() => navigator.userAgent);
-      const keys = userAgent.includes("Macintosh") ? "⌘K" : "Ctrl+K";
+      const isMac = await isMacUserAgent(page);
+      const keys = isMac ? "⌘K" : "Ctrl+K";
       const search = getNavigationMenuSearch(page);
       // The collapsed menu hides the field
       await expandByMouse(page, getNavigationMenu(page));
@@ -902,10 +914,7 @@ test.describe("main", () => {
           exact: true,
           includeHidden: true,
         }),
-      ).toHaveAttribute(
-        "aria-keyshortcuts",
-        userAgent.includes("Macintosh") ? "Meta+K" : "Control+K",
-      );
+      ).toHaveAttribute("aria-keyshortcuts", isMac ? "Meta+K" : "Control+K");
     });
 
     test("opens only the first navigation menu and focuses its search", async ({ page }) => {
@@ -1451,17 +1460,21 @@ test.describe("main", () => {
       await expectNoA11yViolations(page);
     });
 
-    test("has no violations with the menus open", async ({ page }) => {
+    // One test per state: each check runs axe on this long page in both color schemes, and several
+    // in one test exceed the test timeout in WebKit on CI
+    test("has no violations with the user menu open", async ({ page }) => {
       await getUserButton(page).click();
       await expect(getUserMenu(page)).toBeVisible();
       await expectNoA11yViolations(page);
-      await page.keyboard.press("Escape");
+    });
 
+    test("has no violations with the notifications menu open", async ({ page }) => {
       await getNotificationsButton(page).click();
       await expect(getNotificationsMenu(page)).toBeVisible();
       await expectNoA11yViolations(page);
-      await page.keyboard.press("Escape");
+    });
 
+    test("has no violations with the navigation menu expanded", async ({ page }) => {
       await expandByMouse(page, getNavigationMenu(page));
       await expectNoA11yViolations(page);
     });
@@ -1472,7 +1485,12 @@ test.describe("main", () => {
         getNavigationMenu(page).getByRole("button", { name: "Documentação" }),
       ).toContainClass("v-list-item--active");
       await expectNoA11yViolations(page);
+    });
 
+    test("has no violations with the current page highlighted in the expanded rail", async ({
+      page,
+    }) => {
+      await openComponentsPage(page);
       await expandByMouse(page, getNavigationMenu(page));
       await expect(
         getNavigationMenu(page).getByRole("link", { name: "Componentes" }),
@@ -1512,32 +1530,50 @@ test.describe("main", () => {
     // takes longer than the assertion's default 5s when the specs run in parallel
     const fullPageScreenshot = { fullPage: true, timeout: 15_000 };
 
-    test("matches last screenshot after choosing a user menu option", async ({ page }) => {
+    test("matches last screenshot after choosing a user menu option", async ({
+      page,
+      browserName,
+    }) => {
+      skipOutsideScreenshotBrowser(browserName);
       await chooseUserMenuOption(page);
-      await expect(page).toHaveScreenshot(fullPageScreenshot);
+      await expectScreenshot(page, fullPageScreenshot);
     });
 
-    test("matches last screenshot with the notifications menu open", async ({ page }) => {
+    test("matches last screenshot with the notifications menu open", async ({
+      page,
+      browserName,
+    }) => {
+      skipOutsideScreenshotBrowser(browserName);
       await chooseUserMenuOption(page);
       await openNotificationsMenu(page);
-      await expect(page).toHaveScreenshot(fullPageScreenshot);
+      await expectScreenshot(page, fullPageScreenshot);
     });
 
-    test("matches last screenshot after closing the notifications menu", async ({ page }) => {
+    test("matches last screenshot after closing the notifications menu", async ({
+      page,
+      browserName,
+    }) => {
+      skipOutsideScreenshotBrowser(browserName);
       await chooseUserMenuOption(page);
       await openNotificationsMenu(page);
       await page.keyboard.press("Escape");
-      await expect(page).toHaveScreenshot(fullPageScreenshot);
+      await expectScreenshot(page, fullPageScreenshot);
     });
 
-    test("matches last screenshot of the collapsed navigation rail", async ({ page }) => {
+    test("matches last screenshot of the collapsed navigation rail", async ({
+      page,
+      browserName,
+    }) => {
+      skipOutsideScreenshotBrowser(browserName);
       await expectCollapsed(getNavigationMenu(page));
       await expectDemoScreenshot(page, getNavigationToggleDemo(page));
     });
 
     test("matches last screenshot of the navigation rail expanded by the mouse", async ({
       page,
+      browserName,
     }) => {
+      skipOutsideScreenshotBrowser(browserName);
       await getNavigationToggleDemo(page).scrollIntoViewIfNeeded();
       await expandByMouse(page, getNavigationMenu(page));
       await expectDemoScreenshot(page, getNavigationToggleDemo(page));
@@ -1545,7 +1581,9 @@ test.describe("main", () => {
 
     test("matches last screenshot of the collapsed navigation rail with the current page's group", async ({
       page,
+      browserName,
     }) => {
+      skipOutsideScreenshotBrowser(browserName);
       await openComponentsPage(page);
       await expectDemoScreenshot(page, getNavigationToggleDemo(page));
     });
@@ -1563,7 +1601,7 @@ test.describe("main", () => {
       await expect(getFooter(page)).toBeVisible();
       // The demo is as tall as the viewport, so the docs' fixed navigation bar would cover its top
       await page.addStyleTag({ content: ".VPNav { visibility: hidden; }" });
-      await expect(getFooterDemo(page)).toHaveScreenshot();
+      await expectScreenshot(getFooterDemo(page));
     });
 
     test("matches last screenshot of the back-to-top button above the footer", async ({ page }) => {
@@ -1572,14 +1610,14 @@ test.describe("main", () => {
       await waitForAnimations(page);
       await page.addStyleTag({ content: ".VPNav, .VPLocalNav { visibility: hidden; }" });
       // The demo is taller than the viewport, so only its end, with the button, is in view
-      await expect(page).toHaveScreenshot();
+      await expectScreenshot(page);
     });
 
     test("matches last screenshot of the background demo", async ({ page }) => {
       await expect(getBackgroundApp(page)).toContainClass("bg-primary");
       // The demo is as tall as the viewport, so the docs' fixed navigation bar would cover its top
       await page.addStyleTag({ content: ".VPNav { visibility: hidden; }" });
-      await expect(getBackgroundDemo(page)).toHaveScreenshot();
+      await expectScreenshot(getBackgroundDemo(page));
     });
 
     test("matches last screenshot of the open user details menu", async ({ page }) => {
@@ -1587,7 +1625,7 @@ test.describe("main", () => {
       await expect(getUserDetailsMenu(page)).toBeVisible();
       // The menu grows from the button while it opens
       await waitForAnimations(page);
-      await expect(getUserDetailsMenu(page)).toHaveScreenshot();
+      await expectScreenshot(getUserDetailsMenu(page));
     });
 
     test("matches last screenshot of the loading demo with its navigation rail collapsed", async ({
@@ -1598,6 +1636,25 @@ test.describe("main", () => {
     });
   });
 });
+
+/**
+ * Whether the page's user agent says macOS, by the same rule as the component, which then shows and
+ * answers ⌘K instead of Ctrl+K. The Safari device says so even on the Linux runners.
+ */
+async function isMacUserAgent(page: Page) {
+  const userAgent = await page.evaluate(() => navigator.userAgent);
+  return userAgent.includes("Macintosh");
+}
+
+/**
+ * The navigation menu's search shortcut, as the page expects it (see `isMacUserAgent`).
+ * Playwright's `ControlOrMeta` follows the system running the tests instead, so it'd press Ctrl+K
+ * where the page expects ⌘K, and tests that expect the shortcut to be left alone would pass for the
+ * wrong reason.
+ */
+async function getSearchShortcut(page: Page) {
+  return (await isMacUserAgent(page)) ? "Meta+k" : "Control+k";
+}
 
 /** A viewport below the mobile breakpoint (1145px), where the navigation menu is a drawer. */
 const MOBILE_VIEWPORT = { width: 1000, height: 720 };
@@ -1659,7 +1716,7 @@ async function openComponentsPage(page: Page) {
 async function expectDemoScreenshot(page: Page, demo: Locator) {
   await waitForAnimations(page);
   await page.addStyleTag({ content: ".VPNav, .VPLocalNav { visibility: hidden; }" });
-  await expect(demo).toHaveScreenshot();
+  await expectScreenshot(demo);
 }
 
 async function chooseUserMenuOption(page: Page) {
