@@ -1460,17 +1460,21 @@ test.describe("main", () => {
       await expectNoA11yViolations(page);
     });
 
-    test("has no violations with the menus open", async ({ page }) => {
+    // One test per state: each check runs axe on this long page in both color schemes, and several
+    // in one test exceed the test timeout in WebKit on CI
+    test("has no violations with the user menu open", async ({ page }) => {
       await getUserButton(page).click();
       await expect(getUserMenu(page)).toBeVisible();
       await expectNoA11yViolations(page);
-      await page.keyboard.press("Escape");
+    });
 
+    test("has no violations with the notifications menu open", async ({ page }) => {
       await getNotificationsButton(page).click();
       await expect(getNotificationsMenu(page)).toBeVisible();
       await expectNoA11yViolations(page);
-      await page.keyboard.press("Escape");
+    });
 
+    test("has no violations with the navigation menu expanded", async ({ page }) => {
       await expandByMouse(page, getNavigationMenu(page));
       await expectNoA11yViolations(page);
     });
@@ -1481,7 +1485,12 @@ test.describe("main", () => {
         getNavigationMenu(page).getByRole("button", { name: "Documentação" }),
       ).toContainClass("v-list-item--active");
       await expectNoA11yViolations(page);
+    });
 
+    test("has no violations with the current page highlighted in the expanded rail", async ({
+      page,
+    }) => {
+      await openComponentsPage(page);
       await expandByMouse(page, getNavigationMenu(page));
       await expect(
         getNavigationMenu(page).getByRole("link", { name: "Componentes" }),
