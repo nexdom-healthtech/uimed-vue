@@ -200,7 +200,14 @@ export default defineConfig({
                 { text: "UDataSetItem", link: "/api/components/data-sets/data-set-item" },
               ],
             },
-            { text: "UDetails", link: "/api/components/details" },
+            {
+              text: "Details",
+              collapsed: false,
+              items: [
+                { text: "UDetails", link: "/api/components/details" },
+                { text: "UDetailsItem", link: "/api/components/details-item" },
+              ],
+            },
             { text: "UDialog", link: "/api/components/dialog" },
             { text: "UForm", link: "/api/components/form" },
             {

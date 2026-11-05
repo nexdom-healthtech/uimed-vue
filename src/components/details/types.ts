@@ -5,24 +5,34 @@ export type DetailsVariant = "primary" | "secondary";
  */
 export type DetailsProps = {
   /**
-   * Applies a distinct style variation to the details.
+   * Applies a distinct style variation to all the items.
    * One of `primary` or `secondary`.
    * @default "primary"
    */
   variant?: DetailsVariant;
 
   /**
-   * Title displayed on the header, which expands or collapses the content
-   * when clicked. The header stays clickable even without a title.
-   */
-  title?: string;
-
-  /**
-   * Shows a skeleton loader in place of the details while data is being
+   * Shows a skeleton loader in place of the items while data is being
    * loaded.
    * @default false
    */
   loading?: boolean;
+
+  /**
+   * Component id to use on automated tests.
+   */
+  dataTestid?: string;
+};
+
+/**
+ * Props exposed by the {@link DetailsItem} component.
+ */
+export type DetailsItemProps = {
+  /**
+   * Title displayed on the item's header, which expands or collapses its
+   * content when clicked. The header stays clickable even without a title.
+   */
+  title?: string;
 
   /**
    * Component id to use on automated tests.

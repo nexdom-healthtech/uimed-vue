@@ -5,6 +5,7 @@
 import AppBar from "@/components/app-bar/app-bar.vue";
 import DataSet from "@/components/data-sets/data-set/data-set.vue";
 import Details from "@/components/details/details.vue";
+import DetailsItem from "@/components/details/details-item.vue";
 import Toast from "@/components/dialogs/toast.vue";
 import AutocompleteField from "@/components/inputs/autocomplete-field/autocomplete-field.vue";
 import Checkbox from "@/components/inputs/checkbox/checkbox.vue";
@@ -136,7 +137,9 @@ describe("icon aliases", () => {
   });
 
   it("should draw the details, collapsed and expanded", async () => {
-    const wrapper = mountAttached(Details, { title: "Detalhes" });
+    const wrapper = mountAttached({
+      render: () => h(Details, null, { default: () => h(DetailsItem, { title: "Detalhes" }) }),
+    });
 
     await expectDrawnAliases(["expand"]);
 
