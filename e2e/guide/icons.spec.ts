@@ -1,4 +1,9 @@
-import { gotoPage } from "@e2e/utils.ts";
+import {
+  expectScreenshot,
+  getClipboardWritePermissions,
+  gotoPage,
+  skipOutsideScreenshotBrowser,
+} from "@e2e/utils.ts";
 import { icons } from "@/consts/icons.ts";
 import { test, expect, type Page } from "@playwright/test";
 
@@ -91,23 +96,23 @@ test.describe("icons", () => {
 
   test.describe("copy", () => {
     test.describe("when the browser allows writing to the clipboard", () => {
-      test.use({ permissions: ["clipboard-read", "clipboard-write"] });
+      test.use({
+        permissions: async ({ browserName }, use) => use(getClipboardWritePermissions(browserName)),
+      });
 
       test("copies the name of the clicked icon and confirms it", async ({ page }) => {
         await getCopyButton(page, "homeAlternative").click();
 
-        await expect
-          .poll(() => page.evaluate(() => navigator.clipboard.readText()))
-          .toBe("homeAlternative");
         await expect(getToast(page, "success")).toHaveText(/Nome "homeAlternative" copiado\./);
+        await expectCopied(page, "homeAlternative");
       });
 
       test("copies by keyboard", async ({ page }) => {
         await getCopyButton(page, "pill").focus();
         await page.keyboard.press("Enter");
 
-        await expect.poll(() => page.evaluate(() => navigator.clipboard.readText())).toBe("pill");
         await expect(getToast(page, "success")).toHaveText(/Nome "pill" copiado\./);
+        await expectCopied(page, "pill");
       });
     });
 
@@ -149,9 +154,11 @@ test.describe("icons", () => {
   });
 
   test.describe("UI consistency", () => {
+    skipOutsideScreenshotBrowser();
+
     test("matches last screenshot", async ({ page }) => {
       await page.evaluate(() => document.fonts.ready);
-      await expect(page).toHaveScreenshot({ fullPage: true });
+      await expectScreenshot(page, { fullPage: true });
     });
   });
 });
@@ -183,4 +190,16 @@ function getCopyButton(page: Page, icon: string) {
 /** The toast of the given color, which also holds its close button */
 function getToast(page: Page, color: "success" | "error") {
   return page.locator(`.v-overlay-container .v-snackbar__wrapper.bg-${color}`);
+}
+
+/**
+ * Pastes the clipboard into the search with the keyboard and expects the copied name there. WebKit
+ * rejects reading the clipboard from the page (`navigator.clipboard.readText()`), even with the
+ * `clipboard-read` permission.
+ */
+async function expectCopied(page: Page, name: string) {
+  const search = getSearch(page);
+  await search.focus();
+  await search.press("ControlOrMeta+V");
+  await expect(search).toHaveValue(name);
 }

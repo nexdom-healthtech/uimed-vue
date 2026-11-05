@@ -2,8 +2,10 @@ import { test, expect, type Locator, type Page } from "@playwright/test";
 import {
   expectNoA11yViolations,
   expectOutlinedButton,
+  expectScreenshot,
   gotoPage,
   selectOption,
+  skipOutsideScreenshotBrowser,
   themeTextRgb,
 } from "@e2e/utils.ts";
 
@@ -213,11 +215,6 @@ test.describe("button", () => {
           page,
         }) => {
           await selectOption(page, "btn-playground-variant", variant);
-          // Opening the variant's menu scrolls the color field under the docs' header, which would
-          // take the click
-          await page
-            .getByTestId("btn-playground-color")
-            .evaluate((field) => field.scrollIntoView({ block: "center" }));
           await selectOption(page, "btn-playground-color", color);
           await expect(getPreviewButton(page)).toContainClass(variantClass);
 
@@ -228,8 +225,10 @@ test.describe("button", () => {
   });
 
   test.describe("UI consistency", () => {
+    skipOutsideScreenshotBrowser();
+
     test("matches last screenshot", async ({ page }) => {
-      await expect(page).toHaveScreenshot({ fullPage: true });
+      await expectScreenshot(page, { fullPage: true });
     });
   });
 });

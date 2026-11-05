@@ -1,14 +1,75 @@
 import { AxeBuilder } from "@axe-core/playwright";
-import { expect, type Locator, type Page } from "@playwright/test";
+import {
+  expect,
+  test,
+  type Locator,
+  type Page,
+  type PageAssertionsToHaveScreenshotOptions,
+} from "@playwright/test";
 
 export async function gotoPage(page: Page, url: string) {
   await page.goto(url);
   await page.locator("h1").waitFor({ state: "visible" });
 }
 
+/**
+ * Chooses an option in a select field. The field is centered first, so its menu opens with room
+ * below it instead of moving while it opens (WebKit then reports the option as not stable), and the
+ * menu is closed when it returns, so it doesn't cover what the test checks next. It expects no list
+ * left open after the choice, so it doesn't fit `multiple` selects, whose menu stays open.
+ */
 export async function selectOption(page: Page, testId: string, option: string) {
-  await page.getByTestId(testId).locator("input:visible").click({ force: true });
+  const input = page.getByTestId(testId).locator("input:visible");
+  await input.evaluate((element) => element.scrollIntoView({ block: "center" }));
+  await input.click({ force: true });
   await page.getByRole("option", { name: option, exact: true }).click();
+  await expect(page.getByRole("listbox")).toHaveCount(0);
+}
+
+/**
+ * Expects a page or element to match its last screenshot, only in Chromium: the baselines are taken
+ * in Chromium, and other browsers render fonts and antialiasing differently. The tests run their
+ * other checks in every browser, so use this instead of calling `toHaveScreenshot` directly.
+ * `"chromium"` is the project's name in `playwright.config.ts`, and the baselines' paths don't
+ * include the project, so comparing them in another one would fail on every screenshot.
+ */
+export async function expectScreenshot(
+  target: Page,
+  options?: PageAssertionsToHaveScreenshotOptions,
+): Promise<void>;
+export async function expectScreenshot(
+  target: Locator,
+  options?: Parameters<ReturnType<typeof expect<Locator>>["toHaveScreenshot"]>[0],
+): Promise<void>;
+export async function expectScreenshot(
+  target: Page | Locator,
+  options?: PageAssertionsToHaveScreenshotOptions,
+) {
+  if (test.info().project.name !== "chromium") return;
+  await expect(target).toHaveScreenshot(options);
+}
+
+/**
+ * Skips, outside Chromium, tests that only compare screenshots (see `expectScreenshot`), which would
+ * check nothing in other browsers. Call it in a `describe` whose tests all only compare screenshots,
+ * or, for one such test among others, first thing in the test, passing its `browserName`.
+ */
+export function skipOutsideScreenshotBrowser(browserName?: string) {
+  const reason = "Screenshots are only compared in Chromium";
+  if (browserName === undefined) {
+    test.skip(({ browserName }) => browserName !== "chromium", reason);
+  } else {
+    test.skip(browserName !== "chromium", reason);
+  }
+}
+
+/**
+ * The permissions a page needs to write to the clipboard, for `test.use({ permissions })`.
+ * Chromium asks for `clipboard-write`, while WebKit rejects it (it only knows `clipboard-read`) and
+ * lets pages write without a permission.
+ */
+export function getClipboardWritePermissions(browserName: string) {
+  return browserName === "webkit" ? [] : ["clipboard-write"];
 }
 
 /**

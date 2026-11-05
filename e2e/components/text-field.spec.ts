@@ -1,5 +1,12 @@
 import { test, expect, type Page } from "@playwright/test";
-import { expectNoA11yViolations, getFieldContrast, gotoPage, selectOption } from "@e2e/utils.ts";
+import {
+  expectNoA11yViolations,
+  expectScreenshot,
+  getFieldContrast,
+  gotoPage,
+  selectOption,
+  skipOutsideScreenshotBrowser,
+} from "@e2e/utils.ts";
 
 test.describe("text-field", () => {
   test.beforeEach(async ({ page }) => {
@@ -212,8 +219,10 @@ test.describe("text-field", () => {
   });
 
   test.describe("UI consistency", () => {
+    skipOutsideScreenshotBrowser();
+
     test("matches last screenshot", async ({ page }) => {
-      await expect(page).toHaveScreenshot({ fullPage: true });
+      await expectScreenshot(page, { fullPage: true });
     });
   });
 });

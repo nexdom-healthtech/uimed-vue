@@ -1,4 +1,4 @@
-import { expectNoA11yViolations, gotoPage } from "@e2e/utils.ts";
+import { expectNoA11yViolations, expectScreenshot, gotoPage } from "@e2e/utils.ts";
 import { test, expect, type Page } from "@playwright/test";
 
 test.describe("page-transition", () => {
@@ -109,7 +109,7 @@ test.describe("page-transition", () => {
   test.describe("UI consistency", () => {
     test("matches last screenshots", async ({ page }) => {
       // The demo takes the viewport's height, so the whole page is captured
-      await expect(page).toHaveScreenshot({ fullPage: true });
+      await expectScreenshot(page, { fullPage: true });
 
       await page.getByRole("button", { name: "Ir para a agenda" }).click();
       await expect(getSecondPage(page)).toBeVisible();
@@ -118,7 +118,7 @@ test.describe("page-transition", () => {
       // Clicking scrolled the page, which would capture the docs' fixed header halfway down
       await page.evaluate(() => globalThis.scrollTo(0, 0));
 
-      await expect(page).toHaveScreenshot({ fullPage: true });
+      await expectScreenshot(page, { fullPage: true });
     });
   });
 });

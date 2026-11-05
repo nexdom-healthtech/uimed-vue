@@ -1,7 +1,18 @@
 import { test, expect, type Locator, type Page } from "@playwright/test";
-import { gotoPage, selectOption } from "@e2e/utils.ts";
+import {
+  expectScreenshot,
+  getClipboardWritePermissions,
+  gotoPage,
+  selectOption,
+  skipOutsideScreenshotBrowser,
+} from "@e2e/utils.ts";
 
 test.describe("mask-field", () => {
+  // The paste tests write to the clipboard, and paste from it with the keyboard
+  test.use({
+    permissions: async ({ browserName }, use) => use(getClipboardWritePermissions(browserName)),
+  });
+
   test.beforeEach(async ({ page }) => {
     await gotoPage(page, "guide/components/mask-field");
   });
@@ -540,12 +551,6 @@ test.describe("mask-field", () => {
       await selectOption(page, "mask-field-playground-mask", "cnpj");
       await input.pressSequentially("12345678000195");
       await expect(input).toHaveValue("12.345.678/0001-95");
-      // Opening the menu may scroll the page to its end, leaving the select under the fixed
-      // header, where the forced click of `selectOption` would land
-      await page
-        .getByTestId("mask-field-playground-mask")
-        .evaluate((element) => element.scrollIntoView({ block: "center" }));
-
       await selectOption(page, "mask-field-playground-mask", "cpf");
       await input.focus();
       await input.blur();
@@ -639,8 +644,10 @@ test.describe("mask-field", () => {
   });
 
   test.describe("UI consistency", () => {
+    skipOutsideScreenshotBrowser();
+
     test("matches last screenshot", async ({ page }) => {
-      await expect(page).toHaveScreenshot({ fullPage: true });
+      await expectScreenshot(page, { fullPage: true });
     });
   });
 });
@@ -685,7 +692,6 @@ function getSelection(input: Locator) {
 }
 
 async function paste(page: Page, input: Locator, text: string) {
-  await page.context().grantPermissions(["clipboard-read", "clipboard-write"]);
   await page.evaluate((value) => navigator.clipboard.writeText(value), text);
   await input.focus();
   await input.press("ControlOrMeta+V");
