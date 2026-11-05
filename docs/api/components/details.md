@@ -1,33 +1,37 @@
 # UDetails
 
-Componente para exibir conteúdo que pode ser expandido e recolhido ao clicar no título.
-Inicia recolhido.
+Componente para agrupar itens ([`UDetailsItem`](./details-item)) cujo conteúdo é expandido e recolhido ao clicar no título, em um acordeão.
+Os itens iniciam recolhidos, e apenas um fica expandido por vez.
 
 ## Props
 
-| Prop         | Tipo                       | Padrão      | Descrição                                                              |
-| ------------ | -------------------------- | ----------- | ---------------------------------------------------------------------- |
-| `variant`    | `"primary" \| "secondary"` | `"primary"` | Aplica uma variação de estilo distinta ao conteúdo expansível.         |
-| `title`      | `string`                   |             | Título exibido no cabeçalho. Ao clicar, expande ou recolhe o conteúdo. |
-| `loading`    | `boolean`                  | `false`     | Coloca o conteúdo expansível em estado de carregamento.                |
-| `dataTestid` | `string`                   |             | Id do componente para uso em testes automatizados.                     |
+| Prop         | Tipo                       | Padrão      | Descrição                                                               |
+| ------------ | -------------------------- | ----------- | ----------------------------------------------------------------------- |
+| `variant`    | `"primary" \| "secondary"` | `"primary"` | Aplica uma variação de estilo distinta a todos os itens.                |
+| `loading`    | `boolean`                  | `false`     | Exibe um skeleton loader no lugar dos itens enquanto os dados carregam. |
+| `dataTestid` | `string`                   |             | Id do componente para uso em testes automatizados.                      |
 
 ## Slots
 
-| Slot      | Descrição                                   |
-| --------- | ------------------------------------------- |
-| `default` | Conteúdo exibido quando o item é expandido. |
+| Slot      | Descrição                                                       |
+| --------- | --------------------------------------------------------------- |
+| `default` | Itens do acordeão, cada um um [`UDetailsItem`](./details-item). |
 
 ## Exemplo
 
 ```vue
 <template>
-  <u-details title="Mais informações" variant="secondary">
-    <p>Conteúdo exibido ao expandir.</p>
+  <u-details variant="secondary">
+    <u-details-item title="Mais informações">
+      <p>Conteúdo exibido ao expandir.</p>
+    </u-details-item>
+    <u-details-item title="Outras informações">
+      <p>Outro conteúdo.</p>
+    </u-details-item>
   </u-details>
 </template>
 
 <script lang="ts" setup>
-import { UDetails } from "@nexdom/uimed-vue/components";
+import { UDetails, UDetailsItem } from "@nexdom/uimed-vue/components";
 </script>
 ```

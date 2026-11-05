@@ -98,6 +98,10 @@ createApp(App).use(createUimed()).mount("#app");
 | `@nexdom/uimed-vue/plugins`     | `vitePluginUimed()` for Vite, and `vitestServerPluginUimed()` for Vitest               |
 | `@nexdom/uimed-vue/unit-test`   | `vueTestUtilsPluginUimed()`, to mount the components in unit tests with Vue Test Utils |
 
+## Breaking changes in 3.0
+
+- `UDetails` is now an accordion of `UDetailsItem`s, and only one item stays expanded at a time: its `title` prop moved to `UDetailsItem`, which takes the content in its default slot (`<u-details title="A">...</u-details>` becomes `<u-details><u-details-item title="A">...</u-details-item></u-details>`). `variant` and `loading` stay on `UDetails`.
+
 ## Breaking changes in 2.0
 
 When upgrading an app from an earlier version, check each change below. The renames, imports, notifications and row alignment have before and after examples in [`references/guide/migration-v1-to-v2.md`](references/guide/migration-v1-to-v2.md).

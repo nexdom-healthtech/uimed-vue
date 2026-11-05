@@ -12,12 +12,19 @@ test.describe("details", () => {
   });
 
   test.describe("demos", () => {
-    test("starts collapsed and expands when the title is clicked", async ({ page }) => {
-      const details = page.getByTestId("demo-details-title");
-      const header = details.getByRole("button", { name: "Mais informações" });
-      const content = details.getByText("Conteúdo exibido ao expandir");
+    test("starts with every item collapsed and expands one when its title is clicked", async ({
+      page,
+    }) => {
+      const item = page.getByTestId("demo-details-item-personal");
+      const header = item.getByRole("button", { name: "Dados pessoais" });
+      const content = item.getByText("Nome, data de nascimento e documentos");
 
-      await expect(header).toHaveAttribute("aria-expanded", "false");
+      for (const title of ["Dados pessoais", "Endereço", "Contato"]) {
+        await expect(getItemsDemo(page).getByRole("button", { name: title })).toHaveAttribute(
+          "aria-expanded",
+          "false",
+        );
+      }
       await expect(content).toBeHidden();
 
       await header.click();
@@ -25,10 +32,10 @@ test.describe("details", () => {
       await expect(content).toBeVisible();
     });
 
-    test("collapses when the title is clicked again", async ({ page }) => {
-      const details = page.getByTestId("demo-details-title");
-      const header = details.getByRole("button", { name: "Mais informações" });
-      const content = details.getByText("Conteúdo exibido ao expandir");
+    test("collapses an item when its title is clicked again", async ({ page }) => {
+      const item = page.getByTestId("demo-details-item-personal");
+      const header = item.getByRole("button", { name: "Dados pessoais" });
+      const content = item.getByText("Nome, data de nascimento e documentos");
 
       await header.click();
       await expect(content).toBeVisible();
@@ -38,15 +45,21 @@ test.describe("details", () => {
       await expect(content).toBeHidden();
     });
 
-    test("keeps each details independent from the others", async ({ page }) => {
-      const first = page.getByTestId("demo-details-first");
-      const second = page.getByTestId("demo-details-second");
+    test("keeps only one item expanded at a time", async ({ page }) => {
+      const personal = page.getByTestId("demo-details-item-personal");
+      const address = page.getByTestId("demo-details-item-address");
 
-      await first.getByRole("button", { name: "Primeiro" }).click();
-      await second.getByRole("button", { name: "Segundo" }).click();
+      await personal.getByRole("button", { name: "Dados pessoais" }).click();
+      await expect(personal.getByText("Nome, data de nascimento e documentos")).toBeVisible();
 
-      await expect(first.getByText("Conteúdo do primeiro")).toBeVisible();
-      await expect(second.getByText("Conteúdo do segundo")).toBeVisible();
+      await address.getByRole("button", { name: "Endereço" }).click();
+
+      await expect(address.getByText("Rua, número, bairro e CEP")).toBeVisible();
+      await expect(personal.getByRole("button", { name: "Dados pessoais" })).toHaveAttribute(
+        "aria-expanded",
+        "false",
+      );
+      await expect(personal.getByText("Nome, data de nascimento e documentos")).toBeHidden();
     });
 
     test("renders the loading skeleton in the loading demo", async ({ page }) => {
@@ -54,17 +67,24 @@ test.describe("details", () => {
       await expect(bones.first()).toBeVisible();
       await expectLoadingAnnouncement(page.locator(".vp-doc .v-skeleton-loader"), 1);
     });
+
+    test("matches the accessible snapshot of the items demo", async ({ page }) => {
+      await expect(getItemsDemo(page)).toMatchAriaSnapshot();
+    });
   });
 
   test.describe("playground", () => {
-    test("updates variant when playground-variant changes", async ({ page }) => {
+    test("updates the variant of every item when playground-variant changes", async ({ page }) => {
       const preview = getPreviewDetails(page);
+      const items = preview.locator(".v-expansion-panel");
+      await expect(items).toHaveCount(2);
       await expect(preview).not.toContainClass("v-expansion-panels--flat");
-      await expect(preview.locator(".v-expansion-panel")).not.toContainClass("border");
+      await expect(items.nth(0)).not.toContainClass("border");
 
       await selectOption(page, "details-playground-variant", "secondary");
       await expect(preview).toContainClass("v-expansion-panels--flat");
-      await expect(preview.locator(".v-expansion-panel")).toContainClass("border");
+      await expect(items.nth(0)).toContainClass("border");
+      await expect(items.nth(1)).toContainClass("border");
     });
 
     test("shows a skeleton loader when playground-loading is toggled", async ({ page }) => {
@@ -93,7 +113,7 @@ test.describe("details", () => {
       await page.getByTestId("details-playground-content").locator("input").fill(text);
       await getPreviewHeader(page).click();
 
-      await expect(getPreviewDetails(page).getByText(text)).toBeVisible();
+      await expect(getPreviewItem(page).getByText(text)).toBeVisible();
     });
 
     test("matches the accessible snapshot of the preview in its default state", async ({
@@ -104,13 +124,25 @@ test.describe("details", () => {
 
     test("matches the accessible snapshot of the preview when expanded", async ({ page }) => {
       await getPreviewHeader(page).click();
-      await expect(getPreviewDetails(page).getByText(/Teste o componente Details/)).toBeVisible();
+      await expect(getPreviewItem(page).getByText(/Teste o componente Details/)).toBeVisible();
       await expect(getPreviewDetails(page)).toMatchAriaSnapshot();
     });
   });
 
   test.describe("accessibility", () => {
     test("has no violations", async ({ page }) => {
+      await expectNoA11yViolations(page);
+    });
+
+    test("has no violations with an item expanded", async ({ page }) => {
+      await page
+        .getByTestId("demo-details-item-personal")
+        .getByRole("button", { name: "Dados pessoais" })
+        .click();
+      await expect(
+        page.getByTestId("demo-details-item-personal").getByText("Nome, data de nascimento"),
+      ).toBeVisible();
+
       await expectNoA11yViolations(page);
     });
   });
@@ -122,10 +154,18 @@ test.describe("details", () => {
   });
 });
 
+function getItemsDemo(page: Page) {
+  return page.getByTestId("demo-details-items");
+}
+
 function getPreviewDetails(page: Page) {
   return page.getByTestId("details-preview");
 }
 
+function getPreviewItem(page: Page) {
+  return page.getByTestId("details-preview-item");
+}
+
 function getPreviewHeader(page: Page) {
-  return getPreviewDetails(page).getByRole("button");
+  return getPreviewItem(page).getByRole("button");
 }
