@@ -137,6 +137,27 @@ test.describe("tabs", () => {
       await expect(tabs.locator(".v-slide-group__next")).toBeVisible();
     });
 
+    test("opens a dialog focused on the selected tab, switching its contents", async ({ page }) => {
+      await page.getByTestId("btn-tabs-dialog").click();
+
+      const dialog = page.getByRole("dialog");
+      const tabs = page.getByTestId("demo-tabs-dialog-tabs");
+      const content = page.getByTestId("demo-tabs-dialog-content");
+      await expect(dialog).toHaveAccessibleName("Maria da Silva");
+      await expect(tabs.getByRole("tab", { name: "Dados pessoais" })).toBeFocused();
+      await expect(content.getByRole("tabpanel")).toHaveText("Nascida em 12/03/1983, 43 anos.");
+
+      await page.keyboard.press("ArrowRight");
+      await page.keyboard.press("Enter");
+
+      await expect(tabs.getByRole("tab", { name: "Endereço" })).toHaveAttribute(
+        "aria-selected",
+        "true",
+      );
+      await expect(content.getByText("Rua das Flores, 120, Centro, 01010-000.")).toBeVisible();
+      await expect(content.getByText("Nascida em 12/03/1983, 43 anos.")).toBeHidden();
+    });
+
     test("matches the accessible snapshot of the basic demo", async ({ page }) => {
       await expect(getBasicDemo(page)).toMatchAriaSnapshot();
     });
@@ -156,14 +177,37 @@ test.describe("tabs", () => {
 
       await expectNoA11yViolations(page);
     });
+
+    test("has no violations in the dialog", async ({ page }) => {
+      await openDialog(page);
+
+      await expectNoA11yViolations(page);
+    });
   });
 
   test.describe("UI consistency", () => {
     test("matches last screenshot", async ({ page }) => {
       await expect(page).toHaveScreenshot({ fullPage: true });
     });
+
+    test("matches last screenshot of the dialog", async ({ page }) => {
+      await openDialog(page);
+
+      await expect(page).toHaveScreenshot();
+    });
   });
 });
+
+async function openDialog(page: Page) {
+  const opener = page.getByTestId("btn-tabs-dialog");
+  // Centers the button so the page behind the dialog is the same on every run
+  await opener.evaluate((element) => element.scrollIntoView({ block: "center" }));
+  await opener.click();
+  await expect(
+    page.getByTestId("demo-tabs-dialog-tabs").getByRole("tab", { name: "Dados pessoais" }),
+  ).toBeFocused();
+  await waitForAnimations(page);
+}
 
 function getBasicDemo(page: Page) {
   return page.locator(".demo").filter({ has: page.getByTestId("demo-tabs-basic") });
