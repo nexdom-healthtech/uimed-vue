@@ -152,13 +152,72 @@ const months = [
 </script>
 ```
 
+## Em uma janela
+
+As abas também organizam o conteúdo de uma [janela modal](./dialog). Ao abrir, a janela coloca o foco na aba selecionada, o primeiro elemento focável do conteúdo.
+
+<demo>
+<u-button data-testid="btn-tabs-dialog" @click="dialogOpen = true">Ver paciente</u-button>
+<u-dialog v-model="dialogOpen" title="Maria da Silva" :actions="dialogActions" data-testid="demo-tabs-dialog">
+<u-tabs v-model="dialogTab" :items="basicItems" data-testid="demo-tabs-dialog-tabs" />
+<u-tabs-content v-model="dialogTab" data-testid="demo-tabs-dialog-content">
+  <u-tabs-item value="dados">Nascida em 12/03/1983, 43 anos.</u-tabs-item>
+  <u-tabs-item value="endereco">Rua das Flores, 120, Centro, 01010-000.</u-tabs-item>
+  <u-tabs-item value="contato">(11) 98765-4321, maria.silva@exemplo.com.br.</u-tabs-item>
+</u-tabs-content>
+</u-dialog>
+</demo>
+
+```vue
+<template>
+  <u-button @click="open = true">Ver paciente</u-button>
+  <u-dialog v-model="open" title="Maria da Silva" :actions>
+    <u-tabs v-model="tab" :items />
+    <u-tabs-content v-model="tab">
+      <u-tabs-item value="dados">Nascida em 12/03/1983, 43 anos.</u-tabs-item>
+      <u-tabs-item value="endereco">Rua das Flores, 120, Centro, 01010-000.</u-tabs-item>
+      <u-tabs-item value="contato">(11) 98765-4321, maria.silva@exemplo.com.br.</u-tabs-item>
+    </u-tabs-content>
+  </u-dialog>
+</template>
+
+<script lang="ts" setup>
+import { ref } from "vue";
+import type { ComponentProps } from "vue-component-type-helpers";
+import { UButton, UDialog, UTabs, UTabsContent, UTabsItem } from "@nexdom/uimed-vue/components";
+
+type DialogAction = NonNullable<ComponentProps<typeof UDialog>["actions"]>[number];
+
+const open = ref(false);
+const tab = ref<string | number>();
+const items = [
+  { title: "Dados pessoais", value: "dados" },
+  { title: "Endereço", value: "endereco" },
+  { title: "Contato", value: "contato" },
+];
+
+const actions: DialogAction[] = [{ label: "Fechar", onClick: () => (open.value = false) }];
+</script>
+```
+
 ## Ver também
 
 Consulte a referência de API do [UTabs](../../api/components/tabs), do [UTabsContent](../../api/components/tabs-content) e do [UTabsItem](../../api/components/tabs-item) para a lista completa de props, eventos e slots.
 
 <script lang="ts" setup>
   import { ref } from "vue"
-  import { USection, USectionContent, UTabs, UTabsContent, UTabsItem } from "../../../dist/components.js"
+  import type { ComponentProps } from "vue-component-type-helpers";
+  import {
+    UButton,
+    UDialog,
+    USection,
+    USectionContent,
+    UTabs,
+    UTabsContent,
+    UTabsItem,
+  } from "../../../dist/components.js"
+
+  type DialogAction = NonNullable<ComponentProps<typeof UDialog>["actions"]>[number];
 
   const basicTab = ref<string | number>();
   const basicItems = [
@@ -185,4 +244,8 @@ Consulte a referência de API do [UTabs](../../api/components/tabs), do [UTabsCo
     "Novembro",
     "Dezembro",
   ].map((title, index) => ({ title, value: index + 1 }));
+
+  const dialogOpen = ref(false);
+  const dialogTab = ref<string | number>();
+  const dialogActions: DialogAction[] = [{ label: "Fechar", onClick: () => (dialogOpen.value = false) }];
 </script>
