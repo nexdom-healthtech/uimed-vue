@@ -161,9 +161,9 @@ As abas também organizam o conteúdo de uma [janela modal](./dialog). Ao abrir,
 <u-dialog v-model="dialogOpen" title="Maria da Silva" :actions="dialogActions" data-testid="demo-tabs-dialog">
 <u-tabs v-model="dialogTab" :items="basicItems" data-testid="demo-tabs-dialog-tabs" />
 <u-tabs-content v-model="dialogTab" data-testid="demo-tabs-dialog-content">
-  <u-tabs-item value="dados">Nascida em 12/03/1983, 43 anos.</u-tabs-item>
-  <u-tabs-item value="endereco">Rua das Flores, 120, Centro, 01010-000.</u-tabs-item>
-  <u-tabs-item value="contato">(11) 98765-4321, maria.silva@exemplo.com.br.</u-tabs-item>
+  <u-tabs-item value="dados"><u-container>Nascida em 12/03/1983, 43 anos.</u-container></u-tabs-item>
+  <u-tabs-item value="endereco"><u-container>Rua das Flores, 120, Centro, 01010-000.</u-container></u-tabs-item>
+  <u-tabs-item value="contato"><u-container>(11) 98765-4321, maria.silva@exemplo.com.br.</u-container></u-tabs-item>
 </u-tabs-content>
 </u-dialog>
 </demo>
@@ -174,9 +174,15 @@ As abas também organizam o conteúdo de uma [janela modal](./dialog). Ao abrir,
   <u-dialog v-model="open" title="Maria da Silva" :actions>
     <u-tabs v-model="tab" :items />
     <u-tabs-content v-model="tab">
-      <u-tabs-item value="dados">Nascida em 12/03/1983, 43 anos.</u-tabs-item>
-      <u-tabs-item value="endereco">Rua das Flores, 120, Centro, 01010-000.</u-tabs-item>
-      <u-tabs-item value="contato">(11) 98765-4321, maria.silva@exemplo.com.br.</u-tabs-item>
+      <u-tabs-item value="dados">
+        <u-container>Nascida em 12/03/1983, 43 anos.</u-container>
+      </u-tabs-item>
+      <u-tabs-item value="endereco">
+        <u-container>Rua das Flores, 120, Centro, 01010-000.</u-container>
+      </u-tabs-item>
+      <u-tabs-item value="contato">
+        <u-container>(11) 98765-4321, maria.silva@exemplo.com.br.</u-container>
+      </u-tabs-item>
     </u-tabs-content>
   </u-dialog>
 </template>
@@ -184,7 +190,14 @@ As abas também organizam o conteúdo de uma [janela modal](./dialog). Ao abrir,
 <script lang="ts" setup>
 import { ref } from "vue";
 import type { ComponentProps } from "vue-component-type-helpers";
-import { UButton, UDialog, UTabs, UTabsContent, UTabsItem } from "@nexdom/uimed-vue/components";
+import {
+  UButton,
+  UContainer,
+  UDialog,
+  UTabs,
+  UTabsContent,
+  UTabsItem,
+} from "@nexdom/uimed-vue/components";
 
 type DialogAction = NonNullable<ComponentProps<typeof UDialog>["actions"]>[number];
 
@@ -209,6 +222,7 @@ Consulte a referência de API do [UTabs](../../api/components/tabs), do [UTabsCo
   import type { ComponentProps } from "vue-component-type-helpers";
   import {
     UButton,
+    UContainer,
     UDialog,
     USection,
     USectionContent,
