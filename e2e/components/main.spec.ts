@@ -395,7 +395,7 @@ test.describe("main", () => {
       expect(content.x).toBeGreaterThanOrEqual(rail.x + rail.width);
     });
 
-    test("stays between the app bar and the footer, which takes the app's whole width", async ({
+    test("goes from the app bar to the bottom of the app, with the footer beside it", async ({
       page,
     }) => {
       const drawer = getPlaygroundNavigationMenu(page);
@@ -408,9 +408,9 @@ test.describe("main", () => {
         getBox(getPlaygroundFooter(page)),
       ]);
       expect(rail.y).toBeCloseTo(appBar.y + appBar.height, 0);
-      expect(rail.y + rail.height).toBeCloseTo(footer.y, 0);
-      expect(footer.x).toBeCloseTo(app.x, 0);
-      expect(footer.width).toBeCloseTo(app.width, 0);
+      expect(rail.y + rail.height).toBeCloseTo(app.y + app.height, 0);
+      expect(footer.x).toBeCloseTo(rail.x + rail.width, 0);
+      expect(footer.x + footer.width).toBeCloseTo(app.x + app.width, 0);
     });
 
     // The docs contain each demo's app, which then scrolls with the page. In an app, the main
