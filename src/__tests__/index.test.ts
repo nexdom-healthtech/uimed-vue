@@ -159,9 +159,9 @@ describe("index", () => {
       expect(contrast(text, toRgb(light.colors[fill]))).toBeGreaterThanOrEqual(minContrast);
     });
 
-    describe("navigation menu, on the tertiary fill", () => {
-      const fill = toRgb(light.colors.tertiary);
-      const text = toRgb(light.colors["on-tertiary"]);
+    describe("navigation menu, on the primary fill", () => {
+      const fill = toRgb(light.colors.primary);
+      const text = toRgb(light.colors["on-primary"]);
 
       it("should keep the search's placeholder above WCAG AA's minimum", () => {
         const placeholder = blend(text, fill, light.variables["disabled-opacity"]);

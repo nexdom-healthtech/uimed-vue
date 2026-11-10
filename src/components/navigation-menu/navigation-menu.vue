@@ -1,7 +1,7 @@
 <template>
   <v-navigation-drawer
     v-model="drawerOpen"
-    color="tertiary"
+    color="primary"
     :data-testid="props.dataTestid"
     :aria-busy="props.loading || undefined"
     :mobile="mobile"
@@ -55,7 +55,7 @@
 
     <v-divider />
 
-    <skeleton-loader :loading="props.loading" type="list-item@6" color="tertiary">
+    <skeleton-loader :loading="props.loading" type="list-item@6" color="primary">
       <!-- Vuetify's `list` role only allows list items, but the items are links.
       Vuetify makes the list the only tab stop and takes its items out of the tab order, for the arrow
       keys: the items are links and buttons, so each one is a tab stop instead (the arrow keys still

@@ -56,9 +56,9 @@ const light: ThemeDefinition = {
     // Vuetify's 0.6, and 0.7 on the active items, stay below WCAG AA's 4.5:1
     "medium-emphasis-opacity": 0.72,
     // Vuetify draws the fields' placeholders at the disabled opacity. Its 0.38 left them at
-    // 2.22:1 on the surface and 2.17:1 on the background, below WCAG AA's 4.5:1. 0.77 is the
-    // lowest that also keeps the navigation menu's search placeholder above it, on the tertiary
-    // fill (4.56:1). The disabled elements share it, so they're less faded than Vuetify's
+    // 2.22:1 on the surface and 2.17:1 on the background, below WCAG AA's 4.5:1. 0.77 keeps them
+    // at 6.72:1 and 6.19:1, and the navigation menu's search placeholder at 6.44:1 on the primary
+    // fill. The disabled elements share it, so they're less faded than Vuetify's
     "disabled-opacity": 0.77,
   },
 };
