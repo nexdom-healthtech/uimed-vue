@@ -14,7 +14,7 @@ The complete guides and API pages of this version are in [`references/`](referen
 - [`references/api/`](references/api/): props, events, slots and types of each component and composable.
 - [`references/guide/icons.md`](references/guide/icons.md): the icon names the components accept.
 - [`references/guide/unit-testing.md`](references/guide/unit-testing.md): unit tests with Vitest and Vue Test Utils.
-- [`references/guide/migration-v1-to-v2.md`](references/guide/migration-v1-to-v2.md): migrating from v1.
+- [`references/guide/migration-v2-to-v3.md`](references/guide/migration-v2-to-v3.md): migrating from v2.
 
 Read the page of a component or composable before using it, instead of relying on memory: the library is recent, and its API is not in most models' training data.
 
@@ -100,11 +100,13 @@ createApp(App).use(createUimed()).mount("#app");
 
 ## Breaking changes in 3.0
 
+When upgrading an app from 2.x, check the change below. It has before and after examples in [`references/guide/migration-v2-to-v3.md`](references/guide/migration-v2-to-v3.md).
+
 - `UDetails` is now an accordion of `UDetailsItem`s, and only one item stays expanded at a time: its `title` prop moved to `UDetailsItem`, which takes the content in its default slot (`<u-details title="A">...</u-details>` becomes `<u-details><u-details-item title="A">...</u-details-item></u-details>`). `variant` and `loading` stay on `UDetails`.
 
 ## Breaking changes in 2.0
 
-When upgrading an app from an earlier version, check each change below. The renames, imports, notifications and row alignment have before and after examples in [`references/guide/migration-v1-to-v2.md`](references/guide/migration-v1-to-v2.md).
+When upgrading an app from 1.x, check each change below too.
 
 - The components were renamed with the `U` prefix (e.g. `Root` → `UMain`, `Btn` → `UButton`, `ContentSet` → `USection`).
 - The prop types (e.g. `AppBarConfig`, `SectionAction`) are no longer exported: derive them with `ComponentProps`.
