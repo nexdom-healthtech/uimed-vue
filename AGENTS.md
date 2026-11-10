@@ -24,6 +24,8 @@ vp env setup    # create shims like vpr and vpx
 vp install      # install dependencies
 ```
 
+`vp install` also installs the browsers of the E2E tests (Chromium and WebKit, through the `postinstall` script). If Playwright says WebKit's executable doesn't exist, run `vp install` again to install it.
+
 On Windows, prefer VSCode's "Dev Containers: Clone Repository in Container Volume" over opening a folder cloned on the host:
 
 - A host clone with `core.autocrlf=true` checks files out with CRLF, and `vpr check` then reports formatting issues on every file. `.gitattributes` enforces LF, but clones made before it was added need `git rm -rq --cached . && git reset --hard` to be re-normalized (commit or stash local changes first, since `reset --hard` discards them).
@@ -34,7 +36,7 @@ On Windows, prefer VSCode's "Dev Containers: Clone Repository in Container Volum
 - `vpr check` — lint, formatter, and type-check (builds the library first, since the type-check reads `dist`)
 - `vp test --coverage` — unit tests with coverage (Vitest, jsdom, 100% coverage threshold enforced)
 - `vpr test:mutations` — mutation tests (Stryker; thresholds: high 100, low 100, break 100). It starts one test runner per CPU core; on machines with limited memory, run `vpx stryker run --concurrency 4` instead
-- `vpr test:e2e` — E2E tests (Playwright, runs against the built docs preview site). Outside CI it reuses any server already on port 4173, which is also `vpr docs:dev`'s port: stop the dev server first, or the tests run against it instead of the built site. A running `vitepress preview` keeps serving the build it started with, so restart it after rebuilding the docs
+- `vpr test:e2e` — E2E tests (Playwright, runs against the built docs preview site), in Chromium and WebKit (Safari's engine). Outside CI it reuses any server already on port 4173, which is also `vpr docs:dev`'s port: stop the dev server first, or the tests run against it instead of the built site. A running `vitepress preview` keeps serving the build it started with, so restart it after rebuilding the docs
 - `vpr depcruise` — architecture/dependency rules (dependency-cruiser)
 - `vp pack` / `vpr build` — build the library. It publishes one module per source file (`unbundle` in `vite.config.ts`), and the entry points import them instead of copying their code, so the apps' bundlers can split the components by the route that uses them
 - `vpr docs` / `vpr docs:dev` — run docs site (imports the lib from `dist`, not `src` — run `vpr dev` in a second terminal to keep `dist` updated while iterating)
@@ -57,8 +59,11 @@ vp test src/components/button --coverage --coverage.include="src/components/butt
 # (repeating the flag keeps only the last one)
 vpx stryker run --mutate "src/components/button/button.vue,src/composables/button/button.ts"
 
-# One E2E spec
+# One E2E spec, in both browsers
 vpr test:e2e e2e/components/button.spec.ts
+
+# Same, in a single browser (`chromium` or `webkit`), e.g. to debug a failure of that browser
+vpr test:e2e e2e/components/button.spec.ts --project=chromium
 ```
 
 ### Static analysis (SonarQube)
@@ -146,7 +151,11 @@ Use an existing composable (e.g. `use-toast`) as the reference, and deliver in t
 - Global unit test setup (`src/__tests__/setup.ts`) stubs `visualViewport`, uses fake timers, and silences `console.error/warn/log`.
 - With fake timers in jsdom, Vuetify transitions (e.g. of `VDialog`, `VMenu`) don't finish on their own. Emit the transition events on the Vuetify component (`wrapper.findComponent(VDialog).vm.$emit("afterLeave")`) or advance the timers with `await vi.runAllTimersAsync()`.
 - Coverage threshold is 100%; mutation testing threshold is 100% (break at 100). Don't add code paths without covering tests. Mutants that don't compile are reported as compile errors and don't count toward the score.
-- E2E tests (Playwright, `e2e/`) run against the built docs preview (`http://localhost:4173/uimed-vue/`). Snapshots/screenshots live under `__snapshots__`/`__screenshot__` next to each spec.
+- E2E tests (Playwright, `e2e/`) run against the built docs preview (`http://localhost:4173/uimed-vue/`), in two projects: `chromium` and `webkit` (the "Desktop Safari" device). Snapshots/screenshots live under `__snapshots__`/`__screenshot__` next to each spec.
+  - Screenshots only have baselines in Chromium: take them with `expectScreenshot(page | locator, options?)` from `e2e/utils.ts`, which skips the comparison in other browsers, never with `toHaveScreenshot` directly. A test that only compares screenshots would check nothing in other browsers, so it's skipped outside Chromium with `skipOutsideScreenshotBrowser()`, called in its `describe` when all of the `describe`'s tests only compare screenshots, or first thing in the test, with its `browserName`, otherwise.
+  - Accessible snapshots (`toMatchAriaSnapshot`) are shared by both browsers, so a spec's `.aria.yml` must match in both.
+  - The Safari device identifies itself as macOS, even on the Linux runners, so components that read the system from the user agent expect ⌘ there, while Playwright's `ControlOrMeta` follows the system running the tests (Control on Linux). Press shortcuts with the key the page expects, read from its user agent by the same rule as the component (as `getSearchShortcut` in `e2e/components/main.spec.ts` does), not with `ControlOrMeta`.
+  - Clipboard permissions differ: Chromium needs `clipboard-write` to write to the clipboard, while WebKit rejects that permission and writes without it. Grant them with `test.use({ permissions: async ({ browserName }, use) => use(getClipboardWritePermissions(browserName)) })`. WebKit also refuses `navigator.clipboard.readText()`: to check what was copied, paste it with the keyboard into a field and check the field's value (as `e2e/guide/icons.spec.ts` does).
 - Every E2E spec has an "accessibility" `describe` that calls `expectNoA11yViolations(page)` from `e2e/utils.ts` at least once. It runs axe against WCAG 2.2 AA and its best practices on the page's demos and overlays, in both of the docs' color schemes (the demos keep the library's light theme on a background of their own in dark mode), and fails on any violation. Check each state that renders something new, too: open overlays (menus, dialogs, toasts) and every color of a variant whose text takes the color (as `button.spec.ts` does for `ghost`). Contrast is the most common failure: the theme's colors and text shades must keep 4.5:1, which `src/__tests__/index.test.ts` checks. Don't make a check pass by disabling rules or excluding elements: fix the cause, or stop and ask. The helper only disables the landmark rules that fail because of the docs' layout, with a comment saying why. It also enables axe's experimental `label-content-name-mismatch` rule (WCAG 2.5.3), so buttons and links must have an accessible name that contains their visible text.
 - Before keeping a new screenshot as a baseline, open it and check it against how plain Vuetify renders the same component: overflowing content shows its scrollbar, buttons and cards keep their native paddings, nothing touches the edges or gets clipped. A screenshot that only "looks fine" isn't enough: name what you checked in your report.
 - Generate and update screenshots only on Linux, as CI does: in the Dev Container, or in the Playwright Docker image of the version in `package.json` (`mcr.microsoft.com/playwright:v<version>-noble`). Screenshots taken on Windows or macOS render fonts differently and fail in CI.

@@ -1,4 +1,4 @@
-import { expectNoA11yViolations, gotoPage } from "@e2e/utils.ts";
+import { expectNoA11yViolations, expectScreenshot, gotoPage } from "@e2e/utils.ts";
 import { test, expect, type Page } from "@playwright/test";
 
 const buttons = [
@@ -104,7 +104,7 @@ test.describe("use-toast", () => {
         const toastsContainer = getOverlayContainer(page);
 
         await expect(toastsContainer).toMatchAriaSnapshot();
-        await expect(page).toHaveScreenshot();
+        await expectScreenshot(page);
       }
     });
   });

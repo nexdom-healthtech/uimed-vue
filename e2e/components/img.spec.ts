@@ -1,5 +1,11 @@
 import { test, expect, type Locator, type Page, type Route } from "@playwright/test";
-import { expectNoA11yViolations, gotoPage, selectOption } from "@e2e/utils.ts";
+import {
+  expectNoA11yViolations,
+  expectScreenshot,
+  gotoPage,
+  selectOption,
+  skipOutsideScreenshotBrowser,
+} from "@e2e/utils.ts";
 
 test.describe("img", () => {
   test.beforeEach(async ({ page }) => {
@@ -186,13 +192,15 @@ test.describe("img", () => {
   });
 
   test.describe("UI consistency", () => {
+    skipOutsideScreenshotBrowser();
+
     test("matches last screenshot", async ({ page }) => {
       for (const img of await page.locator(".vp-doc .v-img").all()) {
         await loadImage(img);
       }
       await page.evaluate(() => window.scrollTo(0, 0));
 
-      await expect(page).toHaveScreenshot({ fullPage: true });
+      await expectScreenshot(page, { fullPage: true });
     });
   });
 });
