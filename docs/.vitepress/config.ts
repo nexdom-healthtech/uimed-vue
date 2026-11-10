@@ -100,7 +100,7 @@ export default defineConfig({
             { text: "Iniciando", link: "/guide/getting-started" },
             { text: "Ícones", link: "/guide/icons" },
             { text: "Testes Unitários", link: "/guide/unit-testing" },
-            { text: "Migrando da v1 para v2", link: "/guide/migration-v1-to-v2" },
+            { text: "Migrando da v2 para v3", link: "/guide/migration-v2-to-v3" },
           ],
         },
         {
