@@ -319,7 +319,7 @@ Consulte a referência de [API do UDateTimeField](../../api/components/date-time
     },
     variant: {
       type: "combobox",
-      label: "Tipo",
+      label: "Variante",
       value: playgroundVariantOptions[0],
       dataTestid: "date-time-field-playground-variant",
       items: playgroundVariantOptions

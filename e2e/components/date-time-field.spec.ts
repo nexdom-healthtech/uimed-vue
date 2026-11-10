@@ -326,6 +326,13 @@ test.describe("date-time-field", () => {
       await expect(getOpenMenu(page).locator(".v-date-picker")).toHaveCount(0);
     });
 
+    test("names the type and variant selectors after what they change", async ({ page }) => {
+      await expect(page.getByTestId("date-time-field-playground-type")).toContainText("Tipo");
+      await expect(page.getByTestId("date-time-field-playground-variant")).toContainText(
+        "Variante",
+      );
+    });
+
     test("updates variant when playground-variant changes", async ({ page }) => {
       const preview = getPreview(page);
       await expect(preview.locator(".v-field--variant-underlined")).toBeAttached();
