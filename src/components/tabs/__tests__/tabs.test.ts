@@ -125,11 +125,11 @@ describe("Tabs", () => {
       expect(wrapper.emitted("update:modelValue")).toEqual([[1]]);
     });
 
-    it("should color only the selected tab with the primary's text shade", async () => {
+    it("should color only the selected tab with the tertiary's text shade", async () => {
       const wrapper = mountTabs({ modelValue: "address" });
       await nextTick();
 
-      expect(findVTabList(wrapper).map((tab) => tab.classes("text-primary-text"))).toEqual([
+      expect(findVTabList(wrapper).map((tab) => tab.classes("text-tertiary-text"))).toEqual([
         false,
         true,
         false,

@@ -1,6 +1,6 @@
 <template>
-  <!-- The selected tab's text and indicator take the primary's text shade -->
-  <v-tabs v-model="modelValue" color="primary-text" :data-testid="props.dataTestid">
+  <!-- The selected tab's text and indicator take the tertiary's text shade -->
+  <v-tabs v-model="modelValue" color="tertiary-text" :data-testid="props.dataTestid">
     <v-tab
       v-for="(item, index) in props.items"
       :key="index"
