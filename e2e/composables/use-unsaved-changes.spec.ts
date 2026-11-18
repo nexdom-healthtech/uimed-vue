@@ -1,4 +1,4 @@
-import { expectNoA11yViolations, expectScreenshot, gotoPage } from "@e2e/utils.ts";
+import { expectNoA11yViolations, gotoPage } from "@e2e/utils.ts";
 import { test, expect, type Locator, type Page } from "@playwright/test";
 
 test.describe("use-unsaved-changes", () => {
@@ -191,14 +191,14 @@ test.describe("use-unsaved-changes", () => {
     test("matches last screenshots", async ({ page }) => {
       await getNameField(page).fill("Joana Souza");
       await expect(getForm(page)).toMatchAriaSnapshot();
-      await expectScreenshot(getForm(page));
+      await expect(getForm(page)).toHaveScreenshot();
 
       await page.getByRole("button", { name: "Ir para a lista", exact: true }).click();
       const dialog = getDialog(page);
       await expect(dialog.getByRole("button", { name: "Continuar editando" })).toBeFocused();
 
       await expect(dialog).toMatchAriaSnapshot();
-      await expectScreenshot(page);
+      await expect(page).toHaveScreenshot();
     });
   });
 });

@@ -1,11 +1,5 @@
 import { test, expect, type Page } from "@playwright/test";
-import {
-  expectLoadingAnnouncement,
-  expectNoA11yViolations,
-  expectScreenshot,
-  gotoPage,
-  skipOutsideScreenshotBrowser,
-} from "@e2e/utils.ts";
+import { expectLoadingAnnouncement, expectNoA11yViolations, gotoPage } from "@e2e/utils.ts";
 
 test.describe("table", () => {
   test.beforeEach(async ({ page }) => {
@@ -53,7 +47,7 @@ test.describe("table", () => {
 
       await headerCheckbox.locator("input").click();
       await expect(tables).toHaveCount(0);
-      await expectScreenshot(page, { fullPage: true });
+      await expect(page).toHaveScreenshot({ fullPage: true });
 
       await headerCheckbox.locator("input").click();
       await expect(tables).toHaveCount(1);
@@ -67,7 +61,7 @@ test.describe("table", () => {
 
       await verticalCheckbox.locator("input").click();
       await expect(tables).toHaveCount(2);
-      await expectScreenshot(page, { fullPage: true });
+      await expect(page).toHaveScreenshot({ fullPage: true });
     });
 
     test("toggles loading state when checkbox is clicked", async ({ page }) => {
@@ -78,7 +72,7 @@ test.describe("table", () => {
 
       await loadingCheckbox.locator("input").click();
       await expect(previewTable).not.toBeVisible();
-      await expectScreenshot(page, { fullPage: true });
+      await expect(page).toHaveScreenshot({ fullPage: true });
 
       await loadingCheckbox.locator("input").click();
       await expect(previewTable).toBeVisible();
@@ -92,10 +86,8 @@ test.describe("table", () => {
   });
 
   test.describe("UI consistency", () => {
-    skipOutsideScreenshotBrowser();
-
     test("matches last screenshot", async ({ page }) => {
-      await expectScreenshot(page, { fullPage: true });
+      await expect(page).toHaveScreenshot({ fullPage: true });
     });
   });
 });

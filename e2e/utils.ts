@@ -1,11 +1,5 @@
 import { AxeBuilder } from "@axe-core/playwright";
-import {
-  expect,
-  test,
-  type Locator,
-  type Page,
-  type PageAssertionsToHaveScreenshotOptions,
-} from "@playwright/test";
+import { expect, type Locator, type Page } from "@playwright/test";
 
 export async function gotoPage(page: Page, url: string) {
   await page.goto(url);
@@ -24,43 +18,6 @@ export async function selectOption(page: Page, testId: string, option: string) {
   await input.click({ force: true });
   await page.getByRole("option", { name: option, exact: true }).click();
   await expect(page.getByRole("listbox")).toHaveCount(0);
-}
-
-/**
- * Expects a page or element to match its last screenshot, only in Chromium: the baselines are taken
- * in Chromium, and other browsers render fonts and antialiasing differently. The tests run their
- * other checks in every browser, so use this instead of calling `toHaveScreenshot` directly.
- * `"chromium"` is the project's name in `playwright.config.ts`, and the baselines' paths don't
- * include the project, so comparing them in another one would fail on every screenshot.
- */
-export async function expectScreenshot(
-  target: Page,
-  options?: PageAssertionsToHaveScreenshotOptions,
-): Promise<void>;
-export async function expectScreenshot(
-  target: Locator,
-  options?: Parameters<ReturnType<typeof expect<Locator>>["toHaveScreenshot"]>[0],
-): Promise<void>;
-export async function expectScreenshot(
-  target: Page | Locator,
-  options?: PageAssertionsToHaveScreenshotOptions,
-) {
-  if (test.info().project.name !== "chromium") return;
-  await expect(target).toHaveScreenshot(options);
-}
-
-/**
- * Skips, outside Chromium, tests that only compare screenshots (see `expectScreenshot`), which would
- * check nothing in other browsers. Call it in a `describe` whose tests all only compare screenshots,
- * or, for one such test among others, first thing in the test, passing its `browserName`.
- */
-export function skipOutsideScreenshotBrowser(browserName?: string) {
-  const reason = "Screenshots are only compared in Chromium";
-  if (browserName === undefined) {
-    test.skip(({ browserName }) => browserName !== "chromium", reason);
-  } else {
-    test.skip(browserName !== "chromium", reason);
-  }
 }
 
 /**

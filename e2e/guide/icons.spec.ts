@@ -1,9 +1,4 @@
-import {
-  expectScreenshot,
-  getClipboardWritePermissions,
-  gotoPage,
-  skipOutsideScreenshotBrowser,
-} from "@e2e/utils.ts";
+import { getClipboardWritePermissions, gotoPage } from "@e2e/utils.ts";
 import { icons } from "@/consts/icons.ts";
 import { test, expect, type Page } from "@playwright/test";
 
@@ -154,11 +149,9 @@ test.describe("icons", () => {
   });
 
   test.describe("UI consistency", () => {
-    skipOutsideScreenshotBrowser();
-
     test("matches last screenshot", async ({ page }) => {
       await page.evaluate(() => document.fonts.ready);
-      await expectScreenshot(page, { fullPage: true });
+      await expect(page).toHaveScreenshot({ fullPage: true });
     });
   });
 });

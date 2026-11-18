@@ -1,11 +1,5 @@
 import { test, expect, type Page } from "@playwright/test";
-import {
-  expectNoA11yViolations,
-  expectScreenshot,
-  gotoPage,
-  skipOutsideScreenshotBrowser,
-  themeTextRgb,
-} from "@e2e/utils.ts";
+import { expectNoA11yViolations, gotoPage, themeTextRgb } from "@e2e/utils.ts";
 
 const externalUrl = "https://nexdom-healthtech.github.io/shared/";
 
@@ -83,9 +77,8 @@ test.describe("link", () => {
   });
 
   test.describe("UI consistency", () => {
-    test("matches last screenshot", async ({ page, browserName }) => {
-      skipOutsideScreenshotBrowser(browserName);
-      await expectScreenshot(page, { fullPage: true });
+    test("matches last screenshot", async ({ page }) => {
+      await expect(page).toHaveScreenshot({ fullPage: true });
     });
 
     test("matches last screenshot of the focused link", async ({ page }) => {
@@ -95,7 +88,7 @@ test.describe("link", () => {
 
       // Clipped with room around the link, since the focus ring is drawn outside it
       const box = (await getRouteLink(page).boundingBox())!;
-      await expectScreenshot(page, {
+      await expect(page).toHaveScreenshot({
         clip: { x: box.x - 8, y: box.y - 8, width: box.width + 16, height: box.height + 16 },
       });
     });

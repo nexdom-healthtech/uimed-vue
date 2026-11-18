@@ -13,7 +13,9 @@ export default defineConfig({
     toHaveScreenshot: {
       animations: "disabled",
       maxDiffPixelRatio: 0.02,
-      pathTemplate: "{testDir}/{testFileDir}/__screenshot__/{testFileName}/{arg}{ext}",
+      // One baseline per browser, since they render fonts and antialiasing differently
+      pathTemplate:
+        "{testDir}/{testFileDir}/__screenshot__/{testFileName}/{projectName}/{arg}{ext}",
     },
   },
   use: {

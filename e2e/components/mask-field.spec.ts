@@ -1,11 +1,5 @@
 import { test, expect, type Locator, type Page } from "@playwright/test";
-import {
-  expectScreenshot,
-  getClipboardWritePermissions,
-  gotoPage,
-  selectOption,
-  skipOutsideScreenshotBrowser,
-} from "@e2e/utils.ts";
+import { getClipboardWritePermissions, gotoPage, selectOption } from "@e2e/utils.ts";
 
 test.describe("mask-field", () => {
   // The paste tests write to the clipboard, and paste from it with the keyboard
@@ -644,10 +638,8 @@ test.describe("mask-field", () => {
   });
 
   test.describe("UI consistency", () => {
-    skipOutsideScreenshotBrowser();
-
     test("matches last screenshot", async ({ page }) => {
-      await expectScreenshot(page, { fullPage: true });
+      await expect(page).toHaveScreenshot({ fullPage: true });
     });
   });
 });
