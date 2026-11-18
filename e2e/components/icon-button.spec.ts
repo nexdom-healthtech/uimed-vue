@@ -1,10 +1,5 @@
 import { test, expect, type Page } from "@playwright/test";
-import {
-  expectScreenshot,
-  gotoPage,
-  selectOption,
-  skipOutsideScreenshotBrowser,
-} from "@e2e/utils.ts";
+import { gotoPage, selectOption } from "@e2e/utils.ts";
 import { icons } from "@/consts/icons.ts";
 
 test.describe("icon-button", () => {
@@ -103,11 +98,9 @@ test.describe("icon-button", () => {
   });
 
   test.describe("UI consistency", () => {
-    skipOutsideScreenshotBrowser();
-
     test("matches last screenshot", async ({ page }) => {
       await page.evaluate(() => document.fonts.ready);
-      await expectScreenshot(page, { fullPage: true });
+      await expect(page).toHaveScreenshot({ fullPage: true });
     });
   });
 });

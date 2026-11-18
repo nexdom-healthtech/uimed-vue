@@ -1,10 +1,4 @@
-import {
-  expectNoA11yViolations,
-  expectScreenshot,
-  gotoPage,
-  pauseClock,
-  selectOption,
-} from "@e2e/utils.ts";
+import { expectNoA11yViolations, gotoPage, pauseClock, selectOption } from "@e2e/utils.ts";
 import { test, expect, type Locator, type Page } from "@playwright/test";
 
 const actionDuration = 1500;
@@ -512,20 +506,20 @@ test.describe("dialog", () => {
       const dialog = getDialog(page);
       await expect(getAction(dialog, "Fechar")).toBeFocused();
       await expect(dialog).toMatchAriaSnapshot();
-      await expectScreenshot(page);
+      await expect(page).toHaveScreenshot();
       await page.keyboard.press("Escape");
       await expect(dialog).toBeHidden();
 
       await page.getByTestId("btn-form").click();
       await expect(dialog.getByRole("textbox", { name: "Nome" })).toBeFocused();
       await expect(dialog).toMatchAriaSnapshot();
-      await expectScreenshot(page);
+      await expect(page).toHaveScreenshot();
       await page.keyboard.press("Escape");
       await expect(dialog).toBeHidden();
 
       await page.getByTestId("btn-long").click();
       await expect(dialog.getByRole("button", { name: "Aceitar" })).toBeInViewport();
-      await expectScreenshot(page);
+      await expect(page).toHaveScreenshot();
       await page.keyboard.press("Escape");
       await expect(dialog).toBeHidden();
 
@@ -538,7 +532,7 @@ test.describe("dialog", () => {
       await open.evaluate((element) => element.scrollIntoView({ block: "center" }));
       await open.click();
       await expect(dialog.getByRole("button", { name: "Cancelar" })).toBeFocused();
-      await expectScreenshot(page);
+      await expect(page).toHaveScreenshot();
     });
   });
 });

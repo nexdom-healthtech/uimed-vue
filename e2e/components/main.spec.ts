@@ -1,11 +1,9 @@
 import {
   expectLoadingAnnouncement,
   expectNoA11yViolations,
-  expectScreenshot,
   getFieldContrast,
   gotoPage,
   selectOption,
-  skipOutsideScreenshotBrowser,
   waitForAnimations,
 } from "@e2e/utils.ts";
 import { icons } from "@/consts/icons.ts";
@@ -418,7 +416,7 @@ test.describe("main", () => {
     // The docs contain each demo's app, which then scrolls with the page. In an app, the main
     // component is the page, as without that containment
     test("stays in place while the page scrolls", async ({ page }) => {
-      await page.addStyleTag({ content: ".demo { contain: none !important; }" });
+      await page.addStyleTag({ content: ".demo-contained { transform: none !important; }" });
       const drawer = getNavigationMenu(page);
       const content = getNavigationToggleDemo(page).locator(".v-main > .v-container");
       const [rail, contentBefore] = await Promise.all([getBox(drawer), getBox(content)]);
@@ -432,8 +430,7 @@ test.describe("main", () => {
     });
 
     test("scrolls only its items when they don't fit", async ({ page }) => {
-      const viewportHeight = 200;
-      await page.setViewportSize({ width: 1280, height: viewportHeight });
+      await page.setViewportSize({ width: 1280, height: 200 });
       const drawer = getNavigationMenu(page);
       const items = drawer.locator(".v-navigation-drawer__content");
       await scrollToMenu(drawer);
@@ -445,18 +442,12 @@ test.describe("main", () => {
       ]);
       expect(scrollHeight).toBeGreaterThan(clientHeight + 20);
       const pageScroll = await page.evaluate(() => globalThis.scrollY);
-      const searchBefore = await getBox(getNavigationMenuSearch(page));
 
       await page.mouse.wheel(0, 20);
 
       await expect.poll(() => items.evaluate((element) => element.scrollTop)).toBeGreaterThan(0);
       expect(await page.evaluate(() => globalThis.scrollY)).toBe(pageScroll);
-      // Compares positions instead of `toBeInViewport`, since WebKit's IntersectionObserver, which it
-      // relies on, misplaces elements inside the demo (`contain: layout`)
-      const searchAfter = await getBox(getNavigationMenuSearch(page));
-      expect(searchAfter).toEqual(searchBefore);
-      expect(searchAfter.y).toBeGreaterThanOrEqual(0);
-      expect(searchAfter.y + searchAfter.height).toBeLessThanOrEqual(viewportHeight);
+      await expect(getNavigationMenuSearch(page)).toBeInViewport();
     });
 
     test("leaves the navigation button out of the app bar", async ({ page }) => {
@@ -1530,50 +1521,32 @@ test.describe("main", () => {
     // takes longer than the assertion's default 5s when the specs run in parallel
     const fullPageScreenshot = { fullPage: true, timeout: 15_000 };
 
-    test("matches last screenshot after choosing a user menu option", async ({
-      page,
-      browserName,
-    }) => {
-      skipOutsideScreenshotBrowser(browserName);
+    test("matches last screenshot after choosing a user menu option", async ({ page }) => {
       await chooseUserMenuOption(page);
-      await expectScreenshot(page, fullPageScreenshot);
+      await expect(page).toHaveScreenshot(fullPageScreenshot);
     });
 
-    test("matches last screenshot with the notifications menu open", async ({
-      page,
-      browserName,
-    }) => {
-      skipOutsideScreenshotBrowser(browserName);
+    test("matches last screenshot with the notifications menu open", async ({ page }) => {
       await chooseUserMenuOption(page);
       await openNotificationsMenu(page);
-      await expectScreenshot(page, fullPageScreenshot);
+      await expect(page).toHaveScreenshot(fullPageScreenshot);
     });
 
-    test("matches last screenshot after closing the notifications menu", async ({
-      page,
-      browserName,
-    }) => {
-      skipOutsideScreenshotBrowser(browserName);
+    test("matches last screenshot after closing the notifications menu", async ({ page }) => {
       await chooseUserMenuOption(page);
       await openNotificationsMenu(page);
       await page.keyboard.press("Escape");
-      await expectScreenshot(page, fullPageScreenshot);
+      await expect(page).toHaveScreenshot(fullPageScreenshot);
     });
 
-    test("matches last screenshot of the collapsed navigation rail", async ({
-      page,
-      browserName,
-    }) => {
-      skipOutsideScreenshotBrowser(browserName);
+    test("matches last screenshot of the collapsed navigation rail", async ({ page }) => {
       await expectCollapsed(getNavigationMenu(page));
       await expectDemoScreenshot(page, getNavigationToggleDemo(page));
     });
 
     test("matches last screenshot of the navigation rail expanded by the mouse", async ({
       page,
-      browserName,
     }) => {
-      skipOutsideScreenshotBrowser(browserName);
       await getNavigationToggleDemo(page).scrollIntoViewIfNeeded();
       await expandByMouse(page, getNavigationMenu(page));
       await expectDemoScreenshot(page, getNavigationToggleDemo(page));
@@ -1581,9 +1554,7 @@ test.describe("main", () => {
 
     test("matches last screenshot of the collapsed navigation rail with the current page's group", async ({
       page,
-      browserName,
     }) => {
-      skipOutsideScreenshotBrowser(browserName);
       await openComponentsPage(page);
       await expectDemoScreenshot(page, getNavigationToggleDemo(page));
     });
@@ -1601,7 +1572,7 @@ test.describe("main", () => {
       await expect(getFooter(page)).toBeVisible();
       // The demo is as tall as the viewport, so the docs' fixed navigation bar would cover its top
       await page.addStyleTag({ content: ".VPNav { visibility: hidden; }" });
-      await expectScreenshot(getFooterDemo(page));
+      await expect(getFooterDemo(page)).toHaveScreenshot();
     });
 
     test("matches last screenshot of the back-to-top button above the footer", async ({ page }) => {
@@ -1610,14 +1581,14 @@ test.describe("main", () => {
       await waitForAnimations(page);
       await page.addStyleTag({ content: ".VPNav, .VPLocalNav { visibility: hidden; }" });
       // The demo is taller than the viewport, so only its end, with the button, is in view
-      await expectScreenshot(page);
+      await expect(page).toHaveScreenshot();
     });
 
     test("matches last screenshot of the background demo", async ({ page }) => {
       await expect(getBackgroundApp(page)).toContainClass("bg-primary");
       // The demo is as tall as the viewport, so the docs' fixed navigation bar would cover its top
       await page.addStyleTag({ content: ".VPNav { visibility: hidden; }" });
-      await expectScreenshot(getBackgroundDemo(page));
+      await expect(getBackgroundDemo(page)).toHaveScreenshot();
     });
 
     test("matches last screenshot of the open user details menu", async ({ page }) => {
@@ -1625,7 +1596,7 @@ test.describe("main", () => {
       await expect(getUserDetailsMenu(page)).toBeVisible();
       // The menu grows from the button while it opens
       await waitForAnimations(page);
-      await expectScreenshot(getUserDetailsMenu(page));
+      await expect(getUserDetailsMenu(page)).toHaveScreenshot();
     });
 
     test("matches last screenshot of the loading demo with its navigation rail collapsed", async ({
@@ -1716,7 +1687,7 @@ async function openComponentsPage(page: Page) {
 async function expectDemoScreenshot(page: Page, demo: Locator) {
   await waitForAnimations(page);
   await page.addStyleTag({ content: ".VPNav, .VPLocalNav { visibility: hidden; }" });
-  await expectScreenshot(demo);
+  await expect(demo).toHaveScreenshot();
 }
 
 async function chooseUserMenuOption(page: Page) {

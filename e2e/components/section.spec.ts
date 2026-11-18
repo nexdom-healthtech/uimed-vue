@@ -2,10 +2,8 @@ import { test, expect, type Locator, type Page } from "@playwright/test";
 import {
   expectLoadingAnnouncement,
   expectNoA11yViolations,
-  expectScreenshot,
   gotoPage,
   selectOption,
-  skipOutsideScreenshotBrowser,
 } from "@e2e/utils.ts";
 
 test.describe("section", () => {
@@ -224,10 +222,8 @@ test.describe("section", () => {
   });
 
   test.describe("UI consistency", () => {
-    skipOutsideScreenshotBrowser();
-
     test("matches last screenshot", async ({ page }) => {
-      await expectScreenshot(page, { fullPage: true });
+      await expect(page).toHaveScreenshot({ fullPage: true });
     });
 
     test("matches last screenshot of the playground loading with full height", async ({ page }) => {
@@ -236,7 +232,7 @@ test.describe("section", () => {
       await page.addStyleTag({ content: ".VPNav { visibility: hidden; }" });
       // The bones are only a light gray on the skeleton's lighter background, which the default
       // per-pixel threshold (0.2) counts as the same color, so moved bones would still pass
-      await expectScreenshot(page.locator(".playground-preview"), { threshold: 0.05 });
+      await expect(page.locator(".playground-preview")).toHaveScreenshot({ threshold: 0.05 });
     });
   });
 });

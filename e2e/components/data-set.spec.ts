@@ -3,10 +3,8 @@ import {
   expectLoadingAnnouncement,
   expectNoA11yViolations,
   expectOutlinedButton,
-  expectScreenshot,
   gotoPage,
   selectOption,
-  skipOutsideScreenshotBrowser,
   themeTextRgb,
 } from "@e2e/utils.ts";
 
@@ -572,10 +570,8 @@ test.describe("data-set", () => {
   });
 
   test.describe("UI consistency", () => {
-    skipOutsideScreenshotBrowser();
-
     test("matches last screenshot", async ({ page }) => {
-      await expectScreenshot(page, { fullPage: true });
+      await expect(page).toHaveScreenshot({ fullPage: true });
     });
   });
 });

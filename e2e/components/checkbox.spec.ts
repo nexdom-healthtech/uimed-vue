@@ -1,10 +1,5 @@
 import { test, expect, type Page } from "@playwright/test";
-import {
-  expectNoA11yViolations,
-  expectScreenshot,
-  gotoPage,
-  skipOutsideScreenshotBrowser,
-} from "@e2e/utils.ts";
+import { expectNoA11yViolations, gotoPage } from "@e2e/utils.ts";
 
 test.describe("checkbox", () => {
   test.beforeEach(async ({ page }) => {
@@ -102,10 +97,8 @@ test.describe("checkbox", () => {
   });
 
   test.describe("UI consistency", () => {
-    skipOutsideScreenshotBrowser();
-
     test("matches last screenshot", async ({ page }) => {
-      await expectScreenshot(page, { fullPage: true });
+      await expect(page).toHaveScreenshot({ fullPage: true });
     });
   });
 });

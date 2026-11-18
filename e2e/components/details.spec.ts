@@ -2,10 +2,8 @@ import { test, expect, type Page } from "@playwright/test";
 import {
   expectLoadingAnnouncement,
   expectNoA11yViolations,
-  expectScreenshot,
   gotoPage,
   selectOption,
-  skipOutsideScreenshotBrowser,
 } from "@e2e/utils.ts";
 
 test.describe("details", () => {
@@ -150,10 +148,8 @@ test.describe("details", () => {
   });
 
   test.describe("UI consistency", () => {
-    skipOutsideScreenshotBrowser();
-
     test("matches last screenshot", async ({ page }) => {
-      await expectScreenshot(page, { fullPage: true });
+      await expect(page).toHaveScreenshot({ fullPage: true });
     });
   });
 });

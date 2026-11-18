@@ -52,8 +52,11 @@ const classes = computed(() => ({
     align-items: center;
   }
 
+  // Keeps the demo's fixed elements (e.g. the app bar) inside it. Not with `contain: layout`, which
+  // does the same, since WebKit's IntersectionObserver then never sees them, so the images that
+  // Vuetify loads once visible (e.g. the user's avatar in the app bar) never load in Safari
   &-contained {
-    contain: layout;
+    transform: translate(0);
   }
 
   &-col {

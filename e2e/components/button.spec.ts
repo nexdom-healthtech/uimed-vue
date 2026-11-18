@@ -2,10 +2,8 @@ import { test, expect, type Locator, type Page } from "@playwright/test";
 import {
   expectNoA11yViolations,
   expectOutlinedButton,
-  expectScreenshot,
   gotoPage,
   selectOption,
-  skipOutsideScreenshotBrowser,
   themeTextRgb,
 } from "@e2e/utils.ts";
 
@@ -225,10 +223,8 @@ test.describe("button", () => {
   });
 
   test.describe("UI consistency", () => {
-    skipOutsideScreenshotBrowser();
-
     test("matches last screenshot", async ({ page }) => {
-      await expectScreenshot(page, { fullPage: true });
+      await expect(page).toHaveScreenshot({ fullPage: true });
     });
   });
 });
